@@ -260,6 +260,7 @@
 <script setup lang="ts">
 import { ref, computed, watch, nextTick } from 'vue'
 import type { Product } from '~/components/ProductCard.vue'
+import { hexToBase64 } from '../utils/image'
 // html2pdf can only be imported on client side
 let html2pdf: any;
 if (process.client) {
@@ -442,7 +443,7 @@ const getCoverImageSrc = (url: string | null | undefined, blob: string | null | 
   if (blob) {
     const isJpg = url && (url.toLowerCase().endsWith('.jpg') || url.toLowerCase().endsWith('.jpeg'));
     const mime = isJpg ? 'image/jpeg' : 'image/png';
-    return `data:${mime};base64,${blob}`;
+    return `data:${mime};base64,${hexToBase64(blob)}`;
   }
   return url || '';
 }
