@@ -225,11 +225,23 @@ const saveCategoryAsset = async (catAsset: any) => {
       throw new Error('O nome da categoria não pode estar em branco.')
     }
 
+    let dbBlob = catAsset.coverImageBlob
+    if (dbBlob && !dbBlob.startsWith('\\x')) {
+      // Convert base64 back to hex string
+      const binary = atob(dbBlob)
+      let hex = ''
+      for (let i = 0; i < binary.length; i++) {
+        const h = binary.charCodeAt(i).toString(16)
+        hex += h.length === 1 ? '0' + h : h
+      }
+      dbBlob = '\\x' + hex
+    }
+
     // 1. Update category_assets
     const assetPayload = {
       category: newCat,
       cover_image_url: catAsset.coverImageUrl,
-      cover_image_blob: catAsset.coverImageBlob,
+      cover_image_blob: dbBlob,
       color_hex: catAsset.colorHex
     }
     const { error: assetError } = await supabase
@@ -725,6 +737,16 @@ const handleCsvUpload = async (file: File) => {
         }
       })
       
+      const csvSlots = parseInt(row['layout_slots']) || 3
+      let dbLayoutSlots = 3 // default to 2 products per page (3 slots)
+      if (csvSlots === 1) {
+        dbLayoutSlots = 6 // 1 product per page = 6 slots
+      } else if (csvSlots === 2) {
+        dbLayoutSlots = 3 // 2 products per page = 3 slots
+      } else if (csvSlots === 6) {
+        dbLayoutSlots = 1 // 6 products per page = 1 slot
+      }
+
       parsedProducts.push({
         title: row['title'],
         name_code: row['name_code'],
@@ -732,7 +754,7 @@ const handleCsvUpload = async (file: File) => {
         tag: row['tag'] || 'ATIVO',
         tag_color_class: 'text-[#005db7]',
         bg_class: 'bg-secondary',
-        layout_slots: parseInt(row['layout_slots']) || 3,
+        layout_slots: dbLayoutSlots,
         image: row['image_url'] || 'https://via.placeholder.com/400x300/e5e7eb/6b7280?text=Produto',
         datasheet_url: row['datasheet_url'] || null,
         specs: specs
