@@ -1,3 +1,6 @@
+if (typeof globalThis.WebSocket === 'undefined') {
+  globalThis.WebSocket = class {} as any
+}
 import { createClient } from '@supabase/supabase-js'
 
 export default defineEventHandler(async (event) => {

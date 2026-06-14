@@ -1,1 +1,61 @@
-"import { createClient } from '@supabase/supabase-client'\n\nexport default defineEventHandler(async (event) => {\n  const query = getQuery(event)\n  const id = query.id\n\n  if (!id) {\n    throw createError({\n      statusCode: 400,\n      statusMessage: 'ID do produto é obrigatório',\n    })\n  }\n\n  // Get credentials from runtimeConfig or env\n  const config = useRuntimeConfig()\n  const supabaseUrl = process.env.SUPABASE_URL || config.public.supabase?.url\n  const supabaseKey = process.env.SUPABASE_KEY || process.env.SUPABASE_ANON_KEY || config.public.supabase?.key\n\n  if (!supabaseUrl || !supabaseKey) {\n    throw createError({\n      statusCode: 500,\n      statusMessage: 'Configuração do Supabase ausente',\n    })\n  }\n\n  const supabase = createClient(supabaseUrl, supabaseKey)\n\n  // Fetch product datasheet blob\n  const { data, error } = await supabase\n    .from('products')\n    .select('title, name_code, datasheet_name, datasheet_blob')\n    .eq('id', id)\n    .single()\n\n  if (error || !data || !data.datasheet_blob) {\n    throw createError({\n      statusCode: 404,\n      statusMessage: 'Datasheet não encontrado para este produto',\n    })\n  }\n\n  // Convert postgres bytea string (starting with \\x) or raw buffer\n  let pdfBuffer: Buffer\n  if (typeof data.datasheet_blob === 'string') {\n    const hex = data.datasheet_blob.replace(/^\\\\x/, '')\n    pdfBuffer = Buffer.from(hex, 'hex')\n  } else {\n    pdfBuffer = Buffer.from(data.datasheet_blob)\n  }\n\n  const filename = data.datasheet_name || `datasheet_${data.name_code || id}.pdf`\n\n  // Send PDF response headers\n  setHeader(event, 'Content-Type', 'application/pdf')\n  setHeader(event, 'Content-Disposition', `inline; filename=\"${encodeURIComponent(filename)}\"`)\n  \n  return pdfBuffer\n})\n"
+if (typeof globalThis.WebSocket === 'undefined') {
+  globalThis.WebSocket = class {} as any
+}
+import { createClient } from '@supabase/supabase-js'
+
+export default defineEventHandler(async (event) => {
+  const query = getQuery(event)
+  const id = query.id
+
+  if (!id) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'ID do produto é obrigatório',
+    })
+  }
+
+  // Get credentials from runtimeConfig or env
+  const config = useRuntimeConfig()
+  const supabaseUrl = process.env.SUPABASE_URL || config.public.supabase?.url
+  const supabaseKey = process.env.SUPABASE_KEY || process.env.SUPABASE_ANON_KEY || config.public.supabase?.key
+
+  if (!supabaseUrl || !supabaseKey) {
+    throw createError({
+      statusCode: 500,
+      statusMessage: 'Configuração do Supabase ausente',
+    })
+  }
+
+  const supabase = createClient(supabaseUrl, supabaseKey)
+
+  // Fetch product datasheet blob
+  const { data, error } = await supabase
+    .from('products')
+    .select('title, name_code, datasheet_name, datasheet_blob')
+    .eq('id', id)
+    .single()
+
+  if (error || !data || !data.datasheet_blob) {
+    throw createError({
+      statusCode: 404,
+      statusMessage: 'Datasheet não encontrado para este produto',
+    })
+  }
+
+  // Convert postgres bytea string (starting with \x) or raw buffer
+  let pdfBuffer: Buffer
+  if (typeof data.datasheet_blob === 'string') {
+    const hex = data.datasheet_blob.replace(/^\\x/, '')
+    pdfBuffer = Buffer.from(hex, 'hex')
+  } else {
+    pdfBuffer = Buffer.from(data.datasheet_blob)
+  }
+
+  const filename = data.datasheet_name || `datasheet_${data.name_code || id}.pdf`
+
+  // Send PDF response headers
+  setHeader(event, 'Content-Type', 'application/pdf')
+  setHeader(event, 'Content-Disposition', `inline; filename="${encodeURIComponent(filename)}"`)
+  
+  return pdfBuffer
+})
