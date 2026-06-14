@@ -65,6 +65,9 @@
               <button @click="openReplicateModal(category)" class="w-full py-2 border border-blue-600 text-blue-600 hover:bg-blue-50 text-xs font-bold rounded transition-colors">
                 REPLICAR LAYOUT PDF
               </button>
+              <button @click="confirmDeleteCategory(category)" class="w-full py-2 border border-red-600 text-red-650 hover:bg-red-50 text-xs font-bold rounded transition-colors">
+                EXCLUIR CATEGORIA
+              </button>
             </div>
           </div>
 
@@ -446,6 +449,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: 'create-category', name: string): void
   (e: 'save-category', category: Category): void
+  (e: 'delete-category', id: string): void
   (e: 'replicate-settings', payload: { source: Category, targetIds: string[] }): void
 }>()
 
@@ -455,6 +459,12 @@ const sourceCategory = ref<Category | null>(null)
 const selectedTargets = ref<string[]>([])
 const fileInputs = ref<Record<string, HTMLInputElement | null>>({})
 const openCategorySettings = ref<Record<string, boolean>>({})
+
+const confirmDeleteCategory = (category: Category) => {
+  if (confirm(`Deseja realmente excluir a categoria "${category.category}"? Isso removerá a categoria e todas as suas configurações visuais de PDF.`)) {
+    emit('delete-category', category.id)
+  }
+}
 
 const isPdfSettingsOpen = (id: string) => {
   return !!openCategorySettings.value[id]

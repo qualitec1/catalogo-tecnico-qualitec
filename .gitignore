@@ -29,3 +29,6 @@ database_backup.sql
 
 # Recovery folder
 recovery_catalog/
+
+# Local data sheets and CSVs
+*.csv

@@ -45,23 +45,25 @@
             :importing="importing"
             @edit="openEditModal"
             @delete="deleteProduct"
-            @csv-upload="handleCsvUpload"
-            ref="productTableRef"
-          />
-        </section>
-      </div>
-
-      <!-- Categories & Covers Management View -->
-      <div class="else-if-categorias" v-else-if="currentTab === 'categorias'">
-        <AdminCategorySettings 
-          :categories="categoryAssetsList"
-          :loading="loadingCategories"
-          :saving="saving"
-          @create-category="saveNewCategoryAsset"
-          @save-category="saveCategoryAsset"
-          @replicate-settings="replicateCategorySettings"
+          @delete-all="deleteAllProducts"
+          @csv-upload="handleCsvUpload"
+          ref="productTableRef"
         />
-      </div>
+      </section>
+    </div>
+
+    <!-- Categories & Covers Management View -->
+    <div class="else-if-categorias" v-else-if="currentTab === 'categorias'">
+      <AdminCategorySettings 
+        :categories="categoryAssetsList"
+        :loading="loadingCategories"
+        :saving="saving"
+        @create-category="saveNewCategoryAsset"
+        @save-category="saveCategoryAsset"
+        @delete-category="deleteCategoryAsset"
+        @replicate-settings="replicateCategorySettings"
+      />
+    </div>
     </main>
 
     <!-- Footer -->
@@ -643,25 +645,57 @@ const deleteProduct = async (id: number) => {
   }
 }
 
+// Helper to parse a CSV line supporting delimiters and quotes
+const parseCsvLine = (line: string, delimiter: string) => {
+  const result: string[] = []
+  let current = ''
+  let inQuotes = false
+  for (let i = 0; i < line.length; i++) {
+    const char = line[i]
+    if (char === '"') {
+      inQuotes = !inQuotes
+    } else if (char === delimiter && !inQuotes) {
+      result.push(current.trim())
+      current = ''
+    } else {
+      current += char
+    }
+  }
+  result.push(current.trim())
+  return result.map(val => {
+    let clean = val
+    if (clean.startsWith('"') && clean.endsWith('"')) {
+      clean = clean.substring(1, clean.length - 1)
+    }
+    return clean.replace(/""/g, '"')
+  })
+}
+
 // Bulk CSV Import Logic
 const handleCsvUpload = async (file: File) => {
   importing.value = true
   const reader = new FileReader()
   reader.onload = async (e) => {
     const text = e.target?.result as string
-    const lines = text.split('\n')
-    const headers = lines[0].split(',')
+    const lines = text.split('\n').map(l => l.trim()).filter(Boolean)
+    if (lines.length === 0) {
+      triggerToast('O arquivo CSV está vazio.', 'error')
+      importing.value = false
+      return
+    }
+
+    const firstLine = lines[0]
+    const delimiter = firstLine.includes(';') ? ';' : ','
+    const headers = parseCsvLine(firstLine, delimiter)
     
     const parsedProducts = []
     
     for (let i = 1; i < lines.length; i++) {
-      const line = lines[i].trim()
-      if (!line) continue
-      
-      const values = line.split(',')
+      const line = lines[i]
+      const values = parseCsvLine(line, delimiter)
       const row: Record<string, string> = {}
       headers.forEach((h, idx) => {
-        row[h.trim()] = values[idx] ? values[idx].trim() : ''
+        row[h] = values[idx] ? values[idx] : ''
       })
       
       // Core columns
@@ -683,11 +717,10 @@ const handleCsvUpload = async (file: File) => {
       
       // 2. Process all other columns as individual specifications (dynamic columns)
       headers.forEach(h => {
-        const headerTrimmed = h.trim()
-        if (!coreColumns.includes(headerTrimmed) && row[headerTrimmed]) {
+        if (!coreColumns.includes(h) && row[h]) {
           specs.push({
-            label: headerTrimmed,
-            value: row[headerTrimmed]
+            label: h,
+            value: row[h]
           })
         }
       })
@@ -719,6 +752,55 @@ const handleCsvUpload = async (file: File) => {
     }
   }
   reader.readAsText(file)
+}
+
+// Delete all products
+const deleteAllProducts = async () => {
+  loading.value = true
+  try {
+    const { error } = await supabase.from('products').delete().neq('id', 0)
+    if (error) throw error
+    triggerToast('Todos os produtos foram removidos do catálogo com sucesso!', 'success')
+    await fetchProducts()
+  } catch (err: any) {
+    console.error(err)
+    triggerToast(`Erro ao remover todos os produtos: ${err.message}`, 'error')
+  } finally {
+    loading.value = false
+  }
+}
+
+// Delete category asset and settings
+const deleteCategoryAsset = async (id: string) => {
+  saving.value = true
+  try {
+    const catAsset = categoryAssetsList.value.find(c => c.id === id)
+    if (!catAsset) return
+    const catName = catAsset.category.toUpperCase().trim()
+
+    // 1. Delete category assets
+    const { error: assetError } = await supabase.from('category_assets').delete().eq('id', id)
+    if (assetError) throw assetError
+
+    // 2. Delete pdf settings
+    const { error: settingsError } = await supabase.from('pdf_settings').delete().eq('category', catName)
+    if (settingsError) throw settingsError
+
+    triggerToast(`Categoria "${catName}" excluída com sucesso!`, 'success')
+    
+    const { fetchAssets } = useCategoryColors()
+    const { fetchPdfSettings } = usePdfSettings()
+    await Promise.all([
+      fetchAssets(),
+      fetchPdfSettings(),
+      fetchCategoryAssetsAdmin()
+    ])
+  } catch (err: any) {
+    console.error(err)
+    triggerToast(`Erro ao excluir categoria: ${err.message}`, 'error')
+  } finally {
+    saving.value = false
+  }
 }
 
 // Smooth scroll to creation form

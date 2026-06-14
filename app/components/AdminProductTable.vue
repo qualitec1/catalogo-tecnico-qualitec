@@ -10,6 +10,10 @@
             <span class="material-symbols-outlined text-sm mr-1">upload_file</span>
             {{ importing ? 'Importando...' : 'Importar CSV' }}
           </button>
+          <button @click="confirmDeleteAll" :disabled="products.length === 0" class="flex items-center px-3 py-1.5 border border-red-650 text-red-655 hover:bg-red-50 font-semibold text-xs rounded transition-colors disabled:opacity-50">
+            <span class="material-symbols-outlined text-sm mr-1">delete_sweep</span>
+            Excluir Todos
+          </button>
           <input type="file" ref="csvInput" accept=".csv" class="hidden" @change="handleFileChange" />
         </div>
       </div>
@@ -115,8 +119,15 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: 'edit', product: Product): void
   (e: 'delete', id: number): void
+  (e: 'delete-all'): void
   (e: 'csv-upload', file: File): void
 }>()
+
+const confirmDeleteAll = () => {
+  if (confirm('Deseja realmente REMOVER TODOS os produtos do catálogo? Esta ação é irreversível e apagará todos os itens cadastrados.')) {
+    emit('delete-all')
+  }
+}
 
 const searchQuery = ref('')
 const currentPage = ref(1)
