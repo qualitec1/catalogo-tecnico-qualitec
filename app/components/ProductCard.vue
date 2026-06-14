@@ -20,9 +20,9 @@
       <img 
         :alt="product.title" 
         class="w-full h-full object-contain max-h-[220px] cursor-pointer hover:opacity-90 transition-opacity" 
-        :src="product.imageBlob ? `data:image/png;base64,${product.imageBlob}` : product.image"
+        :src="getProductImage(product)"
         @error="handleImageError"
-        @click="$emit('openImage', product.imageBlob ? `data:image/png;base64,${product.imageBlob}` : product.image)"
+        @click="$emit('openImage', getProductImage(product))"
       >
     </div>
 
@@ -128,9 +128,21 @@ const getTagColor = (colorClass: string) => {
   return colorMap[colorClass] || colorClass;
 }
 
+const getProductImage = (product: any) => {
+  if (product.imageBlob) {
+    if (product.imageBlob.startsWith('data:')) return product.imageBlob
+    return `data:image/png;base64,${product.imageBlob}`
+  }
+  return product.image || 'https://via.placeholder.com/400x300/e5e7eb/6b7280?text=Produto'
+}
+
 const handleImageError = (e: Event) => {
   const img = e.target as HTMLImageElement;
-  console.error('Erro ao carregar imagem:', img.src);
-  img.src = 'https://via.placeholder.com/400x300/e5e7eb/6b7280?text=Produto';
+  const fallbackUrl = `/api/product-image?id=${props.product.id}`;
+  if (img.src !== fallbackUrl && !img.src.includes('/api/product-image')) {
+    img.src = fallbackUrl;
+  } else {
+    img.src = 'https://via.placeholder.com/400x300/e5e7eb/6b7280?text=Produto';
+  }
 }
 </script>

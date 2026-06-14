@@ -31,19 +31,44 @@ export default defineEventHandler(async (event) => {
         .eq('id', id)
         .single()
 
-    if (error || !data || !data.image_blob) {
+    if (error || !data) {
         throw createError({
             statusCode: 404,
-            statusMessage: 'Imagem não encontrada',
+            statusMessage: 'Produto não encontrado',
         })
     }
 
     let imgBuffer: Buffer
-    if (typeof data.image_blob === 'string') {
-        const hex = data.image_blob.replace(/^\\x/, '')
-        imgBuffer = Buffer.from(hex, 'hex')
+    if (data.image_blob) {
+        if (typeof data.image_blob === 'string') {
+            const hex = data.image_blob.replace(/^\\x/, '')
+            imgBuffer = Buffer.from(hex, 'hex')
+        } else {
+            imgBuffer = Buffer.from(data.image_blob)
+        }
+    } else if (data.image && (data.image.startsWith('http://') || data.image.startsWith('https://'))) {
+        try {
+            const res = await fetch(data.image)
+            if (!res.ok) throw new Error('Falha ao baixar imagem externa')
+            const arrayBuffer = await res.arrayBuffer()
+            imgBuffer = Buffer.from(arrayBuffer)
+            
+            // Convert to postgres bytea hex string for Supabase
+            const hex = '\\x' + imgBuffer.toString('hex')
+            // Save to database so subsequent loads are local and fast
+            await supabase.from('products').update({ image_blob: hex }).eq('id', id)
+        } catch (e) {
+            console.error('Error proxying external image:', e)
+            throw createError({
+                statusCode: 404,
+                statusMessage: 'Imagem externa indisponível',
+            })
+        }
     } else {
-        imgBuffer = Buffer.from(data.image_blob)
+        throw createError({
+            statusCode: 404,
+            statusMessage: 'Imagem não encontrada',
+        })
     }
 
     const imageUrl = data.image || ''
