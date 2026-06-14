@@ -454,6 +454,9 @@ const getProductImageSrc = (product: any) => {
     const mime = isJpg ? 'image/jpeg' : 'image/png';
     return `data:${mime};base64,${product.imageBlob}`;
   }
+  if (product.image && (product.image.startsWith('http://') || product.image.startsWith('https://'))) {
+    return `/api/product-image?id=${product.id}`
+  }
   return product.image || 'https://via.placeholder.com/400x300/e5e7eb/6b7280?text=Produto';
 }
 

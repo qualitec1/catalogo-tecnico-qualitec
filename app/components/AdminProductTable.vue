@@ -162,6 +162,9 @@ const getProductImage = (product: Product) => {
     if (product.imageBlob.startsWith('data:')) return product.imageBlob
     return `data:image/png;base64,${product.imageBlob}`
   }
+  if (product.image && (product.image.startsWith('http://') || product.image.startsWith('https://'))) {
+    return `/api/product-image?id=${product.id}`
+  }
   return product.image || 'https://via.placeholder.com/150?text=Sem+Imagem'
 }
 
