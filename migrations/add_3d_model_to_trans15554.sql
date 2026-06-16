@@ -1,6 +1,6 @@
--- Atualiza o produto TRANS-15554 com o modelo 3D
+-- Atualiza o produto TRANS-15554 com o modelo 3D do GitHub raw
 UPDATE products
-SET model3d_url = '/model3d.glb'
+SET model3d_url = 'https://github.com/qualitec1/catalogo-tecnico-qualitec/raw/main/public/model3d.glb'
 WHERE name_code = 'TRANS-15554';
 
 -- Verifica se foi atualizado
