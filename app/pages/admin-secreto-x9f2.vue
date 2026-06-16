@@ -164,6 +164,7 @@ const fetchCategoryAssetsAdmin = async () => {
         dividerLineColor: settings.divider_line_color || '#cbd5e1',
         productSpacing: settings.product_spacing || '24px',
         productImageOffsetY: settings.product_image_offset_y || '0px',
+        productImageOffsetX: settings.product_image_offset_x || '0px',
         cardOffsetX: settings.card_offset_x || '0px',
         cardOffsetY: settings.card_offset_y || '0px',
         cardTitleOffsetX: settings.card_title_offset_x || '0px',
@@ -209,6 +210,14 @@ const fetchCategoryAssetsAdmin = async () => {
         tagOffsetX: settings.tag_offset_x || '0px',
         tagOffsetY: settings.tag_offset_y || '0px',
         orientation: settings.orientation || 'portrait',
+        pdfImageScale: settings.pdf_image_scale !== undefined && settings.pdf_image_scale !== null ? Number(settings.pdf_image_scale) : 1.0,
+        pdfImageScaleX: settings.pdf_image_scale_x !== undefined && settings.pdf_image_scale_x !== null ? Number(settings.pdf_image_scale_x) : 1.0,
+        pdfImageScaleY: settings.pdf_image_scale_y !== undefined && settings.pdf_image_scale_y !== null ? Number(settings.pdf_image_scale_y) : 1.0,
+        landscapeSettings: (() => {
+          let ls = settings.landscape_settings
+          if (typeof ls === 'string') { try { ls = JSON.parse(ls) } catch { ls = null } }
+          return ls || {}
+        })(),
         
         uploading: false,
         hasChanges: false
@@ -285,6 +294,7 @@ const saveCategoryAsset = async (catAsset: any) => {
       divider_line_color: catAsset.dividerLineColor,
       product_spacing: catAsset.productSpacing,
       product_image_offset_y: catAsset.productImageOffsetY,
+      product_image_offset_x: catAsset.productImageOffsetX,
       card_offset_x: catAsset.cardOffsetX,
       card_offset_y: catAsset.cardOffsetY,
       card_title_offset_x: catAsset.cardTitleOffsetX,
@@ -329,7 +339,13 @@ const saveCategoryAsset = async (catAsset: any) => {
       tag_underline: catAsset.tagUnderline,
       tag_offset_x: catAsset.tagOffsetX,
       tag_offset_y: catAsset.tagOffsetY,
-      orientation: catAsset.orientation || 'portrait'
+      orientation: catAsset.orientation || 'portrait',
+      pdf_image_scale: catAsset.pdfImageScale !== undefined && catAsset.pdfImageScale !== null ? Number(catAsset.pdfImageScale) : 1.0,
+      pdf_image_scale_x: catAsset.pdfImageScaleX !== undefined && catAsset.pdfImageScaleX !== null ? Number(catAsset.pdfImageScaleX) : 1.0,
+      pdf_image_scale_y: catAsset.pdfImageScaleY !== undefined && catAsset.pdfImageScaleY !== null ? Number(catAsset.pdfImageScaleY) : 1.0,
+      landscape_settings: catAsset.landscapeSettings && Object.keys(catAsset.landscapeSettings).length > 0
+        ? catAsset.landscapeSettings
+        : null
     }
     
     if (catAsset.pdfSettingsId) {
@@ -383,6 +399,7 @@ const replicateCategorySettings = async ({ source, targetIds }: { source: any, t
         divider_line_color: source.dividerLineColor,
         product_spacing: source.productSpacing,
         product_image_offset_y: source.productImageOffsetY,
+        product_image_offset_x: source.productImageOffsetX,
         card_offset_x: source.cardOffsetX,
         card_offset_y: source.cardOffsetY,
         card_title_offset_x: source.cardTitleOffsetX,
@@ -427,7 +444,13 @@ const replicateCategorySettings = async ({ source, targetIds }: { source: any, t
         tag_underline: source.tagUnderline,
         tag_offset_x: source.tagOffsetX,
         tag_offset_y: source.tagOffsetY,
-        orientation: source.orientation || 'portrait'
+        orientation: source.orientation || 'portrait',
+        pdf_image_scale: source.pdfImageScale !== undefined && source.pdfImageScale !== null ? Number(source.pdfImageScale) : 1.0,
+        pdf_image_scale_x: source.pdfImageScaleX !== undefined && source.pdfImageScaleX !== null ? Number(source.pdfImageScaleX) : 1.0,
+        pdf_image_scale_y: source.pdfImageScaleY !== undefined && source.pdfImageScaleY !== null ? Number(source.pdfImageScaleY) : 1.0,
+        landscape_settings: source.landscapeSettings && Object.keys(source.landscapeSettings).length > 0
+          ? source.landscapeSettings
+          : null
       }
 
       if (targetCat.pdfSettingsId) {
@@ -481,6 +504,7 @@ const saveNewCategoryAsset = async (name: string) => {
       divider_line_color: '#cbd5e1',
       product_spacing: '24px',
       product_image_offset_y: '0px',
+      product_image_offset_x: '0px',
       card_offset_x: '0px',
       card_offset_y: '0px',
       card_title_offset_x: '0px',
@@ -511,7 +535,11 @@ const saveNewCategoryAsset = async (name: string) => {
       tag_underline: false,
       tag_offset_x: '0px',
       tag_offset_y: '0px',
-      orientation: 'portrait'
+      orientation: 'portrait',
+      pdf_image_scale: 1.0,
+      pdf_image_scale_x: 1.0,
+      pdf_image_scale_y: 1.0,
+      landscape_settings: null
     }])
     
     triggerToast('Nova categoria criada com sucesso!', 'success')
@@ -731,31 +759,80 @@ const parseCsvLine = (line: string, delimiter: string) => {
   })
 }
 
+// Robust character-by-character CSV parser that supports quotes, delimiters, and newlines inside cells
+const parseFullCsv = (text: string, delimiter: string): string[][] => {
+  const result: string[][] = []
+  let currentRow: string[] = []
+  let currentField = ''
+  let inQuotes = false
+  
+  for (let i = 0; i < text.length; i++) {
+    const char = text[i]
+    const nextChar = text[i + 1]
+    
+    if (char === '"') {
+      if (inQuotes && nextChar === '"') {
+        currentField += '"'
+        i++ // Skip double quote
+      } else {
+        inQuotes = !inQuotes
+      }
+    } else if (char === delimiter && !inQuotes) {
+      currentRow.push(currentField.trim())
+      currentField = ''
+    } else if ((char === '\r' || char === '\n') && !inQuotes) {
+      if (char === '\r' && nextChar === '\n') {
+        i++ // Skip \n
+      }
+      currentRow.push(currentField.trim())
+      if (currentRow.length > 1 || (currentRow.length === 1 && currentRow[0] !== '')) {
+        result.push(currentRow)
+      }
+      currentRow = []
+      currentField = ''
+    } else {
+      currentField += char
+    }
+  }
+  
+  if (currentField !== '' || currentRow.length > 0) {
+    currentRow.push(currentField.trim())
+    result.push(currentRow)
+  }
+  
+  return result
+}
+
 // Bulk CSV Import Logic
 const handleCsvUpload = async (file: File) => {
   importing.value = true
   const reader = new FileReader()
   reader.onload = async (e) => {
     const text = e.target?.result as string
-    const lines = text.split('\n').map(l => l.trim()).filter(Boolean)
-    if (lines.length === 0) {
+    if (!text || !text.trim()) {
       triggerToast('O arquivo CSV está vazio.', 'error')
       importing.value = false
       return
     }
 
-    const firstLine = lines[0]
-    const delimiter = firstLine.includes(';') ? ';' : ','
-    const headers = parseCsvLine(firstLine, delimiter)
-    
+    const delimiter = text.includes(';') ? ';' : ','
+    const allRows = parseFullCsv(text, delimiter)
+    if (allRows.length === 0) {
+      triggerToast('O arquivo CSV está vazio.', 'error')
+      importing.value = false
+      return
+    }
+
+    const headers = allRows[0]
     const parsedProducts = []
     
-    for (let i = 1; i < lines.length; i++) {
-      const line = lines[i]
-      const values = parseCsvLine(line, delimiter)
+    for (let i = 1; i < allRows.length; i++) {
+      const values = allRows[i]
+      if (values.length === 0 || (values.length === 1 && values[0] === '')) continue
+      
       const row: Record<string, string> = {}
       headers.forEach((h, idx) => {
-        row[h] = values[idx] ? values[idx] : ''
+        row[h] = values[idx] !== undefined ? values[idx] : ''
       })
       
       // Core columns

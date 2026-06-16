@@ -110,9 +110,8 @@
               <div v-if="getSlots(product) === 1" class="flex flex-col h-full w-full justify-between">
                 <!-- Imagem com altura fixa e alinhamento pela base para que todas comecem na mesma linha -->
                 <div class="flex items-end justify-center relative z-10" 
-                     :class="isLandscape ? 'h-24' : 'h-32'"
-                     :style="{ position: 'relative', top: formatDimension(getPageSettings(page).product_image_offset_y, '0px') }">
-                  <img v-if="product.imageBlob || product.image" :src="getProductImageSrc(product)" class="object-contain" :style="{ maxHeight: `${(isLandscape ? 80 : 112) * (product.image_scale || 1.0)}px`, maxWidth: `${90 * (product.image_scale || 1.0)}%`, position: 'relative', top: `${product.image_offset_y || 0}px`, left: `${product.image_offset_x || 0}px` }" crossorigin="anonymous" @error="(e) => handleImageError(e, product)" />
+                     :class="isLandscape ? 'h-24' : 'h-32'">
+                  <img v-if="product.imageBlob || product.image" :src="getProductImageSrc(product)" class="object-contain" :style="{ maxHeight: `${(isLandscape ? 80 : 112) * (product.image_scale || 1.0) * Number(getPageSettings(page).pdf_image_scale || 1.0) * Number(getPageSettings(page).pdf_image_scale_y || 1.0)}px`, maxWidth: `${90 * (product.image_scale || 1.0) * Number(getPageSettings(page).pdf_image_scale || 1.0) * Number(getPageSettings(page).pdf_image_scale_x || 1.0)}%`, position: 'relative', top: getProductImageOffsetY(product, page), left: getProductImageOffsetX(product, page) }" crossorigin="anonymous" @error="(e) => handleImageError(e, product)" />
                 </div>
                 
                 <!-- Bloco Colorido + Especificações Wrapper -->
@@ -153,7 +152,8 @@
                                 width: formatDimension(getPageSettings(page).specs_value_width, '55%'),
                                 fontWeight: getPageSettings(page).specs_val_bold ? 'bold' : 'normal', 
                                 fontStyle: getPageSettings(page).specs_val_italic ? 'italic' : 'normal', 
-                                textDecoration: getPageSettings(page).specs_val_underline ? 'underline' : 'none'
+                                textDecoration: getPageSettings(page).specs_val_underline ? 'underline' : 'none',
+                                whiteSpace: 'pre-line'
                               }">{{ spec.value }}</span>
                       </div>
                     </div>
@@ -174,9 +174,9 @@
               <div v-else-if="getSlots(product) === 6" class="flex flex-col h-full justify-between mt-2" :style="{ position: 'relative', top: formatDimension(getPageSettings(page).card_offset_y, '0px'), left: formatDimension(getPageSettings(page).card_offset_x, '0px') }">
                 
                 <!-- Centro: Imagem Gigante Centrada -->
-                <div class="flex-grow flex items-center justify-center bg-white rounded-lg overflow-hidden relative p-4 my-2"
+                <div class="flex-grow flex items-center justify-center bg-white rounded-lg relative p-4 my-2"
                      :class="isLandscape ? 'max-h-[220px]' : 'max-h-[380px]'">
-                  <img v-if="product.imageBlob || product.image" :src="getProductImageSrc(product)" class="object-contain mix-blend-multiply" :style="{ maxHeight: `${(isLandscape ? 200 : 350) * (product.image_scale || 1.0)}px`, maxWidth: `${100 * (product.image_scale || 1.0)}%`, position: 'relative', top: `${product.image_offset_y || 0}px`, left: `${product.image_offset_x || 0}px` }" crossorigin="anonymous" @error="(e) => handleImageError(e, product)" />
+                  <img v-if="product.imageBlob || product.image" :src="getProductImageSrc(product)" class="object-contain mix-blend-multiply" :style="{ maxHeight: `${(isLandscape ? 200 : 350) * (product.image_scale || 1.0) * Number(getPageSettings(page).pdf_image_scale || 1.0) * Number(getPageSettings(page).pdf_image_scale_y || 1.0)}px`, maxWidth: `${100 * (product.image_scale || 1.0) * Number(getPageSettings(page).pdf_image_scale || 1.0) * Number(getPageSettings(page).pdf_image_scale_x || 1.0)}%`, position: 'relative', top: getProductImageOffsetY(product, page), left: getProductImageOffsetX(product, page) }" crossorigin="anonymous" @error="(e) => handleImageError(e, product)" />
                   <div v-else class="text-gray-300 text-sm text-center">Sem imagem</div>
                 </div>
                 
@@ -249,7 +249,8 @@
                                 paddingBottom: formatDimension(getPageSettings(page).specs_padding_y, isLandscape ? '4px' : '10px'),
                                 fontWeight: getPageSettings(page).specs_val_bold ? 'bold' : 'normal', 
                                 fontStyle: getPageSettings(page).specs_val_italic ? 'italic' : 'normal', 
-                                textDecoration: getPageSettings(page).specs_val_underline ? 'underline' : 'none'
+                                textDecoration: getPageSettings(page).specs_val_underline ? 'underline' : 'none',
+                                whiteSpace: 'pre-line'
                               }">
                             {{ spec.value }}
                           </td>
@@ -329,7 +330,8 @@
                                    width: formatDimension(getPageSettings(page).specs_value_width, '55%'),
                                    fontWeight: getPageSettings(page).specs_val_bold ? 'bold' : 'normal', 
                                    fontStyle: getPageSettings(page).specs_val_italic ? 'italic' : 'normal', 
-                                   textDecoration: getPageSettings(page).specs_val_underline ? 'underline' : 'none'
+                                   textDecoration: getPageSettings(page).specs_val_underline ? 'underline' : 'none',
+                                   whiteSpace: 'pre-line'
                                  }">{{ spec.value }}</span>
                          </div>
                        </div>
@@ -351,8 +353,8 @@
                   getPageSettings(page).image_position === 'left' ? 'justify-start' : 
                   getPageSettings(page).image_position === 'right' ? 'justify-end' : 'justify-center',
                   isLandscape ? 'max-h-[180px]' : 'max-h-[220px]'
-                ]" class="flex-grow flex items-center bg-white overflow-hidden p-2" :style="{ position: 'relative', top: formatDimension(getPageSettings(page).product_image_offset_y, '0px') }">
-                  <img v-if="product.imageBlob || product.image" :src="getProductImageSrc(product)" class="object-contain mix-blend-multiply" :style="{ maxHeight: `${(isLandscape ? 150 : 180) * (product.image_scale || 1.0)}px`, maxWidth: `${(isLandscape ? 300 : 240) * (product.image_scale || 1.0)}px`, position: 'relative', top: `${product.image_offset_y || 0}px`, left: `${product.image_offset_x || 0}px` }" crossorigin="anonymous" @error="(e) => handleImageError(e, product)" />
+                ]" class="flex-grow flex items-center bg-white p-2">
+                  <img v-if="product.imageBlob || product.image" :src="getProductImageSrc(product)" class="object-contain mix-blend-multiply" :style="{ maxHeight: `${(isLandscape ? 150 : 180) * (product.image_scale || 1.0) * Number(getPageSettings(page).pdf_image_scale || 1.0) * Number(getPageSettings(page).pdf_image_scale_y || 1.0)}px`, maxWidth: `${(isLandscape ? 300 : 240) * (product.image_scale || 1.0) * Number(getPageSettings(page).pdf_image_scale || 1.0) * Number(getPageSettings(page).pdf_image_scale_x || 1.0)}px`, position: 'relative', top: getProductImageOffsetY(product, page), left: getProductImageOffsetX(product, page) }" crossorigin="anonymous" @error="(e) => handleImageError(e, product)" />
                   <div v-else class="text-gray-300 text-xs text-center">Sem imagem</div>
                 </div>
 
@@ -407,6 +409,24 @@ const formatDimension = (value: string | number | undefined, fallback: string) =
   }
   
   return fallback
+}
+
+const getProductImageOffsetY = (product: any, page: Product[]) => {
+  if (product.image_offset_y !== undefined && product.image_offset_y !== null && product.image_offset_y !== 0 && String(product.image_offset_y) !== '0' && String(product.image_offset_y) !== '') {
+    return `${product.image_offset_y}px`
+  }
+  const defaultOffset = getPageSettings(page).product_image_offset_y
+  if (!defaultOffset) return '0px'
+  return String(defaultOffset).endsWith('px') ? defaultOffset : `${defaultOffset}px`
+}
+
+const getProductImageOffsetX = (product: any, page: Product[]) => {
+  if (product.image_offset_x !== undefined && product.image_offset_x !== null && product.image_offset_x !== 0 && String(product.image_offset_x) !== '0' && String(product.image_offset_x) !== '') {
+    return `${product.image_offset_x}px`
+  }
+  const defaultOffset = getPageSettings(page).product_image_offset_x
+  if (!defaultOffset) return '0px'
+  return String(defaultOffset).endsWith('px') ? defaultOffset : `${defaultOffset}px`
 }
 
 // html2pdf can only be imported on client side
@@ -511,7 +531,7 @@ const catalogCategory = computed(() => {
 
 // Composable de Cores e Assets de Categoria
 const { getCategoryColor, getCategoryCover, fetchAssets } = useCategoryColors()
-const { getPdfSettings, fetchPdfSettings } = usePdfSettings()
+const { getPdfSettings, getLandscapePdfSettings, fetchPdfSettings } = usePdfSettings()
 
 const isLandscape = computed(() => {
   if (props.forceLandscape) return true
@@ -522,13 +542,29 @@ const isLandscape = computed(() => {
 
 const getPageSettings = (page: Product[]) => {
   const cat = page && page.length > 0 ? page[0].category : catalogCategory.value
-  const settings = getPdfSettings(cat)
+  // Usa as configurações de paisagem quando em modo landscape, com fallback para portrait
+  const settings = isLandscape.value
+    ? getLandscapePdfSettings(cat)
+    : getPdfSettings(cat)
   const slots = page && page.length > 0 ? getSlots(page[0]) : 3
   
+  let baseSettings = settings || {}
   if (settings && settings.layout_settings && settings.layout_settings[slots]) {
-    return { ...settings, ...settings.layout_settings[slots] }
+    baseSettings = { ...settings, ...settings.layout_settings[slots] }
   }
-  return settings || {}
+  
+  return new Proxy(baseSettings, {
+    get(target, prop) {
+      if (typeof prop === 'string') {
+        if (prop in target) return target[prop]
+        const camelProp = prop.replace(/_([a-z])/g, (g) => g[1].toUpperCase())
+        if (camelProp in target) return target[camelProp]
+        const snakeProp = prop.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`)
+        if (snakeProp in target) return target[snakeProp]
+      }
+      return target[prop as any]
+    }
+  })
 }
 
 // Determinar a cor de background predominante

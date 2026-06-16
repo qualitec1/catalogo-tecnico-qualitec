@@ -9,8 +9,38 @@ export interface PdfSettings {
   card_layout_order: string
   font_size_specs: string
   divider_line_color: string
+  landscape_settings?: Record<string, any> | null
   [key: string]: any
 }
+
+// Retorna os defaults compartilhados entre portrait e landscape
+const getSettingsDefaults = () => ({
+  title_font_size: '36px',
+  title_position_y: '0px',
+  image_position: 'right',
+  card_layout_order: 'specs-first',
+  font_size_specs: '10px',
+  divider_line_color: '#cbd5e1',
+  logo_width: '240px',
+  logo_height: '75px',
+  logo_position_x: '60px',
+  logo_position_y: '60px',
+  specs_val_bold: false,
+  specs_val_italic: false,
+  specs_val_underline: false,
+  card_header_layout: 'model-left',
+  tag_font_family: 'Inter',
+  tag_font_size: '10px',
+  tag_bold: true,
+  tag_italic: false,
+  tag_underline: false,
+  tag_offset_x: '0px',
+  tag_offset_y: '0px',
+  pdf_image_scale: 1.0,
+  pdf_image_scale_x: 1.0,
+  pdf_image_scale_y: 1.0,
+  product_image_offset_x: '0px',
+})
 
 export default function usePdfSettings() {
   const pdfSettings = useState<Record<string, PdfSettings>>('pdf-layout-settings', () => ({}))
@@ -23,6 +53,12 @@ export default function usePdfSettings() {
         const mapping: Record<string, PdfSettings> = {}
         for (const item of data) {
           if (item.category) {
+            // Parse landscape_settings JSON se vier como string
+            let lsRaw = item.landscape_settings
+            if (typeof lsRaw === 'string') {
+              try { lsRaw = JSON.parse(lsRaw) } catch { lsRaw = null }
+            }
+
             mapping[item.category.toUpperCase().trim()] = {
               ...item,
               title_font_size: item.title_font_size || '36px',
@@ -42,7 +78,12 @@ export default function usePdfSettings() {
               tag_underline: !!item.tag_underline,
               tag_offset_x: item.tag_offset_x || '0px',
               tag_offset_y: item.tag_offset_y || '0px',
-              orientation: item.orientation || 'portrait'
+              orientation: item.orientation || 'portrait',
+              pdf_image_scale: item.pdf_image_scale !== undefined && item.pdf_image_scale !== null ? Number(item.pdf_image_scale) : 1.0,
+              pdf_image_scale_x: item.pdf_image_scale_x !== undefined && item.pdf_image_scale_x !== null ? Number(item.pdf_image_scale_x) : 1.0,
+              pdf_image_scale_y: item.pdf_image_scale_y !== undefined && item.pdf_image_scale_y !== null ? Number(item.pdf_image_scale_y) : 1.0,
+              product_image_offset_x: item.product_image_offset_x || '0px',
+              landscape_settings: lsRaw || null,
             }
           }
         }
@@ -53,40 +94,49 @@ export default function usePdfSettings() {
     }
   }
 
-  const getPdfSettings = (category?: string) => {
+  const getPdfSettings = (category?: string): PdfSettings => {
     const defaultSettings: PdfSettings = {
       category: 'Geral',
-      title_font_size: '36px',
-      title_position_y: '0px',
-      image_position: 'right',
-      card_layout_order: 'specs-first',
-      font_size_specs: '10px',
-      divider_line_color: '#cbd5e1',
-      logo_width: '240px',
-      logo_height: '75px',
-      logo_position_x: '60px',
-      logo_position_y: '60px',
-      specs_val_bold: false,
-      specs_val_italic: false,
-      specs_val_underline: false,
-      card_header_layout: 'model-left',
-      tag_font_family: 'Inter',
-      tag_font_size: '10px',
-      tag_bold: true,
-      tag_italic: false,
-      tag_underline: false,
-      tag_offset_x: '0px',
-      tag_offset_y: '0px',
-      orientation: 'portrait'
+      ...getSettingsDefaults(),
+      orientation: 'portrait',
+      landscape_settings: null,
     }
     if (!category) return defaultSettings
     const catUpper = category.toUpperCase().trim()
     return pdfSettings.value[catUpper] || pdfSettings.value['GERAL'] || defaultSettings
   }
 
+  /**
+   * Retorna as configurações de PDF para o modo paisagem.
+   * Mescla os defaults do portrait com os overrides salvos em landscape_settings.
+   * Se não houver landscape_settings configurado, cai de volta para o portrait.
+   */
+  const getLandscapePdfSettings = (category?: string): PdfSettings => {
+    const portraitSettings = getPdfSettings(category)
+    const lsOverrides = portraitSettings.landscape_settings
+    if (!lsOverrides || Object.keys(lsOverrides).length === 0) {
+      return portraitSettings // fallback: usa portrait se landscape não configurado
+    }
+    
+    // Converte os overrides do landscape (que estão em camelCase) para snake_case para sobrescrever corretamente os campos correspondentes
+    const snakeOverrides: Record<string, any> = {}
+    for (const key of Object.keys(lsOverrides)) {
+      const snakeKey = key.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`)
+      snakeOverrides[snakeKey] = lsOverrides[key]
+    }
+
+    // Mescla: portrait como base + overrides de landscape por cima
+    return {
+      ...portraitSettings,
+      ...snakeOverrides,
+      orientation: 'landscape',
+    }
+  }
+
   return {
     pdfSettings,
     fetchPdfSettings,
-    getPdfSettings
+    getPdfSettings,
+    getLandscapePdfSettings,
   }
 }
