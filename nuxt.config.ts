@@ -6,28 +6,11 @@ if (typeof globalThis.WebSocket === 'undefined') {
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   srcDir: 'app',
-  vue: {
-    compilerOptions: {
-      isCustomElement: (tag) => tag === 'model-viewer'
-    }
-  },
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
   modules: ['@nuxtjs/tailwindcss', '@nuxtjs/supabase'],
   supabase: {
     redirect: false
-  },
-  nitro: {
-    publicAssets: [
-      {
-        baseURL: '/',
-        dir: '../public',
-        maxAge: 31536000
-      }
-    ]
-  },
-  vite: {
-    assetsInclude: ['**/*.glb']
   },
   app: {
     head: {

@@ -6,24 +6,12 @@
         <span class="text-xs font-semibold tracking-wider uppercase" :style="{ color: getTagColor(product.tagColorClass) }">
           {{ product.tag }}
         </span>
-        <div class="flex items-center gap-2">
-          <!-- Botão 3D -->
-          <button
-            v-if="product.model3dUrl"
-            @click.stop="$emit('open3dModel', product.model3dUrl!)"
-            title="Visualizar modelo 3D"
-            class="flex items-center gap-1 px-2 py-1 text-[10px] font-bold tracking-wider text-white bg-indigo-600 hover:bg-indigo-700 transition-colors rounded-sm uppercase"
-          >
-            <span class="material-symbols-outlined text-sm leading-none" style="font-size:14px;">view_in_ar</span>
-            3D
-          </button>
-          <input 
-            :checked="isSelected" 
-            @change="$emit('toggleSelect', product.id)"
-            class="w-5 h-5 border-2 border-gray-400 text-blue-600 focus:ring-0 cursor-pointer" 
-            type="checkbox"
-          >
-        </div>
+        <input 
+          :checked="isSelected" 
+          @change="$emit('toggleSelect', product.id)"
+          class="w-5 h-5 border-2 border-gray-400 text-blue-600 focus:ring-0 cursor-pointer" 
+          type="checkbox"
+        >
       </div>
     </div>
 
@@ -106,7 +94,6 @@ export interface Product {
   specs: Spec[];
   datasheetName?: string;
   datasheetUrl?: string;
-  model3dUrl?: string;
 }
 
 const props = defineProps<{
@@ -117,7 +104,6 @@ const props = defineProps<{
 defineEmits<{
   (e: 'toggleSelect', id: number): void;
   (e: 'openImage', src: string): void;
-  (e: 'open3dModel', url: string): void;
 }>()
 
 const getBgColor = (bgClass: string) => {
