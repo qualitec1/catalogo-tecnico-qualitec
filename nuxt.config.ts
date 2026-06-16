@@ -17,6 +17,18 @@ export default defineNuxtConfig({
   supabase: {
     redirect: false
   },
+  nitro: {
+    publicAssets: [
+      {
+        baseURL: '/',
+        dir: '../public',
+        maxAge: 31536000
+      }
+    ]
+  },
+  vite: {
+    assetsInclude: ['**/*.glb']
+  },
   app: {
     head: {
       title: 'Qualitec Industrial | Catálogo Técnico',
