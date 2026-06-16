@@ -25,6 +25,8 @@
         exposure="1"
         loading="eager"
         reveal="auto"
+        ar
+        ar-modes="webxr scene-viewer quick-look"
         style="width: 100%; height: 100%; --progress-bar-color: #4f46e5;"
         @load="onModelLoad"
         @error="onModelError"
@@ -67,7 +69,16 @@ const onModelLoad = () => {
 
 const onModelError = (event: any) => {
   console.error('❌ Erro ao carregar modelo 3D:', event)
-  error.value = 'Não foi possível carregar o arquivo do modelo 3D. Verifique sua conexão.'
+  console.error('❌ Detalhes do erro:', {
+    detail: event.detail,
+    sourceError: event.detail?.sourceError,
+    type: event.detail?.type,
+    message: event.detail?.sourceError?.message,
+    stack: event.detail?.sourceError?.stack
+  })
+  
+  const errorMsg = event.detail?.sourceError?.message || event.detail?.type || 'Erro desconhecido'
+  error.value = `Falha ao carregar: ${errorMsg}`
 }
 
 onMounted(async () => {
