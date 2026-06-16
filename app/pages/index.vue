@@ -109,6 +109,7 @@
             :isSelected="selectedProducts.has(product.id)" 
             @toggleSelect="toggleProduct"
             @openImage="openImageModal"
+            @open3dModel="open3dModal"
           />
         </div>
       </div>
@@ -163,6 +164,25 @@
       </div>
     </footer>
 
+    <!-- Modal 3D -->
+    <div
+      v-if="modal3dUrl"
+      class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4"
+      @click="close3dModal"
+    >
+      <div class="relative w-full max-w-3xl" @click.stop>
+        <button
+          @click="close3dModal"
+          class="absolute -top-10 right-0 text-white hover:text-gray-300 transition-colors"
+        >
+          <span class="material-symbols-outlined text-3xl">close</span>
+        </button>
+        <div class="bg-white rounded-lg overflow-hidden shadow-2xl" style="height: 520px;">
+          <ModelViewer3D :src="modal3dUrl" alt="Modelo 3D do produto" />
+        </div>
+      </div>
+    </div>
+
     <!-- Modal de Imagem -->
     <div 
       v-if="modalImageSrc" 
@@ -207,6 +227,7 @@ const searchQuery = ref('')
 const selectedCategory = ref('TODAS')
 const activePage = ref(1)
 const modalImageSrc = ref<string | null>(null)
+const modal3dUrl = ref<string | null>(null)
 const isGeneratingPdf = ref(false)
 const forceLandscapePdf = ref(false)
 
@@ -226,10 +247,10 @@ const availableCategories = computed(() => {
 const { data: products } = await useAsyncData<Product[]>('products', async () => {
   const { data } = await supabase
     .from('products')
-    .select('id, tag, tag_color_class, name_code, title, image, image_blob, datasheet_name, datasheet_url, bg_class, card_layout, category, specs, layout_slots, image_scale, image_offset_x, image_offset_y')
+    .select('id, tag, tag_color_class, name_code, title, image, image_blob, datasheet_name, datasheet_url, bg_class, card_layout, category, specs, layout_slots, image_scale, image_offset_x, image_offset_y, model3d_url')
     .order('id')
   if (data) {
-    return data.map((item: any) => ({
+    const mapped = data.map((item: any) => ({
       id: item.id,
       tag: item.tag || 'NOVO',
       tagColorClass: item.tag_color_class || 'text-[#005db7]',
@@ -247,8 +268,18 @@ const { data: products } = await useAsyncData<Product[]>('products', async () =>
       layoutSlots: item.layout_slots || 3,
       imageScale: item.image_scale !== null ? Number(item.image_scale) : 1.0,
       imageOffsetX: item.image_offset_x !== null ? Number(item.image_offset_x) : 0,
-      imageOffsetY: item.image_offset_y !== null ? Number(item.image_offset_y) : 0
+      imageOffsetY: item.image_offset_y !== null ? Number(item.image_offset_y) : 0,
+      model3dUrl: item.model3d_url || null
     })) as Product[]
+    
+    // Coloca o TRANS-15554 como primeiro item
+    const trans15554Index = mapped.findIndex(p => p.nameCode === 'TRANS-15554')
+    if (trans15554Index > 0) {
+      const [trans15554] = mapped.splice(trans15554Index, 1)
+      mapped.unshift(trans15554)
+    }
+    
+    return mapped
   }
   return []
 })
@@ -340,5 +371,14 @@ const openImageModal = (src: string) => {
 
 const closeImageModal = () => {
   modalImageSrc.value = null
+}
+
+// 3D modal functions
+const open3dModal = (url: string) => {
+  modal3dUrl.value = url
+}
+
+const close3dModal = () => {
+  modal3dUrl.value = null
 }
 </script>
