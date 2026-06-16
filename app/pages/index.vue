@@ -47,12 +47,16 @@
             <div class="relative">
               <select 
                 v-model="selectedCategory"
-                class="pl-4 pr-10 py-2.5 border border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-sm w-full sm:w-56 appearance-none bg-white outline-none cursor-pointer"
+                class="pl-4 pr-10 py-2.5 border border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-sm w-full sm:w-56 appearance-none bg-white outline-none cursor-pointer uppercase"
               >
                 <option value="TODAS">CATEGORIA: TODAS</option>
-                <option value="VÁLVULAS">VÁLVULAS</option>
-                <option value="INSTRUMENTAÇÃO">INSTRUMENTAÇÃO</option>
-                <option value="SISTEMAS">SISTEMAS</option>
+                <option 
+                  v-for="cat in availableCategories" 
+                  :key="cat" 
+                  :value="cat"
+                >
+                  {{ cat }}
+                </option>
               </select>
               <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none text-lg">
                 expand_more
@@ -84,6 +88,14 @@
             >
               <span class="material-symbols-outlined text-base">picture_as_pdf</span>
               BAIXAR CATÁLOGO TÉCNICO ({{ selectedProducts.size }})
+            </button>
+            
+            <button 
+              @click="downloadPowerPoint"
+              class="bg-slate-800 text-white px-6 py-2.5 text-sm font-medium flex items-center gap-2 hover:bg-slate-900 transition-all shadow-md"
+            >
+              <span class="material-symbols-outlined text-base">slideshow</span>
+              BAIXAR EM POWER POINT ({{ selectedProducts.size }})
             </button>
           </div>
         </div>
@@ -177,6 +189,7 @@
     <CatalogPdfTemplate 
       :is-generating="isGeneratingPdf" 
       :products="selectedProductObjects"
+      :force-landscape="forceLandscapePdf"
       @complete="isGeneratingPdf = false"
     />
   </div>
@@ -195,6 +208,19 @@ const selectedCategory = ref('TODAS')
 const activePage = ref(1)
 const modalImageSrc = ref<string | null>(null)
 const isGeneratingPdf = ref(false)
+const forceLandscapePdf = ref(false)
+
+// Dynamic categories computed from loaded products
+const availableCategories = computed(() => {
+  const items = products.value || []
+  const cats = new Set<string>()
+  items.forEach(p => {
+    if (p.category) {
+      cats.add(p.category.toUpperCase().trim())
+    }
+  })
+  return Array.from(cats).sort()
+})
 
 // Fetch products from Supabase
 const { data: products } = await useAsyncData<Product[]>('products', async () => {
@@ -294,6 +320,16 @@ const downloadCatalog = () => {
     alert('Nenhum equipamento selecionado para download.')
     return
   }
+  forceLandscapePdf.value = false
+  isGeneratingPdf.value = true
+}
+
+const downloadPowerPoint = () => {
+  if (selectedProducts.value.size === 0) {
+    alert('Nenhum equipamento selecionado para download.')
+    return
+  }
+  forceLandscapePdf.value = true
   isGeneratingPdf.value = true
 }
 

@@ -197,6 +197,18 @@ const fetchCategoryAssetsAdmin = async () => {
         specsBold: !!settings.specs_bold,
         specsItalic: !!settings.specs_italic,
         specsUnderline: !!settings.specs_underline,
+        specsValBold: !!settings.specs_val_bold,
+        specsValItalic: !!settings.specs_val_italic,
+        specsValUnderline: !!settings.specs_val_underline,
+        cardHeaderLayout: settings.card_header_layout || 'model-left',
+        tagFontFamily: settings.tag_font_family || 'Inter',
+        tagFontSize: settings.tag_font_size || '10px',
+        tagBold: settings.tag_bold !== null ? !!settings.tag_bold : true,
+        tagItalic: !!settings.tag_italic,
+        tagUnderline: !!settings.tag_underline,
+        tagOffsetX: settings.tag_offset_x || '0px',
+        tagOffsetY: settings.tag_offset_y || '0px',
+        orientation: settings.orientation || 'portrait',
         
         uploading: false,
         hasChanges: false
@@ -305,7 +317,19 @@ const saveCategoryAsset = async (catAsset: any) => {
       card_model_underline: catAsset.cardModelUnderline,
       specs_bold: catAsset.specsBold,
       specs_italic: catAsset.specsItalic,
-      specs_underline: catAsset.specsUnderline
+      specs_underline: catAsset.specsUnderline,
+      specs_val_bold: catAsset.specsValBold,
+      specs_val_italic: catAsset.specsValItalic,
+      specs_val_underline: catAsset.specsValUnderline,
+      card_header_layout: catAsset.cardHeaderLayout,
+      tag_font_family: catAsset.tagFontFamily,
+      tag_font_size: catAsset.tagFontSize,
+      tag_bold: catAsset.tagBold,
+      tag_italic: catAsset.tagItalic,
+      tag_underline: catAsset.tagUnderline,
+      tag_offset_x: catAsset.tagOffsetX,
+      tag_offset_y: catAsset.tagOffsetY,
+      orientation: catAsset.orientation || 'portrait'
     }
     
     if (catAsset.pdfSettingsId) {
@@ -391,7 +415,19 @@ const replicateCategorySettings = async ({ source, targetIds }: { source: any, t
         card_model_underline: source.cardModelUnderline,
         specs_bold: source.specsBold,
         specs_italic: source.specsItalic,
-        specs_underline: source.specsUnderline
+        specs_underline: source.specsUnderline,
+        specs_val_bold: source.specsValBold,
+        specs_val_italic: source.specsValItalic,
+        specs_val_underline: source.specsValUnderline,
+        card_header_layout: source.cardHeaderLayout,
+        tag_font_family: source.tagFontFamily,
+        tag_font_size: source.tagFontSize,
+        tag_bold: source.tagBold,
+        tag_italic: source.tagItalic,
+        tag_underline: source.tagUnderline,
+        tag_offset_x: source.tagOffsetX,
+        tag_offset_y: source.tagOffsetY,
+        orientation: source.orientation || 'portrait'
       }
 
       if (targetCat.pdfSettingsId) {
@@ -463,7 +499,19 @@ const saveNewCategoryAsset = async (name: string) => {
       card_model_underline: false,
       specs_bold: false,
       specs_italic: false,
-      specs_underline: false
+      specs_underline: false,
+      specs_val_bold: false,
+      specs_val_italic: false,
+      specs_val_underline: false,
+      card_header_layout: 'model-left',
+      tag_font_family: 'Inter',
+      tag_font_size: '10px',
+      tag_bold: true,
+      tag_italic: false,
+      tag_underline: false,
+      tag_offset_x: '0px',
+      tag_offset_y: '0px',
+      orientation: 'portrait'
     }])
     
     triggerToast('Nova categoria criada com sucesso!', 'success')

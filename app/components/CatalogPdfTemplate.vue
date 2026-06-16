@@ -5,32 +5,60 @@
     <!-- PDF Content Container -->
     <div id="pdf-content" class="bg-white shadow-xl">
       <!-- Capa do Catálogo (Estilo Modelo Catalogo) -->
-      <div class="pdf-page w-[794px] bg-white relative break-after-page overflow-hidden block" style="font-family: 'Inter', sans-serif;">
+      <div class="pdf-page bg-white relative break-after-page overflow-hidden block" 
+           :class="isLandscape ? 'w-[1122px]' : 'w-[794px]'"
+           :style="{ 
+             fontFamily: '\'Inter\', sans-serif',
+             width: isLandscape ? '297mm' : '210mm',
+             height: isLandscape ? '209.5mm' : '296.5mm',
+             maxHeight: isLandscape ? '210mm' : '297mm'
+           }">
         <!-- Logo no Canto Superior Direito -->
         <div class="absolute flex items-center justify-end bg-white"
              :style="{ 
-               top: getPageSettings([]).logo_position_y || '60px', 
-               right: getPageSettings([]).logo_position_x || '60px', 
-               width: getPageSettings([]).logo_width || '240px', 
-               height: getPageSettings([]).logo_height || '75px' 
+               top: formatDimension(getPageSettings([]).logo_position_y, '60px'), 
+               right: formatDimension(getPageSettings([]).logo_position_x, '60px')
              }">
-          <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCJOpxk8IRBgRW2bvQlS_z4LoXARfSvqvz2saPXY9SVEh_22Bcd1VS5ijTW9c3L5WiWT0idDIuscN94pofAxJzmGnXWNILAeSKTQdpe0NSl8pmXlo5Mo2KzPIESuDMk-6ap5WOs_icm6enTpaiHanmAbwntVxfvVTPLdAKIwMg7L88cyvuALuJQqv2-2ntPUxn3BgVkSCLfjyupjGSuOW5zhpBXbfo-ac3ZkUg-WHHUrhMMhz1XIsk_yPD5jMMWbkCwWOJV1BBvHWM" alt="Qualitec Logo" class="w-full h-full object-fill object-right" crossorigin="anonymous" />
+          <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCJOpxk8IRBgRW2bvQlS_z4LoXARfSvqvz2saPXY9SVEh_22Bcd1VS5ijTW9c3L5WiWT0idDIuscN94pofAxJzmGnXWNILAeSKTQdpe0NSl8pmXlo5Mo2KzPIESuDMk-6ap5WOs_icm6enTpaiHanmAbwntVxfvVTPLdAKIwMg7L88cyvuALuJQqv2-2ntPUxn3BgVkSCLfjyupjGSuOW5zhpBXbfo-ac3ZkUg-WHHUrhMMhz1XIsk_yPD5jMMWbkCwWOJV1BBvHWM" 
+               alt="Qualitec Logo" 
+               :style="{
+                 width: 'auto',
+                 height: 'auto',
+                 maxWidth: formatDimension(getPageSettings([]).logo_width, '240px'),
+                 maxHeight: formatDimension(getPageSettings([]).logo_height, '75px')
+               }"
+               class="object-contain"
+               crossorigin="anonymous" />
         </div>
 
         <!-- Faixa Cinza Clara (Fundo da metade do bloco até acima do link) -->
-        <div class="absolute top-[540px] left-0 w-full bottom-[80px] bg-[#f0f2f5] z-0"></div>
+        <div class="absolute left-0 w-full bg-[#f0f2f5] z-0"
+             :class="isLandscape ? 'top-[370px] bottom-[60px]' : 'top-[540px] bottom-[80px]'"></div>
 
         <!-- Bloco de Categoria (Esquerda) -->
-        <div class="absolute top-[440px] left-0 w-[550px] text-white py-10 px-12 flex flex-col justify-center shadow-sm z-10"
-             :style="{ backgroundColor: getBgColor(catalogBgClass, catalogCategory) }">
+        <div class="absolute left-0 w-[550px] text-white py-10 px-12 flex flex-col justify-center shadow-sm z-10"
+             :style="{ 
+               backgroundColor: getBgColor(catalogBgClass, catalogCategory),
+               top: isLandscape
+                 ? `calc(280px + ${formatDimension(getPageSettings([]).title_position_y, '0px')})`
+                 : `calc(440px + ${formatDimension(getPageSettings([]).title_position_y, '0px')})`,
+               fontFamily: getPageSettings([]).title_font_family || 'Inter'
+             }">
           <span class="text-[14px] uppercase tracking-[0.15em] font-medium opacity-90 mb-3 block">CATÁLOGO DE PRODUTOS</span>
-          <h1 class="text-[34px] font-bold uppercase leading-snug tracking-wide">
+          <h1 class="text-white uppercase leading-snug tracking-wide"
+              :style="{ 
+                fontSize: formatDimension(getPageSettings([]).title_font_size, '34px'),
+                fontWeight: getPageSettings([]).title_bold ? 'bold' : 'normal',
+                fontStyle: getPageSettings([]).title_italic ? 'italic' : 'normal',
+                textDecoration: getPageSettings([]).title_underline ? 'underline' : 'none'
+              }">
             {{ catalogCategory === 'VÁLVULAS' ? 'VÁLVULAS DE SEGURANÇA E ALÍVIO' : catalogCategory }}
           </h1>
         </div>
 
         <!-- Desenho/Esboço no Canto Inferior Direito -->
-        <div class="absolute bottom-[90px] right-[40px] w-[460px] h-[340px] flex items-center justify-center">
+        <div class="absolute flex items-center justify-center"
+             :class="isLandscape ? 'bottom-[70px] right-[40px] w-[480px] h-[300px]' : 'bottom-[90px] right-[40px] w-[460px] h-[340px]'">
           <img v-if="coverImageBlob || coverImageUrl" 
                :src="getCoverImageSrc(coverImageUrl, coverImageBlob)" 
                class="max-w-full max-h-full object-contain mix-blend-multiply opacity-90" 
@@ -40,23 +68,31 @@
         <!-- Rodapé do Site Alinhado à Esquerda (Link clicável) -->
         <a href="https://www.qualitec.ind.br" 
            target="_blank" 
-           class="absolute bottom-[50px] left-[60px] text-[11px] text-gray-400 font-medium tracking-[0.3em] hover:text-[#2b5c90] no-underline transition-colors">
+           class="absolute left-[60px] text-[11px] text-gray-400 font-medium tracking-[0.3em] hover:text-[#2b5c90] no-underline transition-colors"
+           :class="isLandscape ? 'bottom-[35px]' : 'bottom-[50px]'">
           w w w . q u a l i t e c . i n d . b r
         </a>
       </div>
 
       <!-- Páginas de Produtos -->
-      <div v-for="(page, pageIdx) in pages" :key="pageIdx" class="pdf-page flex flex-col w-[794px] bg-white pt-6 px-12 pb-6 relative break-after-page">
+      <div v-for="(page, pageIdx) in pages" :key="pageIdx" 
+           class="pdf-page flex flex-col bg-white relative break-after-page"
+           :class="isLandscape ? 'w-[1122px] pt-4 px-12 pb-4' : 'w-[794px] pt-6 px-12 pb-6'"
+           :style="{
+             width: isLandscape ? '297mm' : '210mm',
+             height: isLandscape ? '209.5mm' : '296.5mm',
+             maxHeight: isLandscape ? '210mm' : '297mm'
+           }">
         <!-- Header da Página -->
-        <div class="mb-4" :style="{ position: 'relative', top: getPageSettings(page).title_position_y }">
-          <h1 class="uppercase tracking-wide" :style="{ color: getBgColor(page[0]?.bgClass || catalogBgClass, page[0]?.category || catalogCategory), fontSize: getPageSettings(page).title_font_size, fontFamily: getPageSettings(page).title_font_family || 'Inter', fontWeight: getPageSettings(page).title_bold ? 'bold' : 'normal', fontStyle: getPageSettings(page).title_italic ? 'italic' : 'normal', textDecoration: getPageSettings(page).title_underline ? 'underline' : 'none' }">
+        <div class="mb-4" :style="{ position: 'relative', top: formatDimension(getPageSettings(page).title_position_y, '0px') }">
+          <h1 class="uppercase tracking-wide" :style="{ color: getBgColor(page[0]?.bgClass || catalogBgClass, page[0]?.category || catalogCategory), fontSize: formatDimension(getPageSettings(page).title_font_size, '36px'), fontFamily: getPageSettings(page).title_font_family || 'Inter', fontWeight: getPageSettings(page).title_bold ? 'bold' : 'normal', fontStyle: getPageSettings(page).title_italic ? 'italic' : 'normal', textDecoration: getPageSettings(page).title_underline ? 'underline' : 'none' }">
             {{ page[0]?.category || catalogCategory }}
           </h1>
         </div>
 
         <!-- Grid de Produtos: 3 colunas x 2 linhas = 6 slots -->
         <!-- layout_slots: 6 (col-span-3 row-span-2), 3 (col-span-3 row-span-1), 1 (col-span-1 row-span-1) -->
-        <div class="flex-grow grid grid-cols-3 grid-rows-2 gap-x-6 mt-4 content-start relative" :style="{ rowGap: getPageSettings(page).product_spacing }">
+        <div class="flex-grow grid grid-cols-3 grid-rows-2 gap-x-6 mt-4 content-start relative" :style="{ rowGap: formatDimension(getPageSettings(page).product_spacing, '24px') }">
           <!-- Separador horizontal -->
           <div v-if="page.length > 3 && getSlots(page[0]) === 1" class="absolute top-1/2 left-0 w-full h-[1px] bg-gray-400 -translate-y-1/2"></div>
 
@@ -73,38 +109,52 @@
               <!-- LAYOUT GRUPO 6 (6 por página - slots: 1) - Estilo Novo / Fiel -->
               <div v-if="getSlots(product) === 1" class="flex flex-col h-full w-full justify-between">
                 <!-- Imagem com altura fixa e alinhamento pela base para que todas comecem na mesma linha -->
-                <div class="h-32 flex items-end justify-center relative z-10" :style="{ position: 'relative', top: getPageSettings(page).product_image_offset_y }">
-                  <img v-if="product.imageBlob || product.image" :src="getProductImageSrc(product)" class="object-contain" :style="{ maxHeight: `${112 * (product.image_scale || 1.0)}px`, maxWidth: `${90 * (product.image_scale || 1.0)}%`, position: 'relative', top: `${product.image_offset_y || 0}px`, left: `${product.image_offset_x || 0}px` }" crossorigin="anonymous" @error="(e) => handleImageError(e, product)" />
+                <div class="flex items-end justify-center relative z-10" 
+                     :class="isLandscape ? 'h-24' : 'h-32'"
+                     :style="{ position: 'relative', top: formatDimension(getPageSettings(page).product_image_offset_y, '0px') }">
+                  <img v-if="product.imageBlob || product.image" :src="getProductImageSrc(product)" class="object-contain" :style="{ maxHeight: `${(isLandscape ? 80 : 112) * (product.image_scale || 1.0)}px`, maxWidth: `${90 * (product.image_scale || 1.0)}%`, position: 'relative', top: `${product.image_offset_y || 0}px`, left: `${product.image_offset_x || 0}px` }" crossorigin="anonymous" @error="(e) => handleImageError(e, product)" />
                 </div>
                 
                 <!-- Bloco Colorido + Especificações Wrapper -->
-                <div class="flex flex-col flex-grow relative mt-2" :style="{ position: 'relative', top: getPageSettings(page).card_offset_y, left: getPageSettings(page).card_offset_x }">
+                <div class="flex flex-col flex-grow relative mt-2" :style="{ position: 'relative', top: formatDimension(getPageSettings(page).card_offset_y, '0px'), left: formatDimension(getPageSettings(page).card_offset_x, '0px') }">
                   <!-- Bloco Colorido -->
-                  <div class="text-white px-4 py-3 flex justify-between items-center z-0" :style="{ backgroundColor: getBgColor(product.bgClass, product.category) }">
-                    <div class="flex flex-col justify-center" :style="{ position: 'relative', left: getPageSettings(page).card_title_offset_x, top: getPageSettings(page).card_title_offset_y, fontFamily: getPageSettings(page).card_title_font_family || 'Inter' }">
+                  <div class="text-white px-4 flex justify-between items-center z-0" :class="isLandscape ? 'py-1.5' : 'py-3'" :style="{ backgroundColor: getBgColor(product.bgClass, product.category) }">
+                    <div class="flex flex-col justify-center" :style="{ position: 'relative', left: formatDimension(getPageSettings(page).card_title_offset_x, '0px'), top: formatDimension(getPageSettings(page).card_title_offset_y, '0px') }">
                       <span class="text-[10px] font-bold uppercase tracking-wider">{{ product.category }}</span>
-                      <span class="text-[11px] mt-0.5 text-white/90 leading-tight" :style="{ fontWeight: getPageSettings(page).card_title_bold ? 'bold' : 'normal', fontStyle: getPageSettings(page).card_title_italic ? 'italic' : 'normal', textDecoration: getPageSettings(page).card_title_underline ? 'underline' : 'none' }">{{ product.title }}</span>
+                      <span class="text-[11px] mt-0.5 text-white/90 leading-tight" :style="{ fontFamily: getPageSettings(page).card_title_font_family || 'Inter', fontWeight: getPageSettings(page).card_title_bold ? 'bold' : 'normal', fontStyle: getPageSettings(page).card_title_italic ? 'italic' : 'normal', textDecoration: getPageSettings(page).card_title_underline ? 'underline' : 'none' }">{{ product.title }}</span>
                     </div>
-                    <div class="flex flex-col items-end justify-center" :style="{ position: 'relative', left: getPageSettings(page).card_model_offset_x, top: getPageSettings(page).card_model_offset_y, fontFamily: getPageSettings(page).card_model_font_family || 'Inter' }">
+                    <div class="flex flex-col items-end justify-center" :style="{ position: 'relative', left: formatDimension(getPageSettings(page).card_model_offset_x, '0px'), top: formatDimension(getPageSettings(page).card_model_offset_y, '0px') }">
                       <span class="text-[8px] uppercase tracking-wider font-semibold text-white/90">Modelo</span>
-                      <span class="text-3xl leading-none mt-1" :style="{ fontSize: getPageSettings(page).card_model_font_size, fontWeight: getPageSettings(page).card_model_bold ? 'bold' : 'normal', fontStyle: getPageSettings(page).card_model_italic ? 'italic' : 'normal', textDecoration: getPageSettings(page).card_model_underline ? 'underline' : 'none' }">{{ product.nameCode }}</span>
+                      <span class="text-3xl leading-none mt-1" :style="{ fontFamily: getPageSettings(page).card_model_font_family || 'Inter', fontSize: formatDimension(getPageSettings(page).card_model_font_size, '24px'), fontWeight: getPageSettings(page).card_model_bold ? 'bold' : 'normal', fontStyle: getPageSettings(page).card_model_italic ? 'italic' : 'normal', textDecoration: getPageSettings(page).card_model_underline ? 'underline' : 'none' }">{{ product.nameCode }}</span>
                     </div>
                   </div>
                   
                   <!-- Especificações -->
-                  <div class="bg-white border-x border-b border-gray-200 flex-grow px-4 py-3 flex flex-col justify-between" :style="{ fontFamily: getPageSettings(page).specs_font_family || 'Inter', fontWeight: getPageSettings(page).specs_bold ? 'bold' : 'normal', fontStyle: getPageSettings(page).specs_italic ? 'italic' : 'normal', textDecoration: getPageSettings(page).specs_underline ? 'underline' : 'none' }">
+                  <div class="bg-white border-x border-b border-gray-200 flex-grow px-4 flex flex-col justify-between" :class="isLandscape ? 'py-2' : 'py-3'" :style="{ fontFamily: getPageSettings(page).specs_font_family || 'Inter' }">
                     <div v-if="product.specs && product.specs.length > 0" class="text-[9px] text-gray-800">
                       <div v-for="(spec, idx) in product.specs" :key="idx" 
                            class="flex justify-between last:border-b-0"
                            :style="{
-                             paddingTop: getPageSettings(page).specs_padding_y || '4px',
-                             paddingBottom: getPageSettings(page).specs_padding_y || '4px',
+                             paddingTop: formatDimension(getPageSettings(page).specs_padding_y, isLandscape ? '2px' : '4px'),
+                             paddingBottom: formatDimension(getPageSettings(page).specs_padding_y, isLandscape ? '2px' : '4px'),
                              borderBottomWidth: (getPageSettings(page).specs_line_style || 'dashed') === 'none' ? '0px' : '1px',
                              borderBottomStyle: getPageSettings(page).specs_line_style || 'dashed',
                              borderBottomColor: getPageSettings(page).specs_line_color || '#cbd5e1'
                            }">
-                        <span class="pr-2 text-left" :style="{ width: getPageSettings(page).specs_label_width || '45%' }">{{ spec.label }}</span>
-                        <span class="text-right text-gray-850 font-medium" :style="{ width: getPageSettings(page).specs_value_width || '55%' }">{{ spec.value }}</span>
+                        <span class="pr-2 text-left" 
+                              :style="{ 
+                                width: formatDimension(getPageSettings(page).specs_label_width, '45%'),
+                                fontWeight: getPageSettings(page).specs_bold ? 'bold' : 'normal', 
+                                fontStyle: getPageSettings(page).specs_italic ? 'italic' : 'normal', 
+                                textDecoration: getPageSettings(page).specs_underline ? 'underline' : 'none'
+                              }">{{ spec.label }}</span>
+                        <span class="text-right text-gray-850" 
+                              :style="{ 
+                                width: formatDimension(getPageSettings(page).specs_value_width, '55%'),
+                                fontWeight: getPageSettings(page).specs_val_bold ? 'bold' : 'normal', 
+                                fontStyle: getPageSettings(page).specs_val_italic ? 'italic' : 'normal', 
+                                textDecoration: getPageSettings(page).specs_val_underline ? 'underline' : 'none'
+                              }">{{ spec.value }}</span>
                       </div>
                     </div>
                     
@@ -121,32 +171,57 @@
               </div>
 
               <!-- LAYOUT GRUPO 1 (1 por página - slots: 6) -->
-              <div v-else-if="getSlots(product) === 6" class="flex flex-col h-full justify-between mt-2">
+              <div v-else-if="getSlots(product) === 6" class="flex flex-col h-full justify-between mt-2" :style="{ position: 'relative', top: formatDimension(getPageSettings(page).card_offset_y, '0px'), left: formatDimension(getPageSettings(page).card_offset_x, '0px') }">
                 
                 <!-- Centro: Imagem Gigante Centrada -->
-                <div class="flex-grow flex items-center justify-center bg-white rounded-lg overflow-hidden relative p-4 max-h-[380px] my-2">
-                  <img v-if="product.imageBlob || product.image" :src="getProductImageSrc(product)" class="object-contain mix-blend-multiply" :style="{ maxHeight: `${350 * (product.image_scale || 1.0)}px`, maxWidth: `${100 * (product.image_scale || 1.0)}%`, position: 'relative', top: `${product.image_offset_y || 0}px`, left: `${product.image_offset_x || 0}px` }" crossorigin="anonymous" @error="(e) => handleImageError(e, product)" />
+                <div class="flex-grow flex items-center justify-center bg-white rounded-lg overflow-hidden relative p-4 my-2"
+                     :class="isLandscape ? 'max-h-[220px]' : 'max-h-[380px]'">
+                  <img v-if="product.imageBlob || product.image" :src="getProductImageSrc(product)" class="object-contain mix-blend-multiply" :style="{ maxHeight: `${(isLandscape ? 200 : 350) * (product.image_scale || 1.0)}px`, maxWidth: `${100 * (product.image_scale || 1.0)}%`, position: 'relative', top: `${product.image_offset_y || 0}px`, left: `${product.image_offset_x || 0}px` }" crossorigin="anonymous" @error="(e) => handleImageError(e, product)" />
                   <div v-else class="text-gray-300 text-sm text-center">Sem imagem</div>
                 </div>
                 
                 <!-- Base: Tabela de Especificações Igual à Foto -->
                 <div class="border border-gray-200 rounded-lg overflow-hidden flex flex-col shadow-sm">
                   <!-- Cabeçalho Colorido com Modelo e Título -->
-                  <div class="p-5 text-white flex flex-col gap-1" :style="{ backgroundColor: getBgColor(product.bgClass, product.category) }">
-                    <div class="flex justify-between items-start">
-                      <div :style="{ position: 'relative', left: getPageSettings(page).card_model_offset_x, top: getPageSettings(page).card_model_offset_y, fontFamily: getPageSettings(page).card_model_font_family || 'Inter' }">
+                  <div class="text-white flex flex-col gap-1" :class="isLandscape ? 'p-3' : 'p-5'" :style="{ backgroundColor: getBgColor(product.bgClass, product.category) }">
+                    <div class="flex justify-between items-start" :style="{ flexDirection: getPageSettings(page).card_header_layout === 'model-right' ? 'row-reverse' : 'row' }">
+                      <div :style="{ 
+                        position: 'relative', 
+                        left: formatDimension(getPageSettings(page).card_model_offset_x, '0px'), 
+                        top: formatDimension(getPageSettings(page).card_model_offset_y, '0px'),
+                        textAlign: getPageSettings(page).card_header_layout === 'model-right' ? 'right' : 'left'
+                      }">
                         <span class="text-white/80 text-[10px] font-semibold uppercase tracking-wider block">Modelo</span>
-                        <h4 class="text-white text-3xl leading-none" :style="{ fontSize: getPageSettings(page).card_model_font_size, fontWeight: getPageSettings(page).card_model_bold ? 'bold' : 'normal', fontStyle: getPageSettings(page).card_model_italic ? 'italic' : 'normal', textDecoration: getPageSettings(page).card_model_underline ? 'underline' : 'none' }">{{ product.nameCode }}</h4>
+                        <h4 class="text-white text-3xl leading-none" :style="{ fontFamily: getPageSettings(page).card_model_font_family || 'Inter', fontSize: formatDimension(getPageSettings(page).card_model_font_size, '24px'), fontWeight: getPageSettings(page).card_model_bold ? 'bold' : 'normal', fontStyle: getPageSettings(page).card_model_italic ? 'italic' : 'normal', textDecoration: getPageSettings(page).card_model_underline ? 'underline' : 'none' }">{{ product.nameCode }}</h4>
                       </div>
-                      <span class="text-[10px] font-bold text-white uppercase tracking-wider mt-1">
+                      <span class="text-white uppercase tracking-wider mt-1"
+                            :style="{ 
+                              fontFamily: getPageSettings(page).tag_font_family || 'Inter',
+                              fontSize: formatDimension(getPageSettings(page).tag_font_size, '10px'),
+                              fontWeight: getPageSettings(page).tag_bold ? 'bold' : 'normal',
+                              fontStyle: getPageSettings(page).tag_italic ? 'italic' : 'normal',
+                              textDecoration: getPageSettings(page).tag_underline ? 'underline' : 'none',
+                              position: 'relative',
+                              left: formatDimension(getPageSettings(page).tag_offset_x, '0px'),
+                              top: formatDimension(getPageSettings(page).tag_offset_y, '0px')
+                            }">
                         {{ product.tag }}
                       </span>
                     </div>
-                    <h3 class="text-white text-lg leading-tight mt-3" :style="{ position: 'relative', left: getPageSettings(page).card_title_offset_x, top: getPageSettings(page).card_title_offset_y, fontFamily: getPageSettings(page).card_title_font_family || 'Inter', fontWeight: getPageSettings(page).card_title_bold ? 'bold' : 'normal', fontStyle: getPageSettings(page).card_title_italic ? 'italic' : 'normal', textDecoration: getPageSettings(page).card_title_underline ? 'underline' : 'none' }">{{ product.title }}</h3>
+                    <h3 class="text-white text-lg leading-tight mt-3" :style="{ 
+                      position: 'relative', 
+                      left: formatDimension(getPageSettings(page).card_title_offset_x, '0px'), 
+                      top: formatDimension(getPageSettings(page).card_title_offset_y, '0px'), 
+                      fontFamily: getPageSettings(page).card_title_font_family || 'Inter', 
+                      fontWeight: getPageSettings(page).card_title_bold ? 'bold' : 'normal', 
+                      fontStyle: getPageSettings(page).card_title_italic ? 'italic' : 'normal', 
+                      textDecoration: getPageSettings(page).card_title_underline ? 'underline' : 'none',
+                      textAlign: getPageSettings(page).card_header_layout === 'model-right' ? 'right' : 'left'
+                    }">{{ product.title }}</h3>
                   </div>
                   
                   <!-- Tabela de Especificações com Fundo Cinza -->
-                  <div v-if="product.specs && product.specs.length > 0" class="bg-[#f3f4f6] p-5" :style="{ fontFamily: getPageSettings(page).specs_font_family || 'Inter', fontWeight: getPageSettings(page).specs_bold ? 'bold' : 'normal', fontStyle: getPageSettings(page).specs_italic ? 'italic' : 'normal', textDecoration: getPageSettings(page).specs_underline ? 'underline' : 'none' }">
+                  <div v-if="product.specs && product.specs.length > 0" class="bg-[#f3f4f6]" :class="isLandscape ? 'p-3' : 'p-5'" :style="{ fontFamily: getPageSettings(page).specs_font_family || 'Inter' }">
                     <table class="w-full text-xs text-gray-750">
                       <tbody>
                         <tr v-for="(spec, idx) in product.specs" :key="idx" 
@@ -156,19 +231,25 @@
                               borderBottomStyle: getPageSettings(page).specs_line_style || 'solid',
                               borderBottomColor: getPageSettings(page).specs_line_color || '#e5e7eb'
                             }">
-                          <td class="px-0 font-semibold text-gray-600 align-top text-left"
+                          <td class="px-0 text-gray-600 align-top text-left"
                               :style="{ 
-                                width: getPageSettings(page).specs_label_width || '45%',
-                                paddingTop: getPageSettings(page).specs_padding_y || '10px',
-                                paddingBottom: getPageSettings(page).specs_padding_y || '10px'
+                                width: formatDimension(getPageSettings(page).specs_label_width, '45%'),
+                                paddingTop: formatDimension(getPageSettings(page).specs_padding_y, isLandscape ? '4px' : '10px'),
+                                paddingBottom: formatDimension(getPageSettings(page).specs_padding_y, isLandscape ? '4px' : '10px'),
+                                fontWeight: getPageSettings(page).specs_bold ? 'bold' : 'normal', 
+                                fontStyle: getPageSettings(page).specs_italic ? 'italic' : 'normal', 
+                                textDecoration: getPageSettings(page).specs_underline ? 'underline' : 'none'
                               }">
                             {{ spec.label }}
                           </td>
                           <td class="px-0 text-gray-900 text-right align-top"
                               :style="{ 
-                                width: getPageSettings(page).specs_value_width || '55%',
-                                paddingTop: getPageSettings(page).specs_padding_y || '10px',
-                                paddingBottom: getPageSettings(page).specs_padding_y || '10px'
+                                width: formatDimension(getPageSettings(page).specs_value_width, '55%'),
+                                paddingTop: formatDimension(getPageSettings(page).specs_padding_y, isLandscape ? '4px' : '10px'),
+                                paddingBottom: formatDimension(getPageSettings(page).specs_padding_y, isLandscape ? '4px' : '10px'),
+                                fontWeight: getPageSettings(page).specs_val_bold ? 'bold' : 'normal', 
+                                fontStyle: getPageSettings(page).specs_val_italic ? 'italic' : 'normal', 
+                                textDecoration: getPageSettings(page).specs_val_underline ? 'underline' : 'none'
                               }">
                             {{ spec.value }}
                           </td>
@@ -181,41 +262,75 @@
 
               <!-- LAYOUT GRUPO 2 (2 por página - slots: 3) -->
               <div v-else-if="getSlots(product) === 3" 
-                   :class="[
-                     getPageSettings(page).card_layout_order === 'image-first' ? 'flex-row-reverse' : 'flex-row'
-                   ]"
+                   :style="{ flexDirection: getPageSettings(page).card_layout_order === 'image-first' ? 'row-reverse' : 'row' }"
                    class="flex h-full gap-8 py-2 relative items-stretch">
                 <!-- Tabela de Especificações (Esquerda) -->
-                <div class="w-[450px] border border-gray-200 rounded overflow-hidden flex flex-col shadow-sm justify-between bg-[#f3f4f6]" :style="{ position: 'relative', top: getPageSettings(page).card_offset_y, left: getPageSettings(page).card_offset_x }">
+                <div class="w-[450px] border border-gray-200 rounded overflow-hidden flex flex-col shadow-sm justify-between bg-[#f3f4f6]" :style="{ position: 'relative', top: formatDimension(getPageSettings(page).card_offset_y, '0px'), left: formatDimension(getPageSettings(page).card_offset_x, '0px') }">
                    <div>
                      <!-- Cabeçalho Colorido com Modelo e Título -->
                      <div class="py-2 px-3 text-white flex flex-col gap-0.5" :style="{ backgroundColor: getBgColor(product.bgClass, product.category) }">
-                       <div class="flex justify-between items-start">
-                         <div :style="{ position: 'relative', left: getPageSettings(page).card_model_offset_x, top: getPageSettings(page).card_model_offset_y, fontFamily: getPageSettings(page).card_model_font_family || 'Inter' }">
+                       <div class="flex justify-between items-start" :style="{ flexDirection: getPageSettings(page).card_header_layout === 'model-right' ? 'row-reverse' : 'row' }">
+                         <div :style="{ 
+                            position: 'relative', 
+                            left: formatDimension(getPageSettings(page).card_model_offset_x, '0px'), 
+                            top: formatDimension(getPageSettings(page).card_model_offset_y, '0px'),
+                            textAlign: getPageSettings(page).card_header_layout === 'model-right' ? 'right' : 'left'
+                          }">
                            <span class="text-white/80 text-[8px] font-semibold uppercase tracking-wider block">Modelo</span>
-                           <h4 class="text-white text-2xl leading-none" :style="{ fontSize: getPageSettings(page).card_model_font_size, fontWeight: getPageSettings(page).card_model_bold ? 'bold' : 'normal', fontStyle: getPageSettings(page).card_model_italic ? 'italic' : 'normal', textDecoration: getPageSettings(page).card_model_underline ? 'underline' : 'none' }">{{ product.nameCode }}</h4>
+                           <h4 class="text-white text-2xl leading-none" :style="{ fontFamily: getPageSettings(page).card_model_font_family || 'Inter', fontSize: formatDimension(getPageSettings(page).card_model_font_size, '24px'), fontWeight: getPageSettings(page).card_model_bold ? 'bold' : 'normal', fontStyle: getPageSettings(page).card_model_italic ? 'italic' : 'normal', textDecoration: getPageSettings(page).card_model_underline ? 'underline' : 'none' }">{{ product.nameCode }}</h4>
                          </div>
-                         <span class="text-[9px] font-bold text-white uppercase tracking-wider mt-0.5">
+                         <span class="text-white uppercase tracking-wider mt-0.5"
+                                :style="{ 
+                                  fontFamily: getPageSettings(page).tag_font_family || 'Inter',
+                                  fontSize: formatDimension(getPageSettings(page).tag_font_size, '9px'),
+                                  fontWeight: getPageSettings(page).tag_bold ? 'bold' : 'normal',
+                                  fontStyle: getPageSettings(page).tag_italic ? 'italic' : 'normal',
+                                  textDecoration: getPageSettings(page).tag_underline ? 'underline' : 'none',
+                                  position: 'relative',
+                                  left: formatDimension(getPageSettings(page).tag_offset_x, '0px'),
+                                  top: formatDimension(getPageSettings(page).tag_offset_y, '0px')
+                                }">
                            {{ product.tag }}
                          </span>
                        </div>
-                       <h3 class="text-white text-sm leading-tight mt-1.5" :style="{ position: 'relative', left: getPageSettings(page).card_title_offset_x, top: getPageSettings(page).card_title_offset_y, fontFamily: getPageSettings(page).card_title_font_family || 'Inter', fontWeight: getPageSettings(page).card_title_bold ? 'bold' : 'normal', fontStyle: getPageSettings(page).card_title_italic ? 'italic' : 'normal', textDecoration: getPageSettings(page).card_title_underline ? 'underline' : 'none' }">{{ product.title }}</h3>
+                       <h3 class="text-white text-sm leading-tight mt-1.5" :style="{ 
+                          position: 'relative', 
+                          left: formatDimension(getPageSettings(page).card_title_offset_x, '0px'), 
+                          top: formatDimension(getPageSettings(page).card_title_offset_y, '0px'), 
+                          fontFamily: getPageSettings(page).card_title_font_family || 'Inter', 
+                          fontWeight: getPageSettings(page).card_title_bold ? 'bold' : 'normal', 
+                          fontStyle: getPageSettings(page).card_title_italic ? 'italic' : 'normal', 
+                          textDecoration: getPageSettings(page).card_title_underline ? 'underline' : 'none',
+                          textAlign: getPageSettings(page).card_header_layout === 'model-right' ? 'right' : 'left'
+                        }">{{ product.title }}</h3>
                      </div>
                     
                      <!-- Tabela com Fundo Cinza e Bordas Tracejadas -->
-                     <div class="bg-[#f3f4f6] py-2 px-3" :style="{ fontFamily: getPageSettings(page).specs_font_family || 'Inter', fontWeight: getPageSettings(page).specs_bold ? 'bold' : 'normal', fontStyle: getPageSettings(page).specs_italic ? 'italic' : 'normal', textDecoration: getPageSettings(page).specs_underline ? 'underline' : 'none' }">
-                       <div v-if="product.specs && product.specs.length > 0" class="text-gray-850" :style="{ fontSize: getPageSettings(page).font_size_specs }">
+                     <div class="bg-[#f3f4f6] py-2 px-3" :style="{ fontFamily: getPageSettings(page).specs_font_family || 'Inter' }">
+                       <div v-if="product.specs && product.specs.length > 0" class="text-gray-850" :style="{ fontSize: formatDimension(getPageSettings(page).font_size_specs, '10px') }">
                          <div v-for="(spec, idx) in product.specs" :key="idx" 
                               class="flex justify-between last:border-b-0"
                               :style="{
-                                paddingTop: getPageSettings(page).specs_padding_y || '0.5px',
-                                paddingBottom: getPageSettings(page).specs_padding_y || '0.5px',
+                                paddingTop: formatDimension(getPageSettings(page).specs_padding_y, '0.5px'),
+                                paddingBottom: formatDimension(getPageSettings(page).specs_padding_y, '0.5px'),
                                 borderBottomWidth: (getPageSettings(page).specs_line_style || 'dashed') === 'none' ? '0px' : '1px',
                                 borderBottomStyle: getPageSettings(page).specs_line_style || 'dashed',
                                 borderBottomColor: getPageSettings(page).specs_line_color || '#cbd5e1'
                               }">
-                           <span class="pr-2 text-left font-semibold text-gray-600" :style="{ width: getPageSettings(page).specs_label_width || '45%' }">{{ spec.label }}</span>
-                           <span class="text-right text-gray-900" :style="{ width: getPageSettings(page).specs_value_width || '55%' }">{{ spec.value }}</span>
+                           <span class="pr-2 text-left text-gray-600" 
+                                 :style="{ 
+                                   width: formatDimension(getPageSettings(page).specs_label_width, '45%'),
+                                   fontWeight: getPageSettings(page).specs_bold ? 'bold' : 'normal', 
+                                   fontStyle: getPageSettings(page).specs_italic ? 'italic' : 'normal', 
+                                   textDecoration: getPageSettings(page).specs_underline ? 'underline' : 'none'
+                                 }">{{ spec.label }}</span>
+                           <span class="text-right text-gray-900" 
+                                 :style="{ 
+                                   width: formatDimension(getPageSettings(page).specs_value_width, '55%'),
+                                   fontWeight: getPageSettings(page).specs_val_bold ? 'bold' : 'normal', 
+                                   fontStyle: getPageSettings(page).specs_val_italic ? 'italic' : 'normal', 
+                                   textDecoration: getPageSettings(page).specs_val_underline ? 'underline' : 'none'
+                                 }">{{ spec.value }}</span>
                          </div>
                        </div>
                      </div>
@@ -234,9 +349,10 @@
                 <!-- Imagem do Produto (Direita) - Altura fixa para alinhar corretamente -->
                 <div :class="[
                   getPageSettings(page).image_position === 'left' ? 'justify-start' : 
-                  getPageSettings(page).image_position === 'right' ? 'justify-end' : 'justify-center'
-                ]" class="flex-grow flex items-center bg-white overflow-hidden p-2 max-h-[220px]" :style="{ position: 'relative', top: getPageSettings(page).product_image_offset_y }">
-                  <img v-if="product.imageBlob || product.image" :src="getProductImageSrc(product)" class="object-contain mix-blend-multiply" :style="{ maxHeight: `${180 * (product.image_scale || 1.0)}px`, maxWidth: `${240 * (product.image_scale || 1.0)}px`, position: 'relative', top: `${product.image_offset_y || 0}px`, left: `${product.image_offset_x || 0}px` }" crossorigin="anonymous" @error="(e) => handleImageError(e, product)" />
+                  getPageSettings(page).image_position === 'right' ? 'justify-end' : 'justify-center',
+                  isLandscape ? 'max-h-[180px]' : 'max-h-[220px]'
+                ]" class="flex-grow flex items-center bg-white overflow-hidden p-2" :style="{ position: 'relative', top: formatDimension(getPageSettings(page).product_image_offset_y, '0px') }">
+                  <img v-if="product.imageBlob || product.image" :src="getProductImageSrc(product)" class="object-contain mix-blend-multiply" :style="{ maxHeight: `${(isLandscape ? 150 : 180) * (product.image_scale || 1.0)}px`, maxWidth: `${(isLandscape ? 300 : 240) * (product.image_scale || 1.0)}px`, position: 'relative', top: `${product.image_offset_y || 0}px`, left: `${product.image_offset_x || 0}px` }" crossorigin="anonymous" @error="(e) => handleImageError(e, product)" />
                   <div v-else class="text-gray-300 text-xs text-center">Sem imagem</div>
                 </div>
 
@@ -249,7 +365,8 @@
         </div>
         
         <!-- Footer da Página -->
-        <div class="mt-8 text-center text-xs text-gray-400 border-t border-gray-100 pt-4">
+        <div class="text-center text-xs text-gray-400 border-t border-gray-100"
+             :class="isLandscape ? 'mt-4 pt-2' : 'mt-8 pt-4'">
           Página {{ pageIdx + 1 }} de {{ pages.length }}
         </div>
       </div>
@@ -261,6 +378,37 @@
 import { ref, computed, watch, nextTick } from 'vue'
 import type { Product } from '~/components/ProductCard.vue'
 import { hexToBase64 } from '../utils/image'
+
+const formatDimension = (value: string | number | undefined, fallback: string) => {
+  if (value === undefined || value === null || value === '') return fallback
+  const str = String(value).trim()
+  
+  // Se for um número puro, adiciona 'px'
+  if (/^-?\d+(\.\d+)?$/.test(str)) {
+    return str + 'px'
+  }
+  
+  // Tenta casar número e unidade
+  const match = str.match(/^([+-]?\d+(?:\.\d+)?)\s*([a-zA-Z%]*)$/)
+  if (match) {
+    const num = match[1]
+    const unit = match[2].toLowerCase()
+    const validUnits = ['px', '%', 'em', 'rem', 'vh', 'vw', 'in', 'cm', 'mm', 'pt', 'pc']
+    if (validUnits.includes(unit)) {
+      return num + unit
+    }
+    return num + 'px' // se for unidade inválida (ex: 140x), força 'px'
+  }
+  
+  // Tenta extrair o primeiro número do texto
+  const numMatch = str.match(/^([+-]?\d+(?:\.\d+)?)/)
+  if (numMatch) {
+    return numMatch[1] + 'px'
+  }
+  
+  return fallback
+}
+
 // html2pdf can only be imported on client side
 let html2pdf: any;
 if (process.client) {
@@ -271,7 +419,8 @@ if (process.client) {
 
 const props = defineProps<{
   products: Product[],
-  isGenerating: boolean
+  isGenerating: boolean,
+  forceLandscape?: boolean
 }>()
 
 const emit = defineEmits(['complete'])
@@ -363,6 +512,13 @@ const catalogCategory = computed(() => {
 // Composable de Cores e Assets de Categoria
 const { getCategoryColor, getCategoryCover, fetchAssets } = useCategoryColors()
 const { getPdfSettings, fetchPdfSettings } = usePdfSettings()
+
+const isLandscape = computed(() => {
+  if (props.forceLandscape) return true
+  const cat = catalogCategory.value
+  const settings = getPdfSettings(cat)
+  return settings.orientation === 'landscape'
+})
 
 const getPageSettings = (page: Product[]) => {
   const cat = page && page.length > 0 ? page[0].category : catalogCategory.value
@@ -515,12 +671,15 @@ watch(() => props.isGenerating, async (newVal) => {
     setTimeout(async () => {
       const element = document.getElementById('pdf-content')
       if (element && html2pdf) {
+        const docFilename = props.forceLandscape || isLandscape.value
+          ? `Catalogo_Qualitec_${catalogCategory.value.replace(/[^a-z0-9]/gi, '_')}_Slides.pdf`
+          : `Catalogo_Qualitec_${catalogCategory.value.replace(/[^a-z0-9]/gi, '_')}.pdf`;
         const opt = {
           margin:       0,
-          filename:     `Catalogo_Qualitec_${catalogCategory.value.replace(/[^a-z0-9]/gi, '_')}.pdf`,
+          filename:     docFilename,
           image:        { type: 'jpeg', quality: 0.98 },
           html2canvas:  { scale: 4, useCORS: true, letterRendering: true },
-          jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
+          jsPDF:        { unit: 'mm', format: 'a4', orientation: isLandscape.value ? 'landscape' : 'portrait' },
           pagebreak:    { mode: ['css', 'legacy'] }
         };
         
