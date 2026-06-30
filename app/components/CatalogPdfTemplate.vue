@@ -111,7 +111,7 @@
                 <!-- Imagem com altura fixa e alinhamento pela base para que todas comecem na mesma linha -->
                 <div class="flex items-end justify-center relative z-10" 
                      :class="isLandscape ? 'h-24' : 'h-32'">
-                  <img v-if="product.imageBlob || product.image" :src="getProductImageSrc(product)" class="object-contain" :style="{ maxHeight: `${(isLandscape ? 80 : 112) * (product.image_scale || 1.0) * Number(getPageSettings(page).pdf_image_scale || 1.0) * Number(getPageSettings(page).pdf_image_scale_y || 1.0)}px`, maxWidth: `${90 * (product.image_scale || 1.0) * Number(getPageSettings(page).pdf_image_scale || 1.0) * Number(getPageSettings(page).pdf_image_scale_x || 1.0)}%`, position: 'relative', top: getProductImageOffsetY(product, page), left: getProductImageOffsetX(product, page) }" crossorigin="anonymous" @error="(e) => handleImageError(e, product)" />
+                  <img v-if="product.imageBlob || product.image" :src="getProductImageSrc(product)" class="object-contain" :style="{ height: `${(isLandscape ? 80 : 112) * (product.imageScale ?? product.image_scale ?? 1.0) * Number(getPageSettings(page).pdf_image_scale || 1.0) * Number(getPageSettings(page).pdf_image_scale_y || 1.0)}px`, width: 'auto', position: 'relative', top: getProductImageOffsetY(product, page), left: getProductImageOffsetX(product, page) }" crossorigin="anonymous" @error="(e) => handleImageError(e, product)" />
                 </div>
                 
                 <!-- Bloco Colorido + Especificações Wrapper -->
@@ -176,7 +176,7 @@
                 <!-- Centro: Imagem Gigante Centrada -->
                 <div class="flex-grow flex items-center justify-center bg-white rounded-lg relative p-4 my-2"
                      :class="isLandscape ? 'max-h-[220px]' : 'max-h-[380px]'">
-                  <img v-if="product.imageBlob || product.image" :src="getProductImageSrc(product)" class="object-contain mix-blend-multiply" :style="{ maxHeight: `${(isLandscape ? 200 : 350) * (product.image_scale || 1.0) * Number(getPageSettings(page).pdf_image_scale || 1.0) * Number(getPageSettings(page).pdf_image_scale_y || 1.0)}px`, maxWidth: `${100 * (product.image_scale || 1.0) * Number(getPageSettings(page).pdf_image_scale || 1.0) * Number(getPageSettings(page).pdf_image_scale_x || 1.0)}%`, position: 'relative', top: getProductImageOffsetY(product, page), left: getProductImageOffsetX(product, page) }" crossorigin="anonymous" @error="(e) => handleImageError(e, product)" />
+                  <img v-if="product.imageBlob || product.image" :src="getProductImageSrc(product)" class="object-contain mix-blend-multiply" :style="{ height: `${(isLandscape ? 200 : 350) * (product.imageScale ?? product.image_scale ?? 1.0) * Number(getPageSettings(page).pdf_image_scale || 1.0) * Number(getPageSettings(page).pdf_image_scale_y || 1.0)}px`, width: 'auto', position: 'relative', top: getProductImageOffsetY(product, page), left: getProductImageOffsetX(product, page) }" crossorigin="anonymous" @error="(e) => handleImageError(e, product)" />
                   <div v-else class="text-gray-300 text-sm text-center">Sem imagem</div>
                 </div>
                 
@@ -257,6 +257,15 @@
                         </tr>
                       </tbody>
                     </table>
+                    
+                    <!-- Download do Datasheet PDF no rodapé do card cinza -->
+                    <div v-if="product.datasheetName || product.datasheetUrl" class="mt-4 pt-2 border-t border-gray-200/50 text-right">
+                      <a :href="getDatasheetLink(product)" 
+                         target="_blank" 
+                         class="text-[8px] text-blue-600 hover:text-blue-800 font-bold uppercase tracking-wider underline flex items-center justify-end gap-1">
+                        <span class="material-symbols-outlined text-[10px]">picture_as_pdf</span> Baixar Ficha Técnica
+                      </a>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -354,7 +363,7 @@
                   getPageSettings(page).image_position === 'right' ? 'justify-end' : 'justify-center',
                   isLandscape ? 'max-h-[180px]' : 'max-h-[220px]'
                 ]" class="flex-grow flex items-center bg-white p-2">
-                  <img v-if="product.imageBlob || product.image" :src="getProductImageSrc(product)" class="object-contain mix-blend-multiply" :style="{ maxHeight: `${(isLandscape ? 150 : 180) * (product.image_scale || 1.0) * Number(getPageSettings(page).pdf_image_scale || 1.0) * Number(getPageSettings(page).pdf_image_scale_y || 1.0)}px`, maxWidth: `${(isLandscape ? 300 : 240) * (product.image_scale || 1.0) * Number(getPageSettings(page).pdf_image_scale || 1.0) * Number(getPageSettings(page).pdf_image_scale_x || 1.0)}px`, position: 'relative', top: getProductImageOffsetY(product, page), left: getProductImageOffsetX(product, page) }" crossorigin="anonymous" @error="(e) => handleImageError(e, product)" />
+                  <img v-if="product.imageBlob || product.image" :src="getProductImageSrc(product)" class="object-contain mix-blend-multiply" :style="{ height: `${(isLandscape ? 150 : 180) * (product.imageScale ?? product.image_scale ?? 1.0) * Number(getPageSettings(page).pdf_image_scale || 1.0) * Number(getPageSettings(page).pdf_image_scale_y || 1.0)}px`, width: 'auto', position: 'relative', top: getProductImageOffsetY(product, page), left: getProductImageOffsetX(product, page) }" crossorigin="anonymous" @error="(e) => handleImageError(e, product)" />
                   <div v-else class="text-gray-300 text-xs text-center">Sem imagem</div>
                 </div>
 
@@ -412,8 +421,9 @@ const formatDimension = (value: string | number | undefined, fallback: string) =
 }
 
 const getProductImageOffsetY = (product: any, page: Product[]) => {
-  if (product.image_offset_y !== undefined && product.image_offset_y !== null && product.image_offset_y !== 0 && String(product.image_offset_y) !== '0' && String(product.image_offset_y) !== '') {
-    return `${product.image_offset_y}px`
+  const val = product.imageOffsetY !== undefined ? product.imageOffsetY : product.image_offset_y
+  if (val !== undefined && val !== null && val !== 0 && String(val) !== '0' && String(val) !== '') {
+    return `${val}px`
   }
   const defaultOffset = getPageSettings(page).product_image_offset_y
   if (!defaultOffset) return '0px'
@@ -421,8 +431,9 @@ const getProductImageOffsetY = (product: any, page: Product[]) => {
 }
 
 const getProductImageOffsetX = (product: any, page: Product[]) => {
-  if (product.image_offset_x !== undefined && product.image_offset_x !== null && product.image_offset_x !== 0 && String(product.image_offset_x) !== '0' && String(product.image_offset_x) !== '') {
-    return `${product.image_offset_x}px`
+  const val = product.imageOffsetX !== undefined ? product.imageOffsetX : product.image_offset_x
+  if (val !== undefined && val !== null && val !== 0 && String(val) !== '0' && String(val) !== '') {
+    return `${val}px`
   }
   const defaultOffset = getPageSettings(page).product_image_offset_x
   if (!defaultOffset) return '0px'
@@ -440,7 +451,8 @@ if (process.client) {
 const props = defineProps<{
   products: Product[],
   isGenerating: boolean,
-  forceLandscape?: boolean
+  forceLandscape?: boolean,
+  coverCategory?: string
 }>()
 
 const emit = defineEmits(['complete'])
@@ -452,8 +464,9 @@ const coverImageBlob = ref<string | null>(null)
 
 // Extrair layout_slots de forma segura, com fallback para 3 (meia página)
 const getSlots = (product: any) => {
-  if (product.layout_slots === 6 || product.layout_slots === 3 || product.layout_slots === 1) {
-    return product.layout_slots;
+  const slots = product.layoutSlots !== undefined ? product.layoutSlots : product.layout_slots;
+  if (slots === 6 || slots === 3 || slots === 1) {
+    return slots;
   }
   return 3; // Default to half page if undefined or invalid
 }
@@ -521,6 +534,7 @@ const pages = computed(() => {
 
 // Determinar a categoria predominante (ou "Geral")
 const catalogCategory = computed(() => {
+  if (props.coverCategory) return props.coverCategory
   if (!props.products || props.products.length === 0) return 'Catálogo'
   const categories = new Set(props.products.map(p => p.category))
   if (categories.size === 1) {
@@ -548,9 +562,17 @@ const getPageSettings = (page: Product[]) => {
     : getPdfSettings(cat)
   const slots = page && page.length > 0 ? getSlots(page[0]) : 3
   
-  let baseSettings = settings || {}
+  let baseSettings = settings ? { ...settings } : {}
   if (settings && settings.layout_settings && settings.layout_settings[slots]) {
-    baseSettings = { ...settings, ...settings.layout_settings[slots] }
+    const overrides = settings.layout_settings[slots]
+    for (const key of Object.keys(overrides)) {
+      const val = overrides[key]
+      if (val !== undefined && val !== null && val !== '') {
+        const snakeKey = key.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`)
+        baseSettings[snakeKey] = val
+        baseSettings[key] = val
+      }
+    }
   }
   
   return new Proxy(baseSettings, {

@@ -101,19 +101,41 @@
 
         <div>
           <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Cor da Categoria</label>
-          <div class="flex space-x-2 items-center h-[46px]">
-            <button 
-              v-for="(color, idx) in colorOptions" 
-              :key="idx"
-              @click="colorIndex = idx"
-              :class="[
-                color.bgClass,
-                colorIndex === idx ? 'ring-2 ring-offset-2 ring-blue-600' : 'ring-1 ring-gray-300'
-              ]"
-              class="w-8 h-8 rounded-full transition-all" 
-              type="button"
-              :title="color.name"
-            ></button>
+          <div class="flex space-x-3 items-center">
+            <!-- Circled presets -->
+            <div class="flex space-x-2 items-center h-[46px]">
+              <button 
+                v-for="(color, idx) in colorOptions" 
+                :key="idx"
+                @click="selectPresetColor(idx)"
+                :class="[
+                  color.bgClass,
+                  (colorIndex === idx && !customColorActive) ? 'ring-2 ring-offset-2 ring-blue-600' : 'ring-1 ring-gray-300'
+                ]"
+                class="w-8 h-8 rounded-full transition-all" 
+                type="button"
+                :title="color.name"
+              ></button>
+            </div>
+            
+            <div class="h-6 w-px bg-gray-300"></div>
+
+            <!-- Custom HEX picker/input -->
+            <div class="flex items-center space-x-2">
+              <input 
+                v-model="customColorHex" 
+                type="color" 
+                @input="applyCustomColor" 
+                class="w-8 h-8 p-0 border-0 bg-transparent cursor-pointer rounded-full" 
+              />
+              <input 
+                v-model="customColorHex" 
+                type="text" 
+                placeholder="#376092" 
+                @input="applyCustomColor"
+                class="border border-gray-300 px-3 py-1.5 text-xs focus:ring-1 focus:ring-blue-600 focus:outline-none w-28 text-center bg-white font-mono rounded" 
+              />
+            </div>
           </div>
         </div>
 
@@ -210,6 +232,8 @@ const getInitialProduct = (): ProductPayload => ({
 
 const localProduct = ref<ProductPayload>(props.product ? JSON.parse(JSON.stringify(props.product)) : getInitialProduct())
 const colorIndex = ref(0)
+const customColorActive = ref(false)
+const customColorHex = ref('#376092')
 
 const colorOptions = [
   { bgClass: 'bg-secondary', tagColor: 'text-[#005db7]', name: 'Azul' },
@@ -218,26 +242,59 @@ const colorOptions = [
   { bgClass: 'bg-primary-container', tagColor: 'text-[#003366]', name: 'Azul Escuro' }
 ]
 
-// Determine colorIndex from bgClass
-const mapBgClassToColorIndex = (bgClass?: string) => {
-  if (!bgClass) return 0
+// Determine colorIndex and customColor from bgClass
+const mapBgClassToColorState = (bgClass?: string) => {
+  if (!bgClass) {
+    colorIndex.value = 0
+    customColorActive.value = false
+    return
+  }
+  
   const index = colorOptions.findIndex(c => c.bgClass === bgClass)
-  return index >= 0 ? index : 0
+  if (index >= 0) {
+    colorIndex.value = index
+    customColorActive.value = false
+  } else {
+    // It's a custom hex color!
+    customColorActive.value = true
+    
+    // Extract hex from bgClass (it could be like '#376092' or 'bg-[#376092]')
+    if (bgClass.startsWith('#')) {
+      customColorHex.value = bgClass
+    } else {
+      const match = bgClass.match(/bg-\[#([0-9a-fA-F]{6})\]/)
+      if (match) {
+        customColorHex.value = `#${match[1]}`
+      } else {
+        customColorHex.value = bgClass // fallback
+      }
+    }
+  }
+}
+
+const selectPresetColor = (idx: number) => {
+  colorIndex.value = idx
+  customColorActive.value = false
+}
+
+const applyCustomColor = () => {
+  customColorActive.value = true
 }
 
 watch(() => props.product, (newVal) => {
   if (newVal) {
     localProduct.value = JSON.parse(JSON.stringify(newVal))
-    colorIndex.value = mapBgClassToColorIndex(newVal.bgClass)
+    mapBgClassToColorState(newVal.bgClass)
   } else {
     localProduct.value = getInitialProduct()
     colorIndex.value = 0
+    customColorActive.value = false
   }
 }, { deep: true })
 
 onMounted(() => {
   if (props.product) {
-    colorIndex.value = mapBgClassToColorIndex(props.product.bgClass)
+    mapBgClassToColorState(props.product.bgClass)
   }
 })
 
@@ -302,13 +359,18 @@ const removeSpecItem = (index: number) => {
 
 const handleSubmit = () => {
   emit('submit', {
-    product: localProduct.value,
+    product: {
+      ...localProduct.value,
+      bgClass: customColorActive.value ? customColorHex.value : colorOptions[colorIndex.value].bgClass,
+      tagColorClass: customColorActive.value ? `text-[${customColorHex.value}]` : colorOptions[colorIndex.value].tagColor
+    },
     colorIndex: colorIndex.value
   })
   if (!props.isEdit) {
     // Reset form after submission if it is a creation form
     localProduct.value = getInitialProduct()
     colorIndex.value = 0
+    customColorActive.value = false
   }
 }
 </script>

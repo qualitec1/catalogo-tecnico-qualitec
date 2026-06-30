@@ -26,7 +26,7 @@ if (!supabaseUrl || !supabaseServiceKey) {
 
 async function createBucketAndUpload() {
   console.log('🪣 Verificando/criando bucket...')
-  
+
   // Criar bucket se não existir
   const createBucketResponse = await fetch(`${supabaseUrl}/storage/v1/bucket`, {
     method: 'POST',
@@ -42,7 +42,7 @@ async function createBucketAndUpload() {
       allowed_mime_types: ['model/gltf-binary', 'model/gltf+json']
     })
   })
-  
+
   if (createBucketResponse.status === 409) {
     console.log('✅ Bucket já existe')
   } else if (createBucketResponse.ok) {
@@ -51,18 +51,18 @@ async function createBucketAndUpload() {
     const error = await createBucketResponse.text()
     console.log('⚠️  Resposta ao criar bucket:', error)
   }
-  
+
   console.log('\n📦 Iniciando upload do modelo 3D...')
-  
+
   const filePath = join(__dirname, '..', 'public', 'model3d.glb')
   const fileBuffer = readFileSync(filePath)
   const fileSizeMB = (fileBuffer.length / 1024 / 1024).toFixed(2)
-  
+
   console.log(`📁 Arquivo: model3d.glb (${fileSizeMB} MB)`)
-  
+
   // Upload usando fetch direto
   const uploadUrl = `${supabaseUrl}/storage/v1/object/product-models/model3d.glb`
-  
+
   const response = await fetch(uploadUrl, {
     method: 'POST',
     headers: {
@@ -72,21 +72,21 @@ async function createBucketAndUpload() {
     },
     body: fileBuffer
   })
-  
+
   if (!response.ok) {
     const error = await response.text()
     console.error('❌ Erro no upload:', response.status, error)
     process.exit(1)
   }
-  
+
   console.log('✅ Upload concluído com sucesso!')
-  
+
   // URL pública
   const publicUrl = `${supabaseUrl}/storage/v1/object/public/product-models/model3d.glb`
-  
+
   console.log('\n📎 URL pública do modelo:')
   console.log(publicUrl)
-  
+
   console.log('\n📝 Rode este SQL no Supabase para atualizar o produto:')
   console.log(`UPDATE products`)
   console.log(`SET model3d_url = '${publicUrl}'`)

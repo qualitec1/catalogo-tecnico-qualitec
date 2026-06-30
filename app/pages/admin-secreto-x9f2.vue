@@ -620,6 +620,8 @@ const saveNewProduct = async ({ product, colorIndex }: { product: any, colorInde
   saving.value = true
   try {
     const selectedColor = colorOptions[colorIndex]
+    const bgClass = product.bgClass || selectedColor.bgClass
+    const tagColorClass = product.tagColorClass || selectedColor.tagColor
     const payload = {
       title: product.title,
       name_code: product.nameCode,
@@ -630,8 +632,8 @@ const saveNewProduct = async ({ product, colorIndex }: { product: any, colorInde
       datasheet_blob: product.datasheetBlob || null,
       datasheet_url: product.datasheetUrl || null,
       tag: product.tag,
-      tag_color_class: selectedColor.tagColor,
-      bg_class: selectedColor.bgClass,
+      tag_color_class: tagColorClass,
+      bg_class: bgClass,
       layout_slots: product.layoutSlots,
       specs: product.specs,
       image_scale: product.imageScale || 1.0,
@@ -667,13 +669,15 @@ const saveProductEdit = async ({ product, colorIndex }: { product: any, colorInd
   saving.value = true
   try {
     const selectedColor = colorOptions[colorIndex]
+    const bgClass = product.bgClass || selectedColor.bgClass
+    const tagColorClass = product.tagColorClass || selectedColor.tagColor
     const payload = {
       title: product.title,
       name_code: product.nameCode,
       category: product.category.toUpperCase().trim(),
       tag: product.tag,
-      tag_color_class: selectedColor.tagColor,
-      bg_class: selectedColor.bgClass,
+      tag_color_class: tagColorClass,
+      bg_class: bgClass,
       layout_slots: product.layoutSlots,
       specs: product.specs,
       image_scale: product.imageScale || 1.0,

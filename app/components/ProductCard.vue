@@ -22,7 +22,7 @@
         class="w-full h-full object-contain max-h-[220px] cursor-pointer hover:opacity-90 transition-opacity" 
         :src="getProductImage(product)"
         @error="handleImageError"
-        @click="$emit('openImage', getProductImage(product))"
+        @click="$emit('openImage', product)"
       >
     </div>
 
@@ -94,6 +94,10 @@ export interface Product {
   specs: Spec[];
   datasheetName?: string;
   datasheetUrl?: string;
+  imageScale?: number;
+  imageOffsetX?: number;
+  imageOffsetY?: number;
+  layoutSlots?: number;
 }
 
 const props = defineProps<{
@@ -103,7 +107,7 @@ const props = defineProps<{
 
 defineEmits<{
   (e: 'toggleSelect', id: number): void;
-  (e: 'openImage', src: string): void;
+  (e: 'openImage', product: Product): void;
 }>()
 
 const getBgColor = (bgClass: string) => {

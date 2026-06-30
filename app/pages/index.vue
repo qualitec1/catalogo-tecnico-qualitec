@@ -166,22 +166,234 @@
     <!-- Modal de Imagem -->
     <div 
       v-if="modalImageSrc" 
-      class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4"
+      class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-slate-900/90 backdrop-blur-sm p-4 md:p-8 select-none"
       @click="closeImageModal"
     >
-      <div class="relative max-w-2xl max-h-[70vh] w-full">
-        <button 
-          @click="closeImageModal"
-          class="absolute -top-10 right-0 text-white hover:text-gray-300 transition-colors"
+      <!-- Card do Modal -->
+      <div 
+        class="relative bg-white rounded-xl shadow-2xl flex flex-col max-w-4xl w-full max-h-[85vh] overflow-hidden border border-gray-100"
+        @click.stop
+      >
+        <!-- Cabeçalho / Barra de Ferramentas -->
+        <header class="flex flex-wrap items-center justify-between px-4 py-3 border-b border-gray-100 bg-gray-50/90 gap-2">
+          <!-- Título/Modelo do Produto -->
+          <div class="flex items-center gap-3">
+            <span 
+              v-if="modalProduct?.nameCode" 
+              class="px-2 py-0.5 text-xs font-semibold text-white rounded bg-[#376092]"
+            >
+              {{ modalProduct.nameCode }}
+            </span>
+            <h3 v-if="modalProduct?.title" class="text-sm font-bold text-gray-800 truncate max-w-[250px] sm:max-w-[400px]">
+              {{ modalProduct.title }}
+            </h3>
+          </div>
+
+          <!-- Controles de Zoom -->
+          <div class="flex items-center gap-1 sm:gap-2 ml-auto">
+            <!-- Zoom Out -->
+            <button 
+              @click="handleZoomOut" 
+              class="p-1.5 rounded-lg hover:bg-gray-200 text-gray-600 transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center"
+              title="Diminuir Zoom"
+              :disabled="zoomScale <= 0.5"
+            >
+              <span class="material-symbols-outlined text-xl">zoom_out</span>
+            </button>
+
+            <!-- Nível de Zoom -->
+            <span class="text-xs font-semibold text-gray-500 min-w-[3.5rem] text-center">
+              {{ Math.round(zoomScale * 100) }}%
+            </span>
+
+            <!-- Zoom In -->
+            <button 
+              @click="handleZoomIn" 
+              class="p-1.5 rounded-lg hover:bg-gray-200 text-gray-600 transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center"
+              title="Aumentar Zoom"
+              :disabled="zoomScale >= 4"
+            >
+              <span class="material-symbols-outlined text-xl">zoom_in</span>
+            </button>
+
+            <!-- Resetar -->
+            <button 
+              @click="resetZoom" 
+              class="p-1.5 rounded-lg hover:bg-gray-200 text-gray-600 transition-colors flex items-center justify-center"
+              title="Ajustar à Tela"
+            >
+              <span class="material-symbols-outlined text-xl">restart_alt</span>
+            </button>
+
+            <div class="h-6 w-px bg-gray-200 mx-1"></div>
+
+            <!-- Fechar -->
+            <button 
+              @click="closeImageModal" 
+              class="p-1.5 rounded-lg hover:bg-red-50 hover:text-red-600 text-gray-500 transition-colors flex items-center justify-center"
+              title="Fechar"
+            >
+              <span class="material-symbols-outlined text-xl">close</span>
+            </button>
+          </div>
+        </header>
+
+        <!-- Área de Visualização da Imagem -->
+        <div 
+          class="relative flex-grow overflow-hidden flex items-center justify-center bg-gray-100/50 p-6 min-h-[300px] sm:min-h-[450px]"
+          :class="zoomScale > 1 ? 'cursor-grab active:cursor-grabbing' : 'cursor-default'"
+          @mousedown="onMouseDown"
+          @mousemove="onMouseMove"
+          @mouseup="onMouseUp"
+          @mouseleave="onMouseUp"
+          @touchstart="onTouchStart"
+          @touchmove="onTouchMove"
+          @touchend="onTouchEnd"
+          @wheel.prevent="onWheel"
         >
-          <span class="material-symbols-outlined text-3xl">close</span>
+          <!-- Mensagem de ajuda para arrastar -->
+          <div 
+            v-if="zoomScale > 1" 
+            class="absolute bottom-3 left-1/2 -translate-x-1/2 bg-black/60 text-white text-[10px] px-2.5 py-1 rounded-full pointer-events-none backdrop-blur-sm tracking-wider font-medium uppercase z-10 flex items-center gap-1"
+          >
+            <span class="material-symbols-outlined text-xs">pan_tool</span> Arraste para mover
+          </div>
+
+          <!-- Imagem com Transformações -->
+          <img 
+            :src="modalImageSrc" 
+            :alt="modalProduct?.title || 'Imagem ampliada'" 
+            class="max-w-full max-h-[55vh] object-contain select-none transition-transform duration-100 ease-out will-change-transform rounded-sm shadow-sm bg-white p-2"
+            :style="{ 
+              transform: `translate(${panOffset.x}px, ${panOffset.y}px) scale(${zoomScale})`,
+              touchAction: zoomScale > 1 ? 'none' : 'auto'
+            }"
+            @click.stop
+          >
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal de Opções de Impressão -->
+    <div 
+      v-if="showPrintModal" 
+      class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
+    >
+      <div class="bg-white border border-gray-200 rounded shadow-xl w-full max-w-lg p-6 relative max-h-[90vh] overflow-y-auto">
+        <button @click="closePrintModal" class="absolute top-4 right-4 p-1 hover:bg-gray-100 rounded text-gray-400 hover:text-gray-600">
+          <span class="material-symbols-outlined">close</span>
         </button>
-        <img 
-          :src="modalImageSrc" 
-          :alt="'Imagem ampliada'" 
-          class="w-full h-full object-contain bg-white rounded-lg shadow-2xl p-4"
-          @click.stop
-        >
+        
+        <h3 class="text-base font-bold text-slate-800 mb-2 uppercase tracking-wider flex items-center gap-2">
+          <span class="material-symbols-outlined text-blue-600">picture_as_pdf</span>
+          Configurar Capa do Catálogo
+        </h3>
+        <p class="text-xs text-gray-500 mb-4">
+          Escolha qual imagem de capa e cores de cabeçalho serão aplicadas na geração do seu PDF.
+        </p>
+
+        <!-- Opções de Capa -->
+        <div class="space-y-3 mb-5">
+          <!-- Opção Dinâmica -->
+          <label class="flex items-start gap-3 p-3 border border-gray-200 rounded cursor-pointer hover:bg-gray-50 transition-colors">
+            <input type="radio" v-model="coverCategorySelection" value="dynamic" class="mt-0.5 text-blue-650" />
+            <div>
+              <span class="text-xs font-bold text-slate-800 uppercase block">Capa Dinâmica / Automática</span>
+              <span class="text-[10px] text-gray-500 block mt-0.5">
+                Usa a capa da categoria caso todos os produtos selecionados pertençam à mesma categoria. Se houver mais de uma, usará a capa Geral.
+              </span>
+            </div>
+          </label>
+
+          <!-- Opção Geral -->
+          <label class="flex items-start gap-3 p-3 border border-gray-200 rounded cursor-pointer hover:bg-gray-50 transition-colors" :class="{ 'opacity-50': !hasGeralCover }">
+            <input type="radio" v-model="coverCategorySelection" value="GERAL" :disabled="!hasGeralCover" class="mt-0.5 text-blue-650" />
+            <div>
+              <span class="text-xs font-bold text-slate-800 uppercase block flex items-center gap-1.5">
+                Capa Geral
+                <span v-if="!hasGeralCover" class="text-[9px] bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded font-normal lowercase">não configurada</span>
+              </span>
+              <span class="text-[10px] text-gray-500 block mt-0.5">
+                Utiliza a imagem de capa e estilo configurados especificamente para o catálogo Geral (Todos os produtos).
+              </span>
+            </div>
+          </label>
+
+          <!-- Opção Específica -->
+          <div class="border border-gray-200 rounded p-3 space-y-2">
+            <label class="flex items-center gap-3 cursor-pointer">
+              <input type="radio" v-model="coverCategorySelection" value="specific" class="text-blue-650" />
+              <span class="text-xs font-bold text-slate-800 uppercase">Forçar Capa de Categoria</span>
+            </label>
+            <div v-if="coverCategorySelection === 'specific'" class="pl-6 pt-1">
+              <select v-model="specificCoverCategory" class="w-full border border-gray-300 p-2 text-xs rounded bg-white text-slate-700 uppercase">
+                <option value="" disabled>Selecione uma categoria...</option>
+                <option v-for="cat in listableCategories" :key="cat" :value="cat">{{ cat }}</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Formulário rápido para Criar Nova Capa/Categoria -->
+        <div class="border-t border-gray-200 pt-4 mb-5">
+          <button 
+            @click="showQuickCreate = !showQuickCreate" 
+            class="text-xs text-blue-600 hover:text-blue-700 font-bold uppercase tracking-wider flex items-center gap-1 bg-transparent border-0 cursor-pointer"
+          >
+            <span class="material-symbols-outlined text-sm">{{ showQuickCreate ? 'expand_less' : 'add' }}</span>
+            Criar Nova Capa / Categoria
+          </button>
+          
+          <div v-if="showQuickCreate" class="mt-4 p-4 bg-gray-50 border border-gray-200 rounded space-y-3">
+            <h4 class="text-xs font-bold text-slate-700 uppercase">Novo Segmento/Categoria</h4>
+            
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Nome da Categoria</label>
+                <input v-model="quickCatName" type="text" placeholder="Ex: RETENÇÃO" class="w-full border border-gray-300 p-2 text-xs rounded bg-white text-slate-800 uppercase" />
+              </div>
+              <div>
+                <label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Cor Principal (HEX)</label>
+                <div class="flex items-center gap-2">
+                  <input v-model="quickCatColor" type="color" class="w-8 h-8 p-0 border-0 bg-transparent cursor-pointer rounded-full" />
+                  <input v-model="quickCatColor" type="text" placeholder="#376092" class="flex-grow border border-gray-300 p-2 text-xs rounded bg-white text-slate-800 font-mono text-center" />
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Imagem de Capa (Upload)</label>
+              <div @click="triggerQuickFileInput" class="border-2 border-dashed border-gray-300 p-3 flex flex-col items-center justify-center cursor-pointer hover:bg-gray-150 transition-colors rounded min-h-[70px] relative bg-white">
+                <input type="file" ref="quickFileInput" class="hidden" accept="image/*" @change="handleQuickImageUpload" />
+                <span v-if="!quickCatImageName" class="material-symbols-outlined text-gray-400 text-lg mb-1">image</span>
+                <span class="text-[10px] font-semibold text-gray-500 text-center truncate w-full px-2">
+                  {{ quickCatImageName || 'Selecionar JPG/PNG' }}
+                </span>
+              </div>
+            </div>
+
+            <button 
+              @click="handleQuickCreateCategory" 
+              :disabled="creatingQuickCat || !quickCatName.trim()" 
+              class="w-full py-2 bg-blue-600 text-white font-bold text-xs rounded hover:bg-blue-700 transition-colors disabled:opacity-50"
+            >
+              {{ creatingQuickCat ? 'Salvando...' : 'Criar e Selecionar Capa' }}
+            </button>
+          </div>
+        </div>
+
+        <div class="flex space-x-3">
+          <button @click="closePrintModal" class="w-1/2 border border-gray-300 text-gray-700 py-2.5 text-xs font-bold rounded hover:bg-gray-50 transition-colors">
+            CANCELAR
+          </button>
+          <button 
+            @click="confirmAndDownload" 
+            :disabled="coverCategorySelection === 'specific' && !specificCoverCategory" 
+            class="w-1/2 bg-blue-600 text-white py-2.5 text-xs font-bold rounded hover:bg-blue-700 transition-colors disabled:opacity-40"
+          >
+            CONFIRMAR E GERAR
+          </button>
+        </div>
       </div>
     </div>
 
@@ -190,23 +402,150 @@
       :is-generating="isGeneratingPdf" 
       :products="selectedProductObjects"
       :force-landscape="forceLandscapePdf"
+      :cover-category="selectedCoverCategoryOverride"
       @complete="isGeneratingPdf = false"
     />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import type { Product } from '~/components/ProductCard.vue'
 import { hexToBase64 } from '../utils/image'
 
 const supabase = useSupabaseClient()
+const { categoryAssets, fetchAssets } = useCategoryColors()
+
+onMounted(async () => {
+  await fetchAssets()
+})
+
+const showPrintModal = ref(false)
+const coverCategorySelection = ref<'dynamic' | 'GERAL' | 'specific'>('dynamic')
+const specificCoverCategory = ref('')
+const printPendingLandscape = ref(false)
+const selectedCoverCategoryOverride = ref<string | undefined>(undefined)
+
+// Quick category creation refs
+const showQuickCreate = ref(false)
+const quickCatName = ref('')
+const quickCatColor = ref('#376092')
+const quickCatImageName = ref('')
+const quickCatImageBlob = ref<string | null>(null)
+const creatingQuickCat = ref(false)
+const quickFileInput = ref<HTMLInputElement | null>(null)
+
+const hasGeralCover = computed(() => {
+  return !!categoryAssets.value['GERAL']
+})
+
+const listableCategories = computed(() => {
+  return Object.keys(categoryAssets.value).filter(k => k !== 'GERAL').sort()
+})
+
+const triggerQuickFileInput = () => {
+  if (quickFileInput.value) {
+    quickFileInput.value.click()
+  }
+}
+
+const handleQuickImageUpload = (event: Event) => {
+  const target = event.target as HTMLInputElement
+  const file = target.files?.[0]
+  if (!file) return
+
+  const reader = new FileReader()
+  reader.onload = (e) => {
+    const arrayBuffer = e.target?.result as ArrayBuffer
+    const uint8 = new Uint8Array(arrayBuffer)
+    let hex = ''
+    for (let i = 0; i < uint8.length; i++) {
+      const h = uint8[i].toString(16)
+      hex += h.length === 1 ? '0' + h : h
+    }
+    quickCatImageName.value = file.name
+    quickCatImageBlob.value = '\\x' + hex
+  }
+  reader.readAsArrayBuffer(file)
+}
+
+const handleQuickCreateCategory = async () => {
+  const name = quickCatName.value.toUpperCase().trim()
+  if (!name) return
+
+  creatingQuickCat.value = true
+  try {
+    const payload = {
+      category: name,
+      cover_image_url: quickCatImageName.value || '/placeholder.png',
+      cover_image_blob: quickCatImageBlob.value,
+      color_hex: quickCatColor.value
+    }
+    const { error } = await supabase.from('category_assets').insert([payload])
+    if (error) throw error
+
+    // Create default settings in pdf_settings
+    await supabase.from('pdf_settings').insert([{
+      category: name,
+      title_font_size: '36px',
+      title_position_y: '0px',
+      image_position: 'right',
+      card_layout_order: 'specs-first',
+      font_size_specs: '10px',
+      divider_line_color: '#cbd5e1'
+    }])
+
+    // Refresh category colors composable
+    await fetchAssets()
+
+    // Select the new category as specific cover category
+    coverCategorySelection.value = 'specific'
+    specificCoverCategory.value = name
+
+    // Reset quick create form
+    quickCatName.value = ''
+    quickCatImageName.value = ''
+    quickCatImageBlob.value = null
+    showQuickCreate.value = false
+    alert(`Capa da categoria "${name}" criada com sucesso!`)
+  } catch (err: any) {
+    console.error(err)
+    alert(`Erro ao criar capa: ${err.message}`)
+  } finally {
+    creatingQuickCat.value = false
+  }
+}
+
+const closePrintModal = () => {
+  showPrintModal.value = false
+  showQuickCreate.value = false
+}
+
+const confirmAndDownload = () => {
+  if (coverCategorySelection.value === 'dynamic') {
+    selectedCoverCategoryOverride.value = undefined
+  } else if (coverCategorySelection.value === 'GERAL') {
+    selectedCoverCategoryOverride.value = 'GERAL'
+  } else if (coverCategorySelection.value === 'specific') {
+    selectedCoverCategoryOverride.value = specificCoverCategory.value
+  }
+
+  forceLandscapePdf.value = printPendingLandscape.value
+  isGeneratingPdf.value = true
+  showPrintModal.value = false
+  showQuickCreate.value = false
+}
 
 // Search and Category state
 const searchQuery = ref('')
 const selectedCategory = ref('TODAS')
 const activePage = ref(1)
 const modalImageSrc = ref<string | null>(null)
+const modalProduct = ref<Product | null>(null)
+const zoomScale = ref(1)
+const isDragging = ref(false)
+const dragStart = ref({ x: 0, y: 0 })
+const panOffset = ref({ x: 0, y: 0 })
 const isGeneratingPdf = ref(false)
 const forceLandscapePdf = ref(false)
 
@@ -329,8 +668,8 @@ const downloadCatalog = () => {
     alert('Nenhum equipamento selecionado para download.')
     return
   }
-  forceLandscapePdf.value = false
-  isGeneratingPdf.value = true
+  printPendingLandscape.value = false
+  showPrintModal.value = true
 }
 
 const downloadPowerPoint = () => {
@@ -338,16 +677,114 @@ const downloadPowerPoint = () => {
     alert('Nenhum equipamento selecionado para download.')
     return
   }
-  forceLandscapePdf.value = true
-  isGeneratingPdf.value = true
+  printPendingLandscape.value = true
+  showPrintModal.value = true
 }
 
 // Image modal functions
-const openImageModal = (src: string) => {
-  modalImageSrc.value = src
+const handleZoomIn = () => {
+  zoomScale.value = Math.min(zoomScale.value + 0.25, 4)
+}
+
+const handleZoomOut = () => {
+  zoomScale.value = Math.max(zoomScale.value - 0.25, 0.5)
+  if (zoomScale.value <= 1) {
+    resetPan()
+  }
+}
+
+const resetZoom = () => {
+  zoomScale.value = 1
+  resetPan()
+}
+
+const resetPan = () => {
+  panOffset.value = { x: 0, y: 0 }
+}
+
+const onMouseDown = (e: MouseEvent) => {
+  if (zoomScale.value <= 1) return
+  isDragging.value = true
+  dragStart.value = { x: e.clientX - panOffset.value.x, y: e.clientY - panOffset.value.y }
+}
+
+const onMouseMove = (e: MouseEvent) => {
+  if (!isDragging.value) return
+  panOffset.value = {
+    x: e.clientX - dragStart.value.x,
+    y: e.clientY - dragStart.value.y
+  }
+}
+
+const onMouseUp = () => {
+  isDragging.value = false
+}
+
+const onTouchStart = (e: TouchEvent) => {
+  if (zoomScale.value <= 1 || e.touches.length !== 1) return
+  isDragging.value = true
+  const touch = e.touches[0]
+  dragStart.value = { x: touch.clientX - panOffset.value.x, y: touch.clientY - panOffset.value.y }
+}
+
+const onTouchMove = (e: TouchEvent) => {
+  if (!isDragging.value || e.touches.length !== 1) return
+  const touch = e.touches[0]
+  panOffset.value = {
+    x: touch.clientX - dragStart.value.x,
+    y: touch.clientY - dragStart.value.y
+  }
+}
+
+const onTouchEnd = () => {
+  isDragging.value = false
+}
+
+const onWheel = (e: WheelEvent) => {
+  const delta = e.deltaY < 0 ? 0.25 : -0.25
+  const newScale = Math.min(Math.max(zoomScale.value + delta, 0.5), 4)
+  zoomScale.value = newScale
+  if (zoomScale.value <= 1) {
+    resetPan()
+  }
+}
+
+const getProductImage = (product: Product) => {
+  if (product.imageBlob) {
+    if (product.imageBlob.startsWith('data:')) return product.imageBlob
+    return `data:image/png;base64,${product.imageBlob}`
+  }
+  if (product.image && (product.image.startsWith('http://') || product.image.startsWith('https://'))) {
+    return `/api/product-image?id=${product.id}`
+  }
+  return product.image || 'https://via.placeholder.com/400x300/e5e7eb/6b7280?text=Produto'
+}
+
+const openImageModal = (product: Product) => {
+  modalProduct.value = product
+  modalImageSrc.value = getProductImage(product)
+  resetZoom()
 }
 
 const closeImageModal = () => {
   modalImageSrc.value = null
+  modalProduct.value = null
+  resetZoom()
 }
+
+const handleGlobalKeydown = (e: KeyboardEvent) => {
+  if (e.key === 'Escape') {
+    closeImageModal()
+  }
+}
+
+watch(modalImageSrc, (newVal) => {
+  if (newVal) {
+    window.addEventListener('keydown', handleGlobalKeydown)
+    document.body.style.overflow = 'hidden'
+  } else {
+    window.removeEventListener('keydown', handleGlobalKeydown)
+    document.body.style.overflow = ''
+  }
+})
 </script>

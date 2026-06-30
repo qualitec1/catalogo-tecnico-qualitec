@@ -117,7 +117,7 @@ export default function usePdfSettings() {
     if (!lsOverrides || Object.keys(lsOverrides).length === 0) {
       return portraitSettings // fallback: usa portrait se landscape não configurado
     }
-    
+
     // Converte os overrides do landscape (que estão em camelCase) para snake_case para sobrescrever corretamente os campos correspondentes
     const snakeOverrides: Record<string, any> = {}
     for (const key of Object.keys(lsOverrides)) {
