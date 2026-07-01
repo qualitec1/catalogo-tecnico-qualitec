@@ -27,7 +27,7 @@
     </div>
 
     <!-- Cabeçalho Colorido com Modelo e Título -->
-    <div class="p-5" :style="{ backgroundColor: getBgColor(product.bgClass) }">
+    <div class="p-5" :style="{ backgroundColor: getBgColor(product.bgClass, product.category) }">
       <!-- Modelo -->
       <div class="flex justify-end mb-3">
         <div class="text-right">
@@ -74,6 +74,8 @@
 </template>
 
 <script setup lang="ts">
+import useCategoryColors from '~/composables/useCategoryColors'
+
 export interface Spec {
   label: string;
   value: string;
@@ -110,7 +112,12 @@ defineEmits<{
   (e: 'openImage', product: Product): void;
 }>()
 
-const getBgColor = (bgClass: string) => {
+const { getCategoryColor } = useCategoryColors()
+
+const getBgColor = (bgClass: string, category?: string) => {
+  const catColor = getCategoryColor(category)
+  if (catColor) return catColor
+
   if (!bgClass) return '#376092';
   if (bgClass.startsWith('#')) return bgClass;
   const hexMatch = bgClass.match(/bg-\[#([0-9a-fA-F]{6})\]/);
@@ -138,7 +145,7 @@ const getProductImage = (product: any) => {
     return `data:image/png;base64,${product.imageBlob}`
   }
   if (product.image && (product.image.startsWith('http://') || product.image.startsWith('https://'))) {
-    return `/api/product-image?id=${product.id}`
+    return `/api/proxy-image?url=${encodeURIComponent(product.image)}`
   }
   return product.image || 'https://via.placeholder.com/400x300/e5e7eb/6b7280?text=Produto'
 }

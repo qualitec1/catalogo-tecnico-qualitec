@@ -1,0 +1,52 @@
+// Plugin Nuxt: inicializa o cliente Supabase com o transport ws correto no servidor
+// e WebSocket nativo no browser. Injeta via provide para uso em todo o app.
+import { createClient, type SupabaseClient } from '@supabase/supabase-js'
+
+export default defineNuxtPlugin(async (nuxtApp) => {
+  const runtimeConfig = useRuntimeConfig()
+
+  // runtimeConfig.public está disponível tanto no servidor quanto no browser
+  const supabaseUrl = (runtimeConfig.public as any).supabaseUrl as string
+  const supabaseAnonKey = (runtimeConfig.public as any).supabaseAnonKey as string
+
+  if (!supabaseUrl || !supabaseAnonKey) {
+    console.warn('[supabase plugin] supabaseUrl ou supabaseAnonKey não definidos no runtimeConfig.public.')
+  }
+
+  // Compartilha o token de acesso HttpOnly do servidor para o cliente
+  const tokenState = useState<string | null>('supabase-token', () => {
+    if (import.meta.server) {
+      return useCookie('sb-access-token').value || null
+    }
+    return null
+  })
+
+  let client: SupabaseClient
+
+  if (import.meta.server) {
+    // No servidor: usar 'ws' como transport do Realtime para evitar erro no Node < 22
+    const ws = await import('ws').then(m => m.default ?? m)
+    client = createClient(supabaseUrl, supabaseAnonKey, {
+      auth: { persistSession: false },
+      realtime: { transport: ws as any }
+    })
+    
+    if (tokenState.value) {
+      await client.auth.setSession({ access_token: tokenState.value, refresh_token: '' })
+    }
+  } else {
+    // No browser: WebSocket nativo disponível
+    client = createClient(supabaseUrl, supabaseAnonKey)
+    
+    if (tokenState.value) {
+      await client.auth.setSession({ access_token: tokenState.value, refresh_token: '' })
+    }
+  }
+
+  return {
+    provide: {
+      supabase: client
+    }
+  }
+})
+

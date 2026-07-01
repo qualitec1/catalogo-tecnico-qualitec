@@ -67,12 +67,79 @@
             </div>
 
             <div class="space-y-2">
-              <label class="block text-[10px] text-gray-500 font-bold uppercase tracking-wider">Capa da Categoria (Upload JPG/PNG)</label>
-              <div @click="triggerImageUpload(category.id)" class="border-2 border-dashed border-gray-300 p-4 flex flex-col items-center justify-center cursor-pointer hover:bg-gray-50 transition-colors rounded h-28 relative bg-white">
-                <input type="file" :ref="el => fileInputs[category.id] = el as HTMLInputElement" class="hidden" accept="image/*" @change="e => handleImageChange(e, category)" />
-                <img v-if="category.coverImageBlob || category.coverImageUrl" :src="getCoverImage(category)" class="max-h-16 object-contain" @error="handleImageError" />
-                <span v-else class="material-symbols-outlined text-gray-500 text-2xl mb-1">image</span>
-                <span class="text-[10px] text-gray-500 font-semibold uppercase mt-1">Trocar Capa</span>
+              <label class="block text-[10px] text-gray-500 font-bold uppercase tracking-wider">Capa da Categoria</label>
+              
+              <!-- Upload Box -->
+              <div @click="triggerImageUpload(category.id)" class="border-2 border-dashed border-gray-300 p-4 flex flex-col items-center justify-center cursor-pointer hover:bg-gray-50 transition-colors rounded h-28 relative bg-white" title="Clique para fazer upload de arquivo">
+                <input type="file" :ref="el => fileInputs[category.id] = el as HTMLInputElement" class="hidden" accept="image/*" @change="e => handleImageChange(e, category)" :disabled="uploadingCategories[category.id]" />
+                <div v-if="uploadingCategories[category.id]" class="flex flex-col items-center">
+                  <span class="material-symbols-outlined animate-spin text-blue-600 mb-2">sync</span>
+                  <span class="text-[10px] text-gray-400 font-bold uppercase">Enviando...</span>
+                </div>
+                <template v-else>
+                  <img v-if="category.coverImageBlob || category.coverImageUrl" :src="getCoverImage(category)" class="max-h-16 object-contain" @error="handleImageError" />
+                  <span v-else class="material-symbols-outlined text-gray-500 text-2xl mb-1">image</span>
+                  <span class="text-[10px] text-gray-500 font-semibold uppercase mt-1">Fazer Upload (JPG/PNG)</span>
+                </template>
+              </div>
+
+              <!-- Link Input -->
+              <div class="space-y-1">
+                <label class="block text-[9px] text-gray-400 font-bold uppercase tracking-wider">Ou insira o link da imagem (URL)</label>
+                <input 
+                  v-model="category.coverImageUrl" 
+                  type="text" 
+                  @input="category.coverImageBlob = null; category.hasChanges = true" 
+                  placeholder="https://exemplo.com/imagem.jpg" 
+                  class="w-full border border-gray-300 rounded p-2 text-xs focus:ring-1 focus:ring-blue-600 focus:outline-none bg-white text-slate-800" 
+                />
+              </div>
+            </div>
+
+            <!-- Static PDF Settings -->
+            <div class="space-y-2 pt-2 border-t border-gray-200">
+              <label class="block text-[10px] text-gray-500 font-bold uppercase tracking-wider">Catálogo PDF Pronto (Download Direto)</label>
+              
+              <!-- PDF Upload button -->
+              <div class="flex items-center space-x-2">
+                <button 
+                  type="button"
+                  @click="triggerPdfUpload(category.id)"
+                  :disabled="uploadingPdfs[category.id]"
+                  class="flex items-center px-3 py-1.5 bg-gray-100 hover:bg-gray-200 border border-gray-300 text-slate-700 text-xs font-semibold rounded transition-colors disabled:opacity-50"
+                >
+                  <span class="material-symbols-outlined text-sm mr-1">upload_file</span>
+                  {{ uploadingPdfs[category.id] ? 'Enviando...' : (category.pdfUrl ? 'Substituir PDF' : 'Upload PDF') }}
+                </button>
+                <input 
+                  type="file" 
+                  :ref="el => pdfFileInputs[category.id] = el as HTMLInputElement" 
+                  class="hidden" 
+                  accept="application/pdf" 
+                  @change="e => handlePdfChange(e, category)" 
+                />
+                
+                <button 
+                  v-if="category.pdfUrl"
+                  type="button"
+                  @click="removePdfUrl(category)"
+                  class="text-red-650 hover:text-red-750 text-xs font-semibold"
+                  title="Remover PDF estático"
+                >
+                  Remover
+                </button>
+              </div>
+
+              <!-- PDF Link text box -->
+              <div class="space-y-1">
+                <label class="block text-[9px] text-gray-400 font-bold uppercase tracking-wider">Ou Link Direto do PDF (URL)</label>
+                <input 
+                  v-model="category.pdfUrl" 
+                  type="text" 
+                  @input="category.hasChanges = true" 
+                  placeholder="https://exemplo.com/catalogo.pdf" 
+                  class="w-full border border-gray-300 rounded p-2 text-xs focus:ring-1 focus:ring-blue-600 focus:outline-none bg-white text-slate-800 font-mono" 
+                />
               </div>
             </div>
 
@@ -80,6 +147,15 @@
             <div class="pt-4 border-t border-gray-200 flex flex-col gap-2">
               <button @click="$emit('save-category', category)" :disabled="saving || !category.hasChanges" class="w-full py-2 bg-blue-600 text-white hover:bg-blue-700 text-xs font-bold rounded transition-colors disabled:opacity-40">
                 SALVAR ALTERAÇÕES
+              </button>
+              <button 
+                @click="$emit('publish-catalog', category)" 
+                :disabled="saving"
+                class="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded transition-colors flex items-center justify-center gap-1.5"
+                title="Gera o PDF com o layout atual e o publica como arquivo estático oficial"
+              >
+                <span class="material-symbols-outlined text-sm">publish</span>
+                ATUALIZAR PDF OFICIAL
               </button>
               <button @click="openReplicateModal(category)" class="w-full py-2 border border-blue-600 text-blue-600 hover:bg-blue-50 text-xs font-bold rounded transition-colors">
                 REPLICAR LAYOUT PDF
@@ -1037,6 +1113,7 @@ const emit = defineEmits<{
   (e: 'save-category', category: Category): void
   (e: 'delete-category', id: string): void
   (e: 'replicate-settings', payload: { source: Category, targetIds: string[] }): void
+  (e: 'publish-catalog', category: Category): void
 }>()
 
 const newCategoryName = ref('')
@@ -1055,7 +1132,54 @@ const replicateModalOpen = ref(false)
 const sourceCategory = ref<Category | null>(null)
 const selectedTargets = ref<string[]>([])
 const fileInputs = ref<Record<string, HTMLInputElement | null>>({})
+const pdfFileInputs = ref<Record<string, HTMLInputElement | null>>({})
 const openCategorySettings = ref<Record<string, boolean>>({})
+const uploadingCategories = ref<Record<string, boolean>>({})
+const uploadingPdfs = ref<Record<string, boolean>>({})
+
+const triggerPdfUpload = (id: string) => {
+  const input = pdfFileInputs.value[id]
+  if (input) {
+    input.click()
+  }
+}
+
+const handlePdfChange = async (event: Event, category: Category) => {
+  const target = event.target as HTMLInputElement
+  const file = target.files?.[0]
+  if (!file) return
+
+  uploadingPdfs.value[category.id] = true
+  try {
+    const formData = new FormData()
+    formData.append('file', file)
+
+    const response = await fetch('/api/upload-r2', {
+      method: 'POST',
+      body: formData,
+    })
+
+    if (!response.ok) {
+      const errorData = await response.json()
+      throw new Error(errorData.statusMessage || 'Erro ao fazer upload do PDF')
+    }
+
+    const data = await response.json()
+    category.pdfUrl = data.url
+    category.hasChanges = true
+  } catch (error: any) {
+    console.error('Error uploading category PDF to R2:', error)
+    alert(`Erro no upload do PDF: ${error.message || error}`)
+  } finally {
+    uploadingPdfs.value[category.id] = false
+    target.value = '' // Reset input
+  }
+}
+
+const removePdfUrl = (category: Category) => {
+  category.pdfUrl = null
+  category.hasChanges = true
+}
 
 const confirmDeleteCategory = (category: Category) => {
   if (confirm(`Deseja realmente excluir a categoria "${category.category}"? Isso removerá a categoria e todas as suas configurações visuais de PDF.`)) {
@@ -1272,25 +1396,37 @@ const triggerImageUpload = (id: string) => {
   }
 }
 
-const handleImageChange = (event: Event, category: Category) => {
+const handleImageChange = async (event: Event, category: Category) => {
   const target = event.target as HTMLInputElement
   const file = target.files?.[0]
   if (!file) return
 
-  const reader = new FileReader()
-  reader.onload = (e) => {
-    const arrayBuffer = e.target?.result as ArrayBuffer
-    const uint8 = new Uint8Array(arrayBuffer)
-    let hex = ''
-    for (let i = 0; i < uint8.length; i++) {
-      const h = uint8[i].toString(16)
-      hex += h.length === 1 ? '0' + h : h
+  uploadingCategories.value[category.id] = true
+  try {
+    const formData = new FormData()
+    formData.append('file', file)
+
+    const response = await fetch('/api/upload-r2', {
+      method: 'POST',
+      body: formData,
+    })
+
+    if (!response.ok) {
+      const errorData = await response.json()
+      throw new Error(errorData.statusMessage || 'Erro ao fazer upload da capa')
     }
-    category.coverImageUrl = file.name
-    category.coverImageBlob = '\\x' + hex
+
+    const data = await response.json()
+    category.coverImageUrl = data.url
+    category.coverImageBlob = null // clear legacy hex blob
     category.hasChanges = true
+  } catch (error: any) {
+    console.error('Error uploading category cover to R2:', error)
+    alert(`Erro no upload da capa: ${error.message || error}`)
+  } finally {
+    uploadingCategories.value[category.id] = false
+    target.value = '' // Reset input
   }
-  reader.readAsArrayBuffer(file)
 }
 
 const getCoverImage = (category: Category) => {

@@ -522,6 +522,41 @@ const closePrintModal = () => {
 }
 
 const confirmAndDownload = () => {
+  let targetCat = 'GERAL'
+  if (coverCategorySelection.value === 'specific') {
+    targetCat = specificCoverCategory.value
+  } else if (coverCategorySelection.value === 'dynamic') {
+    const categories = new Set(selectedProductObjects.value.map(p => p.category))
+    if (categories.size === 1) {
+      targetCat = Array.from(categories)[0]
+    } else {
+      targetCat = 'GERAL'
+    }
+  } else if (coverCategorySelection.value === 'GERAL') {
+    targetCat = 'GERAL'
+  }
+
+  const catUpper = targetCat.toUpperCase().trim()
+  const asset = categoryAssets.value[catUpper]
+
+  // Se houver um PDF estático pré-salvo para esta categoria e o usuário estiver baixando o catálogo completo dela
+  if (asset && asset.pdfUrl) {
+    const productsInCat = products.value.filter(p => p.category.toUpperCase().trim() === catUpper)
+    const selectedInCat = selectedProductObjects.value.filter(p => p.category.toUpperCase().trim() === catUpper)
+    
+    // Se selecionou todos os produtos daquela categoria ou se for o catálogo GERAL completo
+    const isFullCategoryDownload = catUpper === 'GERAL' || selectedInCat.length >= productsInCat.length
+    
+    if (isFullCategoryDownload) {
+      console.log(`[index] Download direto do PDF estático da categoria ${targetCat}:`, asset.pdfUrl)
+      window.open(asset.pdfUrl, '_blank')
+      showPrintModal.value = false
+      showQuickCreate.value = false
+      return
+    }
+  }
+
+  // Fallback: Gerar dinamicamente no navegador
   if (coverCategorySelection.value === 'dynamic') {
     selectedCoverCategoryOverride.value = undefined
   } else if (coverCategorySelection.value === 'GERAL') {
@@ -563,40 +598,53 @@ const availableCategories = computed(() => {
 
 // Fetch products from Supabase
 const { data: products } = await useAsyncData<Product[]>('products', async () => {
-  const { data } = await supabase
-    .from('products')
-    .select('id, tag, tag_color_class, name_code, title, image, image_blob, datasheet_name, datasheet_url, bg_class, card_layout, category, specs, layout_slots, image_scale, image_offset_x, image_offset_y')
-    .order('id')
-  if (data) {
-    const mapped = data.map((item: any) => ({
-      id: item.id,
-      tag: item.tag || 'NOVO',
-      tagColorClass: item.tag_color_class || 'text-[#005db7]',
-      nameCode: item.name_code,
-      title: item.title,
-      description: '',
-      image: item.image,
-      imageBlob: item.image_blob ? hexToBase64(item.image_blob) : null,
-      datasheetName: item.datasheet_name,
-      datasheetUrl: item.datasheet_url,
-      bgClass: item.bg_class || 'bg-secondary',
-      cardLayout: item.card_layout,
-      category: item.category,
-      specs: item.specs || [],
-      layoutSlots: item.layout_slots || 3,
-      imageScale: item.image_scale !== null ? Number(item.image_scale) : 1.0,
-      imageOffsetX: item.image_offset_x !== null ? Number(item.image_offset_x) : 0,
-      imageOffsetY: item.image_offset_y !== null ? Number(item.image_offset_y) : 0
-    })) as Product[]
+  console.log('[useAsyncData] Fetching products from Supabase...')
+  try {
+    const { data, error } = await supabase
+      .from('products')
+      .select('id, tag, tag_color_class, name_code, title, image, image_blob, datasheet_name, datasheet_url, bg_class, card_layout, category, specs, layout_slots, image_scale, image_offset_x, image_offset_y')
+      .order('id')
     
-    // Coloca o TRANS-15554 como primeiro item
-    const trans15554Index = mapped.findIndex(p => p.nameCode === 'TRANS-15554')
-    if (trans15554Index > 0) {
-      const [trans15554] = mapped.splice(trans15554Index, 1)
-      mapped.unshift(trans15554)
+    if (error) {
+      console.error('[useAsyncData] Supabase query error:', error)
+      throw error
     }
     
-    return mapped
+    if (data) {
+      console.log('[useAsyncData] Supabase returned rows:', data.length)
+      const mapped = data.map((item: any) => ({
+        id: item.id,
+        tag: item.tag || 'NOVO',
+        tagColorClass: item.tag_color_class || 'text-[#005db7]',
+        nameCode: item.name_code,
+        title: item.title,
+        description: '',
+        image: item.image,
+        imageBlob: item.image_blob ? hexToBase64(item.image_blob) : null,
+        datasheetName: item.datasheet_name,
+        datasheetUrl: item.datasheet_url,
+        bgClass: item.bg_class || 'bg-secondary',
+        cardLayout: item.card_layout,
+        category: item.category,
+        specs: item.specs || [],
+        layoutSlots: item.layout_slots || 3,
+        imageScale: item.image_scale !== null ? Number(item.image_scale) : 1.0,
+        imageOffsetX: item.image_offset_x !== null ? Number(item.image_offset_x) : 0,
+        imageOffsetY: item.image_offset_y !== null ? Number(item.image_offset_y) : 0
+      })) as Product[]
+      
+      // Coloca o TRANS-15554 como primeiro item
+      const trans15554Index = mapped.findIndex(p => p.nameCode === 'TRANS-15554')
+      if (trans15554Index > 0) {
+        const [trans15554] = mapped.splice(trans15554Index, 1)
+        mapped.unshift(trans15554)
+      }
+      
+      return mapped
+    }
+  } catch (err) {
+    console.error('[useAsyncData] Caught exception during fetch:', err)
+    throw err
   }
   return []
 })

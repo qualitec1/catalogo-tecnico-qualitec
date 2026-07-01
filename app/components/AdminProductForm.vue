@@ -26,22 +26,49 @@
         <div class="grid grid-cols-2 gap-4">
           <div>
             <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Imagem Técnica</label>
-            <div @click="triggerFileInput('imgInput')" class="border-2 border-dashed border-gray-300 p-4 flex flex-col items-center justify-center cursor-pointer hover:bg-gray-50 transition-colors rounded h-28 relative bg-white">
-              <input type="file" ref="imgInput" class="hidden" accept="image/*" @change="handleImageUpload" />
-              <span v-if="!localProduct.imageName" class="material-symbols-outlined text-gray-400 mb-2">image</span>
-              <span class="text-xs font-semibold text-gray-500 text-center truncate w-full px-2">
-                {{ localProduct.imageName || 'Upload JPG/PNG' }}
-              </span>
+            
+            <!-- Upload Box -->
+            <div @click="triggerFileInput('imgInput')" class="border-2 border-dashed border-gray-300 p-4 flex flex-col items-center justify-center cursor-pointer hover:bg-gray-50 transition-colors rounded h-28 relative bg-white" title="Clique para fazer upload de arquivo">
+              <input type="file" ref="imgInput" class="hidden" accept="image/*" @change="handleImageUpload" :disabled="uploadingImage" />
+              <div v-if="uploadingImage" class="flex flex-col items-center">
+                <span class="material-symbols-outlined animate-spin text-blue-600 mb-2">sync</span>
+                <span class="text-[10px] text-gray-400 font-bold uppercase">Enviando...</span>
+              </div>
+              <template v-else>
+                <img v-if="localProduct.imageBlob || localProduct.image" :src="getProductImagePreview(localProduct)" class="max-h-16 object-contain" />
+                <span v-else class="material-symbols-outlined text-gray-400 mb-2">image</span>
+                <span class="text-xs font-semibold text-gray-500 text-center truncate w-full px-2 mt-1">
+                  {{ localProduct.imageName || 'Upload JPG/PNG' }}
+                </span>
+              </template>
+            </div>
+
+            <!-- Link Input -->
+            <div class="mt-2 space-y-1">
+              <label class="block text-[9px] text-gray-400 font-bold uppercase tracking-wider">Ou insira o link da imagem (URL)</label>
+              <input 
+                v-model="localProduct.image" 
+                type="text" 
+                @input="localProduct.imageBlob = null; localProduct.imageName = localProduct.image ? 'Imagem via Link' : ''" 
+                placeholder="https://exemplo.com/produto.jpg" 
+                class="w-full border border-gray-300 rounded p-2 text-xs focus:ring-1 focus:ring-blue-600 focus:outline-none bg-white text-slate-800 font-mono" 
+              />
             </div>
           </div>
           <div>
             <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Datasheet (Upload PDF)</label>
             <div @click="triggerFileInput('pdfInput')" class="border-2 border-dashed border-gray-300 p-4 flex flex-col items-center justify-center cursor-pointer hover:bg-gray-50 transition-colors rounded h-28 relative mb-2 bg-white">
-              <input type="file" ref="pdfInput" class="hidden" accept="application/pdf" @change="handleDatasheetUpload" />
-              <span v-if="!localProduct.datasheetName" class="material-symbols-outlined text-gray-400 mb-2">picture_as_pdf</span>
-              <span class="text-xs font-semibold text-gray-500 text-center truncate w-full px-2">
-                {{ localProduct.datasheetName || 'Upload PDF' }}
-              </span>
+              <input type="file" ref="pdfInput" class="hidden" accept="application/pdf" @change="handleDatasheetUpload" :disabled="uploadingPdf" />
+              <div v-if="uploadingPdf" class="flex flex-col items-center">
+                <span class="material-symbols-outlined animate-spin text-blue-600 mb-2">sync</span>
+                <span class="text-[10px] text-gray-400 font-bold uppercase">Enviando...</span>
+              </div>
+              <template v-else>
+                <span v-if="!localProduct.datasheetName" class="material-symbols-outlined text-gray-400 mb-2">picture_as_pdf</span>
+                <span class="text-xs font-semibold text-gray-500 text-center truncate w-full px-2">
+                  {{ localProduct.datasheetName || 'Upload PDF' }}
+                </span>
+              </template>
             </div>
             <label class="block text-xs font-bold text-gray-500 uppercase mb-1 text-[10px]">OU Link Direto (Ex: Website)</label>
             <input v-model="localProduct.datasheetUrl" class="w-full border border-gray-300 rounded p-2 text-xs focus:ring-1 focus:ring-blue-600 focus:outline-none bg-white" placeholder="https://exemplo.com/datasheet.pdf" type="text" />
@@ -184,6 +211,7 @@ interface ProductPayload {
   category: string
   tag: string
   layoutSlots: number
+  image?: string | null
   imageName: string
   imageBlob: string | null
   datasheetName: string
@@ -216,6 +244,7 @@ const getInitialProduct = (): ProductPayload => ({
   category: '',
   tag: 'NOVO',
   layoutSlots: 3,
+  image: '',
   imageName: '',
   imageBlob: null,
   datasheetName: '',
@@ -231,9 +260,19 @@ const getInitialProduct = (): ProductPayload => ({
 })
 
 const localProduct = ref<ProductPayload>(props.product ? JSON.parse(JSON.stringify(props.product)) : getInitialProduct())
+const uploadingImage = ref(false)
+const uploadingPdf = ref(false)
 const colorIndex = ref(0)
 const customColorActive = ref(false)
 const customColorHex = ref('#376092')
+
+const getProductImagePreview = (product: any) => {
+  if (product.imageBlob) {
+    if (product.imageBlob.startsWith('data:')) return product.imageBlob
+    return `data:image/png;base64,${product.imageBlob}`
+  }
+  return product.image || ''
+}
 
 const colorOptions = [
   { bgClass: 'bg-secondary', tagColor: 'text-[#005db7]', name: 'Azul' },
@@ -309,44 +348,70 @@ const triggerFileInput = (refName: 'imgInput' | 'pdfInput') => {
   }
 }
 
-const handleImageUpload = (event: Event) => {
+const handleImageUpload = async (event: Event) => {
   const target = event.target as HTMLInputElement
   const file = target.files?.[0]
   if (!file) return
 
-  const reader = new FileReader()
-  reader.onload = (e) => {
-    const arrayBuffer = e.target?.result as ArrayBuffer
-    const uint8 = new Uint8Array(arrayBuffer)
-    let hex = ''
-    for (let i = 0; i < uint8.length; i++) {
-      const h = uint8[i].toString(16)
-      hex += h.length === 1 ? '0' + h : h
+  uploadingImage.value = true
+  try {
+    const formData = new FormData()
+    formData.append('file', file)
+
+    const response = await fetch('/api/upload-r2', {
+      method: 'POST',
+      body: formData,
+    })
+
+    if (!response.ok) {
+      const errorData = await response.json()
+      throw new Error(errorData.statusMessage || 'Erro ao fazer upload da imagem')
     }
+
+    const data = await response.json()
+    localProduct.value.image = data.url
     localProduct.value.imageName = file.name
-    localProduct.value.imageBlob = '\\x' + hex
+    localProduct.value.imageBlob = null // clear any legacy hex blob
+  } catch (error: any) {
+    console.error('Error uploading image to R2:', error)
+    alert(`Erro no upload da imagem: ${error.message || error}`)
+  } finally {
+    uploadingImage.value = false
+    target.value = '' // Reset input
   }
-  reader.readAsArrayBuffer(file)
 }
 
-const handleDatasheetUpload = (event: Event) => {
+const handleDatasheetUpload = async (event: Event) => {
   const target = event.target as HTMLInputElement
   const file = target.files?.[0]
   if (!file) return
 
-  const reader = new FileReader()
-  reader.onload = (e) => {
-    const arrayBuffer = e.target?.result as ArrayBuffer
-    const uint8 = new Uint8Array(arrayBuffer)
-    let hex = ''
-    for (let i = 0; i < uint8.length; i++) {
-      const h = uint8[i].toString(16)
-      hex += h.length === 1 ? '0' + h : h
+  uploadingPdf.value = true
+  try {
+    const formData = new FormData()
+    formData.append('file', file)
+
+    const response = await fetch('/api/upload-r2', {
+      method: 'POST',
+      body: formData,
+    })
+
+    if (!response.ok) {
+      const errorData = await response.json()
+      throw new Error(errorData.statusMessage || 'Erro ao fazer upload do datasheet')
     }
+
+    const data = await response.json()
+    localProduct.value.datasheetUrl = data.url
     localProduct.value.datasheetName = file.name
-    localProduct.value.datasheetBlob = '\\x' + hex
+    localProduct.value.datasheetBlob = null // clear any legacy hex blob
+  } catch (error: any) {
+    console.error('Error uploading PDF to R2:', error)
+    alert(`Erro no upload do PDF: ${error.message || error}`)
+  } finally {
+    uploadingPdf.value = false
+    target.value = '' // Reset input
   }
-  reader.readAsArrayBuffer(file)
 }
 
 const addSpecItem = () => {

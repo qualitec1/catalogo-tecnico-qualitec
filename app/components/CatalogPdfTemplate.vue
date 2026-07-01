@@ -1,6 +1,14 @@
 <template>
-  <div v-if="rendering" class="fixed top-0 left-0 w-full h-full bg-white z-[9999] overflow-auto flex flex-col items-center py-10">
-    <div class="text-xl font-bold mb-4 text-blue-600 animate-pulse">Gerando Catálogo, aguarde...</div>
+  <div v-if="rendering" class="fixed top-0 left-0 w-full h-full bg-white z-[9999] overflow-auto flex flex-col items-center justify-center py-10">
+    <div class="flex flex-col items-center space-y-4 max-w-md text-center px-6">
+      <span class="material-symbols-outlined animate-spin text-5xl text-blue-600 mb-2">sync</span>
+      <h3 class="text-xl font-bold text-slate-800">Gerando Catálogo em Ultra Resolução</h3>
+      <p class="text-sm text-gray-500 font-medium min-h-[20px]">{{ progressText || 'Iniciando a renderização...' }}</p>
+      <div class="w-64 bg-gray-200 h-2 rounded-full overflow-hidden shadow-inner">
+        <div class="bg-blue-600 h-full transition-all duration-300 rounded-full" :style="{ width: `${progressPercent}%` }"></div>
+      </div>
+      <span class="text-xs font-mono font-bold text-gray-400 mt-1">{{ progressPercent }}%</span>
+    </div>
     
     <!-- PDF Content Container -->
     <div id="pdf-content" class="bg-white shadow-xl">
@@ -452,13 +460,16 @@ const props = defineProps<{
   products: Product[],
   isGenerating: boolean,
   forceLandscape?: boolean,
-  coverCategory?: string
+  coverCategory?: string,
+  publishMode?: boolean
 }>()
 
-const emit = defineEmits(['complete'])
+const emit = defineEmits(['complete', 'published'])
 
 const supabase = useSupabaseClient()
 const rendering = ref(false)
+const progressText = ref('')
+const progressPercent = ref(0)
 const coverImageUrl = ref<string | null>(null)
 const coverImageBlob = ref<string | null>(null)
 
@@ -659,6 +670,9 @@ const getCoverImageSrc = (url: string | null | undefined, blob: string | null | 
     const mime = isJpg ? 'image/jpeg' : 'image/png';
     return `data:${mime};base64,${hexToBase64(blob)}`;
   }
+  if (url && (url.startsWith('http://') || url.startsWith('https://'))) {
+    return `/api/proxy-image?url=${encodeURIComponent(url)}`;
+  }
   return url || '';
 }
 
@@ -670,18 +684,18 @@ const getProductImageSrc = (product: any) => {
     return `data:${mime};base64,${product.imageBlob}`;
   }
   if (product.image && (product.image.startsWith('http://') || product.image.startsWith('https://'))) {
-    return `/api/product-image?id=${product.id}`
+    return `/api/proxy-image?url=${encodeURIComponent(product.image)}`;
   }
   return product.image || 'https://via.placeholder.com/400x300/e5e7eb/6b7280?text=Produto';
 }
 
 const handleImageError = (e: Event, product: any) => {
   const img = e.target as HTMLImageElement;
-  const fallbackUrl = process.client 
-    ? `${window.location.origin}/api/product-image?id=${product.id}` 
-    : `/api/product-image?id=${product.id}`;
+  const fallbackUrl = `/api/product-image?id=${product.id}`;
   if (img.src !== fallbackUrl && !img.src.includes('/api/product-image')) {
     img.src = fallbackUrl;
+  } else {
+    img.src = 'https://via.placeholder.com/400x300/e5e7eb/6b7280?text=Produto';
   }
 }
 
@@ -715,37 +729,154 @@ const fetchCoverImage = async (category: string) => {
   }
 }
 
+// Helper para garantir que todas as imagens no contêiner do PDF estejam totalmente carregadas
+const waitForImages = (container: HTMLElement): Promise<void> => {
+  console.log('[CatalogPdfTemplate] Iniciando carregamento de imagens...')
+  const images = Array.from(container.getElementsByTagName('img'))
+  const promises = images.map((img) => {
+    if (img.complete) return Promise.resolve()
+    return new Promise<void>((resolve) => {
+      img.onload = () => resolve()
+      img.onerror = () => resolve() // Resolve mesmo em erro para não travar a geração
+    })
+  })
+  return Promise.all(promises).then(() => {
+    console.log('[CatalogPdfTemplate] Todas as imagens foram carregadas com sucesso!')
+  })
+}
+
 // Gerar PDF
 watch(() => props.isGenerating, async (newVal) => {
   if (newVal && process.client) {
     rendering.value = true
+    progressText.value = 'Iniciando e carregando configurações...'
+    progressPercent.value = 5
     
-    await fetchAssets()
-    await fetchPdfSettings()
-    await fetchCoverImage(catalogCategory.value)
-    
-    // Aguardar o DOM renderizar completamente e carregar imagens
-    await nextTick()
-    setTimeout(async () => {
+    try {
+      await fetchAssets()
+      await fetchPdfSettings()
+      await fetchCoverImage(catalogCategory.value)
+      
+      // Aguardar o DOM renderizar completamente
+      await nextTick()
+      
       const element = document.getElementById('pdf-content')
-      if (element && html2pdf) {
-        const docFilename = props.forceLandscape || isLandscape.value
-          ? `Catalogo_Qualitec_${catalogCategory.value.replace(/[^a-z0-9]/gi, '_')}_Slides.pdf`
-          : `Catalogo_Qualitec_${catalogCategory.value.replace(/[^a-z0-9]/gi, '_')}.pdf`;
-        const opt = {
-          margin:       0,
-          filename:     docFilename,
-          image:        { type: 'jpeg', quality: 0.98 },
-          html2canvas:  { scale: 4, useCORS: true, letterRendering: true },
-          jsPDF:        { unit: 'mm', format: 'a4', orientation: isLandscape.value ? 'landscape' : 'portrait' },
-          pagebreak:    { mode: ['css', 'legacy'] }
-        };
+      if (element) {
+        progressText.value = 'Carregando fotos técnicas...'
+        progressPercent.value = 10
         
-        await html2pdf().from(element).set(opt).save()
+        // 1. Aguardar o carregamento de todas as imagens no contêiner do PDF
+        await waitForImages(element)
+        
+        // Pequena pausa para garantir a correta renderização final do layout
+        await new Promise(resolve => setTimeout(resolve, 300))
+
+        progressText.value = 'Carregando o motor de renderização...'
+        progressPercent.value = 15
+
+        // 2. Importar as bibliotecas necessárias para o PDF (dinamicamente no cliente)
+        const jsPDF = await import('jspdf').then(m => m.jsPDF || m.default || m)
+        const html2canvas = await import('html2canvas').then(m => m.default || m)
+
+        // 3. Obter todas as páginas HTML do PDF (classe .pdf-page)
+        const pagesElements = Array.from(element.getElementsByClassName('pdf-page')) as HTMLElement[]
+        const totalPages = pagesElements.length
+        
+        if (totalPages > 0) {
+          const docFilename = props.forceLandscape || isLandscape.value
+            ? `Catalogo_Qualitec_${catalogCategory.value.replace(/[^a-z0-9]/gi, '_')}_Slides.pdf`
+            : `Catalogo_Qualitec_${catalogCategory.value.replace(/[^a-z0-9]/gi, '_')}.pdf`;
+            
+          const orientation = isLandscape.value ? 'landscape' : 'portrait'
+          const pdf = new jsPDF({
+            orientation: orientation,
+            unit: 'mm',
+            format: 'a4',
+            compress: true
+          })
+
+          // Escala fixa de alta definição 3x para textos e imagens extremamente nítidos
+          const scale = 3.0
+
+          for (let i = 0; i < totalPages; i++) {
+            const pageElement = pagesElements[i]
+            const pageNum = i + 1
+            
+            progressText.value = `Processando página ${pageNum} de ${totalPages}...`
+            progressPercent.value = 15 + Math.round((pageNum / totalPages) * 80)
+            
+            // Renderiza a página individual em um canvas
+            const canvas = await html2canvas(pageElement, {
+              scale: scale,
+              useCORS: true,
+              allowTaint: false,
+              logging: false,
+              backgroundColor: '#ffffff'
+            })
+
+            const imgData = canvas.toDataURL('image/jpeg', 0.92)
+            
+            if (i > 0) {
+              pdf.addPage('a4', orientation)
+            }
+
+            // A4 dimensions: 210 x 297 mm
+            const pdfWidth = isLandscape.value ? 297 : 210
+            const pdfHeight = isLandscape.value ? 210 : 297
+            
+            pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight, undefined, 'FAST')
+            
+            // Liberar memória do canvas para evitar travamento em documentos gigantes
+            canvas.width = 0
+            canvas.height = 0
+          }
+
+          if (props.publishMode) {
+            progressText.value = 'Enviando catálogo ao servidor...'
+            progressPercent.value = 97
+            
+            try {
+              const pdfBlob = pdf.output('blob')
+              const file = new File([pdfBlob], `${catalogCategory.value.replace(/[^a-z0-9]/gi, '_')}_OfficialCatalog.pdf`, { type: 'application/pdf' })
+              
+              const formData = new FormData()
+              formData.append('file', file)
+
+              const response = await fetch('/api/upload-r2', {
+                method: 'POST',
+                body: formData,
+              })
+
+              if (!response.ok) {
+                const errorData = await response.json()
+                throw new Error(errorData.statusMessage || 'Erro ao fazer upload do catálogo oficial')
+              }
+
+              const data = await response.json()
+              progressText.value = 'Publicação concluída!'
+              progressPercent.value = 99
+              
+              emit('published', data.url)
+            } catch (uploadErr: any) {
+              console.error('Error uploading generated PDF to R2:', uploadErr)
+              alert(`Erro ao publicar catálogo no R2: ${uploadErr.message || uploadErr}`)
+            }
+          } else {
+            progressText.value = 'Salvando arquivo...'
+            progressPercent.value = 98
+            pdf.save(docFilename)
+          }
+        }
       }
+    } catch (err: any) {
+      console.error('[CatalogPdfTemplate] Erro fatal ao gerar PDF:', err)
+      alert(`Erro fatal na geração do PDF: ${err.message || err}`)
+    } finally {
+      progressText.value = 'Concluído!'
+      progressPercent.value = 100
       rendering.value = false
       emit('complete')
-    }, 1500) // Delay to ensure images load
+    }
   }
 })
 const getDatasheetLink = (product: any) => {

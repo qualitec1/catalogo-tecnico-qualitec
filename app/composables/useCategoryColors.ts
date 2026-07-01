@@ -6,6 +6,7 @@ export interface CategoryAsset {
   cover_image_url: string
   cover_image_blob?: string | null
   color_hex?: string | null
+  pdfUrl?: string | null
 }
 
 export default function useCategoryColors() {
@@ -24,7 +25,8 @@ export default function useCategoryColors() {
               category: item.category,
               cover_image_url: item.cover_image_url,
               cover_image_blob: item.cover_image_blob,
-              color_hex: item.color_hex
+              color_hex: item.color_hex,
+              pdfUrl: item.pdf_url
             }
           }
         }

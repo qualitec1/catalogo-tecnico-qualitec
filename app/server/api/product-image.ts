@@ -1,6 +1,3 @@
-if (typeof globalThis.WebSocket === 'undefined') {
-  globalThis.WebSocket = class {} as any
-}
 import { createClient } from '@supabase/supabase-js'
 
 export default defineEventHandler(async (event) => {
@@ -15,8 +12,8 @@ export default defineEventHandler(async (event) => {
     }
 
     const config = useRuntimeConfig()
-    const supabaseUrl = process.env.SUPABASE_URL || config.public.supabase?.url
-    const supabaseKey = process.env.SUPABASE_KEY || process.env.SUPABASE_ANON_KEY || config.public.supabase?.key
+    const supabaseUrl = (config.public as any).supabaseUrl || process.env.SUPABASE_URL
+    const supabaseKey = (config.public as any).supabaseAnonKey || process.env.SUPABASE_ANON_KEY
 
     if (!supabaseUrl || !supabaseKey) {
         throw createError({
@@ -55,11 +52,7 @@ export default defineEventHandler(async (event) => {
             if (!res.ok) throw new Error('Falha ao baixar imagem externa')
             const arrayBuffer = await res.arrayBuffer()
             imgBuffer = Buffer.from(arrayBuffer)
-            
-            // Convert to postgres bytea hex string for Supabase
-            const hex = '\\x' + imgBuffer.toString('hex')
-            // Save to database so subsequent loads are local and fast
-            await supabase.from('products').update({ image_blob: hex }).eq('id', id)
+            // Just proxy the external image without saving it to database to avoid bloat
         } catch (e) {
             console.error('Error proxying external image:', e)
             throw createError({

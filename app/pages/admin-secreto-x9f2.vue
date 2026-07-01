@@ -62,6 +62,7 @@
         @save-category="saveCategoryAsset"
         @delete-category="deleteCategoryAsset"
         @replicate-settings="replicateCategorySettings"
+        @publish-catalog="handlePublishCatalog"
       />
     </div>
     </main>
@@ -102,6 +103,16 @@
         <span class="font-bold text-sm text-white">{{ toastMessage }}</span>
       </div>
     </Transition>
+    <!-- Catalog PDF Template Component for Admin Automated Generation & Publication -->
+    <CatalogPdfTemplate 
+      :is-generating="isAdminGeneratingPdf" 
+      :products="adminSelectedProducts"
+      :force-landscape="adminForceLandscapePdf"
+      :cover-category="adminCoverCategory"
+      :publish-mode="true"
+      @complete="isAdminGeneratingPdf = false"
+      @published="handleAdminPdfPublished"
+    />
   </div>
 </template>
 
@@ -154,6 +165,7 @@ const fetchCategoryAssetsAdmin = async () => {
         coverImageUrl: item.cover_image_url,
         coverImageBlob: item.cover_image_blob ? hexToBase64(item.cover_image_blob) : null,
         colorHex: item.color_hex || '#376092',
+        pdfUrl: item.pdf_url,
         
         pdfSettingsId: settings.id,
         titleFontSize: settings.title_font_size || '36px',
@@ -263,7 +275,8 @@ const saveCategoryAsset = async (catAsset: any) => {
       category: newCat,
       cover_image_url: catAsset.coverImageUrl,
       cover_image_blob: dbBlob,
-      color_hex: catAsset.colorHex
+      color_hex: catAsset.colorHex,
+      pdf_url: catAsset.pdfUrl
     }
     const { error: assetError } = await supabase
       .from('category_assets')
@@ -564,6 +577,59 @@ const loading = ref(true)
 const saving = ref(false)
 const importing = ref(false)
 
+// Admin Automated PDF Generation & Publication States
+const isAdminGeneratingPdf = ref(false)
+const adminSelectedProducts = ref<any[]>([])
+const adminForceLandscapePdf = ref(false)
+const adminCoverCategory = ref('')
+const publishingCategory = ref<any>(null)
+
+const handlePublishCatalog = (category: any) => {
+  const catUpper = category.category.toUpperCase().trim()
+  publishingCategory.value = category
+  
+  if (catUpper === 'GERAL') {
+    adminSelectedProducts.value = products.value
+    adminCoverCategory.value = 'GERAL'
+  } else {
+    adminSelectedProducts.value = products.value.filter(p => p.category.toUpperCase().trim() === catUpper)
+    adminCoverCategory.value = category.category
+  }
+  
+  // Set orientation based on category PDF settings
+  adminForceLandscapePdf.value = category.orientation === 'landscape'
+  
+  // Trigger PDF template generation in publish mode
+  isAdminGeneratingPdf.value = true
+}
+
+const handleAdminPdfPublished = async (url: string) => {
+  if (!publishingCategory.value) return
+  
+  try {
+    const catAsset = publishingCategory.value
+    
+    // Update pdf_url in supabase
+    const { error } = await supabase
+      .from('category_assets')
+      .update({ pdf_url: url })
+      .eq('id', catAsset.id)
+      
+    if (error) throw error
+    
+    triggerToast(`Catálogo oficial de "${catAsset.category}" publicado com sucesso!`, 'success')
+    
+    // Refresh administrative assets list
+    await fetchCategoryAssetsAdmin()
+  } catch (err: any) {
+    console.error('Error updating published catalog URL in database:', err)
+    triggerToast(`Erro ao salvar URL do PDF: ${err.message}`, 'error')
+  } finally {
+    publishingCategory.value = null
+    isAdminGeneratingPdf.value = false
+  }
+}
+
 // Editing Modal States
 const editModalOpen = ref(false)
 const editingProduct = ref<any>(null)
@@ -724,15 +790,22 @@ const saveProductEdit = async ({ product, colorIndex }: { product: any, colorInd
 
 // Delete actions
 const deleteProduct = async (id: number) => {
-  if (confirm('Deseja realmente remover este equipamento?')) {
+  console.log('[admin-secreto-x9f2] deleteProduct called with id:', id)
+  const isConfirmed = confirm('Deseja realmente remover este equipamento?')
+  console.log('[admin-secreto-x9f2] deleteProduct confirm result:', isConfirmed)
+  if (isConfirmed) {
     try {
-      const { error } = await supabase.from('products').delete().eq('id', id)
+      console.log('[admin-secreto-x9f2] Executing delete query on Supabase for id:', id)
+      const { data, error, status } = await supabase.from('products').delete().eq('id', id).select()
+      console.log('[admin-secreto-x9f2] Supabase delete query result status:', status, 'data:', data, 'error:', error)
       if (error) throw error
+      
       triggerToast('Equipamento removido do catálogo.', 'success')
+      console.log('[admin-secreto-x9f2] Refreshing product list...')
       await fetchProducts()
     } catch (err: any) {
-      console.error(err)
-      triggerToast(`Erro ao remover produto: ${err.message}`, 'error')
+      console.error('[admin-secreto-x9f2] Error in deleteProduct:', err)
+      triggerToast(`Erro ao remover produto: ${err.message || err}`, 'error')
     }
   }
 }

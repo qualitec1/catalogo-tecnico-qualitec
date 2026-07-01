@@ -14,10 +14,9 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  // Get credentials from runtimeConfig or env
   const config = useRuntimeConfig()
-  const supabaseUrl = process.env.SUPABASE_URL || config.public.supabase?.url
-  const supabaseKey = process.env.SUPABASE_KEY || process.env.SUPABASE_ANON_KEY || config.public.supabase?.key
+  const supabaseUrl = (config.public as any).supabaseUrl || process.env.SUPABASE_URL
+  const supabaseKey = (config.public as any).supabaseAnonKey || process.env.SUPABASE_ANON_KEY
 
   if (!supabaseUrl || !supabaseKey) {
     throw createError({

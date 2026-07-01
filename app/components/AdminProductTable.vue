@@ -54,7 +54,7 @@
                   <button @click="$emit('edit', product)" class="p-1.5 hover:bg-gray-100 rounded text-blue-600 transition-colors" title="Editar">
                     <span class="material-symbols-outlined text-lg">edit</span>
                   </button>
-                  <button @click="$emit('delete', product.id)" class="p-1.5 hover:bg-red-50 rounded text-red-600 transition-colors" title="Excluir">
+                  <button @click="console.log('[AdminProductTable] Delete button clicked for product id:', product.id); $emit('delete', product.id)" class="p-1.5 hover:bg-red-50 rounded text-red-600 transition-colors" title="Excluir">
                     <span class="material-symbols-outlined text-lg">delete</span>
                   </button>
                 </div>
