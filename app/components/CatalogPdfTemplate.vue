@@ -831,9 +831,14 @@ watch(() => props.isGenerating, async (newVal) => {
             canvas.height = 0
           }
 
+          // Sempre faz o download local do arquivo para o usuário/admin verificar
+          progressText.value = 'Salvando arquivo...'
+          progressPercent.value = 96
+          pdf.save(docFilename)
+
           if (props.publishMode) {
             progressText.value = 'Enviando catálogo ao servidor...'
-            progressPercent.value = 97
+            progressPercent.value = 98
             
             try {
               const pdfBlob = pdf.output('blob')
@@ -861,10 +866,6 @@ watch(() => props.isGenerating, async (newVal) => {
               console.error('Error uploading generated PDF to R2:', uploadErr)
               alert(`Erro ao publicar catálogo no R2: ${uploadErr.message || uploadErr}`)
             }
-          } else {
-            progressText.value = 'Salvando arquivo...'
-            progressPercent.value = 98
-            pdf.save(docFilename)
           }
         }
       }
