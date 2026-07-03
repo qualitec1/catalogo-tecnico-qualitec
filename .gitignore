@@ -32,3 +32,9 @@ recovery_catalog/
 
 # Local data sheets and CSVs
 *.csv
+
+# Local backup and scratch files
+database_backup_original.json
+edit.form
+mcps/
+

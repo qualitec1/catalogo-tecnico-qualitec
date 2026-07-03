@@ -1,0 +1,453 @@
+import { 
+  dimToMm, 
+  setFillRgb, 
+  setDrawRgb, 
+  setTextRgb, 
+  parseFontSizePt, 
+  getFontName, 
+  getFontStyle, 
+  drawTextUnderline, 
+  truncateText 
+} from './pdfDocUtils'
+import { addImageSafe } from './pdfImageLoader'
+import type { CachedImage } from './pdfDocUtils'
+
+// A4 dimensions in mm
+const A4_W = 210
+const A4_H = 297
+const MARGIN_X = 13
+const MARGIN_BOTTOM = 8
+
+export interface BuildOptions {
+  pages: any[][]
+  isLandscape: boolean
+  categoryName: string
+  categoryColor: string
+  coverImageDataUrl: string | null
+  logoDataUrl: string | null
+  imageCache: Map<string, CachedImage>
+  getPageSettings: (page: any[]) => any
+  getBgColor: (bgClass: string | null | undefined, category?: string) => string
+  getSlots: (product: any) => number
+}
+
+export function getDatasheetLink(product: any): string | null {
+  if (!product) return null
+  const url = product.datasheetUrl || product.datasheet_url
+  if (url) return url
+  const name = product.datasheetName || product.datasheet_name
+  if (!name && !url) return null
+  
+  if (typeof window !== 'undefined') {
+    return `${window.location.origin}/api/datasheet?id=${product.id}`
+  }
+  return `/api/datasheet?id=${product.id}`
+}
+
+export function drawDatasheetLink(pdf: any, product: any, x: number, y: number, alignRight: boolean) {
+  const linkUrl = getDatasheetLink(product)
+  if (!linkUrl) return
+
+  pdf.setFont('helvetica', 'bold')
+  pdf.setFontSize(6.5)
+  pdf.setTextColor(37, 99, 235) // blue-600
+
+  const linkText = 'Baixar Ficha Técnica'
+  const textWidth = pdf.getTextWidth(linkText)
+  
+  const textX = alignRight ? x - textWidth : x
+  const textY = y
+
+  pdf.text(linkText, textX, textY)
+  
+  // Underline
+  pdf.setDrawColor(37, 99, 235)
+  pdf.setLineWidth(0.12)
+  pdf.line(textX, textY + 0.5, textX + textWidth, textY + 0.5)
+
+  // Clickable hotspot in PDF
+  pdf.link(textX, textY - 2.2, textWidth, 2.8, { url: linkUrl })
+}
+
+export function drawCoverPage(pdf: any, opts: BuildOptions) {
+  const pageW = opts.isLandscape ? A4_H : A4_W
+  const pageH = opts.isLandscape ? A4_W : A4_H
+  const color = opts.categoryColor
+
+  const settings = opts.getPageSettings([])
+
+  const logoWidth = dimToMm(settings.logo_width || settings.logoWidth, 64)
+  const logoHeight = dimToMm(settings.logo_height || settings.logoHeight, 20)
+  const posX = dimToMm(settings.logo_position_x || settings.logoPositionX, 16)
+  const posY = dimToMm(settings.logo_position_y || settings.logoPositionY, 16)
+
+  const logoX = pageW - logoWidth - posX
+  const logoY = posY
+
+  // 1. Logo — top right
+  addImageSafe(pdf, opts.imageCache, '__logo__', logoX, logoY, logoWidth, logoHeight)
+
+  // 2. Gray band background
+  const bandTop = opts.isLandscape ? 98 : 143
+  const bandBottom = opts.isLandscape ? pageH - 16 : pageH - 21
+  setFillRgb(pdf, '#f0f2f5')
+  pdf.rect(0, bandTop, pageW, bandBottom - bandTop, 'F')
+
+  // 3. Colored category block
+  const blockTop = opts.isLandscape ? 74 : 117
+  const blockW = opts.isLandscape ? 160 : 146
+  const blockH = opts.isLandscape ? 50 : 58
+  setFillRgb(pdf, color)
+  pdf.rect(0, blockTop, blockW, blockH, 'F')
+
+  // Text inside block
+  const textX = 13
+  pdf.setFont('helvetica', 'normal')
+  pdf.setFontSize(8)
+  pdf.setTextColor(255, 255, 255)
+  pdf.text('CATÁLOGO DE PRODUTOS', textX, blockTop + 14)
+
+  pdf.setFont('helvetica', 'bold')
+  pdf.setFontSize(20)
+  const catName = opts.categoryName === 'VÁLVULAS'
+    ? 'VÁLVULAS DE SEGURANÇA E ALÍVIO'
+    : opts.categoryName.toUpperCase()
+  const titleLines = pdf.splitTextToSize(catName, blockW - 26)
+  pdf.text(titleLines, textX, blockTop + 24)
+
+  // 4. Cover image — bottom right
+  const imgAreaW = opts.isLandscape ? 130 : 122
+  const imgAreaH = opts.isLandscape ? 80 : 90
+  const imgX = pageW - imgAreaW - 11
+  const imgY = pageH - imgAreaH - (opts.isLandscape ? 18 : 24)
+  addImageSafe(pdf, opts.imageCache, '__cover__', imgX, imgY, imgAreaW, imgAreaH)
+
+  // 5. Website footer
+  pdf.setFont('helvetica', 'normal')
+  pdf.setFontSize(7)
+  pdf.setTextColor(156, 163, 175)
+  const footerY = pageH - (opts.isLandscape ? 9 : 13)
+  pdf.text('w w w . q u a l i t e c . i n d . b r', 16, footerY)
+}
+
+export function drawPageHeader(
+  pdf: any,
+  category: string,
+  color: string,
+  y: number,
+  pageW: number,
+  settings: any
+): number {
+  const fontSize = parseFontSizePt(settings.title_font_size, 22)
+  const offsetY = dimToMm(settings.title_position_y || settings.titlePositionY, 0)
+  
+  const titleColor = settings.title_color || settings.titleColor || color
+  setTextRgb(pdf, titleColor)
+
+  const fontName = getFontName(settings.title_font_family || settings.titleFontFamily)
+  const fontStyle = getFontStyle(settings.title_bold || settings.titleBold, settings.title_italic || settings.titleItalic)
+
+  pdf.setFont(fontName, fontStyle)
+  pdf.setFontSize(fontSize)
+  
+  const textX = MARGIN_X
+  const textY = y + offsetY + fontSize * 0.35
+  const catUpper = category.toUpperCase()
+  
+  pdf.text(catUpper, textX, textY)
+
+  // Draw underline manually if configured
+  if (settings.title_underline || settings.titleUnderline) {
+    const textWidth = pdf.getTextWidth(catUpper)
+    setDrawRgb(pdf, titleColor)
+    pdf.setLineWidth(0.2)
+    const lineY = textY + 0.8
+    pdf.line(textX, lineY, textX + textWidth, lineY)
+  }
+
+  return y + offsetY + fontSize * 0.45 + 4
+}
+
+export function drawPageFooter(pdf: any, pageNum: number, totalPages: number, pageW: number, pageH: number) {
+  pdf.setFont('helvetica', 'normal')
+  pdf.setFontSize(7)
+  pdf.setTextColor(156, 163, 175)
+  setDrawRgb(pdf, '#f3f4f6')
+  const footerY = pageH - MARGIN_BOTTOM + 2
+  pdf.line(MARGIN_X, footerY - 3, pageW - MARGIN_X, footerY - 3)
+  pdf.text(`Página ${pageNum} de ${totalPages}`, pageW / 2, footerY, { align: 'center' })
+}
+
+export function drawSpecsTable(
+  pdf: any,
+  specs: { label: string; value: string }[],
+  x: number,
+  y: number,
+  w: number,
+  maxH: number,
+  settings: any,
+  compact: boolean,
+  exImageKey: string | null = null,
+  imageCache: Map<string, CachedImage> | null = null
+): number {
+  if (!specs || specs.length === 0) return y
+
+  let labelPct = 0.45
+  let valuePct = 0.55
+
+  if (settings) {
+    const sLabelWidth = settings.specs_label_width || settings.specsLabelWidth
+    const sValueWidth = settings.specs_value_width || settings.specsValueWidth
+
+    if (sLabelWidth) {
+      const parsedLabel = parseFloat(sLabelWidth)
+      if (!isNaN(parsedLabel)) {
+        labelPct = parsedLabel > 1 ? parsedLabel / 100 : parsedLabel
+      }
+    }
+    
+    if (sValueWidth) {
+      const parsedValue = parseFloat(sValueWidth)
+      if (!isNaN(parsedValue)) {
+        valuePct = parsedValue > 1 ? parsedValue / 100 : parsedValue
+      }
+    }
+  }
+
+  const labelW = w * labelPct
+  const valueW = w * valuePct
+  const lineEndX = x + Math.min(w, labelW + valueW)
+
+  const rowPad = compact ? 1.2 : 2.0
+  const fontSize = compact ? 6 : 7.5
+  const lineSpacing = fontSize * 0.35 + 0.5
+  const lineColor = settings.specs_line_color || '#cbd5e1'
+  const lineStyle = settings.specs_line_style || 'dashed'
+
+  const hasExLogo = exImageKey && imageCache && imageCache.has(exImageKey)
+  const exW = compact ? 8 : 12
+
+  pdf.setFontSize(fontSize)
+  let curY = y + rowPad
+
+  if (hasExLogo) {
+    const exX = x + w - exW - 1
+    const exY = y + rowPad
+    addImageSafe(pdf, imageCache!, exImageKey!, exX, exY, exW, exW)
+  }
+
+  for (let i = 0; i < specs.length; i++) {
+    const spec = specs[i]
+    const currentSpecsValW = hasExLogo ? (valueW - exW - 1) : (valueW - 2)
+
+    const labelLines = pdf.splitTextToSize(spec.label || '', labelW - 2) as string[]
+    const valueLines = pdf.splitTextToSize(spec.value || '', currentSpecsValW) as string[]
+    const numLines = Math.max(labelLines.length, valueLines.length)
+    
+    const rowHeight = (numLines - 1) * lineSpacing + 2.5
+    if (curY + rowHeight + rowPad > y + maxH) break
+
+    const labelFont = getFontName(settings.specs_font_family || settings.specsFontFamily)
+    const labelStyle = getFontStyle(settings.specs_bold || settings.specsBold, settings.specs_italic || settings.specsItalic)
+    pdf.setFont(labelFont, labelStyle)
+    pdf.setTextColor(107, 114, 128)
+    for (let idx = 0; idx < labelLines.length; idx++) {
+      const lineY = curY + 2.5 + idx * lineSpacing
+      pdf.text(labelLines[idx], x + 1, lineY)
+      if (settings.specs_underline || settings.specsUnderline) {
+        drawTextUnderline(pdf, labelLines[idx], x + 1, lineY, fontSize, '#6b7280', 'left')
+      }
+    }
+
+    const valFont = getFontName(settings.specs_font_family || settings.specsFontFamily)
+    const valStyle = getFontStyle(settings.specs_val_bold || settings.specsValBold, settings.specs_val_italic || settings.specsValItalic)
+    pdf.setFont(valFont, valStyle)
+    pdf.setTextColor(17, 24, 39)
+    for (let idx = 0; idx < valueLines.length; idx++) {
+      const lineY = curY + 2.5 + idx * lineSpacing
+      pdf.text(valueLines[idx], x + labelW + 1, lineY)
+      if (settings.specs_val_underline || settings.specsValUnderline) {
+        drawTextUnderline(pdf, valueLines[idx], x + labelW + 1, lineY, fontSize, '#111827', 'left')
+      }
+    }
+
+    curY += rowHeight + rowPad * 2
+
+    if (i < specs.length - 1 && lineStyle !== 'none') {
+      setDrawRgb(pdf, lineColor)
+      pdf.setLineWidth(0.15)
+      
+      if (lineStyle === 'dashed') {
+        const dashLen = 1.5
+        const gapLen = 1.0
+        let dx = x
+        while (dx < lineEndX) {
+          pdf.line(dx, curY - rowPad, Math.min(dx + dashLen, lineEndX), curY - rowPad)
+          dx += dashLen + gapLen
+        }
+      } else if (lineStyle === 'dotted') {
+        const dotGap = 0.8
+        let dx = x
+        while (dx < lineEndX) {
+          pdf.line(dx, curY - rowPad, dx + 0.1, curY - rowPad)
+          dx += dotGap
+        }
+      } else {
+        pdf.line(x, curY - rowPad, lineEndX, curY - rowPad)
+      }
+    }
+  }
+
+  return curY
+}
+
+export function drawColoredHeader(
+  pdf: any,
+  product: any,
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  color: string,
+  settings: any,
+  compact: boolean
+) {
+  setFillRgb(pdf, color)
+  pdf.rect(x, y, w, h, 'F')
+
+  pdf.setTextColor(255, 255, 255)
+
+  const titleFont = getFontName(settings.card_title_font_family || settings.cardTitleFontFamily)
+  const titleStyle = getFontStyle(settings.card_title_bold || settings.cardTitleBold, settings.card_title_italic || settings.cardTitleItalic)
+  
+  const modelFont = getFontName(settings.card_model_font_family || settings.cardModelFontFamily)
+  const modelStyle = getFontStyle(settings.card_model_bold || settings.cardModelBold, settings.card_model_italic || settings.cardModelItalic)
+  
+  const tagFont = getFontName(settings.tag_font_family || settings.tagFontFamily)
+  const tagStyle = getFontStyle(settings.tag_bold || settings.tagBold, settings.tag_italic || settings.tagItalic)
+  const tagSize = parseFontSizePt(settings.tag_font_size, 6)
+
+  const titleOffX = dimToMm(settings.card_title_offset_x || settings.cardTitleOffsetX, 0)
+  const titleOffY = dimToMm(settings.card_title_offset_y || settings.cardTitleOffsetY, 0)
+  const modelOffX = dimToMm(settings.card_model_offset_x || settings.cardModelOffsetX, 0)
+  const modelOffY = dimToMm(settings.card_model_offset_y || settings.cardModelOffsetY, 0)
+  const tagOffX = dimToMm(settings.tag_offset_x || settings.tagOffsetX, 0)
+  const tagOffY = dimToMm(settings.tag_offset_y || settings.tagOffsetY, 0)
+
+  const isModelRight = (settings.card_header_layout || settings.cardHeaderLayout) === 'model-right'
+
+  if (compact) {
+    if (isModelRight) {
+      pdf.setFont(modelFont, 'normal')
+      pdf.setFontSize(4)
+      pdf.setTextColor(255, 255, 255)
+      pdf.text('Modelo', x + 3 + modelOffX, y + 4 + modelOffY)
+      
+      pdf.setFont(modelFont, modelStyle)
+      const modelSize = parseFontSizePt(settings.card_model_font_size, 14)
+      const finalModelSize = Math.min(modelSize, 12)
+      pdf.setFontSize(finalModelSize)
+      pdf.text(product.nameCode || '', x + 3 + modelOffX, y + 8.5 + modelOffY)
+      if (settings.card_model_underline || settings.cardModelUnderline) {
+        drawTextUnderline(pdf, product.nameCode || '', x + 3 + modelOffX, y + 8.5 + modelOffY, finalModelSize, '#ffffff', 'left')
+      }
+
+      pdf.setFont(titleFont, 'bold')
+      pdf.setFontSize(5.5)
+      pdf.text((product.category || '').toUpperCase(), x + w - 3 + titleOffX, y + 4.5 + titleOffY, { align: 'right' })
+
+      pdf.setFont(titleFont, titleStyle)
+      pdf.setFontSize(5)
+      const title = truncateText(pdf, product.title || '', w - 30)
+      pdf.text(title, x + w - 3 + titleOffX, y + 8 + titleOffY, { align: 'right' })
+      if (settings.card_title_underline || settings.cardTitleUnderline) {
+        drawTextUnderline(pdf, title, x + w - 3 + titleOffX, y + 8 + titleOffY, 5, '#ffffff', 'right')
+      }
+    } else {
+      pdf.setFont(titleFont, 'bold')
+      pdf.setFontSize(5.5)
+      pdf.text((product.category || '').toUpperCase(), x + 3 + titleOffX, y + 4.5 + titleOffY)
+
+      pdf.setFont(titleFont, titleStyle)
+      pdf.setFontSize(5)
+      const title = truncateText(pdf, product.title || '', w - 30)
+      pdf.text(title, x + 3 + titleOffX, y + 8 + titleOffY)
+      if (settings.card_title_underline || settings.cardTitleUnderline) {
+        drawTextUnderline(pdf, title, x + 3 + titleOffX, y + 8 + titleOffY, 5, '#ffffff', 'left')
+      }
+
+      pdf.setFont(modelFont, 'normal')
+      pdf.setFontSize(4)
+      pdf.setTextColor(255, 255, 255)
+      pdf.text('Modelo', x + w - 3 + modelOffX, y + 4 + modelOffY, { align: 'right' })
+      
+      pdf.setFont(modelFont, modelStyle)
+      const modelSize = parseFontSizePt(settings.card_model_font_size, 14)
+      const finalModelSize = Math.min(modelSize, 12)
+      pdf.setFontSize(finalModelSize)
+      pdf.text(product.nameCode || '', x + w - 3 + modelOffX, y + 8.5 + modelOffY, { align: 'right' })
+      if (settings.card_model_underline || settings.cardModelUnderline) {
+        drawTextUnderline(pdf, product.nameCode || '', x + w - 3 + modelOffX, y + 8.5 + modelOffY, finalModelSize, '#ffffff', 'right')
+      }
+    }
+  } else {
+    const modelSize = parseFontSizePt(settings.card_model_font_size, 16)
+
+    if (isModelRight) {
+      if (product.tag) {
+        pdf.setFont(tagFont, tagStyle)
+        pdf.setFontSize(tagSize)
+        pdf.setTextColor(220, 220, 220)
+        pdf.text(product.tag, x + 3 + tagOffX, y + 5 + tagOffY)
+        if (settings.tag_underline || settings.tagUnderline) {
+          drawTextUnderline(pdf, product.tag, x + 3 + tagOffX, y + 5 + tagOffY, tagSize, '#dcdcdc', 'left')
+        }
+      }
+
+      pdf.setFont(modelFont, 'normal')
+      pdf.setFontSize(5.5)
+      pdf.setTextColor(220, 220, 220)
+      pdf.text('MODELO', x + w - 3 + modelOffX, y + 5 + modelOffY, { align: 'right' })
+
+      pdf.setFont(modelFont, modelStyle)
+      pdf.setFontSize(modelSize)
+      pdf.setTextColor(255, 255, 255)
+      pdf.text(product.nameCode || '', x + w - 3 + modelOffX, y + 5 + modelSize * 0.45 + modelOffY, { align: 'right' })
+      if (settings.card_model_underline || settings.cardModelUnderline) {
+        drawTextUnderline(pdf, product.nameCode || '', x + w - 3 + modelOffX, y + 5 + modelSize * 0.45 + modelOffY, modelSize, '#ffffff', 'right')
+      }
+    } else {
+      pdf.setFont(modelFont, 'normal')
+      pdf.setFontSize(5.5)
+      pdf.setTextColor(220, 220, 220)
+      pdf.text('MODELO', x + 3 + modelOffX, y + 5 + modelOffY)
+
+      pdf.setFont(modelFont, modelStyle)
+      pdf.setFontSize(modelSize)
+      pdf.setTextColor(255, 255, 255)
+      pdf.text(product.nameCode || '', x + 3 + modelOffX, y + 5 + modelSize * 0.45 + modelOffY)
+      if (settings.card_model_underline || settings.cardModelUnderline) {
+        drawTextUnderline(pdf, product.nameCode || '', x + 3 + modelOffX, y + 5 + modelSize * 0.45 + modelOffY, modelSize, '#ffffff', 'left')
+      }
+
+      if (product.tag) {
+        pdf.setFont(tagFont, tagStyle)
+        pdf.setFontSize(tagSize)
+        pdf.setTextColor(220, 220, 220)
+        pdf.text(product.tag, x + w - 3 + tagOffX, y + 5 + tagOffY, { align: 'right' })
+        if (settings.tag_underline || settings.tagUnderline) {
+          drawTextUnderline(pdf, product.tag, x + w - 3 + tagOffX, y + 5 + tagOffY, tagSize, '#dcdcdc', 'right')
+        }
+      }
+    }
+
+    pdf.setFont(titleFont, titleStyle)
+    pdf.setFontSize(8)
+    pdf.setTextColor(255, 255, 255)
+    const titleText = truncateText(pdf, product.title || '', w - 8)
+    pdf.text(titleText, x + 3 + titleOffX, y + h - 3 + titleOffY)
+    if (settings.card_title_underline || settings.cardTitleUnderline) {
+      drawTextUnderline(pdf, titleText, x + 3 + titleOffX, y + h - 3 + titleOffY, 8, '#ffffff', 'left')
+    }
+  }
+}

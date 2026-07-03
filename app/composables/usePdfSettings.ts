@@ -40,6 +40,8 @@ const getSettingsDefaults = () => ({
   pdf_image_scale_x: 1.0,
   pdf_image_scale_y: 1.0,
   product_image_offset_x: '0px',
+  specs_bg_color: '#f3f4f6',
+  title_color: '',
 })
 
 export default function usePdfSettings() {
@@ -48,7 +50,8 @@ export default function usePdfSettings() {
 
   const fetchPdfSettings = async () => {
     try {
-      const { data } = await supabase.from('pdf_settings').select('*')
+      const { data, error } = await supabase.from('pdf_settings').select('*')
+      console.log('[usePdfSettings] fetchPdfSettings called. data rows:', data?.length, 'error:', error)
       if (data) {
         const mapping: Record<string, PdfSettings> = {}
         for (const item of data) {
@@ -59,7 +62,8 @@ export default function usePdfSettings() {
               try { lsRaw = JSON.parse(lsRaw) } catch { lsRaw = null }
             }
 
-            mapping[item.category.toUpperCase().trim()] = {
+            const catKey = item.category.toUpperCase().trim()
+            mapping[catKey] = {
               ...item,
               title_font_size: item.title_font_size || '36px',
               title_position_y: item.title_position_y || '0px',
@@ -83,11 +87,25 @@ export default function usePdfSettings() {
               pdf_image_scale_x: item.pdf_image_scale_x !== undefined && item.pdf_image_scale_x !== null ? Number(item.pdf_image_scale_x) : 1.0,
               pdf_image_scale_y: item.pdf_image_scale_y !== undefined && item.pdf_image_scale_y !== null ? Number(item.pdf_image_scale_y) : 1.0,
               product_image_offset_x: item.product_image_offset_x || '0px',
+              specs_bg_color: item.specs_bg_color || '#f3f4f6',
+              title_color: item.title_color || '',
               landscape_settings: lsRaw || null,
             }
+            console.log(`[usePdfSettings] Loaded settings for category '${catKey}':`, JSON.stringify({
+              logo_width: mapping[catKey].logo_width,
+              logo_height: mapping[catKey].logo_height,
+              logo_position_x: mapping[catKey].logo_position_x,
+              logo_position_y: mapping[catKey].logo_position_y,
+              card_title_offset_x: mapping[catKey].card_title_offset_x,
+              card_title_offset_y: mapping[catKey].card_title_offset_y,
+              specs_line_style: mapping[catKey].specs_line_style,
+              image_position: mapping[catKey].image_position,
+              card_layout_order: mapping[catKey].card_layout_order,
+            }))
           }
         }
         pdfSettings.value = mapping
+        console.log('[usePdfSettings] Total categories loaded:', Object.keys(mapping).length, Object.keys(mapping))
       }
     } catch (e) {
       console.error('Failed to fetch pdf settings:', e)
@@ -101,9 +119,14 @@ export default function usePdfSettings() {
       orientation: 'portrait',
       landscape_settings: null,
     }
-    if (!category) return defaultSettings
+    if (!category) {
+      console.log('[usePdfSettings] getPdfSettings called with NO category, returning defaults')
+      return defaultSettings
+    }
     const catUpper = category.toUpperCase().trim()
-    return pdfSettings.value[catUpper] || pdfSettings.value['GERAL'] || defaultSettings
+    const found = pdfSettings.value[catUpper] || pdfSettings.value['GERAL'] || defaultSettings
+    console.log(`[usePdfSettings] getPdfSettings('${category}') => catUpper='${catUpper}', found keys:`, Object.keys(pdfSettings.value), 'matched:', !!pdfSettings.value[catUpper], 'logo_width:', found.logo_width, 'specs_line_style:', found.specs_line_style)
+    return found
   }
 
   /**

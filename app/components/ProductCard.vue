@@ -100,6 +100,8 @@ export interface Product {
   imageOffsetX?: number;
   imageOffsetY?: number;
   layoutSlots?: number;
+  exImageUrl?: string | null;
+  ex_image_url?: string | null;
 }
 
 const props = defineProps<{
@@ -155,8 +157,8 @@ const handleImageError = (e: Event) => {
   const fallbackUrl = `/api/product-image?id=${props.product.id}`;
   if (img.src !== fallbackUrl && !img.src.includes('/api/product-image')) {
     img.src = fallbackUrl;
-  } else {
-    img.src = 'https://via.placeholder.com/400x300/e5e7eb/6b7280?text=Produto';
+  } else if (!img.src.startsWith('data:image/svg+xml')) {
+    img.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100%" height="100%" fill="%23f3f4f6"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="10" fill="%239ca3af">Sem Imagem</text></svg>';
   }
 }
 </script>

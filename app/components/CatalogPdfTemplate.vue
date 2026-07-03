@@ -139,16 +139,19 @@ const getBgColor = (bgClass: string | null | undefined, category?: string) => {
 const getPageSettings = (page: Product[]) => {
   const cat = page && page.length > 0 ? page[0].category : catalogCategory.value
   const settings = isLandscape.value ? getLandscapePdfSettings(cat) : getPdfSettings(cat)
-  const slots = page && page.length > 0 ? getSlots(page[0]) : 3
   let baseSettings = settings ? { ...settings } : {}
-  if (settings && settings.layout_settings && settings.layout_settings[slots]) {
-    const overrides = settings.layout_settings[slots]
-    for (const key of Object.keys(overrides)) {
-      const val = overrides[key]
-      if (val !== undefined && val !== null && val !== '') {
-        const snakeKey = key.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`)
-        baseSettings[snakeKey] = val
-        baseSettings[key] = val
+  
+  if (page && page.length > 0) {
+    const slots = getSlots(page[0])
+    if (settings && settings.layout_settings && settings.layout_settings[slots]) {
+      const overrides = settings.layout_settings[slots]
+      for (const key of Object.keys(overrides)) {
+        const val = overrides[key]
+        if (val !== undefined && val !== null && val !== '') {
+          const snakeKey = key.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`)
+          baseSettings[snakeKey] = val
+          baseSettings[key] = val
+        }
       }
     }
   }

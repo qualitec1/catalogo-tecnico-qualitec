@@ -9,17 +9,27 @@
       <form class="space-y-5" @submit.prevent="handleSubmit">
         <div>
           <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Nome do Equipamento</label>
-          <input v-model="localProduct.title" class="w-full border border-gray-300 rounded p-3 focus:ring-1 focus:ring-blue-600 focus:outline-none transition-all bg-white" placeholder="Ex: Válvula Esfera Monobloco" type="text" required />
+          <input v-model="localProduct.title" class="w-full border border-gray-300 rounded p-3 focus:ring-1 focus:ring-blue-600 focus:outline-none transition-all bg-white text-slate-800" placeholder="Ex: Válvula Esfera Monobloco" type="text" required />
         </div>
         
         <div class="grid grid-cols-2 gap-4">
           <div>
             <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Modelo / SKU</label>
-            <input v-model="localProduct.nameCode" class="w-full border border-gray-300 rounded p-3 focus:ring-1 focus:ring-blue-600 focus:outline-none transition-all bg-white" placeholder="QT-500-2024" type="text" required />
+            <input v-model="localProduct.nameCode" class="w-full border border-gray-300 rounded p-3 focus:ring-1 focus:ring-blue-600 focus:outline-none transition-all bg-white text-slate-800" placeholder="QT-500-2024" type="text" required />
           </div>
-          <div>
+           <div>
             <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Categoria</label>
-            <input v-model="localProduct.category" class="w-full border border-gray-300 rounded p-3 focus:ring-1 focus:ring-blue-600 focus:outline-none transition-all bg-white" placeholder="Ex: VÁLVULAS" type="text" required />
+            <div class="relative">
+              <select v-model="localProduct.category" class="w-full border border-gray-300 rounded p-3 pr-10 focus:ring-1 focus:ring-blue-600 focus:outline-none transition-all bg-white text-slate-800 cursor-pointer appearance-none" required>
+                <option value="" disabled>Selecione uma categoria...</option>
+                <option v-for="cat in uniqueCategories" :key="cat" :value="cat">
+                  {{ cat }}
+                </option>
+              </select>
+              <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500">
+                <span class="material-symbols-outlined text-lg">arrow_drop_down</span>
+              </div>
+            </div>
           </div>
         </div>
         
@@ -27,7 +37,6 @@
           <div>
             <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Imagem Técnica</label>
             
-            <!-- Upload Box -->
             <div @click="triggerFileInput('imgInput')" class="border-2 border-dashed border-gray-300 p-4 flex flex-col items-center justify-center cursor-pointer hover:bg-gray-50 transition-colors rounded h-28 relative bg-white" title="Clique para fazer upload de arquivo">
               <input type="file" ref="imgInput" class="hidden" accept="image/*" @change="handleImageUpload" :disabled="uploadingImage" />
               <div v-if="uploadingImage" class="flex flex-col items-center">
@@ -43,7 +52,6 @@
               </template>
             </div>
 
-            <!-- Link Input -->
             <div class="mt-2 space-y-1">
               <label class="block text-[9px] text-gray-400 font-bold uppercase tracking-wider">Ou insira o link da imagem (URL)</label>
               <input 
@@ -71,21 +79,30 @@
               </template>
             </div>
             <label class="block text-xs font-bold text-gray-500 uppercase mb-1 text-[10px]">OU Link Direto (Ex: Website)</label>
-            <input v-model="localProduct.datasheetUrl" class="w-full border border-gray-300 rounded p-2 text-xs focus:ring-1 focus:ring-blue-600 focus:outline-none bg-white" placeholder="https://exemplo.com/datasheet.pdf" type="text" />
+            <input v-model="localProduct.datasheetUrl" class="w-full border border-gray-300 rounded p-2 text-xs focus:ring-1 focus:ring-blue-600 focus:outline-none bg-white text-slate-800" placeholder="https://exemplo.com/datasheet.pdf" type="text" />
           </div>
         </div>
-        <div class="grid grid-cols-2 gap-4">
+        <div class="grid grid-cols-3 gap-4">
           <div>
             <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Marcador / Tag</label>
-            <input v-model="localProduct.tag" class="w-full border border-gray-300 rounded p-3 focus:ring-1 focus:ring-blue-600 focus:outline-none transition-all bg-white" placeholder="Ex: NOVO" type="text" required />
+            <input v-model="localProduct.tag" class="w-full border border-gray-300 rounded p-3 focus:ring-1 focus:ring-blue-600 focus:outline-none transition-all bg-white text-slate-800" placeholder="Ex: NOVO" type="text" required />
           </div>
           <div>
             <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Layout de Exibição</label>
-            <select v-model="localProduct.layoutSlots" class="w-full border border-gray-300 rounded p-3 focus:ring-1 focus:ring-blue-600 focus:outline-none transition-all appearance-none bg-white">
-              <option :value="3">Padrão (2 por página)</option>
-              <option :value="6">Destaque Hero (1 por página)</option>
-              <option :value="1">Lista Compacta (6 por página)</option>
-            </select>
+            <div class="relative">
+              <select v-model="localProduct.layoutSlots" class="w-full border border-gray-300 rounded p-3 pr-10 focus:ring-1 focus:ring-blue-600 focus:outline-none transition-all appearance-none bg-white text-slate-800 cursor-pointer">
+                <option :value="3">Padrão (2 por página)</option>
+                <option :value="6">Destaque Hero (1 por página)</option>
+                <option :value="1">Lista Compacta (6 por página)</option>
+              </select>
+              <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500">
+                <span class="material-symbols-outlined text-lg">arrow_drop_down</span>
+              </div>
+            </div>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Selo EX (URL Imagem)</label>
+            <input v-model="localProduct.exImageUrl" class="w-full border border-gray-300 rounded p-3 focus:ring-1 focus:ring-blue-600 focus:outline-none transition-all bg-white text-slate-800" placeholder="https://exemplo.com/ex.png" type="text" />
           </div>
         </div>
 
@@ -101,93 +118,45 @@
             <strong>Offset Y:</strong> Valores negativos movem para <strong>Cima</strong>, positivos para <strong>Baixo</strong>.
           </p>
           
-          <div class="grid grid-cols-3 gap-4">
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
-              <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Escala Imagem</label>
-              <div class="flex items-center space-x-2 border border-gray-300 rounded p-2.5 h-[50px] bg-white">
-                <input v-model.number="localProduct.imageScale" type="range" min="0.2" max="3.0" step="0.05" class="flex-grow accent-blue-600" />
-                <span class="text-xs font-bold font-mono text-gray-600 shrink-0 w-10 text-right">{{ localProduct.imageScale || 1.0 }}x</span>
+              <div class="flex justify-between items-center mb-1.5">
+                <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-wider">Escala Imagem</label>
+                <span class="text-xs font-bold font-mono text-blue-600 bg-blue-50 px-2 py-0.5 rounded">{{ localProduct.imageScale !== undefined ? localProduct.imageScale : 1.0 }}x</span>
+              </div>
+              <div class="flex items-center border border-gray-300 rounded px-3 py-2 bg-white h-[46px]">
+                <input v-model.number="localProduct.imageScale" type="range" min="0.2" max="3.0" step="0.05" class="w-full accent-blue-600 cursor-pointer" />
               </div>
             </div>
             <div>
-              <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Offset X (Horiz)</label>
-              <div class="flex items-center space-x-2 border border-gray-300 rounded p-2.5 h-[50px] bg-white">
-                <input v-model.number="localProduct.imageOffsetX" type="range" min="-200" max="200" step="2" class="flex-grow accent-blue-600" />
-                <span class="text-xs font-bold font-mono text-gray-600 shrink-0 w-12 text-right">{{ localProduct.imageOffsetX || 0 }}px</span>
+              <div class="flex justify-between items-center mb-1.5">
+                <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-wider">Offset X (Horiz)</label>
+                <span class="text-xs font-bold font-mono text-blue-600 bg-blue-50 px-2 py-0.5 rounded">{{ localProduct.imageOffsetX || 0 }}px</span>
+              </div>
+              <div class="flex items-center border border-gray-300 rounded px-3 py-2 bg-white h-[46px]">
+                <input v-model.number="localProduct.imageOffsetX" type="range" min="-200" max="200" step="2" class="w-full accent-blue-600 cursor-pointer" />
               </div>
             </div>
             <div>
-              <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Offset Y (Vert)</label>
-              <div class="flex items-center space-x-2 border border-gray-300 rounded p-2.5 h-[50px] bg-white">
-                <input v-model.number="localProduct.imageOffsetY" type="range" min="-200" max="200" step="2" class="flex-grow accent-blue-600" />
-                <span class="text-xs font-bold font-mono text-gray-600 shrink-0 w-12 text-right">{{ localProduct.imageOffsetY || 0 }}px</span>
+              <div class="flex justify-between items-center mb-1.5">
+                <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-wider">Offset Y (Vert)</label>
+                <span class="text-xs font-bold font-mono text-blue-600 bg-blue-50 px-2 py-0.5 rounded">{{ localProduct.imageOffsetY || 0 }}px</span>
+              </div>
+              <div class="flex items-center border border-gray-300 rounded px-3 py-2 bg-white h-[46px]">
+                <input v-model.number="localProduct.imageOffsetY" type="range" min="-200" max="200" step="2" class="w-full accent-blue-600 cursor-pointer" />
               </div>
             </div>
           </div>
-        </div>
-
-        <div>
-          <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Cor da Categoria</label>
-          <div class="flex space-x-3 items-center">
-            <!-- Circled presets -->
-            <div class="flex space-x-2 items-center h-[46px]">
-              <button 
-                v-for="(color, idx) in colorOptions" 
-                :key="idx"
-                @click="selectPresetColor(idx)"
-                :class="[
-                  color.bgClass,
-                  (colorIndex === idx && !customColorActive) ? 'ring-2 ring-offset-2 ring-blue-600' : 'ring-1 ring-gray-300'
-                ]"
-                class="w-8 h-8 rounded-full transition-all" 
-                type="button"
-                :title="color.name"
-              ></button>
-            </div>
-            
-            <div class="h-6 w-px bg-gray-300"></div>
-
-            <!-- Custom HEX picker/input -->
-            <div class="flex items-center space-x-2">
-              <input 
-                v-model="customColorHex" 
-                type="color" 
-                @input="applyCustomColor" 
-                class="w-8 h-8 p-0 border-0 bg-transparent cursor-pointer rounded-full" 
-              />
-              <input 
-                v-model="customColorHex" 
-                type="text" 
-                placeholder="#376092" 
-                @input="applyCustomColor"
-                class="border border-gray-300 px-3 py-1.5 text-xs focus:ring-1 focus:ring-blue-600 focus:outline-none w-28 text-center bg-white font-mono rounded" 
-              />
-            </div>
           </div>
-        </div>
 
-        <!-- Dynamic Specifications Area -->
-        <div class="border-t border-gray-200 pt-4">
-          <label class="block text-xs font-bold text-gray-500 uppercase mb-3">Especificações Técnicas</label>
-          <div class="space-y-2 max-h-60 overflow-y-auto pr-1">
-            <div v-for="(spec, index) in localProduct.specs" :key="index" class="flex gap-2 items-center">
-              <input v-model="spec.label" class="w-1/2 border border-gray-300 rounded p-2 text-xs bg-white" placeholder="Ex: Diâmetro" type="text" required />
-              <input v-model="spec.value" class="w-1/2 border border-gray-300 rounded p-2 text-xs bg-white" placeholder="Ex: 2.1/2" type="text" required />
-              <button type="button" @click="removeSpecItem(index)" class="p-1 text-red-650 hover:bg-red-50 rounded transition-colors">
-                <span class="material-symbols-outlined text-lg">delete</span>
-              </button>
-            </div>
-          </div>
-          <button type="button" @click="addSpecItem" class="mt-2 flex items-center text-xs text-blue-650 hover:text-blue-700 transition-colors font-medium">
-            <span class="material-symbols-outlined text-sm mr-1">add</span> Adicionar Item
-          </button>
-        </div>
+        <!-- Specs Form Subcomponent -->
+        <AdminProductSpecsForm :specs="localProduct.specs" />
 
         <div class="flex space-x-3 pt-4 border-t border-gray-200">
-          <button v-if="isEdit" type="button" @click="$emit('cancel')" class="w-1/2 border border-gray-300 text-gray-750 py-3 font-semibold text-xs rounded hover:bg-gray-50 transition-colors">
+          <button v-if="isEdit" type="button" @click="$emit('cancel')" class="w-1/2 border border-gray-300 text-gray-750 py-3 font-semibold text-xs rounded hover:bg-gray-50 transition-colors bg-white cursor-pointer">
             CANCELAR
           </button>
-          <button type="submit" :disabled="saving" :class="isEdit ? 'w-1/2' : 'w-full'" class="bg-blue-600 text-white py-3 font-semibold text-xs hover:bg-blue-700 transition-all rounded disabled:opacity-50">
+          <button type="submit" :disabled="saving" :class="isEdit ? 'w-1/2' : 'w-full'" class="bg-blue-600 text-white py-3 font-semibold text-xs hover:bg-blue-700 transition-all rounded disabled:opacity-50 border-0 cursor-pointer">
             {{ saving ? 'SALVANDO...' : (isEdit ? 'SALVAR ALTERAÇÕES' : 'SALVAR NO CATÁLOGO') }}
           </button>
         </div>
@@ -197,7 +166,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted } from 'vue'
+import { useAdminProductForm } from '../composables/useAdminProductForm'
 
 interface Spec {
   label: string
@@ -222,220 +191,53 @@ interface ProductPayload {
   imageScale?: number
   imageOffsetX?: number
   imageOffsetY?: number
+  exImageUrl?: string | null
+  tagColorClass?: string
 }
 
 const props = withDefaults(defineProps<{
   product?: ProductPayload
   saving?: boolean
   isEdit?: boolean
+  categories?: any[]
 }>(), {
   saving: false,
-  isEdit: false
+  isEdit: false,
+  categories: () => []
 })
 
 const emit = defineEmits<{
   (e: 'submit', payload: { product: ProductPayload, colorIndex: number }): void
   (e: 'cancel'): void
-  }>()
+}>()
 
-const getInitialProduct = (): ProductPayload => ({
-  title: '',
-  nameCode: '',
-  category: '',
-  tag: 'NOVO',
-  layoutSlots: 3,
-  image: '',
-  imageName: '',
-  imageBlob: null,
-  datasheetName: '',
-  datasheetBlob: null,
-  datasheetUrl: '',
-  imageScale: 1.0,
-  imageOffsetX: 0,
-  imageOffsetY: 0,
-  specs: [
-    { label: 'Diâmetro Nominal', value: '1.1/2" ou 2.1/2"' },
-    { label: 'Pressão de Trabalho', value: '14 bar (200 psi)' }
-  ]
-})
+import { computed } from 'vue'
 
-const localProduct = ref<ProductPayload>(props.product ? JSON.parse(JSON.stringify(props.product)) : getInitialProduct())
-const uploadingImage = ref(false)
-const uploadingPdf = ref(false)
-const colorIndex = ref(0)
-const customColorActive = ref(false)
-const customColorHex = ref('#376092')
-
-const getProductImagePreview = (product: any) => {
-  if (product.imageBlob) {
-    if (product.imageBlob.startsWith('data:')) return product.imageBlob
-    return `data:image/png;base64,${product.imageBlob}`
-  }
-  return product.image || ''
-}
-
-const colorOptions = [
-  { bgClass: 'bg-secondary', tagColor: 'text-[#005db7]', name: 'Azul' },
-  { bgClass: 'bg-tertiary-container', tagColor: 'text-[#003d0b]', name: 'Verde' },
-  { bgClass: 'bg-error', tagColor: 'text-[#ba1a1a]', name: 'Vermelho' },
-  { bgClass: 'bg-primary-container', tagColor: 'text-[#003366]', name: 'Azul Escuro' }
-]
-
-// Determine colorIndex and customColor from bgClass
-const mapBgClassToColorState = (bgClass?: string) => {
-  if (!bgClass) {
-    colorIndex.value = 0
-    customColorActive.value = false
-    return
-  }
-  
-  const index = colorOptions.findIndex(c => c.bgClass === bgClass)
-  if (index >= 0) {
-    colorIndex.value = index
-    customColorActive.value = false
-  } else {
-    // It's a custom hex color!
-    customColorActive.value = true
-    
-    // Extract hex from bgClass (it could be like '#376092' or 'bg-[#376092]')
-    if (bgClass.startsWith('#')) {
-      customColorHex.value = bgClass
-    } else {
-      const match = bgClass.match(/bg-\[#([0-9a-fA-F]{6})\]/)
-      if (match) {
-        customColorHex.value = `#${match[1]}`
-      } else {
-        customColorHex.value = bgClass // fallback
+const uniqueCategories = computed(() => {
+  const list = new Set<string>()
+  if (props.categories) {
+    props.categories.forEach(c => {
+      if (c.category) {
+        list.add(c.category.toUpperCase().trim())
       }
-    }
+    })
   }
-}
-
-const selectPresetColor = (idx: number) => {
-  colorIndex.value = idx
-  customColorActive.value = false
-}
-
-const applyCustomColor = () => {
-  customColorActive.value = true
-}
-
-watch(() => props.product, (newVal) => {
-  if (newVal) {
-    localProduct.value = JSON.parse(JSON.stringify(newVal))
-    mapBgClassToColorState(newVal.bgClass)
-  } else {
-    localProduct.value = getInitialProduct()
-    colorIndex.value = 0
-    customColorActive.value = false
+  if (localProduct.value?.category) {
+    list.add(localProduct.value.category.toUpperCase().trim())
   }
-}, { deep: true })
-
-onMounted(() => {
-  if (props.product) {
-    mapBgClassToColorState(props.product.bgClass)
-  }
+  return Array.from(list).sort()
 })
 
-const imgInput = ref<HTMLInputElement | null>(null)
-const pdfInput = ref<HTMLInputElement | null>(null)
-
-const triggerFileInput = (refName: 'imgInput' | 'pdfInput') => {
-  if (refName === 'imgInput' && imgInput.value) {
-    imgInput.value.click()
-  } else if (refName === 'pdfInput' && pdfInput.value) {
-    pdfInput.value.click()
-  }
-}
-
-const handleImageUpload = async (event: Event) => {
-  const target = event.target as HTMLInputElement
-  const file = target.files?.[0]
-  if (!file) return
-
-  uploadingImage.value = true
-  try {
-    const formData = new FormData()
-    formData.append('file', file)
-
-    const response = await fetch('/api/upload-r2', {
-      method: 'POST',
-      body: formData,
-    })
-
-    if (!response.ok) {
-      const errorData = await response.json()
-      throw new Error(errorData.statusMessage || 'Erro ao fazer upload da imagem')
-    }
-
-    const data = await response.json()
-    localProduct.value.image = data.url
-    localProduct.value.imageName = file.name
-    localProduct.value.imageBlob = null // clear any legacy hex blob
-  } catch (error: any) {
-    console.error('Error uploading image to R2:', error)
-    alert(`Erro no upload da imagem: ${error.message || error}`)
-  } finally {
-    uploadingImage.value = false
-    target.value = '' // Reset input
-  }
-}
-
-const handleDatasheetUpload = async (event: Event) => {
-  const target = event.target as HTMLInputElement
-  const file = target.files?.[0]
-  if (!file) return
-
-  uploadingPdf.value = true
-  try {
-    const formData = new FormData()
-    formData.append('file', file)
-
-    const response = await fetch('/api/upload-r2', {
-      method: 'POST',
-      body: formData,
-    })
-
-    if (!response.ok) {
-      const errorData = await response.json()
-      throw new Error(errorData.statusMessage || 'Erro ao fazer upload do datasheet')
-    }
-
-    const data = await response.json()
-    localProduct.value.datasheetUrl = data.url
-    localProduct.value.datasheetName = file.name
-    localProduct.value.datasheetBlob = null // clear any legacy hex blob
-  } catch (error: any) {
-    console.error('Error uploading PDF to R2:', error)
-    alert(`Erro no upload do PDF: ${error.message || error}`)
-  } finally {
-    uploadingPdf.value = false
-    target.value = '' // Reset input
-  }
-}
-
-const addSpecItem = () => {
-  localProduct.value.specs.push({ label: '', value: '' })
-}
-
-const removeSpecItem = (index: number) => {
-  localProduct.value.specs.splice(index, 1)
-}
-
-const handleSubmit = () => {
-  emit('submit', {
-    product: {
-      ...localProduct.value,
-      bgClass: customColorActive.value ? customColorHex.value : colorOptions[colorIndex.value].bgClass,
-      tagColorClass: customColorActive.value ? `text-[${customColorHex.value}]` : colorOptions[colorIndex.value].tagColor
-    },
-    colorIndex: colorIndex.value
-  })
-  if (!props.isEdit) {
-    // Reset form after submission if it is a creation form
-    localProduct.value = getInitialProduct()
-    colorIndex.value = 0
-    customColorActive.value = false
-  }
-}
+const {
+  localProduct,
+  uploadingImage,
+  uploadingPdf,
+  imgInput,
+  pdfInput,
+  getProductImagePreview,
+  triggerFileInput,
+  handleImageUpload,
+  handleDatasheetUpload,
+  handleSubmit
+} = useAdminProductForm(props, emit)
 </script>
