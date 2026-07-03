@@ -24,6 +24,49 @@
       </div>
     </div>
 
+    <!-- Category Icon (PDF Header) -->
+    <div class="space-y-2">
+      <label class="block text-[10px] text-gray-500 font-bold uppercase tracking-wider">Ícone do Cabeçalho (PDF)</label>
+      <p class="text-[9px] text-gray-400 leading-tight">Aparece no canto superior esquerdo de cada página do catálogo, ao lado do título da categoria.</p>
+
+      <!-- Icon Upload Box -->
+      <div @click="triggerIconUpload" class="border-2 border-dashed border-gray-300 p-3 flex flex-col items-center justify-center cursor-pointer hover:bg-gray-50 transition-colors rounded h-24 relative bg-white" title="Clique para fazer upload do ícone">
+        <input type="file" ref="iconFileInput" class="hidden" accept="image/*" @change="handleIconChange" :disabled="uploadingIcon" />
+        <div v-if="uploadingIcon" class="flex flex-col items-center">
+          <span class="material-symbols-outlined animate-spin text-blue-600 mb-1">sync</span>
+          <span class="text-[10px] text-gray-400 font-bold uppercase">Enviando...</span>
+        </div>
+        <template v-else>
+          <img v-if="category.iconUrl" :src="category.iconUrl" class="max-h-12 max-w-full object-contain" @error="handleImageError" />
+          <span v-else class="material-symbols-outlined text-gray-400 text-2xl mb-1">category</span>
+          <span class="text-[10px] text-gray-500 font-semibold uppercase mt-1">{{ category.iconUrl ? 'Trocar ícone' : 'Upload JPG/PNG' }}</span>
+        </template>
+      </div>
+
+      <!-- Icon URL Input -->
+      <div class="space-y-1">
+        <label class="block text-[9px] text-gray-400 font-bold uppercase tracking-wider">Ou link do ícone (URL)</label>
+        <div class="flex items-center gap-2">
+          <input
+            v-model="category.iconUrl"
+            type="text"
+            @input="category.hasChanges = true"
+            placeholder="https://exemplo.com/icone.png"
+            class="flex-1 border border-gray-300 rounded p-2 text-xs focus:ring-1 focus:ring-blue-600 focus:outline-none bg-white text-slate-800"
+          />
+          <button
+            v-if="category.iconUrl"
+            type="button"
+            @click="category.iconUrl = null; category.hasChanges = true"
+            class="text-red-500 hover:text-red-700 text-xs font-semibold shrink-0"
+            title="Remover ícone"
+          >
+            Remover
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- Category Cover Image -->
     <div class="space-y-2">
       <label class="block text-[10px] text-gray-500 font-bold uppercase tracking-wider">Capa da Categoria</label>
@@ -146,11 +189,49 @@ const { getCoverImage, handleImageError } = useAdminCategorySettings()
 
 const fileInput = ref<HTMLInputElement | null>(null)
 const pdfFileInput = ref<HTMLInputElement | null>(null)
+const iconFileInput = ref<HTMLInputElement | null>(null)
 const uploadingImage = ref(false)
 const uploadingPdf = ref(false)
+const uploadingIcon = ref(false)
 
 const triggerImageUpload = () => {
   fileInput.value?.click()
+}
+
+const triggerIconUpload = () => {
+  iconFileInput.value?.click()
+}
+
+const handleIconChange = async (event: Event) => {
+  const target = event.target as HTMLInputElement
+  const file = target.files?.[0]
+  if (!file) return
+
+  uploadingIcon.value = true
+  try {
+    const formData = new FormData()
+    formData.append('file', file)
+
+    const response = await fetch('/api/upload-r2', {
+      method: 'POST',
+      body: formData,
+    })
+
+    if (!response.ok) {
+      const errorData = await response.json()
+      throw new Error(errorData.statusMessage || 'Erro ao fazer upload do ícone')
+    }
+
+    const data = await response.json()
+    props.category.iconUrl = data.url
+    props.category.hasChanges = true
+  } catch (error: any) {
+    console.error('Error uploading category icon to R2:', error)
+    alert(`Erro no upload do ícone: ${error.message || error}`)
+  } finally {
+    uploadingIcon.value = false
+    target.value = ''
+  }
 }
 
 const handleImageChange = async (event: Event) => {

@@ -106,7 +106,7 @@ export async function buildCatalogPdf(opts: any): Promise<any> {
     const color = opts.getBgColor(page[0]?.bgClass, category)
 
     // Page header
-    const headerEndY = drawPageHeader(pdf, category, color, MARGIN_TOP + 4, pageW, settings)
+    const headerEndY = drawPageHeader(pdf, category, color, MARGIN_TOP + 4, pageW, settings, opts.imageCache)
 
     // Content area
     const contentY = headerEndY + 2

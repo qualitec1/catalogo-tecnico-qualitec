@@ -36,6 +36,7 @@ const progressText = ref('')
 const progressPercent = ref(0)
 const coverImageUrl = ref<string | null>(null)
 const coverImageBlob = ref<string | null>(null)
+const categoryIconUrl = ref<string | null>(null)
 
 // ===== Composables =====
 const { getCategoryColor, getCategoryCover, fetchAssets } = useCategoryColors()
@@ -186,21 +187,24 @@ const fetchCoverImage = async (category: string) => {
   if (asset) {
     coverImageUrl.value = asset.cover_image_url
     coverImageBlob.value = asset.cover_image_blob
+    categoryIconUrl.value = asset.icon_url || null
   } else {
     try {
       const { data } = await supabase
         .from('category_assets')
-        .select('cover_image_url, cover_image_blob')
+        .select('cover_image_url, cover_image_blob, icon_url')
         .eq('category', category)
         .single()
       if (data) {
         coverImageUrl.value = data.cover_image_url
         coverImageBlob.value = data.cover_image_blob
+        categoryIconUrl.value = data.icon_url || null
       } else {
-        const fallback = await supabase.from('category_assets').select('cover_image_url, cover_image_blob').eq('category', 'Geral').single()
+        const fallback = await supabase.from('category_assets').select('cover_image_url, cover_image_blob, icon_url').eq('category', 'Geral').single()
         if (fallback.data) {
           coverImageUrl.value = fallback.data.cover_image_url
           coverImageBlob.value = fallback.data.cover_image_blob
+          categoryIconUrl.value = fallback.data.icon_url || null
         }
       }
     } catch (e) {
@@ -235,7 +239,8 @@ watch(() => props.isGenerating, async (newVal) => {
           const pct = 10 + Math.round((loaded / Math.max(total, 1)) * 70)
           progressPercent.value = pct
           progressText.value = `Carregando imagens (${loaded}/${total})...`
-        }
+        },
+        categoryIconUrl.value
       )
 
       progressText.value = 'Construindo catálogo PDF...'
@@ -249,6 +254,7 @@ watch(() => props.isGenerating, async (newVal) => {
         categoryColor: getBgColor(catalogBgClass.value, catalogCategory.value),
         coverImageDataUrl: coverSrc,
         logoDataUrl: QUALITEC_LOGO_URL,
+        categoryIconUrl: categoryIconUrl.value,
         imageCache,
         getPageSettings,
         getBgColor,

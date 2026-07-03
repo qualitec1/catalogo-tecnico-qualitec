@@ -25,6 +25,7 @@ export interface BuildOptions {
   categoryColor: string
   coverImageDataUrl: string | null
   logoDataUrl: string | null
+  categoryIconUrl?: string | null
   imageCache: Map<string, CachedImage>
   getPageSettings: (page: any[]) => any
   getBgColor: (bgClass: string | null | undefined, category?: string) => string
@@ -136,7 +137,8 @@ export function drawPageHeader(
   color: string,
   y: number,
   pageW: number,
-  settings: any
+  settings: any,
+  imageCache?: Map<string, CachedImage>
 ): number {
   const fontSize = parseFontSizePt(settings.title_font_size, 22)
   const offsetY = dimToMm(settings.title_position_y || settings.titlePositionY, 0)
@@ -150,7 +152,16 @@ export function drawPageHeader(
   pdf.setFont(fontName, fontStyle)
   pdf.setFontSize(fontSize)
   
-  const textX = MARGIN_X
+  // Icon: draw category icon to the left of the title if available
+  const iconSize = fontSize * 0.45 + 4  // roughly matches title height
+  let textX = MARGIN_X
+
+  if (imageCache && imageCache.has('__category_icon__')) {
+    const iconY = y + offsetY
+    addImageSafe(pdf, imageCache, '__category_icon__', textX, iconY, iconSize, iconSize)
+    textX = MARGIN_X + iconSize + 2
+  }
+
   const textY = y + offsetY + fontSize * 0.35
   const catUpper = category.toUpperCase()
   

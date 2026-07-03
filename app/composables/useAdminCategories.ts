@@ -24,6 +24,7 @@ export function useAdminCategories(triggerToast: (msg: string, type?: 'success' 
             coverImageBlob: item.cover_image_blob ? hexToBase64(item.cover_image_blob) : null,
             colorHex: item.color_hex || '#376092',
             pdfUrl: item.pdf_url,
+            iconUrl: item.icon_url || null,
             
             pdfSettingsId: settings.id,
             titleFontSize: settings.title_font_size || '36px',
@@ -131,7 +132,8 @@ export function useAdminCategories(triggerToast: (msg: string, type?: 'success' 
         cover_image_url: catAsset.coverImageUrl,
         cover_image_blob: dbBlob,
         color_hex: catAsset.colorHex,
-        pdf_url: catAsset.pdfUrl
+        pdf_url: catAsset.pdfUrl,
+        icon_url: catAsset.iconUrl || null
       }
       const { error: assetError } = await supabase
         .from('category_assets')

@@ -48,13 +48,20 @@ export async function preloadAllImages(
   products: any[],
   coverSrc: string | null,
   logoUrl: string,
-  onProgress?: (loaded: number, total: number) => void
+  onProgress?: (loaded: number, total: number) => void,
+  categoryIconUrl?: string | null
 ): Promise<Map<string, CachedImage>> {
+
   const cache = new Map<string, CachedImage>()
   const tasks: { key: string; url: string | null }[] = []
 
   // Logo
   tasks.push({ key: '__logo__', url: `/api/proxy-image?url=${encodeURIComponent(logoUrl)}` })
+
+  // Category icon (for PDF page header)
+  if (categoryIconUrl && (categoryIconUrl.startsWith('http://') || categoryIconUrl.startsWith('https://'))) {
+    tasks.push({ key: '__category_icon__', url: `/api/proxy-image?url=${encodeURIComponent(categoryIconUrl)}` })
+  }
 
   // Cover image
   if (coverSrc) {
