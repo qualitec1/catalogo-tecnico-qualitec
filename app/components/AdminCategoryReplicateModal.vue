@@ -204,6 +204,7 @@ const replicationGroups = [
       { key: 'cardModelBold', label: 'Negrito no Modelo' },
       { key: 'cardModelItalic', label: 'Itálico no Modelo' },
       { key: 'cardModelUnderline', label: 'Sublinhado no Modelo' },
+      { key: 'cardModelLabelText', label: 'Texto do Rótulo Modelo' },
       { key: 'cardModelLabelFontSize', label: 'Tamanho Fonte Rótulo Modelo' },
       { key: 'cardModelLabelOffsetX', label: 'Deslocamento X do Rótulo Modelo' },
       { key: 'cardModelLabelOffsetY', label: 'Deslocamento Y do Rótulo Modelo' },

@@ -107,10 +107,15 @@ export function drawTextUnderline(
 
 export function parseFontSizePt(val: string | number | undefined, fallbackPt: number): number {
   if (val === undefined || val === null || val === '') return fallbackPt
-  const num = parseFloat(String(val))
+  const str = String(val).trim()
+  const num = parseFloat(str)
   if (isNaN(num)) return fallbackPt
-  // Convert px to pt (1px ≈ 0.75pt)
-  return num * 0.75
+  // If explicitly pixels, convert to pt (1px ≈ 0.75pt)
+  if (str.toLowerCase().endsWith('px')) return num * 0.75
+  // If explicitly pt, use directly
+  if (str.toLowerCase().endsWith('pt')) return num
+  // Plain number: treat as pt directly (most admin inputs store px strings; if no unit assume pt)
+  return num
 }
 
 /** Truncate text to fit within maxWidth (mm) at current font */

@@ -4,7 +4,7 @@
       <span class="text-[10px] font-bold text-blue-600 uppercase tracking-wider">Ajustes Finos do Card (Modelo/Título)</span>
       <button 
         type="button" 
-        @click="$emit('replicate-section', ['cardOffsetX', 'cardOffsetY', 'cardTitleOffsetX', 'cardTitleOffsetY', 'cardTitleFontFamily', 'cardTitleColor', 'cardTitleBold', 'cardTitleItalic', 'cardTitleUnderline', 'cardModelFontSize', 'cardModelOffsetX', 'cardModelOffsetY', 'cardModelFontFamily', 'cardModelColor', 'cardModelBold', 'cardModelItalic', 'cardModelUnderline', 'cardModelLabelFontSize', 'cardModelLabelOffsetX', 'cardModelLabelOffsetY', 'cardModelLabelFontFamily', 'cardModelLabelColor', 'cardModelLabelBold', 'cardModelLabelItalic', 'cardModelLabelUnderline', 'headerOffsetX', 'headerOffsetY', 'headerWidth', 'headerHeight', 'specsOffsetX', 'specsOffsetY', 'specsWidth', 'specsHeight', 'blockGap'])" 
+        @click="$emit('replicate-section', ['cardOffsetX', 'cardOffsetY', 'cardTitleOffsetX', 'cardTitleOffsetY', 'cardTitleFontFamily', 'cardTitleColor', 'cardTitleBold', 'cardTitleItalic', 'cardTitleUnderline', 'cardModelFontSize', 'cardModelOffsetX', 'cardModelOffsetY', 'cardModelFontFamily', 'cardModelColor', 'cardModelBold', 'cardModelItalic', 'cardModelUnderline', 'cardModelLabelText', 'cardModelLabelFontSize', 'cardModelLabelOffsetX', 'cardModelLabelOffsetY', 'cardModelLabelFontFamily', 'cardModelLabelColor', 'cardModelLabelBold', 'cardModelLabelItalic', 'cardModelLabelUnderline', 'headerOffsetX', 'headerOffsetY', 'headerWidth', 'headerHeight', 'specsOffsetX', 'specsOffsetY', 'specsWidth', 'specsHeight', 'blockGap'])" 
         class="text-[9px] font-bold text-blue-600 hover:text-blue-700 bg-transparent border-0 cursor-pointer flex items-center gap-1 uppercase"
       >
         <span class="material-symbols-outlined text-xs">content_copy</span>
@@ -137,6 +137,13 @@
         <span class="inline-flex items-center justify-center bg-blue-100 text-blue-600 rounded-full w-3.5 h-3.5 text-[9px] font-bold cursor-help ml-1 shrink-0" title="Deslocamento vertical apenas do código do modelo (SKU) no card. Valores positivos movem para BAIXO, negativos para CIMA (Ex: 5px, -5px).">!</span>
       </label>
       <input v-model="target.cardModelOffsetY" type="text" @input="category.hasChanges = true" class="w-full border border-gray-300 p-2 rounded bg-white text-xs" :placeholder="density !== 'geral' ? 'Herdado: ' + translateValue('cardModelOffsetY', getGlobalValue(category, 'cardModelOffsetY')) : '0px'" />
+    </div>
+    <div>
+      <label class="flex items-center text-[10px] text-gray-500 font-semibold mb-1 uppercase">
+        Texto do Rótulo Modelo
+        <span class="inline-flex items-center justify-center bg-blue-100 text-blue-600 rounded-full w-3.5 h-3.5 text-[9px] font-bold cursor-help ml-1 shrink-0" title="Altera a palavra 'Modelo' que fica acima do SKU (ex: 'Código', 'SKU', 'Modelo', etc).">!</span>
+      </label>
+      <input v-model="target.cardModelLabelText" type="text" @input="category.hasChanges = true" class="w-full border border-gray-300 p-2 rounded bg-white text-xs" :placeholder="density !== 'geral' ? 'Herdado: ' + translateValue('cardModelLabelText', getGlobalValue(category, 'cardModelLabelText')) : 'Modelo'" />
     </div>
     <div>
       <label class="flex items-center text-[10px] text-gray-500 font-semibold mb-1 uppercase">

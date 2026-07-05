@@ -610,6 +610,7 @@ const handleResetToDefaults = () => {
   props.category.cardModelLabelBold = false
   props.category.cardModelLabelItalic = false
   props.category.cardModelLabelUnderline = false
+  props.category.cardModelLabelText = 'Modelo'
   props.category.tagFontFamily = 'Inter'
   props.category.tagFontSize = '10px'
   props.category.tagBold = false

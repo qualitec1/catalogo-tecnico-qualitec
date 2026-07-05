@@ -415,11 +415,12 @@ export function drawColoredHeader(
   
   const tagFont = getFontName(settings.tag_font_family || settings.tagFontFamily)
   const tagStyle = getFontStyle(settings.tag_bold || settings.tagBold, settings.tag_italic || settings.tagItalic)
-  const tagSize = parseFontSizePt(settings.tag_font_size, 6)
+  const tagSize = parseFontSizePt(settings.tag_font_size || settings.tagFontSize, 6)
 
   const modelLabelFont = getFontName(settings.card_model_label_font_family || settings.cardModelLabelFontFamily || settings.card_model_font_family || settings.cardModelFontFamily)
   const modelLabelStyle = getFontStyle(settings.card_model_label_bold || settings.cardModelLabelBold, settings.card_model_label_italic || settings.cardModelLabelItalic)
   const modelLabelSize = parseFontSizePt(settings.card_model_label_font_size || settings.cardModelLabelFontSize, compact ? 5.33 : 7.33)
+  const modelLabelText: string = settings.card_model_label_text || settings.cardModelLabelText || 'Modelo'
 
   const titleOffX = dimToMm(settings.card_title_offset_x || settings.cardTitleOffsetX, 0)
   const titleOffY = dimToMm(settings.card_title_offset_y || settings.cardTitleOffsetY, 0)
@@ -442,9 +443,9 @@ export function drawColoredHeader(
       pdf.setFont(modelLabelFont, modelLabelStyle)
       pdf.setFontSize(modelLabelSize)
       pdf.setTextColor(modelLabelColorHex)
-      pdf.text('Modelo', x + 3 + modelOffX + modelLabelOffX, y + 4 + modelOffY + modelLabelOffY)
+      pdf.text(modelLabelText, x + 3 + modelOffX + modelLabelOffX, y + 4 + modelOffY + modelLabelOffY)
       if (settings.card_model_label_underline || settings.cardModelLabelUnderline) {
-        drawTextUnderline(pdf, 'Modelo', x + 3 + modelOffX + modelLabelOffX, y + 4 + modelOffY + modelLabelOffY, modelLabelSize, modelLabelColorHex, 'left')
+        drawTextUnderline(pdf, modelLabelText, x + 3 + modelOffX + modelLabelOffX, y + 4 + modelOffY + modelLabelOffY, modelLabelSize, modelLabelColorHex, 'left')
       }
       
       pdf.setFont(modelFont, modelStyle)
@@ -497,9 +498,9 @@ export function drawColoredHeader(
       pdf.setFont(modelLabelFont, modelLabelStyle)
       pdf.setFontSize(modelLabelSize)
       pdf.setTextColor(modelLabelColorHex)
-      pdf.text('Modelo', x + w - 3 + modelOffX + modelLabelOffX, y + 4 + modelOffY + modelLabelOffY, { align: 'right' })
+      pdf.text(modelLabelText, x + w - 3 + modelOffX + modelLabelOffX, y + 4 + modelOffY + modelLabelOffY, { align: 'right' })
       if (settings.card_model_label_underline || settings.cardModelLabelUnderline) {
-        drawTextUnderline(pdf, 'Modelo', x + w - 3 + modelOffX + modelLabelOffX, y + 4 + modelOffY + modelLabelOffY, modelLabelSize, modelLabelColorHex, 'right')
+        drawTextUnderline(pdf, modelLabelText, x + w - 3 + modelOffX + modelLabelOffX, y + 4 + modelOffY + modelLabelOffY, modelLabelSize, modelLabelColorHex, 'right')
       }
       
       pdf.setFont(modelFont, modelStyle)
@@ -528,9 +529,9 @@ export function drawColoredHeader(
       pdf.setFont(modelLabelFont, modelLabelStyle)
       pdf.setFontSize(modelLabelSize)
       pdf.setTextColor(modelLabelColorHex)
-      pdf.text('MODELO', x + w - 3 + modelOffX + modelLabelOffX, y + 5 + modelOffY + modelLabelOffY, { align: 'right' })
+      pdf.text(modelLabelText.toUpperCase(), x + w - 3 + modelOffX + modelLabelOffX, y + 5 + modelOffY + modelLabelOffY, { align: 'right' })
       if (settings.card_model_label_underline || settings.cardModelLabelUnderline) {
-        drawTextUnderline(pdf, 'MODELO', x + w - 3 + modelOffX + modelLabelOffX, y + 5 + modelOffY + modelLabelOffY, modelLabelSize, modelLabelColorHex, 'right')
+        drawTextUnderline(pdf, modelLabelText.toUpperCase(), x + w - 3 + modelOffX + modelLabelOffX, y + 5 + modelOffY + modelLabelOffY, modelLabelSize, modelLabelColorHex, 'right')
       }
 
       pdf.setFont(modelFont, modelStyle)
@@ -544,9 +545,9 @@ export function drawColoredHeader(
       pdf.setFont(modelLabelFont, modelLabelStyle)
       pdf.setFontSize(modelLabelSize)
       pdf.setTextColor(modelLabelColorHex)
-      pdf.text('MODELO', x + 3 + modelOffX + modelLabelOffX, y + 5 + modelOffY + modelLabelOffY)
+      pdf.text(modelLabelText.toUpperCase(), x + 3 + modelOffX + modelLabelOffX, y + 5 + modelOffY + modelLabelOffY)
       if (settings.card_model_label_underline || settings.cardModelLabelUnderline) {
-        drawTextUnderline(pdf, 'MODELO', x + 3 + modelOffX + modelLabelOffX, y + 5 + modelOffY + modelLabelOffY, modelLabelSize, modelLabelColorHex, 'left')
+        drawTextUnderline(pdf, modelLabelText.toUpperCase(), x + 3 + modelOffX + modelLabelOffX, y + 5 + modelOffY + modelLabelOffY, modelLabelSize, modelLabelColorHex, 'left')
       }
 
       pdf.setFont(modelFont, modelStyle)
