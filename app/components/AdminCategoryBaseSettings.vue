@@ -596,6 +596,7 @@ const handleResetToDefaults = () => {
   props.category.cardTitleBold = true
   props.category.cardTitleItalic = false
   props.category.cardTitleUnderline = false
+  props.category.cardTitleFontSize = '14px'
   props.category.cardModelFontSize = '15px'
   props.category.cardModelOffsetX = '0px'
   props.category.cardModelOffsetY = '7px'

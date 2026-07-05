@@ -4,7 +4,7 @@
       <span class="text-[10px] font-bold text-blue-600 uppercase tracking-wider">Ajustes Finos do Card (Modelo/Título)</span>
       <button 
         type="button" 
-        @click="$emit('replicate-section', ['cardOffsetX', 'cardOffsetY', 'cardTitleOffsetX', 'cardTitleOffsetY', 'cardTitleFontFamily', 'cardTitleColor', 'cardTitleBold', 'cardTitleItalic', 'cardTitleUnderline', 'cardModelFontSize', 'cardModelOffsetX', 'cardModelOffsetY', 'cardModelFontFamily', 'cardModelColor', 'cardModelBold', 'cardModelItalic', 'cardModelUnderline', 'cardModelLabelText', 'cardModelLabelFontSize', 'cardModelLabelOffsetX', 'cardModelLabelOffsetY', 'cardModelLabelFontFamily', 'cardModelLabelColor', 'cardModelLabelBold', 'cardModelLabelItalic', 'cardModelLabelUnderline', 'headerOffsetX', 'headerOffsetY', 'headerWidth', 'headerHeight', 'specsOffsetX', 'specsOffsetY', 'specsWidth', 'specsHeight', 'blockGap'])" 
+        @click="$emit('replicate-section', ['cardOffsetX', 'cardOffsetY', 'cardTitleOffsetX', 'cardTitleOffsetY', 'cardTitleFontFamily', 'cardTitleColor', 'cardTitleFontSize', 'cardTitleBold', 'cardTitleItalic', 'cardTitleUnderline', 'cardModelFontSize', 'cardModelOffsetX', 'cardModelOffsetY', 'cardModelFontFamily', 'cardModelColor', 'cardModelBold', 'cardModelItalic', 'cardModelUnderline', 'cardModelLabelText', 'cardModelLabelFontSize', 'cardModelLabelOffsetX', 'cardModelLabelOffsetY', 'cardModelLabelFontFamily', 'cardModelLabelColor', 'cardModelLabelBold', 'cardModelLabelItalic', 'cardModelLabelUnderline', 'headerOffsetX', 'headerOffsetY', 'headerWidth', 'headerHeight', 'specsOffsetX', 'specsOffsetY', 'specsWidth', 'specsHeight', 'blockGap'])" 
         class="text-[9px] font-bold text-blue-600 hover:text-blue-700 bg-transparent border-0 cursor-pointer flex items-center gap-1 uppercase"
       >
         <span class="material-symbols-outlined text-xs">content_copy</span>
@@ -77,6 +77,13 @@
         <input :value="target.cardTitleColor || getGlobalValue(category, 'cardTitleColor') || '#ffffff'" type="color" @input="(e: any) => { target.cardTitleColor = e.target.value; category.hasChanges = true; }" class="w-8 h-8 p-0 border border-gray-300 bg-transparent cursor-pointer rounded shrink-0" />
         <input v-model="target.cardTitleColor" type="text" @input="category.hasChanges = true" class="w-full border border-gray-300 p-2 rounded bg-white text-xs font-mono" :placeholder="density !== 'geral' ? 'Herdado: ' + translateValue('cardTitleColor', getGlobalValue(category, 'cardTitleColor')) : '#ffffff'" />
       </div>
+    </div>
+    <div>
+      <label class="flex items-center text-[10px] text-gray-500 font-semibold mb-1 uppercase">
+        Tamanho Fonte Título
+        <span class="inline-flex items-center justify-center bg-blue-100 text-blue-600 rounded-full w-3.5 h-3.5 text-[9px] font-bold cursor-help ml-1 shrink-0" title="Tamanho do título do produto nos cards do PDF.">!</span>
+      </label>
+      <input v-model="target.cardTitleFontSize" type="text" @input="category.hasChanges = true" class="w-full border border-gray-300 p-2 rounded bg-white text-xs" :placeholder="density !== 'geral' ? 'Herdado: ' + translateValue('cardTitleFontSize', getGlobalValue(category, 'cardTitleFontSize')) : '14px'" />
     </div>
     <div>
       <label class="flex items-center text-[10px] text-gray-500 font-semibold mb-1 uppercase">

@@ -468,14 +468,28 @@ export function drawColoredHeader(
       }
 
       pdf.setFont(titleFont, titleStyle)
-      pdf.setFontSize(5)
+      const tSize1 = parseFontSizePt(settings.card_title_font_size || settings.cardTitleFontSize, 5)
+      pdf.setFontSize(tSize1)
       pdf.setTextColor(titleColorHex)
-      const title = truncateText(pdf, product.title || '', w - 30)
+      
+      // Calculate maximum allowed title width dynamically to prevent unnecessary truncation
+      pdf.setFont(modelFont, modelStyle)
+      pdf.setFontSize(modelSize)
+      const mWidth = pdf.getTextWidth(product.nameCode || '')
+      pdf.setFont(modelLabelFont, modelLabelStyle)
+      pdf.setFontSize(modelLabelSize)
+      const lWidth = pdf.getTextWidth(modelLabelText)
+      const maxTitleW = Math.max(w - Math.max(mWidth, lWidth) - 8, 20)
+      
+      pdf.setFont(titleFont, titleStyle)
+      pdf.setFontSize(tSize1)
+      const title = truncateText(pdf, product.title || '', maxTitleW)
       pdf.text(title, x + w - 3 + titleOffX, y + 8 + titleOffY, { align: 'right' })
       if (settings.card_title_underline || settings.cardTitleUnderline) {
-        drawTextUnderline(pdf, title, x + w - 3 + titleOffX, y + 8 + titleOffY, 5, titleColorHex, 'right')
+        drawTextUnderline(pdf, title, x + w - 3 + titleOffX, y + 8 + titleOffY, tSize1, titleColorHex, 'right')
       }
     } else {
+      const modelSize2 = parseFontSizePt(settings.card_model_font_size || settings.cardModelFontSize, 14)
       if (product.tag) {
         pdf.setFont(tagFont, tagStyle)
         pdf.setFontSize(tagSize)
@@ -487,12 +501,25 @@ export function drawColoredHeader(
       }
 
       pdf.setFont(titleFont, titleStyle)
-      pdf.setFontSize(5)
+      const tSize2 = parseFontSizePt(settings.card_title_font_size || settings.cardTitleFontSize, 5)
+      pdf.setFontSize(tSize2)
       pdf.setTextColor(titleColorHex)
-      const title2 = truncateText(pdf, product.title || '', w - 30)
+      
+      // Calculate maximum allowed title width dynamically to prevent unnecessary truncation
+      pdf.setFont(modelFont, modelStyle)
+      pdf.setFontSize(modelSize2)
+      const mWidth2 = pdf.getTextWidth(product.nameCode || '')
+      pdf.setFont(modelLabelFont, modelLabelStyle)
+      pdf.setFontSize(modelLabelSize)
+      const lWidth2 = pdf.getTextWidth(modelLabelText)
+      const maxTitleW2 = Math.max(w - Math.max(mWidth2, lWidth2) - 8, 20)
+      
+      pdf.setFont(titleFont, titleStyle)
+      pdf.setFontSize(tSize2)
+      const title2 = truncateText(pdf, product.title || '', maxTitleW2)
       pdf.text(title2, x + 3 + titleOffX, y + 8 + titleOffY)
       if (settings.card_title_underline || settings.cardTitleUnderline) {
-        drawTextUnderline(pdf, title2, x + 3 + titleOffX, y + 8 + titleOffY, 5, titleColorHex, 'left')
+        drawTextUnderline(pdf, title2, x + 3 + titleOffX, y + 8 + titleOffY, tSize2, titleColorHex, 'left')
       }
 
       pdf.setFont(modelLabelFont, modelLabelStyle)
@@ -504,7 +531,6 @@ export function drawColoredHeader(
       }
       
       pdf.setFont(modelFont, modelStyle)
-      const modelSize2 = parseFontSizePt(settings.card_model_font_size || settings.cardModelFontSize, 14)
       pdf.setFontSize(modelSize2)
       pdf.setTextColor(modelColorHex)
       pdf.text(product.nameCode || '', x + w - 3 + modelOffX, y + 8.5 + modelOffY, { align: 'right' })
@@ -570,12 +596,13 @@ export function drawColoredHeader(
     }
 
     pdf.setFont(titleFont, titleStyle)
-    pdf.setFontSize(8)
+    const tSize3 = parseFontSizePt(settings.card_title_font_size || settings.cardTitleFontSize, 8)
+    pdf.setFontSize(tSize3)
     pdf.setTextColor(titleColorHex)
     const titleText = truncateText(pdf, product.title || '', w - 8)
     pdf.text(titleText, x + 3 + titleOffX, y + h - 3 + titleOffY)
     if (settings.card_title_underline || settings.cardTitleUnderline) {
-      drawTextUnderline(pdf, titleText, x + 3 + titleOffX, y + h - 3 + titleOffY, 8, titleColorHex, 'left')
+      drawTextUnderline(pdf, titleText, x + 3 + titleOffX, y + h - 3 + titleOffY, tSize3, titleColorHex, 'left')
     }
   }
 }

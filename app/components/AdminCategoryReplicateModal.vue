@@ -194,6 +194,7 @@ const replicationGroups = [
       { key: 'cardTitleOffsetX', label: 'Deslocamento X do Título' },
       { key: 'cardTitleOffsetY', label: 'Deslocamento Y do Título' },
       { key: 'cardTitleFontFamily', label: 'Fonte do Título' },
+      { key: 'cardTitleFontSize', label: 'Tamanho Fonte do Título' },
       { key: 'cardTitleBold', label: 'Negrito no Título' },
       { key: 'cardTitleItalic', label: 'Itálico no Título' },
       { key: 'cardTitleUnderline', label: 'Sublinhado no Título' },
