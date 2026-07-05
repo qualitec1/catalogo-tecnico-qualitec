@@ -96,13 +96,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 
 const props = defineProps<{
   open: boolean
   category: any
   categories: any[]
   saving: boolean
+  initialFields?: string[] | null
+  initialReplicateAllFields?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -114,12 +116,41 @@ const selectedTargets = ref<string[]>([])
 const replicateAllFields = ref(true)
 const selectedFields = ref<string[]>([])
 
+watch(() => props.open, (newVal) => {
+  if (newVal) {
+    if (props.initialFields) {
+      selectedFields.value = [...props.initialFields]
+      replicateAllFields.value = !!props.initialReplicateAllFields
+    } else {
+      selectAll()
+      replicateAllFields.value = true
+    }
+  }
+})
+
 const otherCategories = computed(() => {
   if (!props.category) return []
   return props.categories.filter(c => c.id !== props.category.id)
 })
 
 const replicationGroups = [
+  {
+    name: 'Badge / Ícone Superior',
+    fields: [
+      { key: 'badgeText', label: 'Texto/Frase do Badge' },
+      { key: 'badgeIconUrl', label: 'URL do Ícone do Badge' },
+      { key: 'badgeIconSize', label: 'Tamanho do Ícone' },
+      { key: 'badgeFontFamily', label: 'Fonte da Frase' },
+      { key: 'badgeFontSize', label: 'Tamanho da Fonte' },
+      { key: 'badgeColor', label: 'Cor da Frase' },
+      { key: 'badgePositionX', label: 'Mover Tudo: Offset X' },
+      { key: 'badgePositionY', label: 'Mover Tudo: Offset Y' },
+      { key: 'badgeIconOffsetX', label: 'Mover Ícone: Offset X' },
+      { key: 'badgeIconOffsetY', label: 'Mover Ícone: Offset Y' },
+      { key: 'badgeTextOffsetX', label: 'Mover Frase: Offset X' },
+      { key: 'badgeTextOffsetY', label: 'Mover Frase: Offset Y' }
+    ]
+  },
   {
     name: 'Título da Categoria',
     fields: [
@@ -172,7 +203,17 @@ const replicationGroups = [
       { key: 'cardModelFontFamily', label: 'Fonte do Modelo' },
       { key: 'cardModelBold', label: 'Negrito no Modelo' },
       { key: 'cardModelItalic', label: 'Itálico no Modelo' },
-      { key: 'cardModelUnderline', label: 'Sublinhado no Modelo' }
+      { key: 'cardModelUnderline', label: 'Sublinhado no Modelo' },
+      { key: 'cardModelLabelFontSize', label: 'Tamanho Fonte Rótulo Modelo' },
+      { key: 'cardModelLabelOffsetX', label: 'Deslocamento X do Rótulo Modelo' },
+      { key: 'cardModelLabelOffsetY', label: 'Deslocamento Y do Rótulo Modelo' },
+      { key: 'cardModelLabelFontFamily', label: 'Fonte do Rótulo Modelo' },
+      { key: 'cardModelLabelBold', label: 'Negrito no Rótulo Modelo' },
+      { key: 'cardModelLabelItalic', label: 'Itálico no Rótulo Modelo' },
+      { key: 'cardModelLabelUnderline', label: 'Sublinhado no Rótulo Modelo' },
+      { key: 'cardTitleColor', label: 'Cor do Título Card' },
+      { key: 'cardModelColor', label: 'Cor do Modelo Card' },
+      { key: 'cardModelLabelColor', label: 'Cor do Rótulo Modelo' }
     ]
   },
   {
@@ -191,7 +232,44 @@ const replicationGroups = [
       { key: 'specsPaddingY', label: 'Espaçamento Specs Y' },
       { key: 'specsLineStyle', label: 'Estilo de Linha' },
       { key: 'specsLineColor', label: 'Cor de Linha' },
-      { key: 'specsBgColor', label: 'Fundo do Quadro Specs' }
+      { key: 'specsBgColor', label: 'Fundo do Quadro Specs' },
+      { key: 'specsColor', label: 'Cor Texto Rótulos (Specs)' },
+      { key: 'specsValColor', label: 'Cor Texto Valores (Specs)' }
+    ]
+  },
+  {
+    name: 'Tag de Informação',
+    fields: [
+      { key: 'tagFontFamily', label: 'Fonte da Tag' },
+      { key: 'tagFontSize', label: 'Tamanho Fonte da Tag' },
+      { key: 'tagColor', label: 'Cor do Texto da Tag' },
+      { key: 'tagBold', label: 'Negrito na Tag' },
+      { key: 'tagItalic', label: 'Itálico na Tag' },
+      { key: 'tagUnderline', label: 'Sublinhado na Tag' },
+      { key: 'tagOffsetX', label: 'Deslocamento X da Tag' },
+      { key: 'tagOffsetY', label: 'Deslocamento Y da Tag' }
+    ]
+  },
+  {
+    name: 'Capa do PDF',
+    fields: [
+      { key: 'coverTitleFontFamily', label: 'Fonte do Título da Capa' },
+      { key: 'coverTitleFontSize', label: 'Tamanho Fonte Título Capa' },
+      { key: 'coverTitleBold', label: 'Negrito no Título da Capa' },
+      { key: 'coverTitleItalic', label: 'Itálico no Título da Capa' },
+      { key: 'coverTitleUnderline', label: 'Sublinhado no Título da Capa' },
+      { key: 'coverTitleColor', label: 'Cor do Título da Capa' },
+      { key: 'coverTitleOffsetX', label: 'Deslocamento X do Título' },
+      { key: 'coverTitleOffsetY', label: 'Deslocamento Y do Título' },
+      { key: 'coverSubtitleText', label: 'Texto do Subtítulo da Capa' },
+      { key: 'coverSubtitleFontFamily', label: 'Fonte do Subtítulo' },
+      { key: 'coverSubtitleFontSize', label: 'Tamanho Fonte Subtítulo' },
+      { key: 'coverSubtitleBold', label: 'Negrito no Subtítulo' },
+      { key: 'coverSubtitleItalic', label: 'Itálico no Subtítulo' },
+      { key: 'coverSubtitleUnderline', label: 'Sublinhado no Subtítulo' },
+      { key: 'coverSubtitleColor', label: 'Cor do Subtítulo' },
+      { key: 'coverSubtitleOffsetX', label: 'Deslocamento X do Subtítulo' },
+      { key: 'coverSubtitleOffsetY', label: 'Deslocamento Y do Subtítulo' }
     ]
   },
   {

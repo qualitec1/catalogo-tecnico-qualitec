@@ -11,6 +11,19 @@ import {
 } from './pdfDrawHelpers'
 import type { BuildOptions } from './pdfDrawHelpers'
 
+/** Returns true if the value was explicitly set (non-empty, non-null) */
+function hasDim(val: any): boolean {
+  return val !== undefined && val !== null && val !== ''
+}
+
+/** Parse a dimension for sizing (width/height) with a 1mm minimum */
+function parseSizeDim(val: any, fallback: number): number {
+  if (!hasDim(val)) return fallback
+  const mm = dimToMm(val, fallback)
+  // If result is implausibly small (<1mm), treat as unconfigured → use fallback
+  return mm >= 1 ? mm : fallback
+}
+
 // ========================== Layout: slots=3 (2 per page) ==========================
 
 export function drawLayout3(
@@ -24,45 +37,68 @@ export function drawLayout3(
   settings: any
 ) {
   const spacing = dimToMm(settings.product_spacing || settings.productSpacing, 4)
-  const cardH = products.length === 1 ? contentH : (contentH - spacing) / 2
+  const cardH = (contentH - spacing) / 2
   const offX = dimToMm(settings.product_image_offset_x || settings.productImageOffsetX, 0)
   const offY = dimToMm(settings.product_image_offset_y || settings.productImageOffsetY, 0)
 
   const isImageLeft = (settings.image_position || settings.imagePosition) === 'left' ||
                       (settings.card_layout_order || settings.cardLayoutOrder) === 'image-first'
 
+  // Block positioning / sizing overrides
+  const defaultHeaderH = 18
+  const defaultSpecsW = 110
+
+  const blockGap = dimToMm(settings.block_gap || settings.blockGap, 1.5)
+  const hh = settings.header_height ?? settings.headerHeight
+  const hw = settings.header_width ?? settings.headerWidth
+  const sh = settings.specs_height ?? settings.specsHeight
+  const sw = settings.specs_width ?? settings.specsWidth
+
+  const headerH = parseSizeDim(hh, defaultHeaderH)
+  const headerW = parseSizeDim(hw, defaultSpecsW)
+  const autoSpecsH = cardH - headerH - blockGap
+  const specsH = parseSizeDim(sh, autoSpecsH)
+  const specsW = parseSizeDim(sw, defaultSpecsW)
+
+  const headerOffX = dimToMm(settings.header_offset_x || settings.headerOffsetX, 0)
+  const headerOffY = dimToMm(settings.header_offset_y || settings.headerOffsetY, 0)
+  const specsOffX = dimToMm(settings.specs_offset_x || settings.specsOffsetX, 0)
+  const specsOffY = dimToMm(settings.specs_offset_y || settings.specsOffsetY, 0)
+
   for (let i = 0; i < products.length; i++) {
     const product = products[i]
     const cardY = contentY + i * (cardH + spacing)
     const color = opts.getBgColor(product.bgClass, product.category)
 
-    const specsW = 110
-    const imgW = contentW - specsW - 6
-    const headerH = 18
+    const imgW = contentW - defaultSpecsW - 6
 
     const specsX = isImageLeft ? contentX + imgW + 6 : contentX
-    const imgX = isImageLeft ? contentX : contentX + specsW + 6
+    const imgX = isImageLeft ? contentX : contentX + defaultSpecsW + 6
 
+    // Draw grey specs block background starting below header + gap
     const specsBg = settings.specs_bg_color || settings.specsBgColor || '#f3f4f6'
     setFillRgb(pdf, specsBg)
-    pdf.rect(specsX, cardY, specsW, cardH, 'F')
+    pdf.rect(specsX + specsOffX, cardY + headerH + blockGap + specsOffY, specsW, specsH, 'F')
 
-    drawColoredHeader(pdf, product, specsX, cardY, specsW, headerH, color, settings, false)
+    // Draw blue header block
+    drawColoredHeader(pdf, product, specsX + headerOffX, cardY + headerOffY, headerW, headerH, color, settings, false)
 
+    // Draw specs table inside grey block
     drawSpecsTable(
       pdf,
       product.specs,
-      specsX,
-      cardY + headerH + 1,
+      specsX + specsOffX,
+      cardY + headerH + blockGap + specsOffY + 1,
       specsW,
-      cardH - headerH - 18,
+      specsH - 14,
       settings,
       false,
       product.exImageUrl || product.ex_image_url ? `ex_${product.id}` : null,
       opts.imageCache
     )
 
-    drawDatasheetLink(pdf, product, specsX + specsW - 4, cardY + cardH - 13, true)
+    // Draw datasheet link at the bottom of grey block
+    drawDatasheetLink(pdf, product, specsX + specsOffX + specsW - 4, cardY + headerH + blockGap + specsOffY + specsH - 11, true)
 
     addImageSafe(
       pdf,
@@ -112,6 +148,20 @@ export function drawLayout6(
 
   const isSpecsFirst = (settings.card_layout_order || settings.cardLayoutOrder) === 'specs-first'
 
+  // Block positioning / sizing overrides
+  const defaultHeaderH = 12
+  const hh6 = settings.header_height ?? settings.headerHeight
+  const hw6 = settings.header_width ?? settings.headerWidth
+  const headerH = parseSizeDim(hh6, defaultHeaderH)
+  const headerW = parseSizeDim(hw6, cellW)
+
+  const headerOffX = dimToMm(settings.header_offset_x || settings.headerOffsetX, 0)
+  const headerOffY = dimToMm(settings.header_offset_y || settings.headerOffsetY, 0)
+  const specsOffX = dimToMm(settings.specs_offset_x || settings.specsOffsetX, 0)
+  const specsOffY = dimToMm(settings.specs_offset_y || settings.specsOffsetY, 0)
+
+  const blockGap = dimToMm(settings.block_gap || settings.blockGap, 1.0)
+
   for (let i = 0; i < products.length && i < 6; i++) {
     const product = products[i]
     const col = i % cols
@@ -121,36 +171,44 @@ export function drawLayout6(
     const color = opts.getBgColor(product.bgClass, product.category)
 
     const imgH = cellH * 0.32
-    const headerH = 12
-    const specsH = cellH - imgH - headerH - 2
+    const defaultSpecsH = cellH - imgH - headerH - blockGap - 2
 
-    const imgCellY = isSpecsFirst ? y + headerH + specsH + 1 : y + 1
+    const sh6 = settings.specs_height ?? settings.specsHeight
+    const sw6 = settings.specs_width ?? settings.specsWidth
+    const specsH = parseSizeDim(sh6, defaultSpecsH)
+    const specsW = parseSizeDim(sw6, cellW)
+
+    const imgCellY = isSpecsFirst ? y + headerH + blockGap + specsH + 1 : y + 1
     const headerCellY = isSpecsFirst ? y : y + imgH
-    const specsCellY = isSpecsFirst ? y + headerH : y + imgH + headerH
+    const specsCellY = isSpecsFirst ? y + headerH + blockGap : y + imgH + headerH + blockGap
 
-    drawColoredHeader(pdf, product, x, headerCellY, cellW, headerH, color, settings, true)
+    // Draw blue header block
+    drawColoredHeader(pdf, product, x + headerOffX, headerCellY + headerOffY, headerW, headerH, color, settings, true)
 
+    // Draw grey specs block background
     const specsBg = settings.specs_bg_color || settings.specsBgColor || '#ffffff'
     setFillRgb(pdf, specsBg)
-    pdf.rect(x, specsCellY, cellW, specsH, 'F')
+    pdf.rect(x + specsOffX, specsCellY + specsOffY, specsW, specsH, 'F')
     setDrawRgb(pdf, '#e5e7eb')
     pdf.setLineWidth(0.15)
-    pdf.rect(x, specsCellY, cellW, specsH, 'S')
+    pdf.rect(x + specsOffX, specsCellY + specsOffY, specsW, specsH, 'S')
 
+    // Draw specs table inside grey block
     drawSpecsTable(
       pdf,
       product.specs,
-      x + 1,
-      specsCellY,
-      cellW - 2,
-      specsH - 17,
+      x + 1 + specsOffX,
+      specsCellY + specsOffY,
+      specsW - 2,
+      specsH - 12,
       settings,
       true,
       product.exImageUrl || product.ex_image_url ? `ex_${product.id}` : null,
       opts.imageCache
     )
 
-    drawDatasheetLink(pdf, product, x + cellW - 2, specsCellY + specsH - 12.5, true)
+    // Draw datasheet link at the bottom of grey block
+    drawDatasheetLink(pdf, product, x + specsOffX + specsW - 2, specsCellY + specsOffY + specsH - 11, true)
 
     addImageSafe(
       pdf,
@@ -167,10 +225,14 @@ export function drawLayout6(
   }
 
   if (products.length > 3) {
-    setDrawRgb(pdf, '#9ca3af')
-    pdf.setLineWidth(0.15)
-    const divY = contentY + (contentH / 2)
-    pdf.line(contentX, divY, contentX + contentW, divY)
+    const divColor = settings.divider_line_color || settings.dividerLineColor || '#cbd5e1'
+    setDrawRgb(pdf, divColor)
+    pdf.setLineWidth(0.2)
+    const divY = contentY + cellH + spacing / 2
+    for (let col = 0; col < 3; col++) {
+      const x = contentX + col * (cellW + gapX)
+      pdf.line(x, divY, x + cellW, divY)
+    }
   }
 }
 
@@ -194,31 +256,52 @@ export function drawLayout1(
 
   const imgH = contentH * 0.50
   const cardH = contentH - imgH - 6
-  const headerH = 22
+  const defaultHeaderH = 22
+
+  const blockGap = dimToMm(settings.block_gap || settings.blockGap, 2.0)
+  const hh1 = settings.header_height ?? settings.headerHeight
+  const hw1 = settings.header_width ?? settings.headerWidth
+  const sh1 = settings.specs_height ?? settings.specsHeight
+  const sw1 = settings.specs_width ?? settings.specsWidth
+
+  const headerH = parseSizeDim(hh1, defaultHeaderH)
+  const headerW = parseSizeDim(hw1, contentW)
+  const autoSpecsH = cardH - headerH - blockGap
+  const specsH = parseSizeDim(sh1, autoSpecsH)
+  const specsW = parseSizeDim(sw1, contentW)
 
   const imgY = isSpecsFirst ? contentY + cardH + 4 : contentY + 2
   const cardY = isSpecsFirst ? contentY : contentY + imgH + 4
 
-  drawColoredHeader(pdf, product, contentX, cardY, contentW, headerH, color, settings, false)
+  const headerOffX = dimToMm(settings.header_offset_x || settings.headerOffsetX, 0)
+  const headerOffY = dimToMm(settings.header_offset_y || settings.headerOffsetY, 0)
+  const specsOffX = dimToMm(settings.specs_offset_x || settings.specsOffsetX, 0)
+  const specsOffY = dimToMm(settings.specs_offset_y || settings.specsOffsetY, 0)
 
+  // Draw blue header block
+  drawColoredHeader(pdf, product, contentX + headerOffX, cardY + headerOffY, headerW, headerH, color, settings, false)
+
+  // Draw grey specs block background
   const specsBg = settings.specs_bg_color || settings.specsBgColor || '#f3f4f6'
   setFillRgb(pdf, specsBg)
-  pdf.rect(contentX, cardY + headerH, contentW, cardH - headerH, 'F')
+  pdf.rect(contentX + specsOffX, cardY + headerH + blockGap + specsOffY, specsW, specsH, 'F')
 
+  // Draw specs table inside grey block
   drawSpecsTable(
     pdf,
     product.specs,
-    contentX + 4,
-    cardY + headerH,
-    contentW - 8,
-    cardH - headerH - 18,
+    contentX + 4 + specsOffX,
+    cardY + headerH + blockGap + specsOffY + 1,
+    specsW - 8,
+    specsH - 14,
     settings,
     false,
     product.exImageUrl || product.ex_image_url ? `ex_${product.id}` : null,
     opts.imageCache
   )
 
-  drawDatasheetLink(pdf, product, contentX + contentW - 5, cardY + cardH - 14, true)
+  // Draw datasheet link at the bottom of grey block
+  drawDatasheetLink(pdf, product, contentX + specsOffX + specsW - 5, cardY + headerH + blockGap + specsOffY + specsH - 11, true)
 
   addImageSafe(
     pdf,

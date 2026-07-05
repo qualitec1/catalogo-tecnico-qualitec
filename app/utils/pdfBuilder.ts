@@ -4,6 +4,7 @@
 
 import { drawCoverPage, drawPageHeader, drawPageFooter } from './pdfDrawHelpers'
 import { drawLayout1, drawLayout3, drawLayout6 } from './pdfLayoutDrawers'
+import { getFontName } from './pdfDocUtils'
 
 // Re-export types and functions to preserve API contract
 export type { CachedImage } from './pdfDocUtils'
@@ -20,10 +21,21 @@ async function registerFont(pdf: any, name: string, file: string, fontName: stri
   try {
     const response = await fetch(`/api/font?name=${file}`)
     if (!response.ok) {
-      console.warn(`[pdfBuilder] Failed to fetch font /api/font?name=${file}`)
+      console.warn(`[pdfBuilder] Failed to fetch font /api/font?name=${file} (status ${response.status})`)
       return
     }
     const buffer = await response.arrayBuffer()
+    if (buffer.byteLength < 1000) {
+      console.warn(`[pdfBuilder] Font ${file} is suspiciously small (${buffer.byteLength} bytes), skipping`)
+      return
+    }
+    // Validate TTF magic bytes (00010000 or 'true')
+    const view = new DataView(buffer)
+    const magic = view.getUint32(0)
+    if (magic !== 0x00010000 && magic !== 0x74727565 && magic !== 0x4F54544F) {
+      console.warn(`[pdfBuilder] Font ${file} is not a valid TTF file (magic: ${magic.toString(16)}), skipping`)
+      return
+    }
     let binary = ''
     const bytes = new Uint8Array(buffer)
     const len = bytes.byteLength
@@ -55,40 +67,171 @@ export async function buildCatalogPdf(opts: any): Promise<any> {
     compress: true,
   })
 
-  // Register custom fonts
+  // Register custom fonts dynamically based on what is actually used
   if (typeof window !== 'undefined') {
-    await Promise.all([
-      // Verdana
-      registerFont(pdf, 'Verdana-Regular', 'verdana.ttf', 'Verdana', 'normal'),
-      registerFont(pdf, 'Verdana-Bold', 'verdanab.ttf', 'Verdana', 'bold'),
-      registerFont(pdf, 'Verdana-Italic', 'verdanai.ttf', 'Verdana', 'italic'),
-      registerFont(pdf, 'Verdana-BoldItalic', 'verdanaz.ttf', 'Verdana', 'bolditalic'),
-      // Calibri
-      registerFont(pdf, 'Calibri-Regular', 'calibri.ttf', 'Calibri', 'normal'),
-      registerFont(pdf, 'Calibri-Bold', 'calibrib.ttf', 'Calibri', 'bold'),
-      registerFont(pdf, 'Calibri-Italic', 'calibrii.ttf', 'Calibri', 'italic'),
-      registerFont(pdf, 'Calibri-BoldItalic', 'calibriz.ttf', 'Calibri', 'bolditalic'),
-      // Roboto
-      registerFont(pdf, 'Roboto-Regular', 'roboto.ttf', 'Roboto', 'normal'),
-      registerFont(pdf, 'Roboto-Bold', 'robotob.ttf', 'Roboto', 'bold'),
-      registerFont(pdf, 'Roboto-Italic', 'robotoi.ttf', 'Roboto', 'italic'),
-      registerFont(pdf, 'Roboto-BoldItalic', 'robotoz.ttf', 'Roboto', 'bolditalic'),
-      // Inter
-      registerFont(pdf, 'Inter-Regular', 'inter.ttf', 'Inter', 'normal'),
-      registerFont(pdf, 'Inter-Bold', 'interb.ttf', 'Inter', 'bold'),
-      registerFont(pdf, 'Inter-Italic', 'interi.ttf', 'Inter', 'italic'),
-      registerFont(pdf, 'Inter-BoldItalic', 'interz.ttf', 'Inter', 'bolditalic'),
-      // Outfit
-      registerFont(pdf, 'Outfit-Regular', 'outfit.ttf', 'Outfit', 'normal'),
-      registerFont(pdf, 'Outfit-Bold', 'outfitb.ttf', 'Outfit', 'bold'),
-      registerFont(pdf, 'Outfit-Italic', 'outfiti.ttf', 'Outfit', 'italic'),
-      registerFont(pdf, 'Outfit-BoldItalic', 'outfitz.ttf', 'Outfit', 'bolditalic'),
-      // Hanken Grotesk
-      registerFont(pdf, 'Hanken-Regular', 'hankengrotesk.ttf', 'HankenGrotesk', 'normal'),
-      registerFont(pdf, 'Hanken-Bold', 'hankengroteskb.ttf', 'HankenGrotesk', 'bold'),
-      registerFont(pdf, 'Hanken-Italic', 'hankengroteski.ttf', 'HankenGrotesk', 'italic'),
-      registerFont(pdf, 'Hanken-BoldItalic', 'hankengroteskz.ttf', 'HankenGrotesk', 'bolditalic'),
-    ])
+    const fontsToLoad = new Set<string>()
+
+    const addFamily = (fam: any) => {
+      if (typeof fam === 'string' && fam.trim()) {
+        const norm = getFontName(fam)
+        // Skip built-in jsPDF fonts
+        if (norm && norm !== 'helvetica' && norm !== 'courier' && norm !== 'times') {
+          fontsToLoad.add(norm)
+        }
+      }
+    }
+
+    // 1. Cover settings
+    const coverSettings = opts.getPageSettings([])
+    if (coverSettings) {
+      addFamily(coverSettings.cover_title_font_family)
+      addFamily(coverSettings.coverTitleFontFamily)
+      addFamily(coverSettings.cover_subtitle_font_family)
+      addFamily(coverSettings.coverSubtitleFontFamily)
+    }
+
+    // 2. Pages settings
+    for (const page of opts.pages) {
+      if (page.length === 0) continue
+      const settings = opts.getPageSettings(page)
+      if (settings) {
+        addFamily(settings.title_font_family)
+        addFamily(settings.titleFontFamily)
+        addFamily(settings.card_title_font_family)
+        addFamily(settings.cardTitleFontFamily)
+        addFamily(settings.card_model_font_family)
+        addFamily(settings.cardModelFontFamily)
+        addFamily(settings.card_model_label_font_family)
+        addFamily(settings.cardModelLabelFontFamily)
+        addFamily(settings.tag_font_family)
+        addFamily(settings.tagFontFamily)
+        addFamily(settings.specs_font_family)
+        addFamily(settings.specsFontFamily)
+      }
+    }
+
+    const FONT_REGISTRY: Record<string, { file: string; style: string }[]> = {
+      'Verdana': [
+        { file: 'verdana.ttf', style: 'normal' },
+        { file: 'verdanab.ttf', style: 'bold' },
+        { file: 'verdanai.ttf', style: 'italic' },
+        { file: 'verdanaz.ttf', style: 'bolditalic' }
+      ],
+      'Calibri': [
+        { file: 'calibri.ttf', style: 'normal' },
+        { file: 'calibrib.ttf', style: 'bold' },
+        { file: 'calibrii.ttf', style: 'italic' },
+        { file: 'calibriz.ttf', style: 'bolditalic' }
+      ],
+      'Roboto': [
+        { file: 'roboto.ttf', style: 'normal' },
+        { file: 'robotob.ttf', style: 'bold' },
+        { file: 'robotoi.ttf', style: 'italic' },
+        { file: 'robotoz.ttf', style: 'bolditalic' }
+      ],
+      'HankenGrotesk': [
+        { file: 'hankengrotesk.ttf', style: 'normal' },
+        { file: 'hankengroteskb.ttf', style: 'bold' },
+        { file: 'hankengroteski.ttf', style: 'italic' },
+        { file: 'hankengroteskz.ttf', style: 'bolditalic' }
+      ],
+      'Arial': [
+        { file: 'arial.ttf', style: 'normal' },
+        { file: 'arialbd.ttf', style: 'bold' },
+        { file: 'ariali.ttf', style: 'italic' },
+        { file: 'arialbi.ttf', style: 'bolditalic' }
+      ],
+      'Arial Black': [
+        { file: 'ariblk.ttf', style: 'normal' },
+        { file: 'ariblk.ttf', style: 'bold' },
+        { file: 'ariblk.ttf', style: 'italic' },
+        { file: 'ariblk.ttf', style: 'bolditalic' }
+      ],
+      'Century Gothic': [
+        { file: 'gothic.ttf', style: 'normal' },
+        { file: 'gothicb.ttf', style: 'bold' },
+        { file: 'gothici.ttf', style: 'italic' },
+        { file: 'gothicz.ttf', style: 'bolditalic' }
+      ],
+      'Comic Sans MS': [
+        { file: 'comic.ttf', style: 'normal' },
+        { file: 'comicbd.ttf', style: 'bold' },
+        { file: 'comici.ttf', style: 'italic' },
+        { file: 'comicz.ttf', style: 'bolditalic' }
+      ],
+      'Courier New': [
+        { file: 'cour.ttf', style: 'normal' },
+        { file: 'courbd.ttf', style: 'bold' },
+        { file: 'couri.ttf', style: 'italic' },
+        { file: 'courbi.ttf', style: 'bolditalic' }
+      ],
+      'Georgia': [
+        { file: 'georgia.ttf', style: 'normal' },
+        { file: 'georgiab.ttf', style: 'bold' },
+        { file: 'georgiai.ttf', style: 'italic' },
+        { file: 'georgiaz.ttf', style: 'bolditalic' }
+      ],
+      'Impact': [
+        { file: 'impact.ttf', style: 'normal' },
+        { file: 'impact.ttf', style: 'bold' },
+        { file: 'impact.ttf', style: 'italic' },
+        { file: 'impact.ttf', style: 'bolditalic' }
+      ],
+      'Segoe UI': [
+        { file: 'segoeui.ttf', style: 'normal' },
+        { file: 'segoeuib.ttf', style: 'bold' },
+        { file: 'segoeuii.ttf', style: 'italic' },
+        { file: 'segoeuiz.ttf', style: 'bolditalic' }
+      ],
+      'Tahoma': [
+        { file: 'tahoma.ttf', style: 'normal' },
+        { file: 'tahomabd.ttf', style: 'bold' },
+        { file: 'tahoma.ttf', style: 'italic' },
+        { file: 'tahomabd.ttf', style: 'bolditalic' }
+      ],
+      'Times New Roman': [
+        { file: 'times.ttf', style: 'normal' },
+        { file: 'timesbd.ttf', style: 'bold' },
+        { file: 'timesi.ttf', style: 'italic' },
+        { file: 'timesbi.ttf', style: 'bolditalic' }
+      ],
+      'Trebuchet MS': [
+        { file: 'trebuc.ttf', style: 'normal' },
+        { file: 'trebucbd.ttf', style: 'bold' },
+        { file: 'trebucit.ttf', style: 'italic' },
+        { file: 'trebucbi.ttf', style: 'bolditalic' }
+      ],
+      'Montserrat': [
+        { file: 'montserrat.ttf', style: 'normal' },
+        { file: 'montserratb.ttf', style: 'bold' },
+        { file: 'montserrati.ttf', style: 'italic' },
+        { file: 'montserratz.ttf', style: 'bolditalic' }
+      ],
+      'Montserrat Extra Bold': [
+        { file: 'montserrat-extrabold.ttf', style: 'normal' },
+        { file: 'montserrat-extrabold.ttf', style: 'bold' },
+        { file: 'montserrat-extrabold.ttf', style: 'italic' },
+        { file: 'montserrat-extrabold.ttf', style: 'bolditalic' }
+      ],
+      'Source Sans Pro': [
+        { file: 'sourcesans.ttf', style: 'normal' },
+        { file: 'sourcesansb.ttf', style: 'bold' },
+        { file: 'sourcesansi.ttf', style: 'italic' },
+        { file: 'sourcesansz.ttf', style: 'bolditalic' }
+      ]
+    }
+
+    const promises: Promise<any>[] = []
+    for (const fontName of fontsToLoad) {
+      const registrations = FONT_REGISTRY[fontName]
+      if (registrations) {
+        for (const reg of registrations) {
+          promises.push(registerFont(pdf, `${fontName}-${reg.style}`, reg.file, fontName, reg.style))
+        }
+      }
+    }
+
+    await Promise.all(promises)
   }
 
   // 1. Draw cover page
@@ -105,12 +248,17 @@ export async function buildCatalogPdf(opts: any): Promise<any> {
     const category = page[0]?.category || opts.categoryName
     const color = opts.getBgColor(page[0]?.bgClass, category)
 
+    const catUpper = category.toUpperCase().trim()
+    const catAsset = opts.categoryAssets?.[catUpper] || opts.categoryAssets?.['GERAL']
+    const pageBadgeText = catAsset?.badge_text !== undefined ? catAsset.badge_text : opts.badgeText
+    const pageBadgeIconUrl = catAsset?.badge_icon_url !== undefined ? catAsset.badge_icon_url : opts.badgeIconUrl
+
     // Page header
-    const headerEndY = drawPageHeader(pdf, category, color, MARGIN_TOP + 4, pageW, settings, opts.imageCache)
+    const headerEndY = drawPageHeader(pdf, category, color, MARGIN_TOP + 4, pageW, settings, opts.imageCache, pageBadgeText, pageBadgeIconUrl)
 
     // Content area
     const contentY = headerEndY + 2
-    const footerH = 10
+    const footerH = 2 // footer drawing disabled – keep a small bottom margin
     const contentH = pageH - contentY - footerH
 
     // Determine which layout to use based on the dominant slot type

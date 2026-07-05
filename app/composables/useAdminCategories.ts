@@ -25,11 +25,23 @@ export function useAdminCategories(triggerToast: (msg: string, type?: 'success' 
             colorHex: item.color_hex || '#376092',
             pdfUrl: item.pdf_url,
             iconUrl: item.icon_url || null,
+            badgeText: item.badge_text || null,
+            badgeIconUrl: item.badge_icon_url || null,
             
             pdfSettingsId: settings.id,
             titleFontSize: settings.title_font_size || '36px',
             titlePositionY: settings.title_position_y || '0px',
             titleColor: settings.title_color || '',
+            badgeIconSize: settings.badge_icon_size || '4.5mm',
+            badgeFontFamily: settings.badge_font_family || 'Inter',
+            badgeFontSize: settings.badge_font_size || '8pt',
+            badgeColor: settings.badge_color || '#334155',
+            badgePositionX: settings.badge_position_x || '0px',
+            badgePositionY: settings.badge_position_y || '0px',
+            badgeIconOffsetX: settings.badge_icon_offset_x || '0px',
+            badgeIconOffsetY: settings.badge_icon_offset_y || '0px',
+            badgeTextOffsetX: settings.badge_text_offset_x || '0px',
+            badgeTextOffsetY: settings.badge_text_offset_y || '0px',
             imagePosition: settings.image_position || 'right',
             cardLayoutOrder: settings.card_layout_order || 'specs-first',
             fontSizeSpecs: settings.font_size_specs || '10px',
@@ -44,6 +56,9 @@ export function useAdminCategories(triggerToast: (msg: string, type?: 'success' 
             cardModelFontSize: settings.card_model_font_size || '24px',
             cardModelOffsetX: settings.card_model_offset_x || '0px',
             cardModelOffsetY: settings.card_model_offset_y || '0px',
+            cardModelLabelFontSize: settings.card_model_label_font_size || '8px',
+            cardModelLabelOffsetX: settings.card_model_label_offset_x || '0px',
+            cardModelLabelOffsetY: settings.card_model_label_offset_y || '0px',
             titleFontFamily: settings.title_font_family || 'Inter',
             cardTitleFontFamily: settings.card_title_font_family || 'Inter',
             cardModelFontFamily: settings.card_model_font_family || 'Inter',
@@ -68,6 +83,10 @@ export function useAdminCategories(triggerToast: (msg: string, type?: 'success' 
             cardModelBold: !!settings.card_model_bold,
             cardModelItalic: !!settings.card_model_italic,
             cardModelUnderline: !!settings.card_model_underline,
+            cardModelLabelFontFamily: settings.card_model_label_font_family || 'Inter',
+            cardModelLabelBold: !!settings.card_model_label_bold,
+            cardModelLabelItalic: !!settings.card_model_label_italic,
+            cardModelLabelUnderline: !!settings.card_model_label_underline,
             specsBold: !!settings.specs_bold,
             specsItalic: !!settings.specs_italic,
             specsUnderline: !!settings.specs_underline,
@@ -86,6 +105,29 @@ export function useAdminCategories(triggerToast: (msg: string, type?: 'success' 
             pdfImageScale: settings.pdf_image_scale !== undefined && settings.pdf_image_scale !== null ? Number(settings.pdf_image_scale) : 1.0,
             pdfImageScaleX: settings.pdf_image_scale_x !== undefined && settings.pdf_image_scale_x !== null ? Number(settings.pdf_image_scale_x) : 1.0,
             pdfImageScaleY: settings.pdf_image_scale_y !== undefined && settings.pdf_image_scale_y !== null ? Number(settings.pdf_image_scale_y) : 1.0,
+            cardTitleColor: settings.card_title_color || '#ffffff',
+            cardModelColor: settings.card_model_color || '#ffffff',
+            cardModelLabelColor: settings.card_model_label_color || '#ffffff',
+            tagColor: settings.tag_color || '#ffffff',
+            specsColor: settings.specs_color || '#374151',
+            specsValColor: settings.specs_val_color || '#000000',
+            coverTitleFontFamily: settings.cover_title_font_family || 'Helvetica',
+            coverTitleFontSize: settings.cover_title_font_size || '20px',
+            coverTitleBold: settings.cover_title_bold !== null ? !!settings.cover_title_bold : true,
+            coverTitleItalic: !!settings.cover_title_italic,
+            coverTitleUnderline: !!settings.cover_title_underline,
+            coverTitleColor: settings.cover_title_color || '#ffffff',
+            coverTitleOffsetX: settings.cover_title_offset_x || '0px',
+            coverTitleOffsetY: settings.cover_title_offset_y || '0px',
+            coverSubtitleText: settings.cover_subtitle_text || 'CATÁLOGO DE PRODUTOS',
+            coverSubtitleFontFamily: settings.cover_subtitle_font_family || 'Helvetica',
+            coverSubtitleFontSize: settings.cover_subtitle_font_size || '8px',
+            coverSubtitleBold: settings.cover_subtitle_bold !== null ? !!settings.cover_subtitle_bold : false,
+            coverSubtitleItalic: !!settings.cover_subtitle_italic,
+            coverSubtitleUnderline: !!settings.cover_subtitle_underline,
+            coverSubtitleColor: settings.cover_subtitle_color || '#ffffff',
+            coverSubtitleOffsetX: settings.cover_subtitle_offset_x || '0px',
+            coverSubtitleOffsetY: settings.cover_subtitle_offset_y || '0px',
             landscapeSettings: (() => {
               let ls = settings.landscape_settings
               if (typeof ls === 'string') { try { ls = JSON.parse(ls) } catch { ls = null } }
@@ -133,7 +175,9 @@ export function useAdminCategories(triggerToast: (msg: string, type?: 'success' 
         cover_image_blob: dbBlob,
         color_hex: catAsset.colorHex,
         pdf_url: catAsset.pdfUrl,
-        icon_url: catAsset.iconUrl || null
+        icon_url: catAsset.iconUrl || null,
+        badge_text: catAsset.badgeText || null,
+        badge_icon_url: catAsset.badgeIconUrl || null
       }
       const { error: assetError } = await supabase
         .from('category_assets')
@@ -156,6 +200,16 @@ export function useAdminCategories(triggerToast: (msg: string, type?: 'success' 
         title_font_size: catAsset.titleFontSize,
         title_position_y: catAsset.titlePositionY,
         title_color: catAsset.titleColor || null,
+        badge_icon_size: catAsset.badgeIconSize || '4.5mm',
+        badge_font_family: catAsset.badgeFontFamily || 'Inter',
+        badge_font_size: catAsset.badgeFontSize || '8pt',
+        badge_color: catAsset.badgeColor || '#334155',
+        badge_position_x: catAsset.badgePositionX || '0px',
+        badge_position_y: catAsset.badgePositionY || '0px',
+        badge_icon_offset_x: catAsset.badgeIconOffsetX || '0px',
+        badge_icon_offset_y: catAsset.badgeIconOffsetY || '0px',
+        badge_text_offset_x: catAsset.badgeTextOffsetX || '0px',
+        badge_text_offset_y: catAsset.badgeTextOffsetY || '0px',
         image_position: catAsset.imagePosition,
         card_layout_order: catAsset.cardLayoutOrder,
         font_size_specs: catAsset.fontSizeSpecs,
@@ -170,9 +224,13 @@ export function useAdminCategories(triggerToast: (msg: string, type?: 'success' 
         card_model_font_size: catAsset.cardModelFontSize,
         card_model_offset_x: catAsset.cardModelOffsetX,
         card_model_offset_y: catAsset.cardModelOffsetY,
+        card_model_label_font_size: catAsset.cardModelLabelFontSize,
+        card_model_label_offset_x: catAsset.cardModelLabelOffsetX,
+        card_model_label_offset_y: catAsset.cardModelLabelOffsetY,
         title_font_family: catAsset.titleFontFamily,
         card_title_font_family: catAsset.cardTitleFontFamily,
         card_model_font_family: catAsset.cardModelFontFamily,
+        card_model_label_font_family: catAsset.cardModelLabelFontFamily,
         specs_font_family: catAsset.specsFontFamily,
         logo_width: catAsset.logoWidth,
         logo_height: catAsset.logoHeight,
@@ -194,6 +252,9 @@ export function useAdminCategories(triggerToast: (msg: string, type?: 'success' 
         card_model_bold: catAsset.cardModelBold,
         card_model_italic: catAsset.cardModelItalic,
         card_model_underline: catAsset.cardModelUnderline,
+        card_model_label_bold: catAsset.cardModelLabelBold,
+        card_model_label_italic: catAsset.cardModelLabelItalic,
+        card_model_label_underline: catAsset.cardModelLabelUnderline,
         specs_bold: catAsset.specsBold,
         specs_italic: catAsset.specsItalic,
         specs_underline: catAsset.specsUnderline,
@@ -208,6 +269,29 @@ export function useAdminCategories(triggerToast: (msg: string, type?: 'success' 
         tag_underline: catAsset.tagUnderline,
         tag_offset_x: catAsset.tagOffsetX,
         tag_offset_y: catAsset.tagOffsetY,
+        card_title_color: catAsset.cardTitleColor,
+        card_model_color: catAsset.cardModelColor,
+        card_model_label_color: catAsset.cardModelLabelColor,
+        tag_color: catAsset.tagColor,
+        specs_color: catAsset.specsColor,
+        specs_val_color: catAsset.specsValColor,
+        cover_title_font_family: catAsset.coverTitleFontFamily,
+        cover_title_font_size: catAsset.coverTitleFontSize,
+        cover_title_bold: catAsset.coverTitleBold,
+        cover_title_italic: catAsset.coverTitleItalic,
+        cover_title_underline: catAsset.coverTitleUnderline,
+        cover_title_color: catAsset.coverTitleColor,
+        cover_title_offset_x: catAsset.coverTitleOffsetX,
+        cover_title_offset_y: catAsset.coverTitleOffsetY,
+        cover_subtitle_text: catAsset.coverSubtitleText,
+        cover_subtitle_font_family: catAsset.coverSubtitleFontFamily,
+        cover_subtitle_font_size: catAsset.coverSubtitleFontSize,
+        cover_subtitle_bold: catAsset.coverSubtitleBold,
+        cover_subtitle_italic: catAsset.coverSubtitleItalic,
+        cover_subtitle_underline: catAsset.coverSubtitleUnderline,
+        cover_subtitle_color: catAsset.coverSubtitleColor,
+        cover_subtitle_offset_x: catAsset.coverSubtitleOffsetX,
+        cover_subtitle_offset_y: catAsset.coverSubtitleOffsetY,
         orientation: catAsset.orientation || 'portrait',
         pdf_image_scale: catAsset.pdfImageScale !== undefined && catAsset.pdfImageScale !== null ? Number(catAsset.pdfImageScale) : 1.0,
         pdf_image_scale_x: catAsset.pdfImageScaleX !== undefined && catAsset.pdfImageScaleX !== null ? Number(catAsset.pdfImageScaleX) : 1.0,
@@ -260,57 +344,136 @@ export function useAdminCategories(triggerToast: (msg: string, type?: 'success' 
       }
       const { error } = await supabase.from('category_assets').insert([payload])
       if (error) throw error
-      
+
       await supabase.from('pdf_settings').insert([{
         category: catName,
-        title_font_size: '36px',
-        title_position_y: '0px',
-        title_color: null,
+        title_font_size: '18px',
+        title_position_y: '-0px',
+        title_color: '#1B388F',
         image_position: 'right',
-        card_layout_order: 'specs-first',
-        font_size_specs: '10px',
+        card_layout_order: 'image-first',
+        font_size_specs: '8px',
         divider_line_color: '#cbd5e1',
-        product_spacing: '24px',
+        product_spacing: '25px',
         product_image_offset_y: '0px',
         product_image_offset_x: '0px',
+        pdf_image_scale: 1.0,
+        pdf_image_scale_x: 1.0,
+        pdf_image_scale_y: 1.0,
         card_offset_x: '0px',
         card_offset_y: '0px',
-        card_title_offset_x: '0px',
-        card_title_offset_y: '0px',
-        card_model_font_size: '24px',
+        card_title_offset_x: '-7px',
+        card_title_offset_y: '7px',
+        card_model_font_size: '15px',
         card_model_offset_x: '0px',
-        card_model_offset_y: '0px',
-        title_bold: false,
+        card_model_offset_y: '7px',
+        card_model_label_font_size: '8px',
+        card_model_label_offset_x: '0px',
+        card_model_label_offset_y: '0px',
+        card_model_label_font_family: 'Inter',
+        title_bold: true,
         title_italic: false,
         title_underline: false,
-        card_title_bold: false,
+        card_title_bold: true,
         card_title_italic: false,
         card_title_underline: false,
-        card_model_bold: false,
+        card_model_bold: true,
         card_model_italic: false,
         card_model_underline: false,
+        card_model_label_bold: false,
+        card_model_label_italic: false,
+        card_model_label_underline: false,
         specs_bold: false,
         specs_italic: false,
         specs_underline: false,
         specs_val_bold: false,
         specs_val_italic: false,
         specs_val_underline: false,
+        card_title_color: '#ffffff',
+        card_model_color: '#ffffff',
+        card_model_label_color: '#ffffff',
+        tag_color: '#ffffff',
+        specs_color: '#374151',
+        specs_val_color: '#000000',
+        cover_title_font_family: 'Helvetica',
+        cover_title_font_size: '20px',
+        cover_title_bold: true,
+        cover_title_italic: false,
+        cover_title_underline: false,
+        cover_title_color: '#ffffff',
+        cover_title_offset_x: '0px',
+        cover_title_offset_y: '0px',
+        cover_subtitle_text: 'CATÁLOGO DE PRODUTOS',
+        cover_subtitle_font_family: 'Helvetica',
+        cover_subtitle_font_size: '8px',
+        cover_subtitle_bold: false,
+        cover_subtitle_italic: false,
+        cover_subtitle_underline: false,
+        cover_subtitle_color: '#ffffff',
+        cover_subtitle_offset_x: '0px',
+        cover_subtitle_offset_y: '0px',
         card_header_layout: 'model-left',
         tag_font_family: 'Inter',
         tag_font_size: '10px',
-        tag_bold: true,
+        tag_bold: false,
         tag_italic: false,
         tag_underline: false,
         tag_offset_x: '0px',
         tag_offset_y: '0px',
         orientation: 'portrait',
-        pdf_image_scale: 1.0,
-        pdf_image_scale_x: 1.0,
-        pdf_image_scale_y: 1.0,
-        specs_bg_color: '#f3f4f6',
+        specs_bg_color: '#F1F1F1',
+        logo_width: '380px',
+        logo_height: '150px',
+        logo_position_x: '-80px',
+        logo_position_y: '60px',
+        layout_settings: {
+          "1": {
+            "productImageOffsetY": "12"
+          },
+          "3": {
+            "specsBold": false,
+            "titleBold": true,
+            "cardOffsetX": "0px",
+            "cardOffsetY": "0px",
+            "specsItalic": false,
+            "titleItalic": true,
+            "cardModelBold": false,
+            "cardTitleBold": false,
+            "fontSizeSpecs": "8px",
+            "specsPaddingY": "4px",
+            "titleFontSize": "30px",
+            "productSpacing": "24px",
+            "specsLineColor": "#cbd5e1",
+            "specsLineStyle": "dashed",
+            "specsUnderline": false,
+            "titlePositionY": "13px",
+            "titleUnderline": true,
+            "cardLayoutOrder": "image-first",
+            "cardModelItalic": false,
+            "cardTitleItalic": false,
+            "specsFontFamily": "Inter",
+            "specsLabelWidth": "45%",
+            "specsValueWidth": "55%",
+            "titleFontFamily": "Verdana",
+            "cardModelOffsetX": "0px",
+            "cardModelOffsetY": "0px",
+            "cardTitleOffsetX": "0px",
+            "cardTitleOffsetY": "0px",
+            "dividerLineColor": "#cbd5e1",
+            "cardModelFontSize": "24px",
+            "cardModelUnderline": false,
+            "cardTitleUnderline": false,
+            "cardModelFontFamily": "Inter",
+            "cardTitleFontFamily": "Inter",
+            "productImageOffsetY": "0px"
+          },
+          "6": {
+            "cardTitleFontFamily": "Verdana"
+          }
+        },
         landscape_settings: null
       }])
-      
+
       triggerToast('Nova categoria criada com sucesso!', 'success')
       const { fetchAssets } = useCategoryColors()
       const { fetchPdfSettings } = usePdfSettings()
@@ -420,23 +583,57 @@ export function useAdminCategories(triggerToast: (msg: string, type?: 'success' 
         pdfImageScaleX: 'pdf_image_scale_x',
         pdfImageScaleY: 'pdf_image_scale_y',
         landscapeSettings: 'landscape_settings',
-        layoutSettings: 'layout_settings'
+        layoutSettings: 'layout_settings',
+        badgeIconSize: 'badge_icon_size',
+        badgeFontFamily: 'badge_font_family',
+        badgeFontSize: 'badge_font_size',
+        badgeColor: 'badge_color',
+        badgePositionX: 'badge_position_x',
+        badgePositionY: 'badge_position_y',
+        badgeIconOffsetX: 'badge_icon_offset_x',
+        badgeIconOffsetY: 'badge_icon_offset_y',
+        badgeTextOffsetX: 'badge_text_offset_x',
+        badgeTextOffsetY: 'badge_text_offset_y'
       }
 
-      const fieldsToCopy = fields && Array.isArray(fields) ? fields : Object.keys(fieldToDbCol)
+      const fieldsToCopy = fields && Array.isArray(fields) ? fields : [...Object.keys(fieldToDbCol), 'badgeText', 'badgeIconUrl']
 
       for (const targetId of targetIds) {
         const targetCat = categoryAssetsList.value.find(c => c.id === targetId)
         if (!targetCat) continue
 
+        // 1. Copy category_assets fields
+        const catAssetPayload: Record<string, any> = {}
+        let hasCatAssetChanges = false
+
+        if (fieldsToCopy.includes('badgeText')) {
+          catAssetPayload['badge_text'] = source.badgeText
+          hasCatAssetChanges = true
+        }
+        if (fieldsToCopy.includes('badgeIconUrl')) {
+          catAssetPayload['badge_icon_url'] = source.badgeIconUrl
+          hasCatAssetChanges = true
+        }
+
+        if (hasCatAssetChanges) {
+          const { error: assetError } = await supabase
+            .from('category_assets')
+            .update(catAssetPayload)
+            .eq('id', targetCat.id)
+          if (assetError) throw assetError
+        }
+
+        // 2. Copy pdf_settings fields
         const payload: Record<string, any> = {
           category: targetCat.category
         }
 
+        let hasPdfSettingsChanges = false
         for (const field of fieldsToCopy) {
           const dbCol = fieldToDbCol[field]
           if (!dbCol) continue
 
+          hasPdfSettingsChanges = true
           if (field === 'landscapeSettings') {
             payload[dbCol] = source.landscapeSettings && Object.keys(source.landscapeSettings).length > 0
               ? source.landscapeSettings
@@ -448,17 +645,19 @@ export function useAdminCategories(triggerToast: (msg: string, type?: 'success' 
           }
         }
 
-        if (targetCat.pdfSettingsId) {
-          const { error: settingsError } = await supabase
-            .from('pdf_settings')
-            .update(payload)
-            .eq('id', targetCat.pdfSettingsId)
-          if (settingsError) throw settingsError
-        } else {
-          const { error: settingsError } = await supabase
-            .from('pdf_settings')
-            .insert([payload])
-          if (settingsError) throw settingsError
+        if (hasPdfSettingsChanges) {
+          if (targetCat.pdfSettingsId) {
+            const { error: settingsError } = await supabase
+              .from('pdf_settings')
+              .update(payload)
+              .eq('id', targetCat.pdfSettingsId)
+            if (settingsError) throw settingsError
+          } else {
+            const { error: settingsError } = await supabase
+              .from('pdf_settings')
+              .insert([payload])
+            if (settingsError) throw settingsError
+          }
         }
       }
 

@@ -1,9 +1,18 @@
 <template>
   <div class="pt-4 border-t border-gray-200 mt-4">
-    <span class="block text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-3">Estilos e Decorações do Texto</span>
+    <div class="flex justify-between items-center mb-3 border-b border-gray-200 pb-1">
+      <span class="text-[10px] text-blue-600 font-bold uppercase tracking-wider">Estilos e Decorações do Texto</span>
+      <button 
+        type="button" 
+        @click="$emit('replicate-section', ['titleBold', 'titleItalic', 'titleUnderline', 'cardTitleBold', 'cardTitleItalic', 'cardTitleUnderline', 'cardModelBold', 'cardModelItalic', 'cardModelUnderline', 'cardModelLabelBold', 'cardModelLabelItalic', 'cardModelLabelUnderline', 'specsBold', 'specsItalic', 'specsUnderline', 'specsValBold', 'specsValItalic', 'specsValUnderline', 'tagFontFamily', 'tagFontSize', 'tagColor', 'tagBold', 'tagItalic', 'tagUnderline', 'tagOffsetX', 'tagOffsetY', 'coverTitleBold', 'coverTitleItalic', 'coverTitleUnderline', 'coverSubtitleBold', 'coverSubtitleItalic', 'coverSubtitleUnderline'])" 
+        class="text-[9px] font-bold text-blue-600 hover:text-blue-700 bg-transparent border-0 cursor-pointer flex items-center gap-1 uppercase"
+      >
+        <span class="material-symbols-outlined text-xs">content_copy</span>
+        Replicar
+      </button>
+    </div>
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs">
-      
-      <!-- Título Categoria -->
+      <!-- Título Categoria (Capa e Cabeçalho) -->
       <div class="space-y-2">
         <span class="block font-bold text-slate-700 uppercase tracking-wider text-[10px]">Título Categoria</span>
         <div class="space-y-1.5">
@@ -50,6 +59,114 @@
             <span class="text-gray-500 font-semibold text-[9px] uppercase">Sublinhado</span>
             <select v-model="target.titleUnderline" @change="category.hasChanges = true" class="border border-gray-300 p-0.5 rounded bg-white text-[10px] w-full">
               <option value="">Herdado ({{ getGlobalValue(category, 'titleUnderline') ? 'Sim' : 'Não' }})</option>
+              <option :value="true">Sim</option>
+              <option :value="false">Não</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Título da Capa -->
+      <div class="space-y-2">
+        <span class="block font-bold text-slate-700 uppercase tracking-wider text-[10px]">Título da Capa</span>
+        <div class="space-y-1.5">
+          <!-- Bold -->
+          <div v-if="density === 'geral'">
+            <label class="flex items-center space-x-1.5 cursor-pointer">
+              <input type="checkbox" v-model="target.coverTitleBold" @change="category.hasChanges = true" class="w-4 h-4 text-blue-600 rounded border-gray-300" />
+              <span class="text-gray-650 font-medium">Negrito</span>
+            </label>
+          </div>
+          <div v-else class="flex flex-col space-y-0.5">
+            <span class="text-gray-500 font-semibold text-[9px] uppercase">Negrito</span>
+            <select v-model="target.coverTitleBold" @change="category.hasChanges = true" class="border border-gray-300 p-0.5 rounded bg-white text-[10px] w-full">
+              <option value="">Herdado ({{ getGlobalValue(category, 'coverTitleBold') ? 'Sim' : 'Não' }})</option>
+              <option :value="true">Sim</option>
+              <option :value="false">Não</option>
+            </select>
+          </div>
+
+          <!-- Italic -->
+          <div v-if="density === 'geral'">
+            <label class="flex items-center space-x-1.5 cursor-pointer">
+              <input type="checkbox" v-model="target.coverTitleItalic" @change="category.hasChanges = true" class="w-4 h-4 text-blue-600 rounded border-gray-300" />
+              <span class="text-gray-650 font-medium">Itálico</span>
+            </label>
+          </div>
+          <div v-else class="flex flex-col space-y-0.5">
+            <span class="text-gray-500 font-semibold text-[9px] uppercase">Itálico</span>
+            <select v-model="target.coverTitleItalic" @change="category.hasChanges = true" class="border border-gray-300 p-0.5 rounded bg-white text-[10px] w-full">
+              <option value="">Herdado ({{ getGlobalValue(category, 'coverTitleItalic') ? 'Sim' : 'Não' }})</option>
+              <option :value="true">Sim</option>
+              <option :value="false">Não</option>
+            </select>
+          </div>
+
+          <!-- Underline -->
+          <div v-if="density === 'geral'">
+            <label class="flex items-center space-x-1.5 cursor-pointer">
+              <input type="checkbox" v-model="target.coverTitleUnderline" @change="category.hasChanges = true" class="w-4 h-4 text-blue-600 rounded border-gray-300" />
+              <span class="text-gray-650 font-medium">Sublinhado</span>
+            </label>
+          </div>
+          <div v-else class="flex flex-col space-y-0.5">
+            <span class="text-gray-500 font-semibold text-[9px] uppercase">Sublinhado</span>
+            <select v-model="target.coverTitleUnderline" @change="category.hasChanges = true" class="border border-gray-300 p-0.5 rounded bg-white text-[10px] w-full">
+              <option value="">Herdado ({{ getGlobalValue(category, 'coverTitleUnderline') ? 'Sim' : 'Não' }})</option>
+              <option :value="true">Sim</option>
+              <option :value="false">Não</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Subtítulo da Capa -->
+      <div class="space-y-2">
+        <span class="block font-bold text-slate-700 uppercase tracking-wider text-[10px]">Subtítulo da Capa</span>
+        <div class="space-y-1.5">
+          <!-- Bold -->
+          <div v-if="density === 'geral'">
+            <label class="flex items-center space-x-1.5 cursor-pointer">
+              <input type="checkbox" v-model="target.coverSubtitleBold" @change="category.hasChanges = true" class="w-4 h-4 text-blue-600 rounded border-gray-300" />
+              <span class="text-gray-650 font-medium">Negrito</span>
+            </label>
+          </div>
+          <div v-else class="flex flex-col space-y-0.5">
+            <span class="text-gray-500 font-semibold text-[9px] uppercase">Negrito</span>
+            <select v-model="target.coverSubtitleBold" @change="category.hasChanges = true" class="border border-gray-300 p-0.5 rounded bg-white text-[10px] w-full">
+              <option value="">Herdado ({{ getGlobalValue(category, 'coverSubtitleBold') ? 'Sim' : 'Não' }})</option>
+              <option :value="true">Sim</option>
+              <option :value="false">Não</option>
+            </select>
+          </div>
+
+          <!-- Italic -->
+          <div v-if="density === 'geral'">
+            <label class="flex items-center space-x-1.5 cursor-pointer">
+              <input type="checkbox" v-model="target.coverSubtitleItalic" @change="category.hasChanges = true" class="w-4 h-4 text-blue-600 rounded border-gray-300" />
+              <span class="text-gray-650 font-medium">Itálico</span>
+            </label>
+          </div>
+          <div v-else class="flex flex-col space-y-0.5">
+            <span class="text-gray-500 font-semibold text-[9px] uppercase">Itálico</span>
+            <select v-model="target.coverSubtitleItalic" @change="category.hasChanges = true" class="border border-gray-300 p-0.5 rounded bg-white text-[10px] w-full">
+              <option value="">Herdado ({{ getGlobalValue(category, 'coverSubtitleItalic') ? 'Sim' : 'Não' }})</option>
+              <option :value="true">Sim</option>
+              <option :value="false">Não</option>
+            </select>
+          </div>
+
+          <!-- Underline -->
+          <div v-if="density === 'geral'">
+            <label class="flex items-center space-x-1.5 cursor-pointer">
+              <input type="checkbox" v-model="target.coverSubtitleUnderline" @change="category.hasChanges = true" class="w-4 h-4 text-blue-600 rounded border-gray-300" />
+              <span class="text-gray-650 font-medium">Sublinhado</span>
+            </label>
+          </div>
+          <div v-else class="flex flex-col space-y-0.5">
+            <span class="text-gray-500 font-semibold text-[9px] uppercase">Sublinhado</span>
+            <select v-model="target.coverSubtitleUnderline" @change="category.hasChanges = true" class="border border-gray-300 p-0.5 rounded bg-white text-[10px] w-full">
+              <option value="">Herdado ({{ getGlobalValue(category, 'coverSubtitleUnderline') ? 'Sim' : 'Não' }})</option>
               <option :value="true">Sim</option>
               <option :value="false">Não</option>
             </select>
@@ -158,6 +275,60 @@
             <span class="text-gray-500 font-semibold text-[9px] uppercase">Sublinhado</span>
             <select v-model="target.cardModelUnderline" @change="category.hasChanges = true" class="border border-gray-300 p-0.5 rounded bg-white text-[10px] w-full">
               <option value="">Herdado ({{ getGlobalValue(category, 'cardModelUnderline') ? 'Sim' : 'Não' }})</option>
+              <option :value="true">Sim</option>
+              <option :value="false">Não</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Rótulo do Modelo ("MODELO") -->
+      <div class="space-y-2">
+        <span class="block font-bold text-slate-700 uppercase tracking-wider text-[10px]">Rótulo do Modelo</span>
+        <div class="space-y-1.5">
+          <!-- Bold -->
+          <div v-if="density === 'geral'">
+            <label class="flex items-center space-x-1.5 cursor-pointer">
+              <input type="checkbox" v-model="target.cardModelLabelBold" @change="category.hasChanges = true" class="w-4 h-4 text-blue-600 rounded border-gray-300" />
+              <span class="text-gray-650 font-medium">Negrito</span>
+            </label>
+          </div>
+          <div v-else class="flex flex-col space-y-0.5">
+            <span class="text-gray-500 font-semibold text-[9px] uppercase">Negrito</span>
+            <select v-model="target.cardModelLabelBold" @change="category.hasChanges = true" class="border border-gray-300 p-0.5 rounded bg-white text-[10px] w-full">
+              <option value="">Herdado ({{ getGlobalValue(category, 'cardModelLabelBold') ? 'Sim' : 'Não' }})</option>
+              <option :value="true">Sim</option>
+              <option :value="false">Não</option>
+            </select>
+          </div>
+
+          <!-- Italic -->
+          <div v-if="density === 'geral'">
+            <label class="flex items-center space-x-1.5 cursor-pointer">
+              <input type="checkbox" v-model="target.cardModelLabelItalic" @change="category.hasChanges = true" class="w-4 h-4 text-blue-600 rounded border-gray-300" />
+              <span class="text-gray-650 font-medium">Itálico</span>
+            </label>
+          </div>
+          <div v-else class="flex flex-col space-y-0.5">
+            <span class="text-gray-500 font-semibold text-[9px] uppercase">Itálico</span>
+            <select v-model="target.cardModelLabelItalic" @change="category.hasChanges = true" class="border border-gray-300 p-0.5 rounded bg-white text-[10px] w-full">
+              <option value="">Herdado ({{ getGlobalValue(category, 'cardModelLabelItalic') ? 'Sim' : 'Não' }})</option>
+              <option :value="true">Sim</option>
+              <option :value="false">Não</option>
+            </select>
+          </div>
+
+          <!-- Underline -->
+          <div v-if="density === 'geral'">
+            <label class="flex items-center space-x-1.5 cursor-pointer">
+              <input type="checkbox" v-model="target.cardModelLabelUnderline" @change="category.hasChanges = true" class="w-4 h-4 text-blue-600 rounded border-gray-300" />
+              <span class="text-gray-650 font-medium">Sublinhado</span>
+            </label>
+          </div>
+          <div v-else class="flex flex-col space-y-0.5">
+            <span class="text-gray-500 font-semibold text-[9px] uppercase">Sublinhado</span>
+            <select v-model="target.cardModelLabelUnderline" @change="category.hasChanges = true" class="border border-gray-300 p-0.5 rounded bg-white text-[10px] w-full">
+              <option value="">Herdado ({{ getGlobalValue(category, 'cardModelLabelUnderline') ? 'Sim' : 'Não' }})</option>
               <option :value="true">Sim</option>
               <option :value="false">Não</option>
             </select>
@@ -281,12 +452,26 @@
             <label class="text-[9px] font-semibold text-gray-500 uppercase">Fonte Tag</label>
             <select v-model="target.tagFontFamily" @change="category.hasChanges = true" class="border border-gray-300 p-1.5 rounded bg-white text-xs w-full">
               <option v-if="density !== 'geral'" value="">Herdado ({{ getGlobalValue(category, 'tagFontFamily') }})</option>
-              <option value="Inter">Inter</option>
-              <option value="Hanken Grotesk">Hanken Grotesk</option>
-              <option value="Roboto">Roboto</option>
-              <option value="Outfit">Outfit</option>
-              <option value="Verdana">Verdana</option>
+              <option value="Arial">Arial</option>
+              <option value="Arial Black">Arial Black</option>
               <option value="Calibri">Calibri</option>
+              <option value="Century Gothic">Century Gothic</option>
+              <option value="Comic Sans MS">Comic Sans MS</option>
+              <option value="Courier New">Courier New</option>
+              <option value="Georgia">Georgia</option>
+              <option value="Hanken Grotesk">Hanken Grotesk</option>
+              <option value="Impact">Impact</option>
+              <option value="Inter">Inter</option>
+              <option value="Montserrat">Montserrat</option>
+              <option value="Montserrat Extra Bold">Montserrat Extra Bold</option>
+              <option value="Outfit">Outfit</option>
+              <option value="Roboto">Roboto</option>
+              <option value="Segoe UI">Segoe UI</option>
+              <option value="Source Sans Pro">Source Sans Pro</option>
+              <option value="Tahoma">Tahoma</option>
+              <option value="Times New Roman">Times New Roman</option>
+              <option value="Trebuchet MS">Trebuchet MS</option>
+              <option value="Verdana">Verdana</option>
             </select>
           </div>
           <div>
@@ -300,6 +485,13 @@
           <div>
             <label class="text-[9px] font-semibold text-gray-500 uppercase">Ajuste Y</label>
             <input v-model="target.tagOffsetY" type="text" @input="category.hasChanges = true" class="border border-gray-300 p-1.5 rounded bg-white text-xs w-full" placeholder="0px" />
+          </div>
+          <div class="col-span-2">
+            <label class="text-[9px] font-semibold text-gray-500 uppercase">Cor do Texto Tag</label>
+            <div class="flex items-center gap-1.5">
+              <input :value="target.tagColor || getGlobalValue(category, 'tagColor') || '#ffffff'" type="color" @input="(e: any) => { target.tagColor = e.target.value; category.hasChanges = true; }" class="w-8 h-8 p-0 border border-gray-300 bg-transparent cursor-pointer rounded shrink-0" />
+              <input v-model="target.tagColor" type="text" @input="category.hasChanges = true" class="border border-gray-300 p-1.5 rounded bg-white text-xs font-mono w-full" :placeholder="density !== 'geral' ? 'Herdado: ' + translateValue('tagColor', getGlobalValue(category, 'tagColor')) : '#ffffff'" />
+            </div>
           </div>
           <div class="col-span-2 flex flex-wrap gap-3 pt-1">
             <div v-if="density === 'geral'">
@@ -360,4 +552,6 @@ defineProps<{
   getGlobalValue: (category: any, fieldName: string) => any
   translateValue: (fieldName: string, value: any) => string
 }>()
+
+defineEmits(['replicate-section'])
 </script>

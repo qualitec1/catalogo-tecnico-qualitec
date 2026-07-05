@@ -1,7 +1,15 @@
 <template>
   <div class="contents">
-    <div class="col-span-2 md:col-span-4 border-b border-gray-200 pb-1 mt-2">
+    <div class="col-span-2 md:col-span-4 border-b border-gray-200 pb-1 mt-2 flex justify-between items-center">
       <span class="text-[10px] font-bold text-blue-600 uppercase tracking-wider">Especificações Técnicas (Ficha)</span>
+      <button 
+        type="button" 
+        @click="$emit('replicate-section', ['fontSizeSpecs', 'specsFontFamily', 'specsBold', 'specsItalic', 'specsUnderline', 'specsValBold', 'specsValItalic', 'specsValUnderline', 'specsLabelWidth', 'specsValueWidth', 'specsPaddingY', 'specsLineStyle', 'specsLineColor', 'specsBgColor', 'specsColor', 'specsValColor'])" 
+        class="text-[9px] font-bold text-blue-600 hover:text-blue-700 bg-transparent border-0 cursor-pointer flex items-center gap-1 uppercase"
+      >
+        <span class="material-symbols-outlined text-xs">content_copy</span>
+        Replicar
+      </button>
     </div>
     <div>
       <label class="flex items-center text-[10px] text-gray-500 font-semibold mb-1 uppercase">
@@ -17,13 +25,47 @@
       </label>
       <select v-model="target.specsFontFamily" @change="category.hasChanges = true" class="w-full border border-gray-300 p-2 rounded bg-white text-xs">
         <option v-if="density !== 'geral'" value="">(Herdado) {{ translateValue('specsFontFamily', getGlobalValue(category, 'specsFontFamily')) }}</option>
-        <option value="Inter">Inter</option>
-        <option value="Hanken Grotesk">Hanken Grotesk</option>
-        <option value="Roboto">Roboto</option>
-        <option value="Outfit">Outfit</option>
-        <option value="Verdana">Verdana</option>
+        <option value="Arial">Arial</option>
+        <option value="Arial Black">Arial Black</option>
         <option value="Calibri">Calibri</option>
+        <option value="Century Gothic">Century Gothic</option>
+        <option value="Comic Sans MS">Comic Sans MS</option>
+        <option value="Courier New">Courier New</option>
+        <option value="Georgia">Georgia</option>
+        <option value="Hanken Grotesk">Hanken Grotesk</option>
+        <option value="Impact">Impact</option>
+        <option value="Inter">Inter</option>
+        <option value="Montserrat">Montserrat</option>
+        <option value="Montserrat Extra Bold">Montserrat Extra Bold</option>
+        <option value="Outfit">Outfit</option>
+        <option value="Roboto">Roboto</option>
+        <option value="Segoe UI">Segoe UI</option>
+        <option value="Source Sans Pro">Source Sans Pro</option>
+        <option value="Tahoma">Tahoma</option>
+        <option value="Times New Roman">Times New Roman</option>
+        <option value="Trebuchet MS">Trebuchet MS</option>
+        <option value="Verdana">Verdana</option>
       </select>
+    </div>
+    <div>
+      <label class="flex items-center text-[10px] text-gray-500 font-semibold mb-1 uppercase">
+        Cor Texto Rótulos (Specs)
+        <span class="inline-flex items-center justify-center bg-blue-100 text-blue-600 rounded-full w-3.5 h-3.5 text-[9px] font-bold cursor-help ml-1 shrink-0" title="Cor do texto dos rótulos (labels) na tabela de especificações.">!</span>
+      </label>
+      <div class="flex items-center gap-1.5">
+        <input :value="target.specsColor || getGlobalValue(category, 'specsColor') || '#374151'" type="color" @input="(e: any) => { target.specsColor = e.target.value; category.hasChanges = true; }" class="w-8 h-8 p-0 border border-gray-300 bg-transparent cursor-pointer rounded shrink-0" />
+        <input v-model="target.specsColor" type="text" @input="category.hasChanges = true" class="w-full border border-gray-300 p-2 rounded bg-white text-xs font-mono" :placeholder="density !== 'geral' ? 'Herdado: ' + translateValue('specsColor', getGlobalValue(category, 'specsColor')) : '#374151'" />
+      </div>
+    </div>
+    <div>
+      <label class="flex items-center text-[10px] text-gray-500 font-semibold mb-1 uppercase">
+        Cor Texto Valores (Specs)
+        <span class="inline-flex items-center justify-center bg-blue-100 text-blue-600 rounded-full w-3.5 h-3.5 text-[9px] font-bold cursor-help ml-1 shrink-0" title="Cor do texto dos valores na tabela de especificações.">!</span>
+      </label>
+      <div class="flex items-center gap-1.5">
+        <input :value="target.specsValColor || getGlobalValue(category, 'specsValColor') || '#000000'" type="color" @input="(e: any) => { target.specsValColor = e.target.value; category.hasChanges = true; }" class="w-8 h-8 p-0 border border-gray-300 bg-transparent cursor-pointer rounded shrink-0" />
+        <input v-model="target.specsValColor" type="text" @input="category.hasChanges = true" class="w-full border border-gray-300 p-2 rounded bg-white text-xs font-mono" :placeholder="density !== 'geral' ? 'Herdado: ' + translateValue('specsValColor', getGlobalValue(category, 'specsValColor')) : '#000000'" />
+      </div>
     </div>
     <div>
       <label class="flex items-center text-[10px] text-gray-500 font-semibold mb-1 uppercase">
@@ -81,8 +123,16 @@
     </div>
 
     <!-- Divisor Geral -->
-    <div class="col-span-2 md:col-span-4 border-b border-gray-200 pb-1 mt-2">
+    <div class="col-span-2 md:col-span-4 border-b border-gray-200 pb-1 mt-2 flex justify-between items-center">
       <span class="text-[10px] font-bold text-blue-600 uppercase tracking-wider">Outros Detalhes do PDF</span>
+      <button 
+        type="button" 
+        @click="$emit('replicate-section', ['dividerLineColor'])" 
+        class="text-[9px] font-bold text-blue-600 hover:text-blue-700 bg-transparent border-0 cursor-pointer flex items-center gap-1 uppercase"
+      >
+        <span class="material-symbols-outlined text-xs">content_copy</span>
+        Replicar
+      </button>
     </div>
     <div>
       <label class="flex items-center text-[10px] text-gray-500 font-semibold mb-1 uppercase">
@@ -106,4 +156,6 @@ defineProps<{
   getGlobalValue: (category: any, fieldName: string) => any
   translateValue: (fieldName: string, value: any) => string
 }>()
+
+defineEmits(['replicate-section'])
 </script>

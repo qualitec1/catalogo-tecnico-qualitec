@@ -172,6 +172,7 @@ const {
   products,
   loading,
   saving,
+  importing,
   fetchProducts,
   saveNewProduct,
   saveProductEdit,

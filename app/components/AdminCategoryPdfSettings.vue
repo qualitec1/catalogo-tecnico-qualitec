@@ -145,6 +145,16 @@
           :density="getEditDensity(category.id)"
           :getGlobalValue="getGlobalValue"
           :translateValue="translateValue"
+          @replicate-section="$emit('replicate-section', $event)"
+        />
+
+        <AdminPdfCoverSettings 
+          :target="getDensityTarget(category)" 
+          :category="category" 
+          :density="getEditDensity(category.id)"
+          :getGlobalValue="getGlobalValue"
+          :translateValue="translateValue"
+          @replicate-section="$emit('replicate-section', $event)"
         />
 
         <AdminPdfLogoSettings 
@@ -153,6 +163,7 @@
           :density="getEditDensity(category.id)"
           :getGlobalValue="getGlobalValue"
           :translateValue="translateValue"
+          @replicate-section="$emit('replicate-section', $event)"
         />
 
         <AdminPdfLayoutSettings 
@@ -161,6 +172,7 @@
           :density="getEditDensity(category.id)"
           :getGlobalValue="getGlobalValue"
           :translateValue="translateValue"
+          @replicate-section="$emit('replicate-section', $event)"
         />
 
         <AdminPdfCardSettings 
@@ -169,6 +181,7 @@
           :density="getEditDensity(category.id)"
           :getGlobalValue="getGlobalValue"
           :translateValue="translateValue"
+          @replicate-section="$emit('replicate-section', $event)"
         />
 
         <AdminPdfSpecsSettings 
@@ -177,6 +190,7 @@
           :density="getEditDensity(category.id)"
           :getGlobalValue="getGlobalValue"
           :translateValue="translateValue"
+          @replicate-section="$emit('replicate-section', $event)"
         />
       </div>
 
@@ -187,6 +201,7 @@
         :density="getEditDensity(category.id)"
         :getGlobalValue="getGlobalValue"
         :translateValue="translateValue"
+        @replicate-section="$emit('replicate-section', $event)"
       />
     </div>
   </div>
@@ -197,6 +212,10 @@ import { useAdminCategorySettings } from '../composables/useAdminCategorySetting
 
 defineProps<{
   category: any
+}>()
+
+const emit = defineEmits<{
+  (e: 'replicate-section', fields: string[]): void
 }>()
 
 const {

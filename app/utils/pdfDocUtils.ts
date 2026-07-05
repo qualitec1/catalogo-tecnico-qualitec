@@ -36,27 +36,47 @@ export function fitImageInBox(
   return { w, h, offX: (boxW - w) / 2, offY: (boxH - h) / 2 }
 }
 
-/** Parse a dimension string like '10px' and return mm value */
+/** Parse a dimension string and return mm value. Scaled if 'px', otherwise treated as mm. */
 export function dimToMm(val: string | number | undefined, fallbackMm: number): number {
   if (val === undefined || val === null || val === '') return fallbackMm
-  const str = String(val).trim()
+  const str = String(val).trim().replace(',', '.')
   const num = parseFloat(str)
   if (isNaN(num)) return fallbackMm
-  // Assume px; 1px ≈ 0.264mm at 96dpi
-  return num * 0.264
+  // If explicitly pixels, convert to mm (1px ≈ 0.264mm)
+  if (str.toLowerCase().endsWith('px')) {
+    return num * 0.264
+  }
+  // Otherwise treat as millimeters directly
+  return num
 }
 
 export function getFontName(fontFamily: string | undefined): string {
   if (!fontFamily) return 'helvetica'
   const f = fontFamily.toLowerCase().trim()
+  if (f === 'helvetica' || f === 'helvetica neue') return 'helvetica'
   if (f.includes('verdana')) return 'Verdana'
   if (f.includes('calibri')) return 'Calibri'
-  if (f.includes('inter')) return 'Inter'
+  // Inter & Outfit are distributed as variable fonts only and cannot be used in jsPDF.
+  // We alias them to Roboto (same sans-serif style, full static TTF available).
+  if (f.includes('inter') || f.includes('outfit')) return 'Roboto'
   if (f.includes('roboto')) return 'Roboto'
-  if (f.includes('outfit')) return 'Outfit'
   if (f.includes('hanken')) return 'HankenGrotesk'
-  if (f.includes('courier') || f.includes('mono')) return 'courier'
-  if (f.includes('times') || f.includes('serif') || f.includes('georgia')) return 'times'
+  if (f.includes('arial black')) return 'Arial Black'
+  if (f.includes('arial')) return 'Arial'
+  if (f.includes('century gothic')) return 'Century Gothic'
+  if (f.includes('comic sans')) return 'Comic Sans MS'
+  if (f.includes('courier new')) return 'Courier New'
+  if (f.includes('courier') || f.includes('mono')) return 'Courier New'
+  if (f.includes('georgia')) return 'Georgia'
+  if (f.includes('impact')) return 'Impact'
+  if (f.includes('segoe ui')) return 'Segoe UI'
+  if (f.includes('tahoma')) return 'Tahoma'
+  if (f.includes('times new roman')) return 'Times New Roman'
+  if (f.includes('times') || f.includes('serif')) return 'Times New Roman'
+  if (f.includes('trebuchet')) return 'Trebuchet MS'
+  if (f.includes('montserrat extra bold')) return 'Montserrat Extra Bold'
+  if (f.includes('montserrat')) return 'Montserrat'
+  if (f.includes('source sans')) return 'Source Sans Pro'
   return 'helvetica' // Default sans-serif fallback
 }
 

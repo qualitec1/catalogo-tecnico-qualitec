@@ -55,6 +55,7 @@
           <!-- Right side: PDF Layout Configuration (Collapsible) -->
           <AdminCategoryPdfSettings
             :category="category"
+            @replicate-section="openReplicateModal(category, $event)"
           />
         </div>
       </div>
@@ -66,6 +67,8 @@
       :category="sourceCategory"
       :categories="localCategories"
       :saving="saving"
+      :initialFields="replicateFields"
+      :initialReplicateAllFields="replicateAll"
       @close="closeReplicateModal"
       @replicate="handleReplicate"
     />
@@ -140,14 +143,20 @@ const handleCreateCategory = () => {
 // Replicate Modal logic
 const replicateModalOpen = ref(false)
 const sourceCategory = ref<Category | null>(null)
+const replicateFields = ref<string[] | null>(null)
+const replicateAll = ref(true)
 
-const openReplicateModal = (category: Category) => {
+const openReplicateModal = (category: Category, fields: string[] | null = null) => {
   sourceCategory.value = category
+  replicateFields.value = fields
+  replicateAll.value = fields === null
   replicateModalOpen.value = true
 }
 
 const closeReplicateModal = () => {
   sourceCategory.value = null
+  replicateFields.value = null
+  replicateAll.value = true
   replicateModalOpen.value = false
 }
 

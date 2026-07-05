@@ -1,7 +1,15 @@
 <template>
   <div class="contents">
-    <div class="col-span-2 md:col-span-4 border-b border-gray-200 pb-1 mt-2">
+    <div class="col-span-2 md:col-span-4 border-b border-gray-200 pb-1 mt-2 flex justify-between items-center">
       <span class="text-[10px] font-bold text-blue-600 uppercase tracking-wider">Configurações do Título da Categoria</span>
+      <button 
+        type="button" 
+        @click="$emit('replicate-section', ['titleFontFamily', 'titleFontSize', 'titlePositionY', 'titleColor', 'titleBold', 'titleItalic', 'titleUnderline'])" 
+        class="text-[9px] font-bold text-blue-600 hover:text-blue-700 bg-transparent border-0 cursor-pointer flex items-center gap-1 uppercase"
+      >
+        <span class="material-symbols-outlined text-xs">content_copy</span>
+        Replicar
+      </button>
     </div>
     <div>
       <label class="flex items-center text-[10px] text-gray-500 font-semibold mb-1 uppercase">
@@ -10,12 +18,26 @@
       </label>
       <select v-model="target.titleFontFamily" @change="category.hasChanges = true" class="w-full border border-gray-300 p-2 rounded bg-white text-xs">
         <option v-if="density !== 'geral'" value="">(Herdado) {{ translateValue('titleFontFamily', getGlobalValue(category, 'titleFontFamily')) }}</option>
-        <option value="Inter">Inter</option>
-        <option value="Hanken Grotesk">Hanken Grotesk</option>
-        <option value="Roboto">Roboto</option>
-        <option value="Outfit">Outfit</option>
-        <option value="Verdana">Verdana</option>
+        <option value="Arial">Arial</option>
+        <option value="Arial Black">Arial Black</option>
         <option value="Calibri">Calibri</option>
+        <option value="Century Gothic">Century Gothic</option>
+        <option value="Comic Sans MS">Comic Sans MS</option>
+        <option value="Courier New">Courier New</option>
+        <option value="Georgia">Georgia</option>
+        <option value="Hanken Grotesk">Hanken Grotesk</option>
+        <option value="Impact">Impact</option>
+        <option value="Inter">Inter</option>
+        <option value="Montserrat">Montserrat</option>
+        <option value="Montserrat Extra Bold">Montserrat Extra Bold</option>
+        <option value="Outfit">Outfit</option>
+        <option value="Roboto">Roboto</option>
+        <option value="Segoe UI">Segoe UI</option>
+        <option value="Source Sans Pro">Source Sans Pro</option>
+        <option value="Tahoma">Tahoma</option>
+        <option value="Times New Roman">Times New Roman</option>
+        <option value="Trebuchet MS">Trebuchet MS</option>
+        <option value="Verdana">Verdana</option>
       </select>
     </div>
     <div>
@@ -53,4 +75,6 @@ defineProps<{
   getGlobalValue: (category: any, fieldName: string) => any
   translateValue: (fieldName: string, value: any) => string
 }>()
+
+defineEmits(['replicate-section'])
 </script>

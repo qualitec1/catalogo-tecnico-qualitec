@@ -37,9 +37,11 @@ const progressPercent = ref(0)
 const coverImageUrl = ref<string | null>(null)
 const coverImageBlob = ref<string | null>(null)
 const categoryIconUrl = ref<string | null>(null)
+const badgeText = ref<string | null>(null)
+const badgeIconUrl = ref<string | null>(null)
 
 // ===== Composables =====
-const { getCategoryColor, getCategoryCover, fetchAssets } = useCategoryColors()
+const { getCategoryColor, getCategoryCover, fetchAssets, categoryAssets } = useCategoryColors()
 const { getPdfSettings, getLandscapePdfSettings, fetchPdfSettings } = usePdfSettings()
 
 // ===== Computed: slot helper =====
@@ -140,13 +142,25 @@ const getBgColor = (bgClass: string | null | undefined, category?: string) => {
 const getPageSettings = (page: Product[]) => {
   const cat = page && page.length > 0 ? page[0].category : catalogCategory.value
   const settings = isLandscape.value ? getLandscapePdfSettings(cat) : getPdfSettings(cat)
-  let baseSettings = settings ? { ...settings } : {}
+  let baseSettings: Record<string, any> = settings ? { ...settings } : {}
   
   if (page && page.length > 0) {
     const slots = getSlots(page[0])
     if (settings && settings.layout_settings && settings.layout_settings[slots]) {
       const overrides = settings.layout_settings[slots]
+      // These keys control the category page header title — they must NOT be
+      // overridden by layout_settings (which is for per-slot card adjustments).
+      const TITLE_KEYS = new Set([
+        'titleFontFamily', 'title_font_family',
+        'titleFontSize', 'title_font_size',
+        'titleBold', 'title_bold',
+        'titleItalic', 'title_italic',
+        'titleUnderline', 'title_underline',
+        'titleColor', 'title_color',
+        'titlePositionY', 'title_position_y',
+      ])
       for (const key of Object.keys(overrides)) {
+        if (TITLE_KEYS.has(key)) continue // protect title settings
         const val = overrides[key]
         if (val !== undefined && val !== null && val !== '') {
           const snakeKey = key.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`)
@@ -157,7 +171,7 @@ const getPageSettings = (page: Product[]) => {
     }
   }
   return new Proxy(baseSettings, {
-    get(target, prop) {
+    get(target: Record<string, any>, prop) {
       if (typeof prop === 'string') {
         if (prop in target) return target[prop]
         const camelProp = prop.replace(/_([a-z])/g, (g) => g[1].toUpperCase())
@@ -185,26 +199,32 @@ const getCoverImageSrc = (): string | null => {
 const fetchCoverImage = async (category: string) => {
   const asset = getCategoryCover(category) || getCategoryCover('Geral')
   if (asset) {
-    coverImageUrl.value = asset.cover_image_url
-    coverImageBlob.value = asset.cover_image_blob
+    coverImageUrl.value = asset.cover_image_url || null
+    coverImageBlob.value = asset.cover_image_blob || null
     categoryIconUrl.value = asset.icon_url || null
+    badgeText.value = asset.badge_text || null
+    badgeIconUrl.value = asset.badge_icon_url || null
   } else {
     try {
       const { data } = await supabase
         .from('category_assets')
-        .select('cover_image_url, cover_image_blob, icon_url')
+        .select('cover_image_url, cover_image_blob, icon_url, badge_text, badge_icon_url')
         .eq('category', category)
         .single()
       if (data) {
         coverImageUrl.value = data.cover_image_url
         coverImageBlob.value = data.cover_image_blob
         categoryIconUrl.value = data.icon_url || null
+        badgeText.value = data.badge_text || null
+        badgeIconUrl.value = data.badge_icon_url || null
       } else {
-        const fallback = await supabase.from('category_assets').select('cover_image_url, cover_image_blob, icon_url').eq('category', 'Geral').single()
+        const fallback = await supabase.from('category_assets').select('cover_image_url, cover_image_blob, icon_url, badge_text, badge_icon_url').eq('category', 'Geral').single()
         if (fallback.data) {
           coverImageUrl.value = fallback.data.cover_image_url
           coverImageBlob.value = fallback.data.cover_image_blob
           categoryIconUrl.value = fallback.data.icon_url || null
+          badgeText.value = fallback.data.badge_text || null
+          badgeIconUrl.value = fallback.data.badge_icon_url || null
         }
       }
     } catch (e) {
@@ -240,7 +260,9 @@ watch(() => props.isGenerating, async (newVal) => {
           progressPercent.value = pct
           progressText.value = `Carregando imagens (${loaded}/${total})...`
         },
-        categoryIconUrl.value
+        categoryIconUrl.value,
+        badgeIconUrl.value,
+        categoryAssets.value
       )
 
       progressText.value = 'Construindo catálogo PDF...'
@@ -255,6 +277,9 @@ watch(() => props.isGenerating, async (newVal) => {
         coverImageDataUrl: coverSrc,
         logoDataUrl: QUALITEC_LOGO_URL,
         categoryIconUrl: categoryIconUrl.value,
+        badgeText: badgeText.value,
+        badgeIconUrl: badgeIconUrl.value,
+        categoryAssets: categoryAssets.value,
         imageCache,
         getPageSettings,
         getBgColor,

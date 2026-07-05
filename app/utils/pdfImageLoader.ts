@@ -49,7 +49,9 @@ export async function preloadAllImages(
   coverSrc: string | null,
   logoUrl: string,
   onProgress?: (loaded: number, total: number) => void,
-  categoryIconUrl?: string | null
+  categoryIconUrl?: string | null,
+  badgeIconUrl?: string | null,
+  categoryAssets?: Record<string, any>
 ): Promise<Map<string, CachedImage>> {
 
   const cache = new Map<string, CachedImage>()
@@ -58,9 +60,37 @@ export async function preloadAllImages(
   // Logo
   tasks.push({ key: '__logo__', url: `/api/proxy-image?url=${encodeURIComponent(logoUrl)}` })
 
-  // Category icon (for PDF page header)
+  // Category-specific icons (preloaded for all unique categories in products)
+  if (categoryAssets) {
+    const uniqueCats = new Set<string>()
+    for (const p of products) {
+      if (p.category) {
+        uniqueCats.add(p.category.toUpperCase().trim())
+      }
+    }
+    for (const cat of uniqueCats) {
+      const asset = categoryAssets[cat]
+      if (asset) {
+        const cIcon = asset.icon_url || asset.iconUrl
+        if (cIcon && (cIcon.startsWith('http://') || cIcon.startsWith('https://'))) {
+          tasks.push({ key: `category_icon_${cat}`, url: `/api/proxy-image?url=${encodeURIComponent(cIcon)}` })
+        }
+        const bIcon = asset.badge_icon_url || asset.badgeIconUrl
+        if (bIcon && (bIcon.startsWith('http://') || bIcon.startsWith('https://'))) {
+          tasks.push({ key: `badge_icon_${cat}`, url: `/api/proxy-image?url=${encodeURIComponent(bIcon)}` })
+        }
+      }
+    }
+  }
+
+  // Category icon (fallback/catalog-level)
   if (categoryIconUrl && (categoryIconUrl.startsWith('http://') || categoryIconUrl.startsWith('https://'))) {
     tasks.push({ key: '__category_icon__', url: `/api/proxy-image?url=${encodeURIComponent(categoryIconUrl)}` })
+  }
+
+  // Badge icon (fallback/catalog-level)
+  if (badgeIconUrl && (badgeIconUrl.startsWith('http://') || badgeIconUrl.startsWith('https://'))) {
+    tasks.push({ key: '__badge_icon__', url: `/api/proxy-image?url=${encodeURIComponent(badgeIconUrl)}` })
   }
 
   // Cover image

@@ -7,6 +7,9 @@ export interface CategoryAsset {
   cover_image_blob?: string | null
   color_hex?: string | null
   pdfUrl?: string | null
+  icon_url?: string | null
+  badge_text?: string | null
+  badge_icon_url?: string | null
 }
 
 export default function useCategoryColors() {
@@ -26,7 +29,10 @@ export default function useCategoryColors() {
               cover_image_url: item.cover_image_url,
               cover_image_blob: item.cover_image_blob,
               color_hex: item.color_hex,
-              pdfUrl: item.pdf_url
+              pdfUrl: item.pdf_url,
+              icon_url: item.icon_url,
+              badge_text: item.badge_text || null,
+              badge_icon_url: item.badge_icon_url || null
             }
           }
         }
