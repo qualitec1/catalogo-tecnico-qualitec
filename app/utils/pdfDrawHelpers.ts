@@ -448,13 +448,12 @@ export function drawColoredHeader(
       }
       
       pdf.setFont(modelFont, modelStyle)
-      const modelSize = parseFontSizePt(settings.card_model_font_size, 14)
-      const finalModelSize = Math.min(modelSize, 12)
-      pdf.setFontSize(finalModelSize)
+      const modelSize = parseFontSizePt(settings.card_model_font_size || settings.cardModelFontSize, 14)
+      pdf.setFontSize(modelSize)
       pdf.setTextColor(modelColorHex)
       pdf.text(product.nameCode || '', x + 3 + modelOffX, y + 8.5 + modelOffY)
       if (settings.card_model_underline || settings.cardModelUnderline) {
-        drawTextUnderline(pdf, product.nameCode || '', x + 3 + modelOffX, y + 8.5 + modelOffY, finalModelSize, modelColorHex, 'left')
+        drawTextUnderline(pdf, product.nameCode || '', x + 3 + modelOffX, y + 8.5 + modelOffY, modelSize, modelColorHex, 'left')
       }
 
       if (product.tag) {
@@ -504,17 +503,16 @@ export function drawColoredHeader(
       }
       
       pdf.setFont(modelFont, modelStyle)
-      const modelSize = parseFontSizePt(settings.card_model_font_size, 14)
-      const finalModelSize = Math.min(modelSize, 12)
-      pdf.setFontSize(finalModelSize)
+      const modelSize2 = parseFontSizePt(settings.card_model_font_size || settings.cardModelFontSize, 14)
+      pdf.setFontSize(modelSize2)
       pdf.setTextColor(modelColorHex)
       pdf.text(product.nameCode || '', x + w - 3 + modelOffX, y + 8.5 + modelOffY, { align: 'right' })
       if (settings.card_model_underline || settings.cardModelUnderline) {
-        drawTextUnderline(pdf, product.nameCode || '', x + w - 3 + modelOffX, y + 8.5 + modelOffY, finalModelSize, modelColorHex, 'right')
+        drawTextUnderline(pdf, product.nameCode || '', x + w - 3 + modelOffX, y + 8.5 + modelOffY, modelSize2, modelColorHex, 'right')
       }
     }
   } else {
-    const modelSize = parseFontSizePt(settings.card_model_font_size, 16)
+    const modelSize = parseFontSizePt(settings.card_model_font_size || settings.cardModelFontSize, 16)
 
     if (isModelRight) {
       if (product.tag) {
