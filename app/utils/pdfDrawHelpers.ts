@@ -471,22 +471,15 @@ export function drawColoredHeader(
       const tSize1 = parseFontSizePt(settings.card_title_font_size || settings.cardTitleFontSize, 5)
       pdf.setFontSize(tSize1)
       pdf.setTextColor(titleColorHex)
-      
-      // Calculate maximum allowed title width dynamically to prevent unnecessary truncation
-      pdf.setFont(modelFont, modelStyle)
-      pdf.setFontSize(modelSize)
-      const mWidth = pdf.getTextWidth(product.nameCode || '')
-      pdf.setFont(modelLabelFont, modelLabelStyle)
-      pdf.setFontSize(modelLabelSize)
-      const lWidth = pdf.getTextWidth(modelLabelText)
-      const maxTitleW = Math.max(w - Math.max(mWidth, lWidth) - 8, 20)
-      
-      pdf.setFont(titleFont, titleStyle)
-      pdf.setFontSize(tSize1)
-      const title = truncateText(pdf, product.title || '', maxTitleW)
-      pdf.text(title, x + w - 3 + titleOffX, y + 8 + titleOffY, { align: 'right' })
+      const titleLines1: string[] = pdf.splitTextToSize(product.title || '', w - 6)
+      const titleDisplay1 = titleLines1.slice(0, 2) // max 2 lines
+      const lineH1 = tSize1 * 0.352 // pt -> mm
+      const titleStartY1 = y + 8 + titleOffY
+      titleDisplay1.forEach((line: string, i: number) => {
+        pdf.text(line, x + w - 3 + titleOffX, titleStartY1 + i * lineH1, { align: 'right' })
+      })
       if (settings.card_title_underline || settings.cardTitleUnderline) {
-        drawTextUnderline(pdf, title, x + w - 3 + titleOffX, y + 8 + titleOffY, tSize1, titleColorHex, 'right')
+        drawTextUnderline(pdf, titleDisplay1[0] || '', x + w - 3 + titleOffX, titleStartY1, tSize1, titleColorHex, 'right')
       }
     } else {
       const modelSize2 = parseFontSizePt(settings.card_model_font_size || settings.cardModelFontSize, 14)
@@ -504,22 +497,15 @@ export function drawColoredHeader(
       const tSize2 = parseFontSizePt(settings.card_title_font_size || settings.cardTitleFontSize, 5)
       pdf.setFontSize(tSize2)
       pdf.setTextColor(titleColorHex)
-      
-      // Calculate maximum allowed title width dynamically to prevent unnecessary truncation
-      pdf.setFont(modelFont, modelStyle)
-      pdf.setFontSize(modelSize2)
-      const mWidth2 = pdf.getTextWidth(product.nameCode || '')
-      pdf.setFont(modelLabelFont, modelLabelStyle)
-      pdf.setFontSize(modelLabelSize)
-      const lWidth2 = pdf.getTextWidth(modelLabelText)
-      const maxTitleW2 = Math.max(w - Math.max(mWidth2, lWidth2) - 8, 20)
-      
-      pdf.setFont(titleFont, titleStyle)
-      pdf.setFontSize(tSize2)
-      const title2 = truncateText(pdf, product.title || '', maxTitleW2)
-      pdf.text(title2, x + 3 + titleOffX, y + 8 + titleOffY)
+      const titleLines2: string[] = pdf.splitTextToSize(product.title || '', w - 6)
+      const titleDisplay2 = titleLines2.slice(0, 2) // max 2 lines
+      const lineH2 = tSize2 * 0.352 // pt -> mm
+      const titleStartY2 = y + 8 + titleOffY
+      titleDisplay2.forEach((line: string, i: number) => {
+        pdf.text(line, x + 3 + titleOffX, titleStartY2 + i * lineH2)
+      })
       if (settings.card_title_underline || settings.cardTitleUnderline) {
-        drawTextUnderline(pdf, title2, x + 3 + titleOffX, y + 8 + titleOffY, tSize2, titleColorHex, 'left')
+        drawTextUnderline(pdf, titleDisplay2[0] || '', x + 3 + titleOffX, titleStartY2, tSize2, titleColorHex, 'left')
       }
 
       pdf.setFont(modelLabelFont, modelLabelStyle)
