@@ -73,23 +73,40 @@ const pages = computed(() => {
   const result: Product[][] = []
   for (const cat of sortedCategories) {
     const catProducts = groups[cat]
-    const catPages: { products: Product[], usedSlots: number }[] = []
+    
+    // Group products by layoutSlots to prevent mixing layouts on the same page
+    const bySlots: Record<number, Product[]> = { 6: [], 3: [], 1: [] }
     for (const product of catProducts) {
       const slots = getSlots(product)
-      let foundPage = false
-      for (const page of catPages) {
-        if (page.usedSlots + slots <= 6) {
-          page.products.push(product)
-          page.usedSlots += slots
-          foundPage = true
-          break
+      if (!bySlots[slots]) bySlots[slots] = []
+      bySlots[slots].push(product)
+    }
+
+    // Process each layout group separately
+    const slotOrders = [6, 3, 1]
+    for (const slots of slotOrders) {
+      const prods = bySlots[slots] || []
+      if (prods.length === 0) continue
+
+      const catPages: { products: Product[], usedSlots: number }[] = []
+      for (const product of prods) {
+        let foundPage = false
+        for (const page of catPages) {
+          if (page.usedSlots + slots <= 6) {
+            page.products.push(product)
+            page.usedSlots += slots
+            foundPage = true
+            break
+          }
+        }
+        if (!foundPage) {
+          catPages.push({ products: [product], usedSlots: slots })
         }
       }
-      if (!foundPage) {
-        catPages.push({ products: [product], usedSlots: slots })
+      for (const page of catPages) {
+        result.push(page.products)
       }
     }
-    for (const page of catPages) result.push(page.products)
   }
   return result
 })
