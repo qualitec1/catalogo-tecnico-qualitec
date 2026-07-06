@@ -165,19 +165,7 @@ const getPageSettings = (page: Product[]) => {
     const slots = getSlots(page[0])
     if (settings && settings.layout_settings && settings.layout_settings[slots]) {
       const overrides = settings.layout_settings[slots]
-      // These keys control the category page header title — they must NOT be
-      // overridden by layout_settings (which is for per-slot card adjustments).
-      const TITLE_KEYS = new Set([
-        'titleFontFamily', 'title_font_family',
-        'titleFontSize', 'title_font_size',
-        'titleBold', 'title_bold',
-        'titleItalic', 'title_italic',
-        'titleUnderline', 'title_underline',
-        'titleColor', 'title_color',
-        'titlePositionY', 'title_position_y',
-      ])
       for (const key of Object.keys(overrides)) {
-        if (TITLE_KEYS.has(key)) continue // protect title settings
         const val = overrides[key]
         if (val !== undefined && val !== null && val !== '') {
           const snakeKey = key.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`)
@@ -185,6 +173,10 @@ const getPageSettings = (page: Product[]) => {
           baseSettings[key] = val
         }
       }
+      console.log(`[getPageSettings] Resolved overrides for category "${cat}", slots "${slots}":`, {
+        productImageOffsetX: baseSettings.productImageOffsetX || baseSettings.product_image_offset_x,
+        productImageOffsetY: baseSettings.productImageOffsetY || baseSettings.product_image_offset_y
+      })
     }
   }
   return new Proxy(baseSettings, {

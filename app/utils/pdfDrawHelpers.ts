@@ -452,9 +452,9 @@ export function drawColoredHeader(
       const modelSize = parseFontSizePt(settings.card_model_font_size || settings.cardModelFontSize, 14)
       pdf.setFontSize(modelSize)
       pdf.setTextColor(modelColorHex)
-      pdf.text(product.nameCode || '', x + 3 + modelOffX, y + 8.5 + modelOffY)
+      pdf.text(product.nameCode || product.name_code || '', x + 3 + modelOffX, y + 8.5 + modelOffY)
       if (settings.card_model_underline || settings.cardModelUnderline) {
-        drawTextUnderline(pdf, product.nameCode || '', x + 3 + modelOffX, y + 8.5 + modelOffY, modelSize, modelColorHex, 'left')
+        drawTextUnderline(pdf, product.nameCode || product.name_code || '', x + 3 + modelOffX, y + 8.5 + modelOffY, modelSize, modelColorHex, 'left')
       }
 
       if (product.tag) {
@@ -474,7 +474,7 @@ export function drawColoredHeader(
       const titleLines1: string[] = pdf.splitTextToSize(product.title || '', w - 6)
       const titleDisplay1 = titleLines1.slice(0, 2) // max 2 lines
       const lineH1 = tSize1 * 0.352 // pt -> mm
-      const titleStartY1 = y + 8 + titleOffY
+      const titleStartY1 = y + 8 + titleOffY - (titleDisplay1.length - 1) * lineH1
       titleDisplay1.forEach((line: string, i: number) => {
         pdf.text(line, x + w - 3 + titleOffX, titleStartY1 + i * lineH1, { align: 'right' })
       })
@@ -500,7 +500,7 @@ export function drawColoredHeader(
       const titleLines2: string[] = pdf.splitTextToSize(product.title || '', w - 6)
       const titleDisplay2 = titleLines2.slice(0, 2) // max 2 lines
       const lineH2 = tSize2 * 0.352 // pt -> mm
-      const titleStartY2 = y + 8 + titleOffY
+      const titleStartY2 = y + 8 + titleOffY - (titleDisplay2.length - 1) * lineH2
       titleDisplay2.forEach((line: string, i: number) => {
         pdf.text(line, x + 3 + titleOffX, titleStartY2 + i * lineH2)
       })
@@ -519,9 +519,9 @@ export function drawColoredHeader(
       pdf.setFont(modelFont, modelStyle)
       pdf.setFontSize(modelSize2)
       pdf.setTextColor(modelColorHex)
-      pdf.text(product.nameCode || '', x + w - 3 + modelOffX, y + 8.5 + modelOffY, { align: 'right' })
+      pdf.text(product.nameCode || product.name_code || '', x + w - 3 + modelOffX, y + 8.5 + modelOffY, { align: 'right' })
       if (settings.card_model_underline || settings.cardModelUnderline) {
-        drawTextUnderline(pdf, product.nameCode || '', x + w - 3 + modelOffX, y + 8.5 + modelOffY, modelSize2, modelColorHex, 'right')
+        drawTextUnderline(pdf, product.nameCode || product.name_code || '', x + w - 3 + modelOffX, y + 8.5 + modelOffY, modelSize2, modelColorHex, 'right')
       }
     }
   } else {
@@ -549,9 +549,9 @@ export function drawColoredHeader(
       pdf.setFont(modelFont, modelStyle)
       pdf.setFontSize(modelSize)
       pdf.setTextColor(modelColorHex)
-      pdf.text(product.nameCode || '', x + w - 3 + modelOffX, y + 5 + modelSize * 0.45 + modelOffY, { align: 'right' })
+      pdf.text(product.nameCode || product.name_code || '', x + w - 3 + modelOffX, y + 5 + modelSize * 0.45 + modelOffY, { align: 'right' })
       if (settings.card_model_underline || settings.cardModelUnderline) {
-        drawTextUnderline(pdf, product.nameCode || '', x + w - 3 + modelOffX, y + 5 + modelSize * 0.45 + modelOffY, modelSize, modelColorHex, 'right')
+        drawTextUnderline(pdf, product.nameCode || product.name_code || '', x + w - 3 + modelOffX, y + 5 + modelSize * 0.45 + modelOffY, modelSize, modelColorHex, 'right')
       }
     } else {
       pdf.setFont(modelLabelFont, modelLabelStyle)
@@ -565,9 +565,9 @@ export function drawColoredHeader(
       pdf.setFont(modelFont, modelStyle)
       pdf.setFontSize(modelSize)
       pdf.setTextColor(modelColorHex)
-      pdf.text(product.nameCode || '', x + 3 + modelOffX, y + 5 + modelSize * 0.45 + modelOffY)
+      pdf.text(product.nameCode || product.name_code || '', x + 3 + modelOffX, y + 5 + modelSize * 0.45 + modelOffY)
       if (settings.card_model_underline || settings.cardModelUnderline) {
-        drawTextUnderline(pdf, product.nameCode || '', x + 3 + modelOffX, y + 5 + modelSize * 0.45 + modelOffY, modelSize, modelColorHex, 'left')
+        drawTextUnderline(pdf, product.nameCode || product.name_code || '', x + 3 + modelOffX, y + 5 + modelSize * 0.45 + modelOffY, modelSize, modelColorHex, 'left')
       }
 
       if (product.tag) {

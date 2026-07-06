@@ -642,6 +642,8 @@ export function useAdminCategories(triggerToast: (msg: string, type?: 'success' 
             payload[dbCol] = source.landscapeSettings && Object.keys(source.landscapeSettings).length > 0
               ? source.landscapeSettings
               : null
+          } else if (field === 'layoutSettings') {
+            payload[dbCol] = source.layoutSettings || source.layout_settings || {}
           } else if (field === 'pdfImageScale' || field === 'pdfImageScaleX' || field === 'pdfImageScaleY') {
             payload[dbCol] = source[field] !== undefined && source[field] !== null ? Number(source[field]) : 1.0
           } else {

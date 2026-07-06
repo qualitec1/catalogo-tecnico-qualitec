@@ -68,7 +68,7 @@ export function drawLayout3(
   for (let i = 0; i < products.length; i++) {
     const product = products[i]
     const cardY = contentY + i * (cardH + spacing)
-    const color = opts.getBgColor(product.bgClass, product.category)
+    const color = opts.getBgColor(product.bgClass || product.bg_class, product.category)
 
     const imgW = contentW - defaultSpecsW - 6
 
@@ -108,9 +108,9 @@ export function drawLayout3(
       cardY + 4 + offY,
       imgW,
       cardH - 8,
-      product.imageScale !== undefined ? Number(product.imageScale) : 1.0,
-      product.imageOffsetX !== undefined ? Number(product.imageOffsetX) : 0,
-      product.imageOffsetY !== undefined ? Number(product.imageOffsetY) : 0
+      (product.imageScale !== undefined && product.imageScale !== null) ? Number(product.imageScale) : ((product.image_scale !== undefined && product.image_scale !== null) ? Number(product.image_scale) : 1.0),
+      (product.imageOffsetX !== undefined && product.imageOffsetX !== null) ? Number(product.imageOffsetX) : ((product.image_offset_x !== undefined && product.image_offset_x !== null) ? Number(product.image_offset_x) : 0),
+      (product.imageOffsetY !== undefined && product.imageOffsetY !== null) ? Number(product.imageOffsetY) : ((product.image_offset_y !== undefined && product.image_offset_y !== null) ? Number(product.image_offset_y) : 0)
     )
 
     if (i === 0 && products.length > 1) {
@@ -168,7 +168,7 @@ export function drawLayout6(
     const row = Math.floor(i / cols)
     const x = contentX + col * (cellW + gapX)
     const y = contentY + row * (cellH + gapY)
-    const color = opts.getBgColor(product.bgClass, product.category)
+    const color = opts.getBgColor(product.bgClass || product.bg_class, product.category)
 
     const imgH = cellH * 0.32
     const defaultSpecsH = cellH - imgH - headerH - blockGap - 2
@@ -218,9 +218,9 @@ export function drawLayout6(
       imgCellY + offY,
       cellW - 4,
       imgH - 2,
-      product.imageScale !== undefined ? Number(product.imageScale) : 1.0,
-      product.imageOffsetX !== undefined ? Number(product.imageOffsetX) : 0,
-      product.imageOffsetY !== undefined ? Number(product.imageOffsetY) : 0
+      (product.imageScale !== undefined && product.imageScale !== null) ? Number(product.imageScale) : ((product.image_scale !== undefined && product.image_scale !== null) ? Number(product.image_scale) : 1.0),
+      (product.imageOffsetX !== undefined && product.imageOffsetX !== null) ? Number(product.imageOffsetX) : ((product.image_offset_x !== undefined && product.image_offset_x !== null) ? Number(product.image_offset_x) : 0),
+      (product.imageOffsetY !== undefined && product.imageOffsetY !== null) ? Number(product.imageOffsetY) : ((product.image_offset_y !== undefined && product.image_offset_y !== null) ? Number(product.image_offset_y) : 0)
     )
   }
 
@@ -248,7 +248,7 @@ export function drawLayout1(
   opts: BuildOptions,
   settings: any
 ) {
-  const color = opts.getBgColor(product.bgClass, product.category)
+  const color = opts.getBgColor(product.bgClass || product.bg_class, product.category)
   const offX = dimToMm(settings.product_image_offset_x || settings.productImageOffsetX, 0)
   const offY = dimToMm(settings.product_image_offset_y || settings.productImageOffsetY, 0)
 
@@ -311,8 +311,8 @@ export function drawLayout1(
     imgY + offY,
     contentW - 20,
     imgH - 4,
-    product.imageScale !== undefined ? Number(product.imageScale) : 1.0,
-    product.imageOffsetX !== undefined ? Number(product.imageOffsetX) : 0,
-    product.imageOffsetY !== undefined ? Number(product.imageOffsetY) : 0
+    (product.imageScale !== undefined && product.imageScale !== null) ? Number(product.imageScale) : ((product.image_scale !== undefined && product.image_scale !== null) ? Number(product.image_scale) : 1.0),
+    (product.imageOffsetX !== undefined && product.imageOffsetX !== null) ? Number(product.imageOffsetX) : ((product.image_offset_x !== undefined && product.image_offset_x !== null) ? Number(product.image_offset_x) : 0),
+    (product.imageOffsetY !== undefined && product.imageOffsetY !== null) ? Number(product.imageOffsetY) : ((product.image_offset_y !== undefined && product.image_offset_y !== null) ? Number(product.image_offset_y) : 0)
   )
 }
