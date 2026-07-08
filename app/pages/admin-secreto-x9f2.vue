@@ -42,6 +42,14 @@
         </div>
       </Transition>
 
+      <!-- Import Error Modal -->
+      <ImportErrorModal
+        :show="!!importError"
+        :invalid-categories="importError?.invalidCategories || []"
+        :valid-categories="importError?.validCategories || []"
+        @close="importError = null"
+      />
+
       <!-- Tabs Navigation -->
       <div class="flex border-b border-gray-200 bg-white p-2 rounded shadow-sm mb-6">
         <button @click="currentTab = 'produtos'" :class="currentTab === 'produtos' ? 'bg-slate-900 text-white font-bold' : 'text-slate-600 hover:bg-slate-100 font-semibold'" class="px-6 py-2.5 text-xs uppercase tracking-wider rounded transition-colors mr-2 border-0">
@@ -173,6 +181,7 @@ const {
   loading,
   saving,
   importing,
+  importError,
   fetchProducts,
   saveNewProduct,
   saveProductEdit,

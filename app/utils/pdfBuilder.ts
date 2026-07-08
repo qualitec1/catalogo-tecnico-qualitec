@@ -258,7 +258,7 @@ export async function buildCatalogPdf(opts: any): Promise<any> {
 
     // Content area
     const contentY = headerEndY + 2
-    const footerH = 2 // footer drawing disabled – keep a small bottom margin
+    const footerH = 18 // Espaço para o número da página
     const contentH = pageH - contentY - footerH
 
     // Determine which layout to use based on the dominant slot type

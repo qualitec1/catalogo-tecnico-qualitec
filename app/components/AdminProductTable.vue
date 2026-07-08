@@ -157,15 +157,8 @@ watch(searchQuery, () => {
 })
 
 const getProductImage = (product: Product) => {
-  if (product.imageBlob) {
-    // Check if it's already base64 or needs format
-    if (product.imageBlob.startsWith('data:')) return product.imageBlob
-    return `data:image/png;base64,${product.imageBlob}`
-  }
-  if (product.image && (product.image.startsWith('http://') || product.image.startsWith('https://'))) {
-    return `/api/product-image?id=${product.id}`
-  }
-  return product.image || 'https://via.placeholder.com/150?text=Sem+Imagem'
+  if (product.image && product.image !== '') return product.image
+  return '/placeholder.png'
 }
 
 const handleImageError = (e: Event) => {

@@ -264,7 +264,50 @@ export function drawPageHeader(
 }
 
 export function drawPageFooter(pdf: any, pageNum: number, totalPages: number, pageW: number, pageH: number) {
-  // Page footer information and divider line disabled at the user's request
+  const textY = pageH - 6
+  const marginFromEdge = 5
+  
+  // Desenhar número da página: esquerda se ímpar, direita se par
+  pdf.setFont('helvetica', 'bold')
+  pdf.setFontSize(12)
+  pdf.setTextColor(0, 32, 96) // Azul escuro #002060
+  
+  const pageText = String(pageNum).padStart(2, '0')
+  const pageTextWidth = pdf.getTextWidth(pageText)
+  
+  const pageTextX = pageNum % 2 === 1 
+    ? marginFromEdge  // Ímpar: canto esquerdo
+    : pageW - pageTextWidth - marginFromEdge  // Par: canto direito
+  
+  // Desenhar linha azul acima do número
+  const lineY = textY - 5
+  const lineLength = 15
+  const lineX = pageNum % 2 === 1
+    ? marginFromEdge  // Ímpar: linha começa à esquerda
+    : pageW - lineLength - marginFromEdge  // Par: linha à direita
+  
+  pdf.setDrawColor(41, 98, 155) // Cor azul #29629B
+  pdf.setLineWidth(0.1)
+  pdf.line(lineX, lineY, lineX + lineLength, lineY)
+  
+  // Desenhar o número da página
+  pdf.text(pageText, pageTextX, textY)
+  
+  // Adicionar email (ímpares) ou site (pares) no lado oposto
+  pdf.setFont('helvetica', 'normal')
+  pdf.setFontSize(9)
+  pdf.setTextColor(180, 180, 180) // Cinza mais escuro #B4B4B4
+  
+  if (pageNum % 2 === 1) {
+    // Página ímpar: email à direita
+    const emailText = 'v e n d a s @ q u a l i t e c . i n d . b r'
+    const emailWidth = pdf.getTextWidth(emailText)
+    pdf.text(emailText, pageW - emailWidth - marginFromEdge, textY)
+  } else {
+    // Página par: site à esquerda
+    const siteText = 'w w w . q u a l i t e c . i n d . b r'
+    pdf.text(siteText, marginFromEdge, textY)
+  }
 }
 
 export function drawSpecsTable(
@@ -277,7 +320,8 @@ export function drawSpecsTable(
   settings: any,
   compact: boolean,
   exImageKey: string | null = null,
-  imageCache: Map<string, CachedImage> | null = null
+  imageCache: Map<string, CachedImage> | null = null,
+  hasExImage: boolean = false
 ): number {
   if (!specs || specs.length === 0) return y
 
@@ -363,7 +407,8 @@ export function drawSpecsTable(
 
     curY += rowHeight + rowPad * 2
 
-    if (i < specs.length - 1 && lineStyle !== 'none') {
+    // Não desenhar linhas se o produto tiver imagem EX
+    if (i < specs.length - 1 && lineStyle !== 'none' && !hasExImage) {
       setDrawRgb(pdf, lineColor)
       pdf.setLineWidth(0.15)
       

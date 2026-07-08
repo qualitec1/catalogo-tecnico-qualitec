@@ -1,5 +1,4 @@
 import { ref, computed, watch } from 'vue'
-import { hexToBase64 } from '../utils/image'
 
 export interface Product {
   id: number
@@ -50,7 +49,7 @@ export function useCatalog() {
     try {
       const { data, error } = await supabase
         .from('products')
-        .select('id, tag, tag_color_class, name_code, title, image, image_blob, datasheet_name, datasheet_url, bg_class, card_layout, category, specs, layout_slots, image_scale, image_offset_x, image_offset_y, ex_image_url')
+        .select('id, tag, tag_color_class, name_code, title, image, datasheet_name, datasheet_url, bg_class, card_layout, category, specs, layout_slots, image_scale, image_offset_x, image_offset_y, ex_image_url')
         .order('id')
       
       if (error) throw error
@@ -63,7 +62,7 @@ export function useCatalog() {
           title: item.title,
           description: '',
           image: item.image,
-          imageBlob: item.image_blob ? hexToBase64(item.image_blob) : null,
+          imageBlob: null,
           datasheetName: item.datasheet_name,
           datasheetUrl: item.datasheet_url,
           bgClass: item.bg_class || 'bg-secondary',
@@ -276,14 +275,8 @@ export function useCatalog() {
   }
 
   const getProductImage = (product: Product) => {
-    if (product.imageBlob) {
-      if (product.imageBlob.startsWith('data:')) return product.imageBlob
-      return `data:image/png;base64,${product.imageBlob}`
-    }
-    if (product.image && (product.image.startsWith('http://') || product.image.startsWith('https://'))) {
-      return `/api/product-image?id=${product.id}`
-    }
-    return product.image || 'https://via.placeholder.com/400x300/e5e7eb/6b7280?text=Produto'
+    if (product.image && product.image !== '') return product.image
+    return '/placeholder.png'
   }
 
   const openImageModal = (product: Product) => {

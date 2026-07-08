@@ -7,7 +7,7 @@
           <span class="material-symbols-outlined mr-2">content_copy</span>
           Replicar Layout do PDF
         </h3>
-        <button @click="$emit('close')" class="text-gray-400 hover:text-white transition-colors">
+        <button @click="handleClose" class="text-gray-400 hover:text-white transition-colors">
           <span class="material-symbols-outlined">close</span>
         </button>
       </div>
@@ -88,7 +88,7 @@
           :disabled="selectedTargets.length === 0 || saving"
           class="px-4 py-2 bg-blue-600 text-white rounded font-bold hover:bg-blue-700 transition-colors disabled:opacity-40"
         >
-          Replicar Layout
+          {{ selectedTargets.length === 0 ? 'Selecione Categorias' : 'Replicar Layout' }}
         </button>
       </div>
     </div>
@@ -116,7 +116,16 @@ const selectedTargets = ref<string[]>([])
 const replicateAllFields = ref(true)
 const selectedFields = ref<string[]>([])
 
+const handleClose = () => {
+  console.log('🔴 [AdminCategoryReplicateModal] Close button clicked')
+  emit('close')
+}
+
 watch(() => props.open, (newVal) => {
+  console.log('👁️ [AdminCategoryReplicateModal] Open prop changed:', newVal, {
+    category: props.category?.category,
+    categoryId: props.category?.id
+  })
   if (newVal) {
     if (props.initialFields) {
       selectedFields.value = [...props.initialFields]
@@ -297,6 +306,13 @@ const deselectAll = () => {
 selectAll()
 
 const submitReplicate = () => {
+  console.log('[AdminCategoryReplicateModal] submitReplicate called', {
+    selectedTargets: selectedTargets.value,
+    replicateAllFields: replicateAllFields.value,
+    selectedFieldsCount: selectedFields.value.length,
+    category: props.category?.category
+  })
+  
   if (selectedTargets.value.length > 0) {
     emit('replicate', {
       source: props.category,
@@ -304,6 +320,8 @@ const submitReplicate = () => {
       fields: replicateAllFields.value ? null : selectedFields.value
     })
     selectedTargets.value = []
+  } else {
+    console.warn('[AdminCategoryReplicateModal] No targets selected!')
   }
 }
 </script>

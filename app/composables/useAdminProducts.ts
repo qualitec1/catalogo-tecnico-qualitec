@@ -1,5 +1,4 @@
 import { ref } from 'vue'
-import { hexToBase64 } from '../utils/image'
 
 export function useAdminProducts(triggerToast: (msg: string, type?: 'success' | 'error') => void) {
   const supabase = useSupabaseClient()
@@ -7,13 +6,14 @@ export function useAdminProducts(triggerToast: (msg: string, type?: 'success' | 
   const loading = ref(true)
   const saving = ref(false)
   const importing = ref(false)
+  const importError = ref<{ invalidCategories: { line: number; category: string }[], validCategories: string[] } | null>(null)
 
   const fetchProducts = async () => {
     loading.value = true
     try {
       const { data, error } = await supabase
         .from('products')
-        .select('id, tag, tag_color_class, name_code, title, image, image_blob, datasheet_name, datasheet_url, bg_class, card_layout, category, specs, layout_slots, image_scale, image_offset_x, image_offset_y, ex_image_url')
+        .select('id, tag, tag_color_class, name_code, title, image, datasheet_name, datasheet_url, bg_class, card_layout, category, specs, layout_slots, image_scale, image_offset_x, image_offset_y, ex_image_url')
         .order('id')
       if (error) throw error
       if (data) {
@@ -25,7 +25,7 @@ export function useAdminProducts(triggerToast: (msg: string, type?: 'success' | 
           title: item.title,
           description: '',
           image: item.image,
-          imageBlob: item.image_blob ? hexToBase64(item.image_blob) : null,
+          imageBlob: null,
           datasheetName: item.datasheet_name,
           datasheetBlob: null,
           datasheetUrl: item.datasheet_url,
@@ -65,10 +65,8 @@ export function useAdminProducts(triggerToast: (msg: string, type?: 'success' | 
         title: product.title,
         name_code: product.nameCode,
         category: product.category.toUpperCase().trim(),
-        image: product.imageName ? `/${product.imageName}` : 'https://via.placeholder.com/400x300/e5e7eb/6b7280?text=Produto',
-        image_blob: product.imageBlob,
+        image: product.image || '/placeholder.png',
         datasheet_name: product.datasheetName || null,
-        datasheet_blob: product.datasheetBlob || null,
         datasheet_url: product.datasheetUrl || null,
         tag: product.tag,
         tag_color_class: tagColorClass,
@@ -115,26 +113,19 @@ export function useAdminProducts(triggerToast: (msg: string, type?: 'success' | 
         ex_image_url: product.exImageUrl || null
       }
       
-      if (product.imageBlob && product.imageBlob.startsWith('\\x')) {
-        payload.image = `/${product.imageName}`
-        payload.image_blob = product.imageBlob
-      } else if (product.image && product.image.startsWith('http')) {
+      // Atualizar imagem se fornecida
+      if (product.image) {
         payload.image = product.image
-        payload.image_blob = null
       }
 
-      if (product.datasheetBlob && product.datasheetBlob.startsWith('\\x')) {
-        payload.datasheet_name = product.datasheetName
-        payload.datasheet_blob = product.datasheetBlob
-        payload.datasheet_url = null
-      } else if (product.datasheetUrl && product.datasheetUrl.startsWith('http')) {
+      // Atualizar datasheet se fornecido
+      if (product.datasheetUrl) {
         payload.datasheet_url = product.datasheetUrl
         payload.datasheet_name = product.datasheetName
-        payload.datasheet_blob = null
-      } else if (!product.datasheetUrl && !product.datasheetBlob) {
+      } else if (product.datasheetUrl === null) {
+        // Remover datasheet explicitamente
         payload.datasheet_url = null
         payload.datasheet_name = null
-        payload.datasheet_blob = null
       }
 
       const { error } = await supabase
@@ -247,8 +238,34 @@ export function useAdminProducts(triggerToast: (msg: string, type?: 'success' | 
         return
       }
 
+      // Buscar categorias válidas do banco
+      let validCategories: Set<string>
+      try {
+        const { data: categoriesData, error: catError } = await supabase
+          .from('pdf_settings')
+          .select('category')
+        
+        if (catError) throw catError
+        
+        validCategories = new Set(
+          (categoriesData || []).map((c: any) => c.category.toUpperCase().trim())
+        )
+        
+        if (validCategories.size === 0) {
+          triggerToast('Nenhuma categoria encontrada no sistema.', 'error')
+          importing.value = false
+          return
+        }
+      } catch (err: any) {
+        console.error('Erro ao buscar categorias:', err)
+        triggerToast(`Erro ao validar categorias: ${err.message}`, 'error')
+        importing.value = false
+        return
+      }
+
       const headers = allRows[0]
       const parsedProducts = []
+      const invalidCategories: { line: number, category: string }[] = []
       
       const cleanHeaders = headers.map(h => {
         return h.trim()
@@ -312,19 +329,45 @@ export function useAdminProducts(triggerToast: (msg: string, type?: 'success' | 
           }
         }
 
+        const categoryValue = row['category'] ? row['category'].toUpperCase().trim() : 'GERAL'
+        
+        // Validar se a categoria existe no sistema
+        if (!validCategories.has(categoryValue)) {
+          invalidCategories.push({
+            line: i + 1,
+            category: row['category'] || '(vazio)'
+          })
+        }
+
         parsedProducts.push({
           title: row['title'],
           name_code: row['name_code'],
-          category: row['category'] ? row['category'].toUpperCase().trim() : 'GERAL',
+          category: categoryValue,
           tag: row['tag'] || 'ATIVO',
           tag_color_class: 'text-[#005db7]',
           bg_class: 'bg-secondary',
           layout_slots: dbLayoutSlots,
-          image: row['image_url'] || 'https://via.placeholder.com/400x300/e5e7eb/6b7280?text=Produto',
+          image: row['image_url'] || '/placeholder.png',
           datasheet_url: row['datasheet_url'] || null,
           ex_image_url: exImageUrlVal,
           specs: specs
         })
+      }
+      
+      // Se houver categorias inválidas, rejeitar TODO o import
+      if (invalidCategories.length > 0) {
+        importError.value = {
+          invalidCategories,
+          validCategories: Array.from(validCategories).sort()
+        }
+        importing.value = false
+        return
+      }
+      
+      if (parsedProducts.length === 0) {
+        triggerToast('Nenhum produto válido para importar.', 'error')
+        importing.value = false
+        return
       }
       
       try {
@@ -347,6 +390,7 @@ export function useAdminProducts(triggerToast: (msg: string, type?: 'success' | 
     loading,
     saving,
     importing,
+    importError,
     colorOptions,
     fetchProducts,
     saveNewProduct,

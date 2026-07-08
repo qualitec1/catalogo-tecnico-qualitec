@@ -349,11 +349,16 @@ export function useAdminCategories(triggerToast: (msg: string, type?: 'success' 
       const { error } = await supabase.from('category_assets').insert([payload])
       if (error) throw error
 
+      // Configurações padrão baseadas na categoria GERAL
       await supabase.from('pdf_settings').insert([{
         category: catName,
-        title_font_size: '18px',
-        title_position_y: '-0px',
-        title_color: '#1B388F',
+        title_font_size: '28px',
+        title_position_y: '-9px',
+        title_color: '#7F7F7F',
+        title_font_family: 'Calibri',
+        title_bold: true,
+        title_italic: false,
+        title_underline: false,
         image_position: 'right',
         card_layout_order: 'image-first',
         font_size_specs: '8px',
@@ -368,39 +373,69 @@ export function useAdminCategories(triggerToast: (msg: string, type?: 'success' 
         card_offset_y: '0px',
         card_title_offset_x: '-7px',
         card_title_offset_y: '7px',
+        card_title_font_size: '14px',
+        card_title_color: '#ffffff',
+        card_title_font_family: 'Inter',
+        card_title_bold: true,
+        card_title_italic: false,
+        card_title_underline: false,
         card_model_font_size: '15px',
         card_model_offset_x: '0px',
         card_model_offset_y: '7px',
+        card_model_font_family: 'Inter',
+        card_model_bold: true,
+        card_model_italic: false,
+        card_model_underline: false,
+        card_model_color: '#ffffff',
         card_model_label_font_size: '8px',
         card_model_label_offset_x: '0px',
         card_model_label_offset_y: '0px',
         card_model_label_font_family: 'Inter',
-        title_bold: true,
-        title_italic: false,
-        title_underline: false,
-        card_title_bold: true,
-        card_title_italic: false,
-        card_title_underline: false,
-        card_model_bold: true,
-        card_model_italic: false,
-        card_model_underline: false,
         card_model_label_bold: false,
         card_model_label_italic: false,
         card_model_label_underline: false,
+        card_model_label_color: '#ffffff',
+        card_model_label_text: 'Modelo',
+        specs_font_family: 'Calibri',
         specs_bold: false,
         specs_italic: false,
         specs_underline: false,
         specs_val_bold: false,
-        specs_val_italic: false,
+        specs_val_italic: true,
         specs_val_underline: false,
-        card_title_color: '#ffffff',
-        card_model_color: '#ffffff',
-        card_model_label_color: '#ffffff',
-        tag_color: '#ffffff',
+        specs_label_width: '45%',
+        specs_value_width: '55%',
+        specs_padding_y: '4px',
+        specs_line_style: 'dashed',
+        specs_line_color: '#cbd5e1',
+        specs_bg_color: '#F1F1F1',
         specs_color: '#374151',
         specs_val_color: '#000000',
-        cover_title_font_family: 'Helvetica',
-        cover_title_font_size: '20px',
+        logo_width: '380px',
+        logo_height: '200px',
+        logo_position_x: '-60px',
+        logo_position_y: '-30px',
+        card_header_layout: 'model-left',
+        tag_font_family: 'Calibri',
+        tag_font_size: '9px',
+        tag_bold: false,
+        tag_italic: false,
+        tag_underline: false,
+        tag_offset_x: '50px',
+        tag_offset_y: '3px',
+        tag_color: '#ffffff',
+        badge_icon_size: '7.5mm',
+        badge_font_family: 'Calibri',
+        badge_font_size: '15pt',
+        badge_color: '#D9D9D9',
+        badge_position_x: '-12px',
+        badge_position_y: '35px',
+        badge_icon_offset_x: '5px',
+        badge_icon_offset_y: '0px',
+        badge_text_offset_x: '-8px',
+        badge_text_offset_y: '-5px',
+        cover_title_font_family: 'Roboto',
+        cover_title_font_size: '29px',
         cover_title_bold: true,
         cover_title_italic: false,
         cover_title_underline: false,
@@ -408,74 +443,111 @@ export function useAdminCategories(triggerToast: (msg: string, type?: 'success' 
         cover_title_offset_x: '0px',
         cover_title_offset_y: '0px',
         cover_subtitle_text: 'CATÁLOGO DE PRODUTOS',
-        cover_subtitle_font_family: 'Helvetica',
-        cover_subtitle_font_size: '8px',
+        cover_subtitle_font_family: 'Source Sans Pro',
+        cover_subtitle_font_size: '13px',
         cover_subtitle_bold: false,
         cover_subtitle_italic: false,
         cover_subtitle_underline: false,
         cover_subtitle_color: '#ffffff',
         cover_subtitle_offset_x: '0px',
         cover_subtitle_offset_y: '0px',
-        card_header_layout: 'model-left',
-        tag_font_family: 'Inter',
-        tag_font_size: '10px',
-        tag_bold: false,
-        tag_italic: false,
-        tag_underline: false,
-        tag_offset_x: '0px',
-        tag_offset_y: '0px',
         orientation: 'portrait',
-        specs_bg_color: '#F1F1F1',
-        logo_width: '380px',
-        logo_height: '150px',
-        logo_position_x: '-80px',
-        logo_position_y: '60px',
+        landscape_settings: null,
         layout_settings: {
           "1": {
-            "productImageOffsetY": "12"
+            "tagBold": false,
+            "blockGap": "1.5",
+            "tagItalic": false,
+            "specsWidth": "",
+            "tagOffsetX": "-5px",
+            "tagOffsetY": "70px",
+            "specsHeight": "",
+            "tagFontSize": "11px",
+            "headerHeight": "25",
+            "specsOffsetY": "",
+            "tagUnderline": false,
+            "cardModelBold": "",
+            "cardTitleBold": "",
+            "headerOffsetY": "",
+            "tagFontFamily": "Calibri",
+            "titleFontSize": "28px",
+            "titlePositionY": "-24px",
+            "titleFontFamily": "Calibri",
+            "cardModelOffsetY": "-1px",
+            "cardTitleOffsetX": "-5px",
+            "cardTitleOffsetY": "40px",
+            "cardModelFontSize": "11px",
+            "cardTitleFontSize": "14px",
+            "cardModelLabelBold": false,
+            "cardModelFontFamily": "Calibri",
+            "cardTitleFontFamily": "Calibri",
+            "cardModelLabelOffsetY": "-2px",
+            "cardModelLabelFontSize": "14px",
+            "cardModelLabelFontFamily": "Calibri"
           },
           "3": {
+            "blockGap": "2",
             "specsBold": false,
             "titleBold": true,
+            "specsWidth": "",
+            "tagOffsetX": "-350px",
             "cardOffsetX": "0px",
             "cardOffsetY": "0px",
+            "specsHeight": "",
             "specsItalic": false,
-            "titleItalic": true,
-            "cardModelBold": false,
-            "cardTitleBold": false,
+            "tagFontSize": "9",
+            "titleItalic": false,
+            "headerHeight": "34",
+            "specsBgColor": "#E6E7E8",
+            "specsOffsetY": "",
+            "specsValBold": true,
+            "cardModelBold": true,
+            "cardTitleBold": true,
             "fontSizeSpecs": "8px",
+            "headerOffsetY": "",
             "specsPaddingY": "4px",
-            "titleFontSize": "30px",
+            "tagFontFamily": "Calibri",
+            "titleFontSize": "28px",
+            "coverTitleBold": true,
             "productSpacing": "24px",
-            "specsLineColor": "#cbd5e1",
-            "specsLineStyle": "dashed",
+            "specsLineColor": "#F2F2F2",
+            "specsLineStyle": "dotted",
             "specsUnderline": false,
-            "titlePositionY": "13px",
-            "titleUnderline": true,
+            "specsValItalic": false,
+            "titlePositionY": "-13px",
+            "titleUnderline": false,
             "cardLayoutOrder": "image-first",
             "cardModelItalic": false,
             "cardTitleItalic": false,
-            "specsFontFamily": "Inter",
+            "specsFontFamily": "Calibri",
             "specsLabelWidth": "45%",
             "specsValueWidth": "55%",
-            "titleFontFamily": "Verdana",
-            "cardModelOffsetX": "0px",
+            "titleFontFamily": "Montserrat Extra Bold",
+            "cardModelOffsetX": "330px",
             "cardModelOffsetY": "0px",
             "cardTitleOffsetX": "0px",
             "cardTitleOffsetY": "0px",
-            "dividerLineColor": "#cbd5e1",
-            "cardModelFontSize": "24px",
+            "dividerLineColor": "#F2F2F2",
+            "cardModelFontSize": "28px",
+            "cardModelLabelBold": true,
             "cardModelUnderline": false,
             "cardTitleUnderline": false,
-            "cardModelFontFamily": "Inter",
-            "cardTitleFontFamily": "Inter",
-            "productImageOffsetY": "0px"
+            "coverTitleFontSize": "12px",
+            "cardModelFontFamily": "Calibri",
+            "cardTitleFontFamily": "Calibri",
+            "cardModelLabelItalic": false,
+            "coverTitleFontFamily": "Source Sans Pro",
+            "cardModelLabelUnderline": false
           },
           "6": {
-            "cardTitleFontFamily": "Verdana"
+            "blockGap": "2",
+            "specsWidth": "",
+            "specsHeight": "",
+            "headerHeight": "40",
+            "specsOffsetY": "",
+            "headerOffsetY": ""
           }
-        },
-        landscape_settings: null
+        }
       }])
 
       triggerToast('Nova categoria criada com sucesso!', 'success')
@@ -524,9 +596,23 @@ export function useAdminCategories(triggerToast: (msg: string, type?: 'success' 
     }
   }
 
-  const replicateCategorySettings = async ({ source, targetIds, fields }: { source: any, targetIds: string[], fields?: string[] | null }) => {
+  const replicateCategorySettings = async ({ source, targetIds, fields, density }: { source: any, targetIds: string[], fields?: string[] | null, density?: string }) => {
+    console.log('🔥🔥🔥 [REPLICATE] Function called!', { source: source?.category, targetIds, fields, density })
     saving.value = true
     try {
+      console.log('[replicateCategorySettings] Starting replication', { 
+        sourceCategory: source.category, 
+        targetCount: targetIds.length, 
+        fields: fields?.length || 'ALL',
+        density: density || 'geral'
+      })
+      
+      const actualDensity = density || 'geral'
+      console.log('[replicateCategorySettings] Replication mode:', {
+        density: actualDensity,
+        willCopyFrom: actualDensity === 'geral' ? 'root level' : `layout_settings["${actualDensity}"]`
+      })
+      
       const fieldToDbCol: Record<string, string> = {
         titleFontSize: 'title_font_size',
         titlePositionY: 'title_position_y',
@@ -542,9 +628,21 @@ export function useAdminCategories(triggerToast: (msg: string, type?: 'success' 
         cardOffsetY: 'card_offset_y',
         cardTitleOffsetX: 'card_title_offset_x',
         cardTitleOffsetY: 'card_title_offset_y',
+        cardTitleFontSize: 'card_title_font_size',
+        cardTitleColor: 'card_title_color',
         cardModelFontSize: 'card_model_font_size',
         cardModelOffsetX: 'card_model_offset_x',
         cardModelOffsetY: 'card_model_offset_y',
+        cardModelColor: 'card_model_color',
+        cardModelLabelFontSize: 'card_model_label_font_size',
+        cardModelLabelOffsetX: 'card_model_label_offset_x',
+        cardModelLabelOffsetY: 'card_model_label_offset_y',
+        cardModelLabelFontFamily: 'card_model_label_font_family',
+        cardModelLabelBold: 'card_model_label_bold',
+        cardModelLabelItalic: 'card_model_label_italic',
+        cardModelLabelUnderline: 'card_model_label_underline',
+        cardModelLabelColor: 'card_model_label_color',
+        cardModelLabelText: 'card_model_label_text',
         titleFontFamily: 'title_font_family',
         cardTitleFontFamily: 'card_title_font_family',
         cardModelFontFamily: 'card_model_font_family',
@@ -559,6 +657,8 @@ export function useAdminCategories(triggerToast: (msg: string, type?: 'success' 
         specsLineStyle: 'specs_line_style',
         specsLineColor: 'specs_line_color',
         specsBgColor: 'specs_bg_color',
+        specsColor: 'specs_color',
+        specsValColor: 'specs_val_color',
         titleBold: 'title_bold',
         titleItalic: 'title_italic',
         titleUnderline: 'title_underline',
@@ -582,6 +682,7 @@ export function useAdminCategories(triggerToast: (msg: string, type?: 'success' 
         tagUnderline: 'tag_underline',
         tagOffsetX: 'tag_offset_x',
         tagOffsetY: 'tag_offset_y',
+        tagColor: 'tag_color',
         orientation: 'orientation',
         pdfImageScale: 'pdf_image_scale',
         pdfImageScaleX: 'pdf_image_scale_x',
@@ -597,10 +698,77 @@ export function useAdminCategories(triggerToast: (msg: string, type?: 'success' 
         badgeIconOffsetX: 'badge_icon_offset_x',
         badgeIconOffsetY: 'badge_icon_offset_y',
         badgeTextOffsetX: 'badge_text_offset_x',
-        badgeTextOffsetY: 'badge_text_offset_y'
+        badgeTextOffsetY: 'badge_text_offset_y',
+        coverTitleFontFamily: 'cover_title_font_family',
+        coverTitleFontSize: 'cover_title_font_size',
+        coverTitleBold: 'cover_title_bold',
+        coverTitleItalic: 'cover_title_italic',
+        coverTitleUnderline: 'cover_title_underline',
+        coverTitleColor: 'cover_title_color',
+        coverTitleOffsetX: 'cover_title_offset_x',
+        coverTitleOffsetY: 'cover_title_offset_y',
+        coverSubtitleText: 'cover_subtitle_text',
+        coverSubtitleFontFamily: 'cover_subtitle_font_family',
+        coverSubtitleFontSize: 'cover_subtitle_font_size',
+        coverSubtitleBold: 'cover_subtitle_bold',
+        coverSubtitleItalic: 'cover_subtitle_italic',
+        coverSubtitleUnderline: 'cover_subtitle_underline',
+        coverSubtitleColor: 'cover_subtitle_color',
+        coverSubtitleOffsetX: 'cover_subtitle_offset_x',
+        coverSubtitleOffsetY: 'cover_subtitle_offset_y'
       }
 
       const fieldsToCopy = fields && Array.isArray(fields) ? fields : [...Object.keys(fieldToDbCol), 'badgeText', 'badgeIconUrl']
+
+      // Get source data based on density
+      let sourceData: Record<string, any> = {}
+      
+      if (actualDensity === 'geral') {
+        // Copy from root level
+        for (const field of fieldsToCopy) {
+          const dbCol = fieldToDbCol[field]
+          if (dbCol) {
+            let value = source[field]
+            if (value === undefined || value === null) {
+              value = source[dbCol]
+            }
+            if (value !== undefined && value !== null) {
+              sourceData[field] = value
+            }
+          }
+        }
+      } else {
+        // Copy from layout_settings[density]
+        const layoutSettings = source.layout_settings || source.layoutSettings || {}
+        const densitySettings = layoutSettings[actualDensity] || {}
+        
+        console.log(`[replicateCategorySettings] Reading from layout_settings["${actualDensity}"]`, {
+          category: source.category,
+          hasData: Object.keys(densitySettings).length > 0,
+          sampleKeys: Object.keys(densitySettings).slice(0, 10)
+        })
+        
+        for (const field of fieldsToCopy) {
+          // Try camelCase first
+          let value = densitySettings[field]
+          if (value === undefined || value === null) {
+            // Try snake_case
+            const dbCol = fieldToDbCol[field]
+            if (dbCol) {
+              value = densitySettings[dbCol]
+            }
+          }
+          if (value !== undefined && value !== null) {
+            sourceData[field] = value
+          }
+        }
+        
+        console.log(`[replicateCategorySettings] Source data extracted from density "${actualDensity}":`, {
+          fieldCount: Object.keys(sourceData).length,
+          sampleFields: Object.keys(sourceData).slice(0, 10),
+          sampleValues: Object.entries(sourceData).slice(0, 5)
+        })
+      }
 
       for (const targetId of targetIds) {
         const targetCat = categoryAssetsList.value.find(c => c.id === targetId)
@@ -610,12 +778,12 @@ export function useAdminCategories(triggerToast: (msg: string, type?: 'success' 
         const catAssetPayload: Record<string, any> = {}
         let hasCatAssetChanges = false
 
-        if (fieldsToCopy.includes('badgeText')) {
-          catAssetPayload['badge_text'] = source.badgeText
+        if (fieldsToCopy.includes('badgeText') && sourceData['badgeText'] !== undefined) {
+          catAssetPayload['badge_text'] = sourceData['badgeText']
           hasCatAssetChanges = true
         }
-        if (fieldsToCopy.includes('badgeIconUrl')) {
-          catAssetPayload['badge_icon_url'] = source.badgeIconUrl
+        if (fieldsToCopy.includes('badgeIconUrl') && sourceData['badgeIconUrl'] !== undefined) {
+          catAssetPayload['badge_icon_url'] = sourceData['badgeIconUrl']
           hasCatAssetChanges = true
         }
 
@@ -627,31 +795,35 @@ export function useAdminCategories(triggerToast: (msg: string, type?: 'success' 
           if (assetError) throw assetError
         }
 
-        // 2. Copy pdf_settings fields
-        const payload: Record<string, any> = {
-          category: targetCat.category
-        }
-
-        let hasPdfSettingsChanges = false
-        for (const field of fieldsToCopy) {
-          const dbCol = fieldToDbCol[field]
-          if (!dbCol) continue
-
-          hasPdfSettingsChanges = true
-          if (field === 'landscapeSettings') {
-            payload[dbCol] = source.landscapeSettings && Object.keys(source.landscapeSettings).length > 0
-              ? source.landscapeSettings
-              : null
-          } else if (field === 'layoutSettings') {
-            payload[dbCol] = source.layoutSettings || source.layout_settings || {}
-          } else if (field === 'pdfImageScale' || field === 'pdfImageScaleX' || field === 'pdfImageScaleY') {
-            payload[dbCol] = source[field] !== undefined && source[field] !== null ? Number(source[field]) : 1.0
-          } else {
-            payload[dbCol] = source[field]
+        // 2. Prepare pdf_settings update
+        if (actualDensity === 'geral') {
+          // Direct update to root fields
+          const payload: Record<string, any> = {
+            category: targetCat.category
           }
-        }
 
-        if (hasPdfSettingsChanges) {
+          for (const field of Object.keys(sourceData)) {
+            const dbCol = fieldToDbCol[field]
+            if (!dbCol) continue
+
+            if (field === 'landscapeSettings') {
+              payload[dbCol] = sourceData[field] && Object.keys(sourceData[field]).length > 0
+                ? sourceData[field]
+                : null
+            } else if (field === 'layoutSettings') {
+              payload[dbCol] = sourceData[field] || {}
+            } else if (field === 'pdfImageScale' || field === 'pdfImageScaleX' || field === 'pdfImageScaleY') {
+              payload[dbCol] = sourceData[field] !== undefined && sourceData[field] !== null ? Number(sourceData[field]) : 1.0
+            } else {
+              payload[dbCol] = sourceData[field]
+            }
+          }
+
+          console.log('[replicateCategorySettings] Payload for ROOT update:', targetCat.category, {
+            fieldCount: Object.keys(payload).length,
+            sampleFields: Object.keys(payload).slice(0, 10)
+          })
+
           if (targetCat.pdfSettingsId) {
             const { error: settingsError } = await supabase
               .from('pdf_settings')
@@ -664,13 +836,48 @@ export function useAdminCategories(triggerToast: (msg: string, type?: 'success' 
               .insert([payload])
             if (settingsError) throw settingsError
           }
+        } else {
+          // Update layout_settings[density] specifically
+          // First, fetch current layout_settings
+          const { data: currentSettings, error: fetchError } = await supabase
+            .from('pdf_settings')
+            .select('layout_settings')
+            .eq('id', targetCat.pdfSettingsId)
+            .single()
+          
+          if (fetchError) throw fetchError
+          
+          const currentLayoutSettings = currentSettings?.layout_settings || {}
+          const densityOverrides: Record<string, any> = currentLayoutSettings[actualDensity] || {}
+          
+          // Merge source data into density overrides
+          for (const field of Object.keys(sourceData)) {
+            densityOverrides[field] = sourceData[field]
+          }
+          
+          currentLayoutSettings[actualDensity] = densityOverrides
+          
+          console.log(`[replicateCategorySettings] Updated layout_settings["${actualDensity}"] for ${targetCat.category}`, {
+            totalFields: Object.keys(densityOverrides).length,
+            sampleFields: Object.keys(densityOverrides).slice(0, 10),
+            sampleValues: Object.entries(densityOverrides).slice(0, 5)
+          })
+          
+          const { error: updateError } = await supabase
+            .from('pdf_settings')
+            .update({ layout_settings: currentLayoutSettings })
+            .eq('id', targetCat.pdfSettingsId)
+          
+          if (updateError) throw updateError
         }
       }
 
       triggerToast('Configurações de layout replicadas com sucesso!', 'success')
+      console.log('[replicateCategorySettings] Reloading data...')
       const { fetchPdfSettings } = usePdfSettings()
       await fetchPdfSettings()
       await fetchCategoryAssetsAdmin()
+      console.log('[replicateCategorySettings] Data reloaded successfully')
     } catch (err: any) {
       console.error(err)
       triggerToast(`Erro ao replicar configurações: ${err.message}`, 'error')

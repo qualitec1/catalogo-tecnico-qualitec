@@ -4,7 +4,7 @@
       <span class="text-[10px] font-bold text-blue-600 uppercase tracking-wider">Configurações do Título da Categoria</span>
       <button 
         type="button" 
-        @click="$emit('replicate-section', ['titleFontFamily', 'titleFontSize', 'titlePositionY', 'titleColor', 'titleBold', 'titleItalic', 'titleUnderline'])" 
+        @click="handleReplicateClick" 
         class="text-[9px] font-bold text-blue-600 hover:text-blue-700 bg-transparent border-0 cursor-pointer flex items-center gap-1 uppercase"
       >
         <span class="material-symbols-outlined text-xs">content_copy</span>
@@ -76,5 +76,11 @@ defineProps<{
   translateValue: (fieldName: string, value: any) => string
 }>()
 
-defineEmits(['replicate-section'])
+const emit = defineEmits(['replicate-section'])
+
+const handleReplicateClick = () => {
+  const fields = ['titleFontFamily', 'titleFontSize', 'titlePositionY', 'titleColor', 'titleBold', 'titleItalic', 'titleUnderline']
+  console.log('🟢 [AdminPdfTitleSettings] Replicate button clicked, emitting fields:', fields)
+  emit('replicate-section', fields)
+}
 </script>

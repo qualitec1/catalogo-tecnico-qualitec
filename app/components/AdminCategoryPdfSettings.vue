@@ -145,7 +145,7 @@
           :density="getEditDensity(category.id)"
           :getGlobalValue="getGlobalValue"
           :translateValue="translateValue"
-          @replicate-section="$emit('replicate-section', $event)"
+          @replicate-section="handleReplicateSection"
         />
 
         <AdminPdfCoverSettings 
@@ -154,7 +154,7 @@
           :density="getEditDensity(category.id)"
           :getGlobalValue="getGlobalValue"
           :translateValue="translateValue"
-          @replicate-section="$emit('replicate-section', $event)"
+          @replicate-section="handleReplicateSection"
         />
 
         <AdminPdfLogoSettings 
@@ -163,7 +163,7 @@
           :density="getEditDensity(category.id)"
           :getGlobalValue="getGlobalValue"
           :translateValue="translateValue"
-          @replicate-section="$emit('replicate-section', $event)"
+          @replicate-section="handleReplicateSection"
         />
 
         <AdminPdfLayoutSettings 
@@ -172,7 +172,7 @@
           :density="getEditDensity(category.id)"
           :getGlobalValue="getGlobalValue"
           :translateValue="translateValue"
-          @replicate-section="$emit('replicate-section', $event)"
+          @replicate-section="handleReplicateSection"
         />
 
         <AdminPdfCardSettings 
@@ -181,7 +181,7 @@
           :density="getEditDensity(category.id)"
           :getGlobalValue="getGlobalValue"
           :translateValue="translateValue"
-          @replicate-section="$emit('replicate-section', $event)"
+          @replicate-section="handleReplicateSection"
         />
 
         <AdminPdfSpecsSettings 
@@ -190,7 +190,7 @@
           :density="getEditDensity(category.id)"
           :getGlobalValue="getGlobalValue"
           :translateValue="translateValue"
-          @replicate-section="$emit('replicate-section', $event)"
+          @replicate-section="handleReplicateSection"
         />
       </div>
 
@@ -201,7 +201,7 @@
         :density="getEditDensity(category.id)"
         :getGlobalValue="getGlobalValue"
         :translateValue="translateValue"
-        @replicate-section="$emit('replicate-section', $event)"
+        @replicate-section="handleReplicateSection"
       />
     </div>
   </div>
@@ -210,13 +210,23 @@
 <script setup lang="ts">
 import { useAdminCategorySettings } from '../composables/useAdminCategorySettings'
 
-defineProps<{
+const props = defineProps<{
   category: any
 }>()
 
 const emit = defineEmits<{
-  (e: 'replicate-section', fields: string[]): void
+  (e: 'replicate-section', data: { fields: string[], density: string }): void
 }>()
+
+const handleReplicateSection = (fields: string[]) => {
+  const density = getEditDensity(props.category.id)
+  console.log('🟡 [AdminCategoryPdfSettings] Received replicate-section event from child, forwarding:', {
+    fields,
+    density,
+    categoryId: props.category.id
+  })
+  emit('replicate-section', { fields, density })
+}
 
 const {
   isPdfSettingsOpen,

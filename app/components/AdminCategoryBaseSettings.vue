@@ -374,7 +374,7 @@
         <span class="material-symbols-outlined text-sm">publish</span>
         ATUALIZAR PDF OFICIAL
       </button>
-      <button @click="$emit('open-replicate-modal', category)" class="w-full py-2 border border-blue-600 text-blue-600 hover:bg-blue-50 text-xs font-bold rounded transition-colors">
+      <button @click="handleReplicateClick" class="w-full py-2 border border-blue-600 text-blue-600 hover:bg-blue-50 text-xs font-bold rounded transition-colors">
         REPLICAR LAYOUT PDF
       </button>
       <button @click="handleResetToDefaults" :disabled="saving" class="w-full py-2 border border-amber-600 text-amber-700 hover:bg-amber-50 text-xs font-bold rounded transition-colors" title="Restaura as configurações de PDF desta categoria para o padrão do sistema">
@@ -413,6 +413,14 @@ const uploadingImage = ref(false)
 const uploadingPdf = ref(false)
 const uploadingIcon = ref(false)
 const uploadingBadgeIcon = ref(false)
+
+const handleReplicateClick = () => {
+  console.log('🔵 [AdminCategoryBaseSettings] REPLICAR LAYOUT PDF button clicked!', {
+    categoryId: props.category.id,
+    category: props.category.category
+  })
+  emit('open-replicate-modal', props.category)
+}
 
 const triggerImageUpload = () => {
   fileInput.value?.click()
@@ -575,9 +583,14 @@ const handleResetToDefaults = () => {
     return
   }
 
-  props.category.titleFontSize = '18px'
-  props.category.titlePositionY = '-0px'
-  props.category.titleColor = '#1B388F'
+  // Padrões baseados na categoria GERAL atual
+  props.category.titleFontSize = '28px'
+  props.category.titlePositionY = '-9px'
+  props.category.titleColor = '#7F7F7F'
+  props.category.titleFontFamily = 'Calibri'
+  props.category.titleBold = true
+  props.category.titleItalic = false
+  props.category.titleUnderline = false
   props.category.imagePosition = 'right'
   props.category.cardLayoutOrder = 'image-first'
   props.category.fontSizeSpecs = '8px'
@@ -592,11 +605,12 @@ const handleResetToDefaults = () => {
   props.category.cardOffsetY = '0px'
   props.category.cardTitleOffsetX = '-7px'
   props.category.cardTitleOffsetY = '7px'
+  props.category.cardTitleFontSize = '14px'
+  props.category.cardTitleColor = '#ffffff'
   props.category.cardTitleFontFamily = 'Inter'
   props.category.cardTitleBold = true
   props.category.cardTitleItalic = false
   props.category.cardTitleUnderline = false
-  props.category.cardTitleFontSize = '14px'
   props.category.cardModelFontSize = '15px'
   props.category.cardModelOffsetX = '0px'
   props.category.cardModelOffsetY = '7px'
@@ -604,6 +618,7 @@ const handleResetToDefaults = () => {
   props.category.cardModelBold = true
   props.category.cardModelItalic = false
   props.category.cardModelUnderline = false
+  props.category.cardModelColor = '#ffffff'
   props.category.cardModelLabelFontSize = '8px'
   props.category.cardModelLabelOffsetX = '0px'
   props.category.cardModelLabelOffsetY = '0px'
@@ -611,36 +626,48 @@ const handleResetToDefaults = () => {
   props.category.cardModelLabelBold = false
   props.category.cardModelLabelItalic = false
   props.category.cardModelLabelUnderline = false
+  props.category.cardModelLabelColor = '#ffffff'
   props.category.cardModelLabelText = 'Modelo'
-  props.category.tagFontFamily = 'Inter'
-  props.category.tagFontSize = '10px'
-  props.category.tagBold = false
-  props.category.tagItalic = false
-  props.category.tagUnderline = false
-  props.category.tagOffsetX = '0px'
-  props.category.tagOffsetY = '0px'
-  props.category.titleFontFamily = 'Verdana'
-  props.category.titleBold = true
-  props.category.titleItalic = false
-  props.category.titleUnderline = false
-  props.category.specsFontFamily = 'Inter'
+  props.category.specsFontFamily = 'Calibri'
   props.category.specsBold = false
   props.category.specsItalic = false
   props.category.specsUnderline = false
+  props.category.specsValBold = false
+  props.category.specsValItalic = true
+  props.category.specsValUnderline = false
   props.category.specsLabelWidth = '45%'
   props.category.specsValueWidth = '55%'
   props.category.specsPaddingY = '4px'
-  props.category.specsLineStyle = 'none'
+  props.category.specsLineStyle = 'dashed'
   props.category.specsLineColor = '#cbd5e1'
   props.category.specsBgColor = '#F1F1F1'
-  props.category.cardTitleColor = '#ffffff'
-  props.category.cardModelColor = '#ffffff'
-  props.category.cardModelLabelColor = '#ffffff'
-  props.category.tagColor = '#ffffff'
   props.category.specsColor = '#374151'
   props.category.specsValColor = '#000000'
-  props.category.coverTitleFontFamily = 'Helvetica'
-  props.category.coverTitleFontSize = '20px'
+  props.category.logoWidth = '380px'
+  props.category.logoHeight = '200px'
+  props.category.logoPositionX = '-60px'
+  props.category.logoPositionY = '-30px'
+  props.category.cardHeaderLayout = 'model-left'
+  props.category.tagFontFamily = 'Calibri'
+  props.category.tagFontSize = '9px'
+  props.category.tagBold = false
+  props.category.tagItalic = false
+  props.category.tagUnderline = false
+  props.category.tagOffsetX = '50px'
+  props.category.tagOffsetY = '3px'
+  props.category.tagColor = '#ffffff'
+  props.category.badgeIconSize = '7.5mm'
+  props.category.badgeFontFamily = 'Calibri'
+  props.category.badgeFontSize = '15pt'
+  props.category.badgeColor = '#D9D9D9'
+  props.category.badgePositionX = '-12px'
+  props.category.badgePositionY = '35px'
+  props.category.badgeIconOffsetX = '5px'
+  props.category.badgeIconOffsetY = '0px'
+  props.category.badgeTextOffsetX = '-8px'
+  props.category.badgeTextOffsetY = '-5px'
+  props.category.coverTitleFontFamily = 'Roboto'
+  props.category.coverTitleFontSize = '29px'
   props.category.coverTitleBold = true
   props.category.coverTitleItalic = false
   props.category.coverTitleUnderline = false
@@ -648,66 +675,109 @@ const handleResetToDefaults = () => {
   props.category.coverTitleOffsetX = '0px'
   props.category.coverTitleOffsetY = '0px'
   props.category.coverSubtitleText = 'CATÁLOGO DE PRODUTOS'
-  props.category.coverSubtitleFontFamily = 'Helvetica'
-  props.category.coverSubtitleFontSize = '8px'
+  props.category.coverSubtitleFontFamily = 'Source Sans Pro'
+  props.category.coverSubtitleFontSize = '13px'
   props.category.coverSubtitleBold = false
   props.category.coverSubtitleItalic = false
   props.category.coverSubtitleUnderline = false
   props.category.coverSubtitleColor = '#ffffff'
   props.category.coverSubtitleOffsetX = '0px'
   props.category.coverSubtitleOffsetY = '0px'
-  props.category.logoWidth = '380px'
-  props.category.logoHeight = '150px'
-  props.category.logoPositionX = '-80px'
-  props.category.logoPositionY = '60px'
-  props.category.specsValBold = false
-  props.category.specsValItalic = false
-  props.category.specsValUnderline = false
-  props.category.cardHeaderLayout = 'model-left'
-  props.category.landscapeSettings = {}
+  props.category.orientation = 'portrait'
+  props.category.landscapeSettings = null
   props.category.layout_settings = {
     "1": {
-      "productImageOffsetY": "12",
+      "tagBold": false,
+      "blockGap": "1.5",
+      "tagItalic": false,
+      "specsWidth": "",
+      "tagOffsetX": "-5px",
+      "tagOffsetY": "70px",
+      "specsHeight": "",
+      "tagFontSize": "11px",
       "headerHeight": "25",
-      "blockGap": "1.5"
+      "specsOffsetY": "",
+      "tagUnderline": false,
+      "cardModelBold": "",
+      "cardTitleBold": "",
+      "headerOffsetY": "",
+      "tagFontFamily": "Calibri",
+      "titleFontSize": "28px",
+      "titlePositionY": "-24px",
+      "titleFontFamily": "Calibri",
+      "cardModelOffsetY": "-1px",
+      "cardTitleOffsetX": "-5px",
+      "cardTitleOffsetY": "40px",
+      "cardModelFontSize": "11px",
+      "cardTitleFontSize": "14px",
+      "cardModelLabelBold": false,
+      "cardModelFontFamily": "Calibri",
+      "cardTitleFontFamily": "Calibri",
+      "cardModelLabelOffsetY": "-2px",
+      "cardModelLabelFontSize": "14px",
+      "cardModelLabelFontFamily": "Calibri"
     },
     "3": {
+      "blockGap": "2",
       "specsBold": false,
+      "titleBold": true,
+      "specsWidth": "",
+      "tagOffsetX": "-350px",
       "cardOffsetX": "0px",
       "cardOffsetY": "0px",
+      "specsHeight": "",
       "specsItalic": false,
-      "cardModelBold": false,
-      "cardTitleBold": false,
+      "tagFontSize": "9",
+      "titleItalic": false,
+      "headerHeight": "34",
+      "specsBgColor": "#E6E7E8",
+      "specsOffsetY": "",
+      "specsValBold": true,
+      "cardModelBold": true,
+      "cardTitleBold": true,
       "fontSizeSpecs": "8px",
+      "headerOffsetY": "",
       "specsPaddingY": "4px",
+      "tagFontFamily": "Calibri",
+      "titleFontSize": "28px",
+      "coverTitleBold": true,
       "productSpacing": "24px",
-      "specsLineColor": "#cbd5e1",
-      "specsLineStyle": "dashed",
+      "specsLineColor": "#F2F2F2",
+      "specsLineStyle": "dotted",
       "specsUnderline": false,
+      "specsValItalic": false,
+      "titlePositionY": "-13px",
+      "titleUnderline": false,
       "cardLayoutOrder": "image-first",
       "cardModelItalic": false,
       "cardTitleItalic": false,
-      "specsFontFamily": "Inter",
+      "specsFontFamily": "Calibri",
       "specsLabelWidth": "45%",
       "specsValueWidth": "55%",
-      "cardModelOffsetX": "0px",
+      "titleFontFamily": "Montserrat Extra Bold",
+      "cardModelOffsetX": "330px",
       "cardModelOffsetY": "0px",
       "cardTitleOffsetX": "0px",
       "cardTitleOffsetY": "0px",
-      "dividerLineColor": "#cbd5e1",
-      "cardModelFontSize": "24px",
+      "dividerLineColor": "#F2F2F2",
+      "cardModelFontSize": "28px",
+      "cardModelLabelBold": true,
       "cardModelUnderline": false,
       "cardTitleUnderline": false,
-      "cardModelFontFamily": "Inter",
-      "cardTitleFontFamily": "Inter",
-      "productImageOffsetY": "0px",
-      "headerHeight": "34",
-      "blockGap": "2"
+      "coverTitleFontSize": "12px",
+      "cardModelFontFamily": "Calibri",
+      "cardTitleFontFamily": "Calibri",
+      "cardModelLabelItalic": false,
+      "coverTitleFontFamily": "Source Sans Pro",
+      "cardModelLabelUnderline": false
     },
     "6": {
-      "cardTitleFontFamily": "Verdana",
+      "blockGap": "2",
+      "specsWidth": "",
+      "specsHeight": "",
       "headerHeight": "40",
-      "blockGap": "2"
+      "specsOffsetY": "",
+      "headerOffsetY": ""
     }
   }
 

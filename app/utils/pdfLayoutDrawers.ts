@@ -94,11 +94,17 @@ export function drawLayout3(
       settings,
       false,
       product.exImageUrl || product.ex_image_url ? `ex_${product.id}` : null,
-      opts.imageCache
+      opts.imageCache,
+      !!(product.exImageUrl || product.ex_image_url) // hasExImage
     )
 
     // Draw datasheet link at the bottom of grey block
     drawDatasheetLink(pdf, product, specsX + specsOffX + specsW - 4, cardY + headerH + blockGap + specsOffY + specsH - 11, true)
+
+    // Calculate final scale: Global PDF scale × Individual product scale
+    const globalScale = (settings.pdf_image_scale !== undefined && settings.pdf_image_scale !== null) ? Number(settings.pdf_image_scale) : 1.0
+    const individualScale = (product.imageScale !== undefined && product.imageScale !== null) ? Number(product.imageScale) : ((product.image_scale !== undefined && product.image_scale !== null) ? Number(product.image_scale) : 1.0)
+    const finalScale = globalScale * individualScale
 
     addImageSafe(
       pdf,
@@ -108,12 +114,14 @@ export function drawLayout3(
       cardY + 4 + offY,
       imgW,
       cardH - 8,
-      (product.imageScale !== undefined && product.imageScale !== null) ? Number(product.imageScale) : ((product.image_scale !== undefined && product.image_scale !== null) ? Number(product.image_scale) : 1.0),
+      finalScale,
       (product.imageOffsetX !== undefined && product.imageOffsetX !== null) ? Number(product.imageOffsetX) : ((product.image_offset_x !== undefined && product.image_offset_x !== null) ? Number(product.image_offset_x) : 0),
       (product.imageOffsetY !== undefined && product.imageOffsetY !== null) ? Number(product.imageOffsetY) : ((product.image_offset_y !== undefined && product.image_offset_y !== null) ? Number(product.image_offset_y) : 0)
     )
 
-    if (i === 0 && products.length > 1) {
+    // Não desenhar linha divisória se qualquer produto tiver imagem EX
+    const hasExImage = products.some(p => p.ex_image_url || p.exImageUrl)
+    if (i === 0 && products.length > 1 && !hasExImage) {
       const divColor = settings.divider_line_color || '#cbd5e1'
       setDrawRgb(pdf, divColor)
       pdf.setLineWidth(0.2)
@@ -204,11 +212,17 @@ export function drawLayout6(
       settings,
       true,
       product.exImageUrl || product.ex_image_url ? `ex_${product.id}` : null,
-      opts.imageCache
+      opts.imageCache,
+      !!(product.exImageUrl || product.ex_image_url) // hasExImage
     )
 
     // Draw datasheet link at the bottom of grey block
     drawDatasheetLink(pdf, product, x + specsOffX + specsW - 2, specsCellY + specsOffY + specsH - 11, true)
+
+    // Calculate final scale: Global PDF scale × Individual product scale
+    const globalScale = (settings.pdf_image_scale !== undefined && settings.pdf_image_scale !== null) ? Number(settings.pdf_image_scale) : 1.0
+    const individualScale = (product.imageScale !== undefined && product.imageScale !== null) ? Number(product.imageScale) : ((product.image_scale !== undefined && product.image_scale !== null) ? Number(product.image_scale) : 1.0)
+    const finalScale = globalScale * individualScale
 
     addImageSafe(
       pdf,
@@ -218,13 +232,15 @@ export function drawLayout6(
       imgCellY + offY,
       cellW - 4,
       imgH - 2,
-      (product.imageScale !== undefined && product.imageScale !== null) ? Number(product.imageScale) : ((product.image_scale !== undefined && product.image_scale !== null) ? Number(product.image_scale) : 1.0),
+      finalScale,
       (product.imageOffsetX !== undefined && product.imageOffsetX !== null) ? Number(product.imageOffsetX) : ((product.image_offset_x !== undefined && product.image_offset_x !== null) ? Number(product.image_offset_x) : 0),
       (product.imageOffsetY !== undefined && product.imageOffsetY !== null) ? Number(product.imageOffsetY) : ((product.image_offset_y !== undefined && product.image_offset_y !== null) ? Number(product.image_offset_y) : 0)
     )
   }
 
-  if (products.length > 3) {
+  // Não desenhar linhas divisórias se qualquer produto tiver imagem EX
+  const hasExImage = products.some(p => p.ex_image_url || p.exImageUrl)
+  if (products.length > 3 && !hasExImage) {
     const divColor = settings.divider_line_color || settings.dividerLineColor || '#cbd5e1'
     setDrawRgb(pdf, divColor)
     pdf.setLineWidth(0.2)
@@ -297,11 +313,17 @@ export function drawLayout1(
     settings,
     false,
     product.exImageUrl || product.ex_image_url ? `ex_${product.id}` : null,
-    opts.imageCache
+    opts.imageCache,
+    !!(product.exImageUrl || product.ex_image_url)
   )
 
   // Draw datasheet link at the bottom of grey block
   drawDatasheetLink(pdf, product, contentX + specsOffX + specsW - 5, cardY + headerH + blockGap + specsOffY + specsH - 11, true)
+
+  // Calculate final scale: Global PDF scale × Individual product scale
+  const globalScale = (settings.pdf_image_scale !== undefined && settings.pdf_image_scale !== null) ? Number(settings.pdf_image_scale) : 1.0
+  const individualScale = (product.imageScale !== undefined && product.imageScale !== null) ? Number(product.imageScale) : ((product.image_scale !== undefined && product.image_scale !== null) ? Number(product.image_scale) : 1.0)
+  const finalScale = globalScale * individualScale
 
   addImageSafe(
     pdf,
@@ -311,7 +333,7 @@ export function drawLayout1(
     imgY + offY,
     contentW - 20,
     imgH - 4,
-    (product.imageScale !== undefined && product.imageScale !== null) ? Number(product.imageScale) : ((product.image_scale !== undefined && product.image_scale !== null) ? Number(product.image_scale) : 1.0),
+    finalScale,
     (product.imageOffsetX !== undefined && product.imageOffsetX !== null) ? Number(product.imageOffsetX) : ((product.image_offset_x !== undefined && product.image_offset_x !== null) ? Number(product.image_offset_x) : 0),
     (product.imageOffsetY !== undefined && product.imageOffsetY !== null) ? Number(product.imageOffsetY) : ((product.image_offset_y !== undefined && product.image_offset_y !== null) ? Number(product.image_offset_y) : 0)
   )

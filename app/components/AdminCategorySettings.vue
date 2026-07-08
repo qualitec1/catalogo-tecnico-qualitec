@@ -55,7 +55,7 @@
           <!-- Right side: PDF Layout Configuration (Collapsible) -->
           <AdminCategoryPdfSettings
             :category="category"
-            @replicate-section="openReplicateModal(category, $event)"
+            @replicate-section="(data) => openReplicateModal(category, data.fields, data.density)"
           />
         </div>
       </div>
@@ -101,7 +101,7 @@ const emit = defineEmits<{
   (e: 'create-category', name: string): void
   (e: 'save-category', category: Category): void
   (e: 'delete-category', id: string): void
-  (e: 'replicate-settings', payload: { source: Category, targetIds: string[], fields: string[] | null }): void
+  (e: 'replicate-settings', payload: { source: Category, targetIds: string[], fields: string[] | null, density?: string }): void
   (e: 'publish-catalog', category: Category): void
 }>()
 
@@ -145,23 +145,44 @@ const replicateModalOpen = ref(false)
 const sourceCategory = ref<Category | null>(null)
 const replicateFields = ref<string[] | null>(null)
 const replicateAll = ref(true)
+const replicateDensity = ref<string>('geral')
 
-const openReplicateModal = (category: Category, fields: string[] | null = null) => {
+const openReplicateModal = (category: Category, fields: string[] | null = null, density: string = 'geral') => {
+  console.log('🚀🚀🚀 [AdminCategorySettings] openReplicateModal called!', {
+    category: category?.category,
+    categoryId: category?.id,
+    fields,
+    fieldsIsNull: fields === null,
+    fieldsIsArray: Array.isArray(fields),
+    density
+  })
   sourceCategory.value = category
   replicateFields.value = fields
   replicateAll.value = fields === null
+  replicateDensity.value = density
   replicateModalOpen.value = true
+  console.log('🚀🚀🚀 [AdminCategorySettings] Modal state after open:', {
+    replicateModalOpen: replicateModalOpen.value,
+    sourceCategory: sourceCategory.value?.category,
+    replicateFieldsCount: replicateFields.value?.length || 'ALL',
+    replicateDensity: replicateDensity.value
+  })
 }
 
 const closeReplicateModal = () => {
   sourceCategory.value = null
   replicateFields.value = null
   replicateAll.value = true
+  replicateDensity.value = 'geral'
   replicateModalOpen.value = false
 }
 
 const handleReplicate = (payload: { source: Category, targetIds: string[], fields: string[] | null }) => {
-  emit('replicate-settings', payload)
+  console.log('[AdminCategorySettings] handleReplicate called', payload, 'density:', replicateDensity.value)
+  emit('replicate-settings', {
+    ...payload,
+    density: replicateDensity.value
+  })
   closeReplicateModal()
 }
 </script>
