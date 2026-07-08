@@ -55,8 +55,11 @@
         <button @click="currentTab = 'produtos'" :class="currentTab === 'produtos' ? 'bg-slate-900 text-white font-bold' : 'text-slate-600 hover:bg-slate-100 font-semibold'" class="px-6 py-2.5 text-xs uppercase tracking-wider rounded transition-colors mr-2 border-0">
           Equipamentos
         </button>
-        <button @click="currentTab = 'categorias'" :class="currentTab === 'categorias' ? 'bg-slate-900 text-white font-bold' : 'text-slate-600 hover:bg-slate-100 font-semibold'" class="px-6 py-2.5 text-xs uppercase tracking-wider rounded transition-colors border-0">
+        <button @click="currentTab = 'categorias'" :class="currentTab === 'categorias' ? 'bg-slate-900 text-white font-bold' : 'text-slate-600 hover:bg-slate-100 font-semibold'" class="px-6 py-2.5 text-xs uppercase tracking-wider rounded transition-colors mr-2 border-0">
           Categorias & Customização PDF
+        </button>
+        <button @click="currentTab = 'arquivos'" :class="currentTab === 'arquivos' ? 'bg-slate-900 text-white font-bold' : 'text-slate-600 hover:bg-slate-100 font-semibold'" class="px-6 py-2.5 text-xs uppercase tracking-wider rounded transition-colors border-0">
+          Upload de Arquivos
         </button>
       </div>
 
@@ -95,6 +98,13 @@
           @delete-category="deleteCategoryAsset"
           @replicate-settings="replicateCategorySettings"
           @publish-catalog="handlePublishCatalog"
+        />
+      </div>
+
+      <!-- Tab: File Manager -->
+      <div v-show="currentTab === 'arquivos'">
+        <AdminFileManager 
+          @toast="showToastMessage"
         />
       </div>
     </main>
@@ -160,6 +170,10 @@ const triggerToast = (message: string, type: 'success' | 'error' = 'success') =>
   setTimeout(() => {
     showToast.value = false
   }, 4000)
+}
+
+const showToastMessage = (payload: { message: string; type: 'success' | 'error' }) => {
+  triggerToast(payload.message, payload.type)
 }
 
 const currentTab = ref('produtos')
