@@ -30,22 +30,43 @@ export default defineEventHandler(async (event) => {
     })
   }
 
+  // Check if custom name was provided
+  const customNameField = multipart.find((item) => item.name === 'customName')
+  const customName = customNameField ? customNameField.data.toString('utf-8').trim() : ''
+
   const fileData = fileField.data
   const originalName = fileField.filename
   const contentType = fileField.type || 'application/octet-stream'
 
-  // Generate a unique filename using a timestamp and a short random hash to prevent collisions
+  // Generate filename based on custom name or original name
   const extensionIndex = originalName.lastIndexOf('.')
   const extension = extensionIndex !== -1 ? originalName.substring(extensionIndex) : ''
-  const baseName = extensionIndex !== -1 ? originalName.substring(0, extensionIndex) : originalName
   
-  const cleanBaseName = baseName
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '') // Remove accents
-    .replace(/[^a-z0-9_-]/g, '_')   // Replace spaces and special characters with underscore
+  let finalName: string
+  
+  if (customName) {
+    // Use custom name provided by user
+    const cleanCustomName = customName
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '') // Remove accents
+      .replace(/[^a-z0-9_-]/g, '_')   // Replace spaces and special characters with underscore
+      .replace(/_+/g, '_')             // Replace multiple underscores with single
+      .replace(/^_|_$/g, '')           // Remove leading/trailing underscores
+    
+    finalName = `${cleanCustomName}${extension}`
+  } else {
+    // Generate automatic unique name
+    const baseName = extensionIndex !== -1 ? originalName.substring(0, extensionIndex) : originalName
+    
+    const cleanBaseName = baseName
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '') // Remove accents
+      .replace(/[^a-z0-9_-]/g, '_')   // Replace spaces and special characters with underscore
 
-  const uniqueName = `${Date.now()}_${Math.random().toString(36).substring(2, 8)}_${cleanBaseName}${extension}`
+    finalName = `${Date.now()}_${Math.random().toString(36).substring(2, 8)}_${cleanBaseName}${extension}`
+  }
 
   // Initialize S3 client for Cloudflare R2
   const s3 = new S3Client({
@@ -62,7 +83,7 @@ export default defineEventHandler(async (event) => {
     await s3.send(
       new PutObjectCommand({
         Bucket: r2Config.bucketName,
-        Key: uniqueName,
+        Key: finalName,
         Body: fileData,
         ContentType: contentType,
       })
@@ -71,12 +92,12 @@ export default defineEventHandler(async (event) => {
     // Build the public URL using the configured public URL base
     const publicUrlBase = r2Config.publicUrl || `https://pub-${r2Config.accountId}.r2.dev`
     const formattedUrlBase = publicUrlBase.endsWith('/') ? publicUrlBase : `${publicUrlBase}/`
-    const publicUrl = `${formattedUrlBase}${uniqueName}`
+    const publicUrl = `${formattedUrlBase}${finalName}`
 
     return {
       success: true,
       url: publicUrl,
-      filename: uniqueName,
+      filename: finalName,
       originalName: originalName,
     }
   } catch (error: any) {

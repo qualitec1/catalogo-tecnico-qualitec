@@ -39,6 +39,54 @@
         </p>
       </div>
 
+      <!-- Files to Upload Preview -->
+      <div v-if="pendingFiles.length > 0" class="mt-4 space-y-2">
+        <div class="flex items-center justify-between mb-2">
+          <h4 class="text-xs font-bold text-gray-700 uppercase">Arquivos para Upload</h4>
+          <button
+            @click="clearPendingFiles"
+            class="text-xs text-gray-500 hover:text-red-600 transition-colors"
+          >
+            Limpar todos
+          </button>
+        </div>
+        <div v-for="(pending, idx) in pendingFiles" :key="idx" class="bg-gray-50 rounded border border-gray-200 p-3">
+          <div class="flex items-start space-x-3">
+            <span class="material-symbols-outlined text-gray-400 text-2xl mt-1">
+              {{ getFileIconByName(pending.file.name) }}
+            </span>
+            <div class="flex-1 min-w-0">
+              <p class="text-xs text-gray-500 mb-1">Nome original: {{ pending.file.name }}</p>
+              <div class="flex items-center space-x-2">
+                <input
+                  v-model="pending.customName"
+                  @input="updateCustomName(idx)"
+                  placeholder="Nome customizado (opcional)"
+                  class="flex-1 text-xs border border-gray-300 rounded px-2 py-1.5 focus:outline-none focus:border-blue-500"
+                />
+                <button
+                  @click="removePendingFile(idx)"
+                  class="text-gray-400 hover:text-red-600 transition-colors"
+                  title="Remover"
+                >
+                  <span class="material-symbols-outlined text-lg">close</span>
+                </button>
+              </div>
+              <p class="text-[10px] text-gray-400 mt-1">
+                Preview: {{ pending.finalName || 'Nome será gerado automaticamente' }}
+              </p>
+            </div>
+          </div>
+        </div>
+        <button
+          @click="uploadPendingFiles"
+          :disabled="uploading"
+          class="w-full px-4 py-2 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded transition-colors disabled:opacity-50"
+        >
+          {{ uploading ? 'Enviando...' : `Enviar ${pendingFiles.length} arquivo(s)` }}
+        </button>
+      </div>
+
       <!-- Upload Progress -->
       <div v-if="uploading" class="mt-4">
         <div class="flex items-center justify-between mb-2">
@@ -230,9 +278,16 @@ interface UploadedFile {
   description: string | null
 }
 
+interface PendingFile {
+  file: File
+  customName: string
+  finalName: string
+}
+
 const supabase = useSupabaseClient()
 const fileInput = ref<HTMLInputElement | null>(null)
 const files = ref<UploadedFile[]>([])
+const pendingFiles = ref<PendingFile[]>([])
 const loading = ref(false)
 const uploading = ref(false)
 const uploadProgress = ref(0)
@@ -271,40 +326,91 @@ function triggerFileInput() {
 function handleFileSelect(event: Event) {
   const target = event.target as HTMLInputElement
   if (target.files) {
-    uploadFiles(Array.from(target.files))
+    addPendingFiles(Array.from(target.files))
   }
 }
 
 function handleDrop(event: DragEvent) {
   isDragging.value = false
   if (event.dataTransfer?.files) {
-    uploadFiles(Array.from(event.dataTransfer.files))
+    addPendingFiles(Array.from(event.dataTransfer.files))
   }
 }
 
-async function uploadFiles(fileList: File[]) {
-  if (fileList.length === 0) return
+function addPendingFiles(fileList: File[]) {
+  for (const file of fileList) {
+    pendingFiles.value.push({
+      file,
+      customName: '',
+      finalName: generatePreviewName(file.name, '')
+    })
+  }
+}
+
+function generatePreviewName(originalName: string, customName: string): string {
+  if (!customName.trim()) {
+    return 'auto_' + cleanFileName(originalName)
+  }
+  
+  const extension = getFileExtension(originalName)
+  const cleanCustom = cleanFileName(customName)
+  return extension ? `${cleanCustom}${extension}` : cleanCustom
+}
+
+function cleanFileName(name: string): string {
+  // Remove extension if present
+  const lastDotIndex = name.lastIndexOf('.')
+  const nameWithoutExt = lastDotIndex > 0 ? name.substring(0, lastDotIndex) : name
+  
+  return nameWithoutExt
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '') // Remove accents
+    .replace(/[^a-z0-9_-]/g, '_')   // Replace spaces and special characters
+    .replace(/_+/g, '_')             // Replace multiple underscores with single
+    .replace(/^_|_$/g, '')           // Remove leading/trailing underscores
+}
+
+function getFileExtension(filename: string): string {
+  const lastDotIndex = filename.lastIndexOf('.')
+  return lastDotIndex > 0 ? filename.substring(lastDotIndex) : ''
+}
+
+function updateCustomName(idx: number) {
+  const pending = pendingFiles.value[idx]
+  pending.finalName = generatePreviewName(pending.file.name, pending.customName)
+}
+
+function removePendingFile(idx: number) {
+  pendingFiles.value.splice(idx, 1)
+}
+
+function clearPendingFiles() {
+  pendingFiles.value = []
+  if (fileInput.value) {
+    fileInput.value.value = ''
+  }
+}
+
+async function uploadPendingFiles() {
+  if (pendingFiles.value.length === 0) return
 
   uploading.value = true
   uploadProgress.value = 0
 
   try {
-    const totalFiles = fileList.length
+    const totalFiles = pendingFiles.value.length
     let completedFiles = 0
 
-    for (const file of fileList) {
-      await uploadSingleFile(file)
+    for (const pending of pendingFiles.value) {
+      await uploadSingleFile(pending.file, pending.customName)
       completedFiles++
       uploadProgress.value = Math.round((completedFiles / totalFiles) * 100)
     }
 
     emit('toast', { message: `${totalFiles} arquivo(s) enviado(s) com sucesso!`, type: 'success' })
     await fetchFiles()
-    
-    // Reset file input
-    if (fileInput.value) {
-      fileInput.value.value = ''
-    }
+    clearPendingFiles()
   } catch (err: any) {
     console.error('Upload error:', err)
     emit('toast', { message: 'Erro ao enviar arquivos', type: 'error' })
@@ -314,9 +420,14 @@ async function uploadFiles(fileList: File[]) {
   }
 }
 
-async function uploadSingleFile(file: File) {
+async function uploadSingleFile(file: File, customName: string) {
   const formData = new FormData()
   formData.append('file', file)
+  
+  // Send custom name if provided
+  if (customName.trim()) {
+    formData.append('customName', customName.trim())
+  }
 
   // Upload to R2
   const uploadResponse = await fetch('/api/upload-r2', {
@@ -328,13 +439,13 @@ async function uploadSingleFile(file: File) {
     throw new Error('Upload failed')
   }
 
-  const { url } = await uploadResponse.json()
+  const { url, filename } = await uploadResponse.json()
 
   // Save to database
   const { error } = await supabase
     .from('uploaded_files')
     .insert({
-      filename: file.name,
+      filename: filename,
       original_filename: file.name,
       file_url: url,
       file_type: file.type || null,
@@ -395,6 +506,17 @@ function getFileIcon(fileType: string | null): string {
   if (fileType.includes('word') || fileType.includes('document')) return 'description'
   if (fileType.includes('video')) return 'videocam'
   if (fileType.includes('audio')) return 'audio_file'
+  return 'insert_drive_file'
+}
+
+function getFileIconByName(filename: string): string {
+  const ext = filename.toLowerCase().split('.').pop() || ''
+  if (ext === 'pdf') return 'picture_as_pdf'
+  if (['xlsx', 'xls', 'csv'].includes(ext)) return 'table_chart'
+  if (['doc', 'docx'].includes(ext)) return 'description'
+  if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext)) return 'image'
+  if (['mp4', 'mov', 'avi'].includes(ext)) return 'videocam'
+  if (['mp3', 'wav'].includes(ext)) return 'audio_file'
   return 'insert_drive_file'
 }
 
