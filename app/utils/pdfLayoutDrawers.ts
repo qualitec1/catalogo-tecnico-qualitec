@@ -99,7 +99,7 @@ export function drawLayout3(
     )
 
     // Draw datasheet link at the bottom of grey block
-    drawDatasheetLink(pdf, product, specsX + specsOffX + specsW - 4, cardY + headerH + blockGap + specsOffY + specsH - 11, true)
+    drawDatasheetLink(pdf, product, specsX + specsOffX + specsW - 4, cardY + headerH + blockGap + specsOffY + specsH - 11, true, opts.forPrint)
 
     // Calculate final scale: Global PDF scale × Individual product scale
     const globalScale = (settings.pdf_image_scale !== undefined && settings.pdf_image_scale !== null) ? Number(settings.pdf_image_scale) : 1.0
@@ -193,13 +193,13 @@ export function drawLayout6(
     // Draw blue header block
     drawColoredHeader(pdf, product, x + headerOffX, headerCellY + headerOffY, headerW, headerH, color, settings, true)
 
-    // Draw grey specs block background
+    // Draw grey specs block background (border removed for cleaner look)
     const specsBg = settings.specs_bg_color || settings.specsBgColor || '#ffffff'
     setFillRgb(pdf, specsBg)
     pdf.rect(x + specsOffX, specsCellY + specsOffY, specsW, specsH, 'F')
-    setDrawRgb(pdf, '#e5e7eb')
-    pdf.setLineWidth(0.15)
-    pdf.rect(x + specsOffX, specsCellY + specsOffY, specsW, specsH, 'S')
+    // setDrawRgb(pdf, '#e5e7eb')
+    // pdf.setLineWidth(0.15)
+    // pdf.rect(x + specsOffX, specsCellY + specsOffY, specsW, specsH, 'S')
 
     // Draw specs table inside grey block
     drawSpecsTable(
@@ -217,7 +217,7 @@ export function drawLayout6(
     )
 
     // Draw datasheet link at the bottom of grey block
-    drawDatasheetLink(pdf, product, x + specsOffX + specsW - 2, specsCellY + specsOffY + specsH - 11, true)
+    drawDatasheetLink(pdf, product, x + specsOffX + specsW - 2, specsCellY + specsOffY + specsH - 11, true, opts.forPrint)
 
     // Calculate final scale: Global PDF scale × Individual product scale
     const globalScale = (settings.pdf_image_scale !== undefined && settings.pdf_image_scale !== null) ? Number(settings.pdf_image_scale) : 1.0
@@ -318,7 +318,7 @@ export function drawLayout1(
   )
 
   // Draw datasheet link at the bottom of grey block
-  drawDatasheetLink(pdf, product, contentX + specsOffX + specsW - 5, cardY + headerH + blockGap + specsOffY + specsH - 11, true)
+  drawDatasheetLink(pdf, product, contentX + specsOffX + specsW - 5, cardY + headerH + blockGap + specsOffY + specsH - 11, true, opts.forPrint)
 
   // Calculate final scale: Global PDF scale × Individual product scale
   const globalScale = (settings.pdf_image_scale !== undefined && settings.pdf_image_scale !== null) ? Number(settings.pdf_image_scale) : 1.0
@@ -337,4 +337,128 @@ export function drawLayout1(
     (product.imageOffsetX !== undefined && product.imageOffsetX !== null) ? Number(product.imageOffsetX) : ((product.image_offset_x !== undefined && product.image_offset_x !== null) ? Number(product.image_offset_x) : 0),
     (product.imageOffsetY !== undefined && product.imageOffsetY !== null) ? Number(product.imageOffsetY) : ((product.image_offset_y !== undefined && product.image_offset_y !== null) ? Number(product.image_offset_y) : 0)
   )
+}
+
+
+/**
+ * Layout 8 per page (4 cols × 2 rows) - for landscape PowerPoint mode
+ * Fits 8 products with all specs visible
+ */
+export function drawLayout8(
+  pdf: any,
+  products: any[],
+  contentX: number,
+  contentY: number,
+  contentW: number,
+  contentH: number,
+  opts: BuildOptions,
+  settings: any
+) {
+  const cols = 4
+  const rows = 2
+  const gapX = 3
+  const spacing = dimToMm(settings.product_spacing || settings.productSpacing, 3)
+  const gapY = spacing
+  const cellW = (contentW - gapX * (cols - 1)) / cols
+  const cellH = (contentH - gapY * (rows - 1)) / rows
+
+  const offX = dimToMm(settings.product_image_offset_x || settings.productImageOffsetX, 0)
+  const offY = dimToMm(settings.product_image_offset_y || settings.productImageOffsetY, 0)
+
+  const isSpecsFirst = (settings.card_layout_order || settings.cardLayoutOrder) === 'specs-first'
+
+  // Block positioning / sizing overrides - adjusted for smaller cards
+  const defaultHeaderH = 10
+  const hh8 = settings.header_height ?? settings.headerHeight
+  const hw8 = settings.header_width ?? settings.headerWidth
+  const headerH = parseSizeDim(hh8, defaultHeaderH)
+  const headerW = parseSizeDim(hw8, cellW)
+
+  const headerOffX = dimToMm(settings.header_offset_x || settings.headerOffsetX, 0)
+  const headerOffY = dimToMm(settings.header_offset_y || settings.headerOffsetY, 0)
+  const specsOffX = dimToMm(settings.specs_offset_x || settings.specsOffsetX, 0)
+  const specsOffY = dimToMm(settings.specs_offset_y || settings.specsOffsetY, 0)
+
+  const blockGap = dimToMm(settings.block_gap || settings.blockGap, 0.8)
+
+  for (let i = 0; i < products.length && i < 8; i++) {
+    const product = products[i]
+    const col = i % cols
+    const row = Math.floor(i / cols)
+    const x = contentX + col * (cellW + gapX)
+    const y = contentY + row * (cellH + gapY)
+    const color = opts.getBgColor(product.bgClass || product.bg_class, product.category)
+
+    const imgH = cellH * 0.30
+    const defaultSpecsH = cellH - imgH - headerH - blockGap - 2
+
+    const sh8 = settings.specs_height ?? settings.specsHeight
+    const sw8 = settings.specs_width ?? settings.specsWidth
+    const specsH = parseSizeDim(sh8, defaultSpecsH)
+    const specsW = parseSizeDim(sw8, cellW)
+
+    const imgCellY = isSpecsFirst ? y + headerH + blockGap + specsH + 1 : y + 1
+    const headerCellY = isSpecsFirst ? y : y + imgH
+    const specsCellY = isSpecsFirst ? y + headerH + blockGap : y + imgH + headerH + blockGap
+
+    // Draw blue header block
+    drawColoredHeader(pdf, product, x + headerOffX, headerCellY + headerOffY, headerW, headerH, color, settings, true)
+
+    // Draw grey specs block background (border removed for cleaner look)
+    const specsBg = settings.specs_bg_color || settings.specsBgColor || '#ffffff'
+    setFillRgb(pdf, specsBg)
+    pdf.rect(x + specsOffX, specsCellY + specsOffY, specsW, specsH, 'F')
+    // setDrawRgb(pdf, '#e5e7eb')
+    // pdf.setLineWidth(0.15)
+    // pdf.rect(x + specsOffX, specsCellY + specsOffY, specsW, specsH, 'S')
+
+    // Draw specs table inside grey block
+    drawSpecsTable(
+      pdf,
+      product.specs,
+      x + 0.8 + specsOffX,
+      specsCellY + specsOffY,
+      specsW - 1.6,
+      specsH - 10,
+      settings,
+      true,
+      product.exImageUrl || product.ex_image_url ? `ex_${product.id}` : null,
+      opts.imageCache,
+      !!(product.exImageUrl || product.ex_image_url) // hasExImage
+    )
+
+    // Draw datasheet link at the bottom of grey block
+    drawDatasheetLink(pdf, product, x + specsOffX + specsW - 2, specsCellY + specsOffY + specsH - 10, true, opts.forPrint)
+
+    // Calculate final scale: Global PDF scale × Individual product scale
+    const globalScale = (settings.pdf_image_scale !== undefined && settings.pdf_image_scale !== null) ? Number(settings.pdf_image_scale) : 1.0
+    const individualScale = (product.imageScale !== undefined && product.imageScale !== null) ? Number(product.imageScale) : ((product.image_scale !== undefined && product.image_scale !== null) ? Number(product.image_scale) : 1.0)
+    const finalScale = globalScale * individualScale
+
+    addImageSafe(
+      pdf,
+      opts.imageCache,
+      `product_${product.id}`,
+      x + 1.5 + offX,
+      imgCellY + offY,
+      cellW - 3,
+      imgH - 2,
+      finalScale,
+      (product.imageOffsetX !== undefined && product.imageOffsetX !== null) ? Number(product.imageOffsetX) : ((product.image_offset_x !== undefined && product.image_offset_x !== null) ? Number(product.image_offset_x) : 0),
+      (product.imageOffsetY !== undefined && product.imageOffsetY !== null) ? Number(product.imageOffsetY) : ((product.image_offset_y !== undefined && product.image_offset_y !== null) ? Number(product.image_offset_y) : 0)
+    )
+  }
+
+  // Não desenhar linhas divisórias se qualquer produto tiver imagem EX
+  const hasExImage = products.some(p => p.ex_image_url || p.exImageUrl)
+  if (products.length > 4 && !hasExImage) {
+    const divColor = settings.divider_line_color || settings.dividerLineColor || '#cbd5e1'
+    setDrawRgb(pdf, divColor)
+    pdf.setLineWidth(0.15)
+    const divY = contentY + cellH + spacing / 2
+    for (let col = 0; col < 4; col++) {
+      const x = contentX + col * (cellW + gapX)
+      pdf.line(x, divY, x + cellW, divY)
+    }
+  }
 }

@@ -58,6 +58,41 @@
         </div>
       </div>
 
+      <!-- Opção: PDF para WEB ou IMPRESSÃO -->
+      <div class="border-t border-gray-200 pt-4 mb-5">
+        <h4 class="text-xs font-bold text-slate-800 mb-2 uppercase tracking-wider">Tipo de PDF</h4>
+        <p class="text-[10px] text-gray-500 mb-3">
+          Escolha se o PDF terá links clicáveis ou será otimizado para impressão.
+        </p>
+        <div class="space-y-2">
+          <label class="flex items-start gap-3 p-3 border border-gray-200 rounded cursor-pointer hover:bg-gray-50 transition-colors">
+            <input type="radio" v-model="pdfType" value="web" class="mt-0.5 text-blue-650" />
+            <div>
+              <span class="text-xs font-bold text-slate-800 uppercase block flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-sm text-blue-600">link</span>
+                PDF para WEB
+              </span>
+              <span class="text-[10px] text-gray-500 block mt-0.5">
+                Incluir links clicáveis "Baixar Ficha Técnica" nos cards. Ideal para visualização digital.
+              </span>
+            </div>
+          </label>
+          
+          <label class="flex items-start gap-3 p-3 border border-gray-200 rounded cursor-pointer hover:bg-gray-50 transition-colors">
+            <input type="radio" v-model="pdfType" value="print" class="mt-0.5 text-blue-650" />
+            <div>
+              <span class="text-xs font-bold text-slate-800 uppercase block flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-sm text-gray-600">print</span>
+                PDF para IMPRESSÃO
+              </span>
+              <span class="text-[10px] text-gray-500 block mt-0.5">
+                Sem links nos cards. Layout limpo e otimizado para impressão física.
+              </span>
+            </div>
+          </label>
+        </div>
+      </div>
+
       <!-- Formulário rápido para Criar Nova Capa/Categoria -->
       <div class="border-t border-gray-200 pt-4 mb-5">
         <button 
@@ -133,12 +168,13 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: 'close'): void
-  (e: 'confirm', payload: { selection: 'dynamic' | 'GERAL' | 'specific', specificCategory: string }): void
+  (e: 'confirm', payload: { selection: 'dynamic' | 'GERAL' | 'specific', specificCategory: string, pdfType: 'web' | 'print' }): void
   (e: 'create-quick-category', payload: { name: string, color: string, imageName: string, imageBlob: string | null }): void
 }>()
 
 const coverCategorySelection = ref<'dynamic' | 'GERAL' | 'specific'>('dynamic')
 const specificCoverCategory = ref('')
+const pdfType = ref<'web' | 'print'>('web')
 
 // Quick Create State
 const showQuickCreate = ref(false)
@@ -200,7 +236,8 @@ const handleQuickCreateCategory = async () => {
 const submitConfirm = () => {
   emit('confirm', {
     selection: coverCategorySelection.value,
-    specificCategory: specificCoverCategory.value
+    specificCategory: specificCoverCategory.value,
+    pdfType: pdfType.value
   })
 }
 </script>

@@ -35,6 +35,7 @@ export function useCatalog() {
   const specificCoverCategory = ref('')
   const printPendingLandscape = ref(false)
   const selectedCoverCategoryOverride = ref<string | undefined>(undefined)
+  const pdfTypeSelection = ref<'web' | 'print'>('web')
 
   const hasGeralCover = computed(() => {
     return !!categoryAssets.value['GERAL']
@@ -181,10 +182,11 @@ export function useCatalog() {
     showPrintModal.value = false
   }
 
-  const confirmAndDownload = (payload?: { selection: 'dynamic' | 'GERAL' | 'specific', specificCategory: string }) => {
+  const confirmAndDownload = (payload?: { selection: 'dynamic' | 'GERAL' | 'specific', specificCategory: string, pdfType: 'web' | 'print' }) => {
     if (payload) {
       coverCategorySelection.value = payload.selection
       specificCoverCategory.value = payload.specificCategory
+      pdfTypeSelection.value = payload.pdfType
     }
     let targetCat = 'GERAL'
     if (coverCategorySelection.value === 'specific') {
@@ -316,6 +318,7 @@ export function useCatalog() {
     clearSelection,
     isGeneratingPdf,
     forceLandscapePdf,
+    pdfTypeSelection,
     downloadCatalog,
     downloadPowerPoint,
     closePrintModal,

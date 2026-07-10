@@ -3,7 +3,7 @@
  */
 
 import { drawCoverPage, drawPageHeader, drawPageFooter } from './pdfDrawHelpers'
-import { drawLayout1, drawLayout3, drawLayout6 } from './pdfLayoutDrawers'
+import { drawLayout1, drawLayout3, drawLayout6, drawLayout8 } from './pdfLayoutDrawers'
 import { getFontName } from './pdfDocUtils'
 
 // Re-export types and functions to preserve API contract
@@ -261,11 +261,15 @@ export async function buildCatalogPdf(opts: any): Promise<any> {
     const footerH = 18 // Espaço para o número da página
     const contentH = pageH - contentY - footerH
 
-    // Determine which layout to use based on the dominant slot type
+    // Determine which layout to use based on landscape mode and dominant slot type
     const dominantSlots = opts.getSlots(page[0])
 
-    if (dominantSlots === 1) {
-      // 6 per page
+    // In landscape mode, use 8-per-page layout for better PowerPoint presentation
+    if (opts.isLandscape && dominantSlots === 1) {
+      // 8 per page in landscape (4x2 grid)
+      drawLayout8(pdf, page, MARGIN_X, contentY, contentW, contentH, opts, settings)
+    } else if (dominantSlots === 1) {
+      // 6 per page in portrait
       drawLayout6(pdf, page, MARGIN_X, contentY, contentW, contentH, opts, settings)
     } else if (dominantSlots === 6) {
       // 1 per page

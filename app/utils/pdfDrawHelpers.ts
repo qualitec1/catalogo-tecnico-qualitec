@@ -30,6 +30,7 @@ export interface BuildOptions {
   getPageSettings: (page: any[]) => any
   getBgColor: (bgClass: string | null | undefined, category?: string) => string
   getSlots: (product: any) => number
+  forPrint?: boolean
 }
 
 export function getDatasheetLink(product: any): string | null {
@@ -45,13 +46,16 @@ export function getDatasheetLink(product: any): string | null {
   return `/api/datasheet?id=${product.id}`
 }
 
-export function drawDatasheetLink(pdf: any, product: any, x: number, y: number, alignRight: boolean) {
+export function drawDatasheetLink(pdf: any, product: any, x: number, y: number, alignRight: boolean, forPrint: boolean = false) {
+  // Skip rendering the link if PDF is for print mode
+  if (forPrint) return
+  
   const linkUrl = getDatasheetLink(product)
   if (!linkUrl) return
 
   pdf.setFont('helvetica', 'bold')
   pdf.setFontSize(6.5)
-  pdf.setTextColor(37, 99, 235) // blue-600
+  pdf.setTextColor(156, 163, 175) // Cinza claro #9CA3AF (gray-400)
 
   const linkText = 'Baixar Ficha Técnica'
   const textWidth = pdf.getTextWidth(linkText)
@@ -62,7 +66,7 @@ export function drawDatasheetLink(pdf: any, product: any, x: number, y: number, 
   pdf.text(linkText, textX, textY)
   
   // Underline
-  pdf.setDrawColor(37, 99, 235)
+  pdf.setDrawColor(156, 163, 175) // Cinza claro #9CA3AF (gray-400)
   pdf.setLineWidth(0.12)
   pdf.line(textX, textY + 0.5, textX + textWidth, textY + 0.5)
 
@@ -270,7 +274,7 @@ export function drawPageFooter(pdf: any, pageNum: number, totalPages: number, pa
   // Desenhar número da página: esquerda se ímpar, direita se par
   pdf.setFont('helvetica', 'bold')
   pdf.setFontSize(12)
-  pdf.setTextColor(0, 32, 96) // Azul escuro #002060
+  pdf.setTextColor(180, 180, 180) // Cinza #B4B4B4 (mesma cor do email/site)
   
   const pageText = String(pageNum).padStart(2, '0')
   const pageTextWidth = pdf.getTextWidth(pageText)
@@ -279,14 +283,14 @@ export function drawPageFooter(pdf: any, pageNum: number, totalPages: number, pa
     ? marginFromEdge  // Ímpar: canto esquerdo
     : pageW - pageTextWidth - marginFromEdge  // Par: canto direito
   
-  // Desenhar linha azul acima do número
+  // Desenhar linha cinza acima do número
   const lineY = textY - 5
   const lineLength = 15
   const lineX = pageNum % 2 === 1
     ? marginFromEdge  // Ímpar: linha começa à esquerda
     : pageW - lineLength - marginFromEdge  // Par: linha à direita
   
-  pdf.setDrawColor(41, 98, 155) // Cor azul #29629B
+  pdf.setDrawColor(180, 180, 180) // Cinza #B4B4B4 (mesma cor do email/site)
   pdf.setLineWidth(0.1)
   pdf.line(lineX, lineY, lineX + lineLength, lineY)
   

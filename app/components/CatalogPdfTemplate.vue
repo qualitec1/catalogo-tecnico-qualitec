@@ -25,7 +25,8 @@ const props = defineProps<{
   isGenerating: boolean,
   forceLandscape?: boolean,
   coverCategory?: string,
-  publishMode?: boolean
+  publishMode?: boolean,
+  pdfType?: 'web' | 'print'
 }>()
 
 const emit = defineEmits(['complete', 'published'])
@@ -88,11 +89,14 @@ const pages = computed(() => {
       const prods = bySlots[slots] || []
       if (prods.length === 0) continue
 
+      // Determine max slots per page based on landscape mode and slot type
+      const maxSlotsPerPage = (isLandscape.value && slots === 1) ? 8 : 6
+
       const catPages: { products: Product[], usedSlots: number }[] = []
       for (const product of prods) {
         let foundPage = false
         for (const page of catPages) {
-          if (page.usedSlots + slots <= 6) {
+          if (page.usedSlots + slots <= maxSlotsPerPage) {
             page.products.push(product)
             page.usedSlots += slots
             foundPage = true
@@ -293,6 +297,7 @@ watch(() => props.isGenerating, async (newVal) => {
         getPageSettings,
         getBgColor,
         getSlots,
+        forPrint: props.pdfType === 'print'
       })
 
       // 4. Save locally

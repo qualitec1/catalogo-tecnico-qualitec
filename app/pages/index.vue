@@ -192,6 +192,7 @@
       :products="selectedProductObjects"
       :force-landscape="forceLandscapePdf"
       :cover-category="selectedCoverCategoryOverride"
+      :pdf-type="pdfTypeSelection"
       @complete="isGeneratingPdf = false"
     />
   </div>
@@ -226,6 +227,7 @@ const {
   clearSelection,
   isGeneratingPdf,
   forceLandscapePdf,
+  pdfTypeSelection,
   downloadCatalog,
   downloadPowerPoint,
   closePrintModal,
