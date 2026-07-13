@@ -155,7 +155,7 @@ export function useAdminCategorySettings() {
 
 // Função para resetar categoria para configurações padrão
 async function resetToDefaults(category: any, supabase: any) {
-  const defaultSettings = await import('~/config/defaultPdfSettings.json')
+  const { defaultPdfSettings } = await import('~/config/defaultPdfSettings')
   
   if (!confirm(`Deseja realmente resetar todas as configurações da categoria "${category.name}" para os valores padrão?`)) {
     return false
@@ -165,7 +165,7 @@ async function resetToDefaults(category: any, supabase: any) {
     const { error } = await supabase
       .from('categories')
       .update({
-        ...defaultSettings.default,
+        ...defaultPdfSettings,
         layout_settings: {}  // Limpar overrides de densidade
       })
       .eq('id', category.id)

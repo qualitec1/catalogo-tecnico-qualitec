@@ -1,5 +1,5 @@
 import { useState } from '#app'
-import defaultSettings from '~/config/defaultPdfSettings.json'
+import { defaultPdfSettings } from '~/config/defaultPdfSettings'
 
 export interface PdfSettings {
   id?: string
@@ -13,70 +13,9 @@ export interface PdfSettings {
   [key: string]: any
 }
 
-// Retorna os defaults compartilhados (configurações padrão do arquivo JSON)
+// Retorna os defaults compartilhados (configurações padrão do arquivo)
 const getSettingsDefaults = () => ({
-  ...defaultSettings
-})
-      "titleBold": true,
-      "specsWidth": "",
-      "tagOffsetX": "-350px",
-      "cardOffsetX": "0px",
-      "cardOffsetY": "0px",
-      "specsHeight": "",
-      "specsItalic": false,
-      "tagFontSize": "9",
-      "titleItalic": false,
-      "headerHeight": "34",
-      "specsBgColor": "#E6E7E8",
-      "specsOffsetY": "",
-      "specsValBold": true,
-      "cardModelBold": true,
-      "cardTitleBold": true,
-      "fontSizeSpecs": "8px",
-      "headerOffsetY": "",
-      "specsPaddingY": "4px",
-      "tagFontFamily": "Calibri",
-      "titleFontSize": "28px",
-      "coverTitleBold": true,
-      "productSpacing": "24px",
-      "specsLineColor": "#F2F2F2",
-      "specsLineStyle": "dotted",
-      "specsUnderline": false,
-      "specsValItalic": false,
-      "titlePositionY": "-13px",
-      "titleUnderline": false,
-      "cardLayoutOrder": "image-first",
-      "cardModelItalic": false,
-      "cardTitleItalic": false,
-      "specsFontFamily": "Calibri",
-      "specsLabelWidth": "45%",
-      "specsValueWidth": "55%",
-      "titleFontFamily": "Montserrat Extra Bold",
-      "cardModelOffsetX": "330px",
-      "cardModelOffsetY": "0px",
-      "cardTitleOffsetX": "0px",
-      "cardTitleOffsetY": "0px",
-      "dividerLineColor": "#F2F2F2",
-      "cardModelFontSize": "28px",
-      "cardModelLabelBold": true,
-      "cardModelUnderline": false,
-      "cardTitleUnderline": false,
-      "coverTitleFontSize": "12px",
-      "cardModelFontFamily": "Calibri",
-      "cardTitleFontFamily": "Calibri",
-      "cardModelLabelItalic": false,
-      "coverTitleFontFamily": "Source Sans Pro",
-      "cardModelLabelUnderline": false
-    },
-    "6": {
-      "blockGap": "2",
-      "specsWidth": "",
-      "specsHeight": "",
-      "headerHeight": "40",
-      "specsOffsetY": "",
-      "headerOffsetY": ""
-    }
-  }
+  ...defaultPdfSettings
 })
 
 export default function usePdfSettings() {
