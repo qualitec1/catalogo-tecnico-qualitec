@@ -144,23 +144,6 @@ const otherCategories = computed(() => {
 
 const replicationGroups = [
   {
-    name: 'Badge / Ícone Superior',
-    fields: [
-      { key: 'badgeText', label: 'Texto/Frase do Badge' },
-      { key: 'badgeIconUrl', label: 'URL do Ícone do Badge' },
-      { key: 'badgeIconSize', label: 'Tamanho do Ícone' },
-      { key: 'badgeFontFamily', label: 'Fonte da Frase' },
-      { key: 'badgeFontSize', label: 'Tamanho da Fonte' },
-      { key: 'badgeColor', label: 'Cor da Frase' },
-      { key: 'badgePositionX', label: 'Mover Tudo: Offset X' },
-      { key: 'badgePositionY', label: 'Mover Tudo: Offset Y' },
-      { key: 'badgeIconOffsetX', label: 'Mover Ícone: Offset X' },
-      { key: 'badgeIconOffsetY', label: 'Mover Ícone: Offset Y' },
-      { key: 'badgeTextOffsetX', label: 'Mover Frase: Offset X' },
-      { key: 'badgeTextOffsetY', label: 'Mover Frase: Offset Y' }
-    ]
-  },
-  {
     name: 'Título da Categoria',
     fields: [
       { key: 'titleFontSize', label: 'Tamanho da Fonte' },
@@ -288,7 +271,6 @@ const replicationGroups = [
     fields: [
       { key: 'dividerLineColor', label: 'Cor da Linha Divisória' },
       { key: 'orientation', label: 'Orientação Padrão' },
-      { key: 'landscapeSettings', label: 'Configurações de Paisagem' },
       { key: 'layoutSettings', label: 'Ajustes de Layout (1, 2 e 6 por Página)' }
     ]
   }

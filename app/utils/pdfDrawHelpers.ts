@@ -20,7 +20,6 @@ const MARGIN_BOTTOM = 8
 
 export interface BuildOptions {
   pages: any[][]
-  isLandscape: boolean
   categoryName: string
   categoryColor: string
   coverImageDataUrl: string | null
@@ -65,18 +64,13 @@ export function drawDatasheetLink(pdf: any, product: any, x: number, y: number, 
 
   pdf.text(linkText, textX, textY)
   
-  // Underline
-  pdf.setDrawColor(156, 163, 175) // Cinza claro #9CA3AF (gray-400)
-  pdf.setLineWidth(0.12)
-  pdf.line(textX, textY + 0.5, textX + textWidth, textY + 0.5)
-
   // Clickable hotspot in PDF
   pdf.link(textX, textY - 2.2, textWidth, 2.8, { url: linkUrl })
 }
 
 export function drawCoverPage(pdf: any, opts: BuildOptions) {
-  const pageW = opts.isLandscape ? A4_H : A4_W
-  const pageH = opts.isLandscape ? A4_W : A4_H
+  const pageW = A4_W
+  const pageH = A4_H
   const color = opts.categoryColor
 
   const settings = opts.getPageSettings([])
@@ -93,8 +87,8 @@ export function drawCoverPage(pdf: any, opts: BuildOptions) {
   addImageSafe(pdf, opts.imageCache, '__logo__', logoX, logoY, logoWidth, logoHeight)
 
   // 2. Gray band background
-  const bandTop = opts.isLandscape ? 98 : 143
-  const bandBottom = opts.isLandscape ? pageH - 16 : pageH - 21
+  const bandTop = 143
+  const bandBottom = pageH - 21
   setFillRgb(pdf, '#f0f2f5')
   pdf.rect(0, bandTop, pageW, bandBottom - bandTop, 'F')
 
@@ -116,9 +110,9 @@ export function drawCoverPage(pdf: any, opts: BuildOptions) {
   const titleOffY = dimToMm(settings.cover_title_offset_y || settings.coverTitleOffsetY, 0)
 
   // 3. Colored category block
-  const blockTop = opts.isLandscape ? 74 : 117
-  const blockW = opts.isLandscape ? 160 : 146
-  const blockH = opts.isLandscape ? 50 : 58
+  const blockTop = 117
+  const blockW = 146
+  const blockH = 58
   setFillRgb(pdf, color)
   pdf.rect(0, blockTop, blockW, blockH, 'F')
 
@@ -156,18 +150,220 @@ export function drawCoverPage(pdf: any, opts: BuildOptions) {
   }
 
   // 4. Cover image — bottom right
-  const imgAreaW = opts.isLandscape ? 130 : 122
-  const imgAreaH = opts.isLandscape ? 80 : 90
+  const imgAreaW = 122
+  const imgAreaH = 90
   const imgX = pageW - imgAreaW - 11
-  const imgY = pageH - imgAreaH - (opts.isLandscape ? 18 : 24)
+  const imgY = pageH - imgAreaH - 24
   addImageSafe(pdf, opts.imageCache, '__cover__', imgX, imgY, imgAreaW, imgAreaH)
 
   // 5. Website footer
   pdf.setFont('helvetica', 'normal')
   pdf.setFontSize(7)
   pdf.setTextColor(156, 163, 175)
-  const footerY = pageH - (opts.isLandscape ? 9 : 13)
+  const footerY = pageH - 13
   pdf.text('w w w . q u a l i t e c . i n d . b r', 16, footerY)
+}
+
+export function drawCoverPageScaled(pdf: any, opts: BuildOptions, offsetX: number, scale: number) {
+  const pageW = A4_W
+  const pageH = A4_H
+  const color = opts.categoryColor
+
+  const settings = opts.getPageSettings([])
+
+  const logoWidth = dimToMm(settings.logo_width || settings.logoWidth, 64) * scale
+  const logoHeight = dimToMm(settings.logo_height || settings.logoHeight, 20) * scale
+  const posX = dimToMm(settings.logo_position_x || settings.logoPositionX, 16) * scale
+  const posY = dimToMm(settings.logo_position_y || settings.logoPositionY, 16) * scale
+
+  const logoX = offsetX + (pageW * scale) - logoWidth - posX
+  const logoY = posY
+
+  // 1. Logo — top right
+  addImageSafe(pdf, opts.imageCache, '__logo__', logoX, logoY, logoWidth, logoHeight)
+
+  // 2. Gray band background
+  const bandTop = 143 * scale
+  const bandBottom = (pageH - 21) * scale
+  setFillRgb(pdf, '#f0f2f5')
+  pdf.rect(offsetX, bandTop, pageW * scale, bandBottom - bandTop, 'F')
+
+  // Cover Subtitle settings
+  const subText = settings.cover_subtitle_text || settings.coverSubtitleText || 'CATÁLOGO DE PRODUTOS'
+  const subFont = getFontName(settings.cover_subtitle_font_family || settings.coverSubtitleFontFamily)
+  const subStyle = getFontStyle(settings.cover_subtitle_bold || settings.coverSubtitleBold, settings.cover_subtitle_italic || settings.coverSubtitleItalic)
+  const subSize = parseFontSizePt(settings.cover_subtitle_font_size || settings.coverSubtitleFontSize, 8) * scale
+  const subColor = settings.cover_subtitle_color || settings.coverSubtitleColor || '#ffffff'
+  const subOffX = dimToMm(settings.cover_subtitle_offset_x || settings.coverSubtitleOffsetX, 0) * scale
+  const subOffY = dimToMm(settings.cover_subtitle_offset_y || settings.coverSubtitleOffsetY, 0) * scale
+
+  // Cover Title settings
+  const titleFont = getFontName(settings.cover_title_font_family || settings.coverTitleFontFamily)
+  const titleStyle = getFontStyle(settings.cover_title_bold || settings.coverTitleBold, settings.cover_title_italic || settings.coverTitleItalic)
+  const titleSize = parseFontSizePt(settings.cover_title_font_size || settings.coverTitleFontSize, 20) * scale
+  const titleColor = settings.cover_title_color || settings.coverTitleColor || '#ffffff'
+  const titleOffX = dimToMm(settings.cover_title_offset_x || settings.coverTitleOffsetX, 0) * scale
+  const titleOffY = dimToMm(settings.cover_title_offset_y || settings.coverTitleOffsetY, 0) * scale
+
+  // 3. Colored category block
+  const blockTop = 117 * scale
+  const blockW = 146 * scale
+  const blockH = 58 * scale
+  setFillRgb(pdf, color)
+  pdf.rect(offsetX, blockTop, blockW, blockH, 'F')
+
+  // Text inside block
+  const textX = offsetX + 13 * scale
+  
+  // Render Subtitle
+  pdf.setFont(subFont, subStyle)
+  pdf.setFontSize(subSize)
+  pdf.setTextColor(subColor)
+  const subX = textX + subOffX
+  const subY = blockTop + 14 * scale + subOffY
+  pdf.text(subText, subX, subY)
+  if (settings.cover_subtitle_underline || settings.coverSubtitleUnderline) {
+    drawTextUnderline(pdf, subText, subX, subY, subSize, subColor, 'left')
+  }
+
+  // Render Title
+  pdf.setFont(titleFont, titleStyle)
+  pdf.setFontSize(titleSize)
+  pdf.setTextColor(titleColor)
+  const catName = opts.categoryName === 'VÁLVULAS'
+    ? 'VÁLVULAS DE SEGURANÇA E ALÍVIO'
+    : opts.categoryName.toUpperCase()
+  const titleLines = pdf.splitTextToSize(catName, blockW - 26 * scale)
+  const mainTitleX = textX + titleOffX
+  const mainTitleY = blockTop + 24 * scale + titleOffY
+  pdf.text(titleLines, mainTitleX, mainTitleY)
+  if (settings.cover_title_underline || settings.coverTitleUnderline) {
+    let currentY = mainTitleY
+    const lineSpacing = titleSize * 0.35 + 0.5 * scale
+    for (let i = 0; i < titleLines.length; i++) {
+      drawTextUnderline(pdf, titleLines[i], mainTitleX, currentY + (i * lineSpacing), titleSize, titleColor, 'left')
+    }
+  }
+
+  // 4. Cover image — bottom right
+  const imgAreaW = 122 * scale
+  const imgAreaH = 90 * scale
+  const imgX = offsetX + (pageW * scale) - imgAreaW - 11 * scale
+  const imgY = (pageH - 90 - 24) * scale
+  addImageSafe(pdf, opts.imageCache, '__cover__', imgX, imgY, imgAreaW, imgAreaH)
+
+  // 5. Website footer
+  pdf.setFont('helvetica', 'normal')
+  pdf.setFontSize(7 * scale)
+  pdf.setTextColor(156, 163, 175)
+  const footerY = (pageH - 13) * scale
+  pdf.text('w w w . q u a l i t e c . i n d . b r', offsetX + 16 * scale, footerY)
+}
+
+export function drawCoverPageLandscape(pdf: any, opts: BuildOptions) {
+  // Landscape page: 297x210mm
+  // Layout adaptado do retrato para paisagem:
+  // - Bloco colorido: lado ESQUERDO (~57% largura × ~57% altura)
+  // - Banda cinza: parte INFERIOR da página, largura COMPLETA
+  // - Logo: canto superior DIREITO
+  // - Imagem do produto: dentro da banda cinza, lado DIREITO
+  
+  const pageW = 297  // Landscape width
+  const pageH = 210  // Landscape height
+  const color = opts.categoryColor
+  const settings = opts.getPageSettings([])
+
+  // 1. Banda cinza - parte INFERIOR, largura COMPLETA (desenhada primeiro, fica atrás do bloco)
+  const bandTop = pageH * 0.48  // ~100mm, começa a 48% da altura
+  const bandBottom = pageH - 15  // 15mm acima do fundo para o footer
+  setFillRgb(pdf, '#f0f2f5')
+  pdf.rect(0, bandTop, pageW, bandBottom - bandTop, 'F')
+
+  // 2. Bloco colorido - lado ESQUERDO, mais abaixo e menor altura
+  const blockX = 0
+  const blockY = 50  // Começa mais abaixo (deslocado do topo)
+  const blockW = pageW * 0.50   // ~148.5mm (50% da largura - metade)
+  const blockH = 70   // Altura reduzida (~70mm)
+  
+  setFillRgb(pdf, color)
+  pdf.rect(blockX, blockY, blockW, blockH, 'F')
+
+  // 3. Logo - canto superior DIREITO (fora do bloco colorido)
+  const logoWidth = dimToMm(settings.logo_width || settings.logoWidth, 64)
+  const logoHeight = dimToMm(settings.logo_height || settings.logoHeight, 20)
+  const logoPosXFromRight = dimToMm(settings.logo_position_x || settings.logoPositionX, 16)
+  const logoPosYFromTop = dimToMm(settings.logo_position_y || settings.logoPositionY, 16)
+  
+  const logoX = pageW - logoWidth - logoPosXFromRight
+  const logoY = logoPosYFromTop
+
+  addImageSafe(pdf, opts.imageCache, '__logo__', logoX, logoY, logoWidth, logoHeight)
+
+  // 4. Textos dentro do bloco colorido (centralizados verticalmente no bloco)
+  const subText = settings.cover_subtitle_text || settings.coverSubtitleText || 'CATÁLOGO DE PRODUTOS'
+  const subFont = getFontName(settings.cover_subtitle_font_family || settings.coverSubtitleFontFamily)
+  const subStyle = getFontStyle(settings.cover_subtitle_bold || settings.coverSubtitleBold, settings.cover_subtitle_italic || settings.coverSubtitleItalic)
+  const subSize = parseFontSizePt(settings.cover_subtitle_font_size || settings.coverSubtitleFontSize, 8)
+  const subColor = settings.cover_subtitle_color || settings.coverSubtitleColor || '#ffffff'
+  const subOffX = dimToMm(settings.cover_subtitle_offset_x || settings.coverSubtitleOffsetX, 0)
+  const subOffY = dimToMm(settings.cover_subtitle_offset_y || settings.coverSubtitleOffsetY, 0)
+
+  const titleFont = getFontName(settings.cover_title_font_family || settings.coverTitleFontFamily)
+  const titleStyle = getFontStyle(settings.cover_title_bold || settings.coverTitleBold, settings.cover_title_italic || settings.coverTitleItalic)
+  const titleSize = parseFontSizePt(settings.cover_title_font_size || settings.coverTitleFontSize, 20)
+  const titleColor = settings.cover_title_color || settings.coverTitleColor || '#ffffff'
+  const titleOffX = dimToMm(settings.cover_title_offset_x || settings.coverTitleOffsetX, 0)
+  const titleOffY = dimToMm(settings.cover_title_offset_y || settings.coverTitleOffsetY, 0)
+
+  const textX = 20  // Margem esquerda dentro do bloco
+  
+  // Posicionar textos dentro do bloco colorido (coordenadas ABSOLUTAS)
+  const subX = blockX + textX + subOffX
+  const subY = blockY + 20 + subOffY  // 20mm do topo do bloco
+  
+  // Render Subtitle
+  pdf.setFont(subFont, subStyle)
+  pdf.setFontSize(subSize)
+  setTextRgb(pdf, subColor)
+  pdf.text(subText, subX, subY)
+  if (settings.cover_subtitle_underline || settings.coverSubtitleUnderline) {
+    drawTextUnderline(pdf, subText, subX, subY, subSize, subColor, 'left')
+  }
+
+  // Render Title
+  pdf.setFont(titleFont, titleStyle)
+  pdf.setFontSize(titleSize)
+  setTextRgb(pdf, titleColor)
+  const catName = opts.categoryName === 'VÁLVULAS'
+    ? 'VÁLVULAS DE SEGURANÇA E ALÍVIO'
+    : opts.categoryName.toUpperCase()
+  const titleLines = pdf.splitTextToSize(catName, blockW - 40)
+  const mainTitleX = blockX + textX + titleOffX
+  const mainTitleY = blockY + 40 + titleOffY  // 40mm do topo do bloco (abaixo do subtitle)
+  pdf.text(titleLines, mainTitleX, mainTitleY)
+  if (settings.cover_title_underline || settings.coverTitleUnderline) {
+    let currentY = mainTitleY
+    const lineSpacing = titleSize * 0.35 + 0.5
+    for (let i = 0; i < titleLines.length; i++) {
+      drawTextUnderline(pdf, titleLines[i], mainTitleX, currentY + (i * lineSpacing), titleSize, titleColor, 'left')
+    }
+  }
+
+  // 5. Imagem do produto — dentro da banda cinza, centralizada na metade DIREITA
+  const bandH = bandBottom - bandTop
+  const imgAreaW = 90
+  const imgAreaH = 90
+  const halfPageW = pageW / 2
+  const imgX = halfPageW + (halfPageW - imgAreaW) / 2  // Centralizado na metade direita da página
+  const imgY = bandTop + (bandH - imgAreaH) / 2        // Centralizado verticalmente na banda cinza
+  addImageSafe(pdf, opts.imageCache, '__cover__', imgX, imgY, imgAreaW, imgAreaH)
+
+  // 6. Website footer - canto inferior esquerdo
+  pdf.setFont('helvetica', 'normal')
+  pdf.setFontSize(7)
+  pdf.setTextColor(156, 163, 175)
+  const footerY = pageH - 10
+  pdf.text('w w w . q u a l i t e c . i n d . b r', 20, footerY)
 }
 
 export function drawPageHeader(
@@ -178,79 +374,30 @@ export function drawPageHeader(
   pageW: number,
   settings: any,
   imageCache?: Map<string, CachedImage>,
-  badgeText?: string | null,
-  badgeIconUrl?: string | null
+  offsetX: number = 0,
+  scale: number = 1
 ): number {
-  const fontSize = parseFontSizePt(settings.title_font_size, 22)
-  const offsetY = dimToMm(settings.title_position_y || settings.titlePositionY, 0)
+  const fontSize = parseFontSizePt(settings.title_font_size, 22) * scale
+  const offsetY = dimToMm(settings.title_position_y || settings.titlePositionY, 0) * scale
   
   const titleColor = settings.title_color || settings.titleColor || color
   const fontName = getFontName(settings.title_font_family || settings.titleFontFamily)
   const fontStyle = getFontStyle(settings.title_bold || settings.titleBold, settings.title_italic || settings.titleItalic)
 
-  // 1. Draw badge above the category title if defined
-  let badgeOffsetY = 0
-  const catKey = category.toUpperCase().trim()
-  const badgeIconKey = `badge_icon_${catKey}`
-  const hasBadgeIcon = imageCache && (imageCache.has(badgeIconKey) || imageCache.has('__badge_icon__'))
-
-  if (badgeText || hasBadgeIcon) {
-    const badgeOffX = dimToMm(settings.badge_position_x || settings.badgePositionX, 0)
-    const badgeOffY = dimToMm(settings.badge_position_y || settings.badgePositionY, 0)
-    const baseBadgeY = y + offsetY + badgeOffY
-    const baseBadgeX = MARGIN_X + badgeOffX
-
-    const badgeIconSize = dimToMm(settings.badge_icon_size || settings.badgeIconSize, 4.5)
-    const badgeFont = getFontName(settings.badge_font_family || settings.badgeFontFamily)
-    const badgeSize = parseFontSizePt(settings.badge_font_size || settings.badgeFontSize, 8)
-    const badgeColor = settings.badge_color || settings.badgeColor || '#334155'
-
-    // Individual offsets for icon and text
-    const iconOffX = dimToMm(settings.badge_icon_offset_x || settings.badgeIconOffsetX, 0)
-    const iconOffY = dimToMm(settings.badge_icon_offset_y || settings.badgeIconOffsetY, 0)
-    const textOffX = dimToMm(settings.badge_text_offset_x || settings.badgeTextOffsetX, 0)
-    const textOffY = dimToMm(settings.badge_text_offset_y || settings.badgeTextOffsetY, 0)
-
-    // Track where text starts (after icon)
-    let textStartX = baseBadgeX
-
-    // Draw badge icon if present in imageCache
-    if (imageCache) {
-      const activeIconKey = imageCache.has(badgeIconKey) ? badgeIconKey : (imageCache.has('__badge_icon__') ? '__badge_icon__' : null)
-      if (activeIconKey) {
-        const iconDrawX = baseBadgeX + iconOffX
-        const iconDrawY = baseBadgeY - badgeIconSize + 0.7 + iconOffY
-        addImageSafe(pdf, imageCache, activeIconKey, iconDrawX, iconDrawY, badgeIconSize, badgeIconSize)
-        textStartX = baseBadgeX + badgeIconSize + 2
-      }
-    }
-
-    // Draw badge text if present
-    if (badgeText) {
-      pdf.setFont(badgeFont, 'normal')
-      pdf.setFontSize(badgeSize)
-      setTextRgb(pdf, badgeColor)
-      pdf.text(badgeText, textStartX + textOffX, baseBadgeY - 0.5 + textOffY)
-    }
-
-    badgeOffsetY = 8 // shift main title down by 8mm
-  }
-
-  // 2. Draw category icon and main category title
   setTextRgb(pdf, titleColor)
   pdf.setFont(fontName, fontStyle)
   pdf.setFontSize(fontSize)
   
-  const iconSize = fontSize * 0.45 + 4  // roughly matches title height
-  let textX = MARGIN_X
+  const iconSize = (fontSize * 0.45 + 4) * scale
+  let textX = offsetX + MARGIN_X * scale
 
   if (imageCache && imageCache.has('__category_icon__')) {
-    const iconY = y + offsetY + badgeOffsetY
+    const iconY = y + offsetY
     addImageSafe(pdf, imageCache, '__category_icon__', textX, iconY, iconSize, iconSize)
-    textX = MARGIN_X + iconSize + 2
+    textX = offsetX + (MARGIN_X + iconSize / scale + 2) * scale
   }
 
-  const textY = y + offsetY + badgeOffsetY + fontSize * 0.35
+  const textY = y + offsetY + fontSize * 0.35
   const catUpper = category.toUpperCase()
   
   pdf.text(catUpper, textX, textY)
@@ -259,39 +406,39 @@ export function drawPageHeader(
   if (settings.title_underline || settings.titleUnderline) {
     const textWidth = pdf.getTextWidth(catUpper)
     setDrawRgb(pdf, titleColor)
-    pdf.setLineWidth(0.2)
-    const lineY = textY + 0.8
+    pdf.setLineWidth(0.2 * scale)
+    const lineY = textY + 0.8 * scale
     pdf.line(textX, lineY, textX + textWidth, lineY)
   }
 
-  return y + offsetY + badgeOffsetY + fontSize * 0.45 + 4
+  return y + offsetY + fontSize * 0.45 + 4 * scale
 }
 
-export function drawPageFooter(pdf: any, pageNum: number, totalPages: number, pageW: number, pageH: number) {
-  const textY = pageH - 6
-  const marginFromEdge = 5
+export function drawPageFooter(pdf: any, pageNum: number, totalPages: number, pageW: number, pageH: number, offsetX: number = 0, scale: number = 1) {
+  const textY = pageH - 6 * scale
+  const marginFromEdge = 5 * scale
   
   // Desenhar número da página: esquerda se ímpar, direita se par
   pdf.setFont('helvetica', 'bold')
-  pdf.setFontSize(12)
-  pdf.setTextColor(180, 180, 180) // Cinza #B4B4B4 (mesma cor do email/site)
+  pdf.setFontSize(12 * scale)
+  pdf.setTextColor(180, 180, 180)
   
   const pageText = String(pageNum).padStart(2, '0')
   const pageTextWidth = pdf.getTextWidth(pageText)
   
   const pageTextX = pageNum % 2 === 1 
-    ? marginFromEdge  // Ímpar: canto esquerdo
-    : pageW - pageTextWidth - marginFromEdge  // Par: canto direito
+    ? offsetX + marginFromEdge
+    : offsetX + pageW - pageTextWidth - marginFromEdge
   
   // Desenhar linha cinza acima do número
-  const lineY = textY - 5
-  const lineLength = 15
+  const lineY = textY - 5 * scale
+  const lineLength = 15 * scale
   const lineX = pageNum % 2 === 1
-    ? marginFromEdge  // Ímpar: linha começa à esquerda
-    : pageW - lineLength - marginFromEdge  // Par: linha à direita
+    ? offsetX + marginFromEdge
+    : offsetX + pageW - lineLength - marginFromEdge
   
-  pdf.setDrawColor(180, 180, 180) // Cinza #B4B4B4 (mesma cor do email/site)
-  pdf.setLineWidth(0.1)
+  pdf.setDrawColor(180, 180, 180)
+  pdf.setLineWidth(0.1 * scale)
   pdf.line(lineX, lineY, lineX + lineLength, lineY)
   
   // Desenhar o número da página
@@ -299,18 +446,18 @@ export function drawPageFooter(pdf: any, pageNum: number, totalPages: number, pa
   
   // Adicionar email (ímpares) ou site (pares) no lado oposto
   pdf.setFont('helvetica', 'normal')
-  pdf.setFontSize(9)
-  pdf.setTextColor(180, 180, 180) // Cinza mais escuro #B4B4B4
+  pdf.setFontSize(9 * scale)
+  pdf.setTextColor(180, 180, 180)
   
   if (pageNum % 2 === 1) {
     // Página ímpar: email à direita
     const emailText = 'v e n d a s @ q u a l i t e c . i n d . b r'
     const emailWidth = pdf.getTextWidth(emailText)
-    pdf.text(emailText, pageW - emailWidth - marginFromEdge, textY)
+    pdf.text(emailText, offsetX + pageW - emailWidth - marginFromEdge, textY)
   } else {
     // Página par: site à esquerda
     const siteText = 'w w w . q u a l i t e c . i n d . b r'
-    pdf.text(siteText, marginFromEdge, textY)
+    pdf.text(siteText, offsetX + marginFromEdge, textY)
   }
 }
 

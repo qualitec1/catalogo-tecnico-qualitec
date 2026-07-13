@@ -139,7 +139,6 @@
       :is-generating="isAdminGeneratingPdf"
       :products="adminSelectedProducts" 
       :coverCategory="adminCoverCategory"
-      :forceLandscape="adminForceLandscapePdf"
       :publishMode="true"
       @complete="isAdminGeneratingPdf = false"
       @published="handleAdminPdfPublished"
@@ -214,7 +213,6 @@ watch(currentTab, (newTab) => {
 // Automated PDF Generation & Publication
 const isAdminGeneratingPdf = ref(false)
 const adminSelectedProducts = ref<any[]>([])
-const adminForceLandscapePdf = ref(false)
 const adminCoverCategory = ref('')
 const publishingCategory = ref<any>(null)
 
@@ -230,7 +228,6 @@ const handlePublishCatalog = (category: any) => {
     adminCoverCategory.value = category.category
   }
   
-  adminForceLandscapePdf.value = category.orientation === 'landscape'
   isAdminGeneratingPdf.value = true
 }
 

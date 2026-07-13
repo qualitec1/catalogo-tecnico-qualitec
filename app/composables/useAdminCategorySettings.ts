@@ -2,7 +2,6 @@ import { ref } from 'vue'
 import { hexToBase64 } from '../utils/image'
 
 export function useAdminCategorySettings() {
-  const pdfEditMode = ref<Record<string, 'portrait' | 'landscape'>>({})
   const pdfMenuOpen = ref<Record<string, boolean>>({})
   const pdfEditDensity = ref<Record<string, 'geral' | '1' | '3' | '6'>>({})
   const openCategorySettings = ref<Record<string, boolean>>({})
@@ -13,14 +12,12 @@ export function useAdminCategorySettings() {
   }
 
   const isPdfMenuOpen = (id: string) => !!pdfMenuOpen.value[id]
-  const getPdfMode = (id: string) => pdfEditMode.value[id] || 'portrait'
 
   const togglePdfMenuOpen = (id: string) => {
     pdfMenuOpen.value[id] = !pdfMenuOpen.value[id]
   }
 
-  const openPdfPanel = (id: string, mode: 'portrait' | 'landscape') => {
-    pdfEditMode.value[id] = mode
+  const openPdfPanel = (id: string, mode: 'portrait') => {
     openCategorySettings.value[id] = true
     pdfMenuOpen.value[id] = false
   }
@@ -36,45 +33,23 @@ export function useAdminCategorySettings() {
   }
 
   const getGlobalValue = (category: any, fieldName: string) => {
-    const mode = getPdfMode(category.id)
-    if (mode === 'landscape') {
-      if (category.landscapeSettings && category.landscapeSettings[fieldName] !== undefined && category.landscapeSettings[fieldName] !== '') {
-        return category.landscapeSettings[fieldName]
-      }
-      return category[fieldName]
-    }
     return category[fieldName]
   }
 
   const getDensityTarget = (category: any) => {
-    const mode = getPdfMode(category.id)
     const density = getEditDensity(category.id)
 
     if (density === 'geral') {
-      if (mode === 'landscape') {
-        if (!category.landscapeSettings) {
-          category.landscapeSettings = {}
-        }
-        return category.landscapeSettings
-      }
       return category
     }
 
-    let root: any = category
-    if (mode === 'landscape') {
-      if (!category.landscapeSettings) {
-        category.landscapeSettings = {}
-      }
-      root = category.landscapeSettings
+    if (!category.layout_settings) {
+      category.layout_settings = {}
     }
-
-    if (!root.layout_settings) {
-      root.layout_settings = {}
+    if (!category.layout_settings[density]) {
+      category.layout_settings[density] = {}
     }
-    if (!root.layout_settings[density]) {
-      root.layout_settings[density] = {}
-    }
-    return root.layout_settings[density]
+    return category.layout_settings[density]
   }
 
   const translateValue = (fieldName: string, value: any) => {
@@ -114,24 +89,15 @@ export function useAdminCategorySettings() {
       return
     }
 
-    const mode = getPdfMode(category.id)
-    let root: any = category
-    if (mode === 'landscape') {
-      if (!category.landscapeSettings) {
-        category.landscapeSettings = {}
-      }
-      root = category.landscapeSettings
-    }
-
-    if (root.layout_settings && root.layout_settings[density]) {
-      const overrides = root.layout_settings[density]
+    if (category.layout_settings && category.layout_settings[density]) {
+      const overrides = category.layout_settings[density]
       for (const key of Object.keys(overrides)) {
         const val = overrides[key]
         if (val !== undefined && val !== null && val !== '') {
-          root[key] = val
+          category[key] = val
         }
       }
-      delete root.layout_settings[density]
+      delete category.layout_settings[density]
     }
 
     category.hasChanges = true
@@ -139,13 +105,6 @@ export function useAdminCategorySettings() {
   }
 
   const getPdfTarget = (category: any) => {
-    const mode = getPdfMode(category.id)
-    if (mode === 'landscape') {
-      if (!category.landscapeSettings) {
-        category.landscapeSettings = {}
-      }
-      return category.landscapeSettings
-    }
     return category
   }
 
@@ -172,14 +131,12 @@ export function useAdminCategorySettings() {
   }
 
   return {
-    pdfEditMode,
     pdfMenuOpen,
     pdfEditDensity,
     openCategorySettings,
     isPdfSettingsOpen,
     togglePdfSettings,
     isPdfMenuOpen,
-    getPdfMode,
     togglePdfMenuOpen,
     openPdfPanel,
     closePdfPanel,
@@ -191,7 +148,34 @@ export function useAdminCategorySettings() {
     applyDensityToGlobal,
     getPdfTarget,
     getCoverImage,
-    handleImageError
+    handleImageError,
+    resetToDefaults
   }
 }
+
+// Função para resetar categoria para configurações padrão
+async function resetToDefaults(category: any, supabase: any) {
+  const defaultSettings = await import('~/config/defaultPdfSettings.json')
+  
+  if (!confirm(`Deseja realmente resetar todas as configurações da categoria "${category.name}" para os valores padrão?`)) {
+    return false
+  }
+
+  try {
+    const { error } = await supabase
+      .from('categories')
+      .update({
+        ...defaultSettings.default,
+        layout_settings: {}  // Limpar overrides de densidade
+      })
+      .eq('id', category.id)
+
+    if (error) throw error
+    return true
+  } catch (err) {
+    console.error('Erro ao resetar configurações:', err)
+    return false
+  }
+}
+
 export type UseAdminCategorySettings = ReturnType<typeof useAdminCategorySettings>

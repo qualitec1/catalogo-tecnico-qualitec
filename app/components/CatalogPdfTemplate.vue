@@ -23,10 +23,10 @@ const QUALITEC_LOGO_URL = 'https://lh3.googleusercontent.com/aida-public/AB6AXuC
 const props = defineProps<{
   products: Product[],
   isGenerating: boolean,
-  forceLandscape?: boolean,
   coverCategory?: string,
   publishMode?: boolean,
-  pdfType?: 'web' | 'print'
+  pdfType?: 'web' | 'print',
+  bookletMode?: boolean
 }>()
 
 const emit = defineEmits(['complete', 'published'])
@@ -38,12 +38,10 @@ const progressPercent = ref(0)
 const coverImageUrl = ref<string | null>(null)
 const coverImageBlob = ref<string | null>(null)
 const categoryIconUrl = ref<string | null>(null)
-const badgeText = ref<string | null>(null)
-const badgeIconUrl = ref<string | null>(null)
 
 // ===== Composables =====
 const { getCategoryColor, getCategoryCover, fetchAssets, categoryAssets } = useCategoryColors()
-const { getPdfSettings, getLandscapePdfSettings, fetchPdfSettings } = usePdfSettings()
+const { getPdfSettings, fetchPdfSettings } = usePdfSettings()
 
 // ===== Computed: slot helper =====
 const getSlots = (product: any) => {
@@ -89,8 +87,8 @@ const pages = computed(() => {
       const prods = bySlots[slots] || []
       if (prods.length === 0) continue
 
-      // Determine max slots per page based on landscape mode and slot type
-      const maxSlotsPerPage = (isLandscape.value && slots === 1) ? 8 : 6
+      // Determine max slots per page (always 6 in portrait mode)
+      const maxSlotsPerPage = 6
 
       const catPages: { products: Product[], usedSlots: number }[] = []
       for (const product of prods) {
@@ -133,12 +131,6 @@ const catalogBgClass = computed(() => {
   return props.products[0].bgClass || '#376092'
 })
 
-const isLandscape = computed(() => {
-  if (props.forceLandscape) return true
-  const settings = getPdfSettings(catalogCategory.value)
-  return settings.orientation === 'landscape'
-})
-
 // ===== Helpers =====
 const getBgColor = (bgClass: string | null | undefined, category?: string) => {
   const dynamicColor = getCategoryColor(category)
@@ -162,7 +154,7 @@ const getBgColor = (bgClass: string | null | undefined, category?: string) => {
 
 const getPageSettings = (page: Product[]) => {
   const cat = page && page.length > 0 ? page[0].category : catalogCategory.value
-  const settings = isLandscape.value ? getLandscapePdfSettings(cat) : getPdfSettings(cat)
+  const settings = getPdfSettings(cat)
   let baseSettings: Record<string, any> = settings ? { ...settings } : {}
   
   if (page && page.length > 0) {
@@ -215,29 +207,23 @@ const fetchCoverImage = async (category: string) => {
     coverImageUrl.value = asset.cover_image_url || null
     coverImageBlob.value = asset.cover_image_blob || null
     categoryIconUrl.value = asset.icon_url || null
-    badgeText.value = asset.badge_text || null
-    badgeIconUrl.value = asset.badge_icon_url || null
   } else {
     try {
       const { data } = await supabase
         .from('category_assets')
-        .select('cover_image_url, cover_image_blob, icon_url, badge_text, badge_icon_url')
+        .select('cover_image_url, cover_image_blob, icon_url')
         .eq('category', category)
         .single()
       if (data) {
         coverImageUrl.value = data.cover_image_url
         coverImageBlob.value = data.cover_image_blob
         categoryIconUrl.value = data.icon_url || null
-        badgeText.value = data.badge_text || null
-        badgeIconUrl.value = data.badge_icon_url || null
       } else {
-        const fallback = await supabase.from('category_assets').select('cover_image_url, cover_image_blob, icon_url, badge_text, badge_icon_url').eq('category', 'Geral').single()
+        const fallback = await supabase.from('category_assets').select('cover_image_url, cover_image_blob, icon_url').eq('category', 'Geral').single()
         if (fallback.data) {
           coverImageUrl.value = fallback.data.cover_image_url
           coverImageBlob.value = fallback.data.cover_image_blob
           categoryIconUrl.value = fallback.data.icon_url || null
-          badgeText.value = fallback.data.badge_text || null
-          badgeIconUrl.value = fallback.data.badge_icon_url || null
         }
       }
     } catch (e) {
@@ -274,7 +260,6 @@ watch(() => props.isGenerating, async (newVal) => {
           progressText.value = `Carregando imagens (${loaded}/${total})...`
         },
         categoryIconUrl.value,
-        badgeIconUrl.value,
         categoryAssets.value
       )
 
@@ -284,26 +269,22 @@ watch(() => props.isGenerating, async (newVal) => {
       // 3. Build PDF programmatically (near-instant)
       const pdf = await buildCatalogPdf({
         pages: pages.value,
-        isLandscape: isLandscape.value,
         categoryName: catalogCategory.value,
         categoryColor: getBgColor(catalogBgClass.value, catalogCategory.value),
         coverImageDataUrl: coverSrc,
         logoDataUrl: QUALITEC_LOGO_URL,
         categoryIconUrl: categoryIconUrl.value,
-        badgeText: badgeText.value,
-        badgeIconUrl: badgeIconUrl.value,
         categoryAssets: categoryAssets.value,
         imageCache,
         getPageSettings,
         getBgColor,
         getSlots,
-        forPrint: props.pdfType === 'print'
+        forPrint: props.pdfType === 'print',
+        bookletMode: props.bookletMode || false
       })
 
       // 4. Save locally
-      const docFilename = isLandscape.value
-        ? `Catalogo_Qualitec_${catalogCategory.value.replace(/[^a-z0-9]/gi, '_')}_Slides.pdf`
-        : `Catalogo_Qualitec_${catalogCategory.value.replace(/[^a-z0-9]/gi, '_')}.pdf`
+      const docFilename = `Catalogo_Qualitec_${catalogCategory.value.replace(/[^a-z0-9]/gi, '_')}.pdf`
 
       progressText.value = 'Salvando arquivo...'
       progressPercent.value = 93

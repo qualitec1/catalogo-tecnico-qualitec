@@ -348,6 +348,7 @@ export function useAdminProducts(triggerToast: (msg: string, type?: 'success' | 
           bg_class: 'bg-secondary',
           layout_slots: dbLayoutSlots,
           image: row['image_url'] || '/placeholder.png',
+          image_scale: 1.0,  // Escala padrão de imagem
           datasheet_url: row['datasheet_url'] || null,
           ex_image_url: exImageUrlVal,
           specs: specs

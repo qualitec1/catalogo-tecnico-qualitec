@@ -33,9 +33,9 @@ export function useCatalog() {
   const showPrintModal = ref(false)
   const coverCategorySelection = ref<'dynamic' | 'GERAL' | 'specific'>('dynamic')
   const specificCoverCategory = ref('')
-  const printPendingLandscape = ref(false)
   const selectedCoverCategoryOverride = ref<string | undefined>(undefined)
   const pdfTypeSelection = ref<'web' | 'print'>('web')
+  const bookletModeSelection = ref(false)
 
   const hasGeralCover = computed(() => {
     return !!categoryAssets.value['GERAL']
@@ -158,23 +158,12 @@ export function useCatalog() {
 
   // PDF Download State & Orchestration
   const isGeneratingPdf = ref(false)
-  const forceLandscapePdf = ref(false)
 
   const downloadCatalog = () => {
     if (selectedProducts.value.size === 0) {
       alert('Nenhum equipamento selecionado para download.')
       return
     }
-    printPendingLandscape.value = false
-    showPrintModal.value = true
-  }
-
-  const downloadPowerPoint = () => {
-    if (selectedProducts.value.size === 0) {
-      alert('Nenhum equipamento selecionado para download.')
-      return
-    }
-    printPendingLandscape.value = true
     showPrintModal.value = true
   }
 
@@ -182,11 +171,12 @@ export function useCatalog() {
     showPrintModal.value = false
   }
 
-  const confirmAndDownload = (payload?: { selection: 'dynamic' | 'GERAL' | 'specific', specificCategory: string, pdfType: 'web' | 'print' }) => {
+  const confirmAndDownload = (payload?: { selection: 'dynamic' | 'GERAL' | 'specific', specificCategory: string, pdfType: 'web' | 'print', bookletMode: boolean }) => {
     if (payload) {
       coverCategorySelection.value = payload.selection
       specificCoverCategory.value = payload.specificCategory
       pdfTypeSelection.value = payload.pdfType
+      bookletModeSelection.value = payload.bookletMode
     }
     let targetCat = 'GERAL'
     if (coverCategorySelection.value === 'specific') {
@@ -225,7 +215,6 @@ export function useCatalog() {
       selectedCoverCategoryOverride.value = specificCoverCategory.value
     }
 
-    forceLandscapePdf.value = printPendingLandscape.value
     isGeneratingPdf.value = true
     showPrintModal.value = false
   }
@@ -302,7 +291,6 @@ export function useCatalog() {
     showPrintModal,
     coverCategorySelection,
     specificCoverCategory,
-    printPendingLandscape,
     selectedCoverCategoryOverride,
     hasGeralCover,
     listableCategories,
@@ -317,10 +305,9 @@ export function useCatalog() {
     selectAll,
     clearSelection,
     isGeneratingPdf,
-    forceLandscapePdf,
     pdfTypeSelection,
+    bookletModeSelection,
     downloadCatalog,
-    downloadPowerPoint,
     closePrintModal,
     confirmAndDownload,
     modalImageSrc,

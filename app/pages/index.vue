@@ -68,10 +68,6 @@
               <span class="material-symbols-outlined text-base">picture_as_pdf</span>
               BAIXAR CATÁLOGO TÉCNICO ({{ selectedProducts.size }})
             </button>
-            <button @click="downloadPowerPoint" class="bg-slate-800 text-white px-6 py-2.5 text-sm font-medium flex items-center gap-2 hover:bg-slate-900 transition-all shadow-md border-0 cursor-pointer">
-              <span class="material-symbols-outlined text-base">slideshow</span>
-              BAIXAR EM POWER POINT ({{ selectedProducts.size }})
-            </button>
           </div>
         </div>
       </div>
@@ -190,9 +186,9 @@
     <CatalogPdfTemplate 
       :is-generating="isGeneratingPdf" 
       :products="selectedProductObjects"
-      :force-landscape="forceLandscapePdf"
       :cover-category="selectedCoverCategoryOverride"
       :pdf-type="pdfTypeSelection"
+      :booklet-mode="bookletModeSelection"
       @complete="isGeneratingPdf = false"
     />
   </div>
@@ -226,10 +222,9 @@ const {
   selectAll,
   clearSelection,
   isGeneratingPdf,
-  forceLandscapePdf,
   pdfTypeSelection,
+  bookletModeSelection,
   downloadCatalog,
-  downloadPowerPoint,
   closePrintModal,
   confirmAndDownload,
   modalImageSrc,

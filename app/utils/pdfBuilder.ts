@@ -2,8 +2,8 @@
  * pdfBuilder.ts — Construtor programático de catálogo PDF via jsPDF
  */
 
-import { drawCoverPage, drawPageHeader, drawPageFooter } from './pdfDrawHelpers'
-import { drawLayout1, drawLayout3, drawLayout6, drawLayout8 } from './pdfLayoutDrawers'
+import { drawCoverPage, drawCoverPageLandscape, drawPageHeader, drawPageFooter } from './pdfDrawHelpers'
+import { drawLayout1, drawLayout3, drawLayout6 } from './pdfLayoutDrawers'
 import { getFontName } from './pdfDocUtils'
 
 // Re-export types and functions to preserve API contract
@@ -54,17 +54,26 @@ async function registerFont(pdf: any, name: string, file: string, fontName: stri
 export async function buildCatalogPdf(opts: any): Promise<any> {
   const { jsPDF } = await import('jspdf')
 
-  const orientation = opts.isLandscape ? 'landscape' : 'portrait'
-  const pageW = opts.isLandscape ? A4_H : A4_W
-  const pageH = opts.isLandscape ? A4_W : A4_H
-  const contentW = pageW - MARGIN_X * 2
+  const bookletMode = opts.bookletMode || false
+  
+  // In booklet mode, we create landscape pages with 2 portrait pages side-by-side (scaled down)
+  // In normal mode, standard portrait A4
+  const physicalOrientation = bookletMode ? 'landscape' : 'portrait'
+  const physicalPageW = bookletMode ? 297 : 210
+  const physicalPageH = bookletMode ? 210 : 297
+  
+  // Logical page dimensions (always A4 portrait for layout calculation)
+  const logicalPageW = 210
+  const logicalPageH = 297
+  const contentW = logicalPageW - MARGIN_X * 2
   const totalPages = opts.pages.length
 
   const pdf = new jsPDF({
-    orientation,
+    orientation: physicalOrientation,
     unit: 'mm',
     format: 'a4',
     compress: true,
+    putOnlyUsedFonts: true,
   })
 
   // Register custom fonts dynamically based on what is actually used
@@ -234,54 +243,115 @@ export async function buildCatalogPdf(opts: any): Promise<any> {
     await Promise.all(promises)
   }
 
-  // 1. Draw cover page
-  drawCoverPage(pdf, opts)
+  // 1. Draw cover page (primeira página do PDF, não adicionar página extra)
+  if (bookletMode) {
+    // Booklet mode: cover is landscape page (já foi criada no jsPDF init)
+    drawCoverPageLandscape(pdf, opts)
+  } else {
+    // Normal mode: cover is portrait page (já foi criada no jsPDF init)
+    drawCoverPage(pdf, opts)
+  }
 
   // 2. Draw product pages
-  for (let pi = 0; pi < opts.pages.length; pi++) {
-    const page = opts.pages[pi]
-    if (page.length === 0) continue
+  if (bookletMode) {
+    // Booklet mode: 2 A4 portrait pages side-by-side on A4 landscape
+    const scale = 0.707
+    
+    for (let pi = 0; pi < opts.pages.length; pi += 2) {
+      pdf.addPage('a4', 'landscape')
 
-    pdf.addPage('a4', orientation)
+      // Draw left page (pages[pi])
+      const leftPage = opts.pages[pi]
+      if (leftPage && leftPage.length > 0) {
+        const leftSettings = opts.getPageSettings(leftPage)
+        const leftCategory = leftPage[0]?.category || opts.categoryName
+        const leftColor = opts.getBgColor(leftPage[0]?.bgClass, leftCategory)
+        const leftDominantSlots = opts.getSlots(leftPage[0])
 
-    const settings = opts.getPageSettings(page)
-    const category = page[0]?.category || opts.categoryName
-    const color = opts.getBgColor(page[0]?.bgClass, category)
+        // Draw at original size, but everything will be scaled by using smaller dimensions
+        const scaledMarginX = MARGIN_X * scale
+        const scaledMarginTop = (MARGIN_TOP + 4) * scale
+        const scaledContentW = contentW * scale
+        const scaledLogicalPageW = logicalPageW * scale
+        const scaledLogicalPageH = logicalPageH * scale
 
-    const catUpper = category.toUpperCase().trim()
-    const catAsset = opts.categoryAssets?.[catUpper] || opts.categoryAssets?.['GERAL']
-    const pageBadgeText = catAsset?.badge_text !== undefined ? catAsset.badge_text : opts.badgeText
-    const pageBadgeIconUrl = catAsset?.badge_icon_url !== undefined ? catAsset.badge_icon_url : opts.badgeIconUrl
+        const leftHeaderEndY = drawPageHeader(pdf, leftCategory, leftColor, scaledMarginTop, scaledLogicalPageW, leftSettings, opts.imageCache, 0, scale)
+        const leftContentY = leftHeaderEndY + 2 * scale
+        const leftFooterH = 18 * scale
+        const leftContentH = scaledLogicalPageH - leftContentY - leftFooterH
 
-    // Page header
-    const headerEndY = drawPageHeader(pdf, category, color, MARGIN_TOP + 4, pageW, settings, opts.imageCache, pageBadgeText, pageBadgeIconUrl)
+        if (leftDominantSlots === 1) {
+          drawLayout6(pdf, leftPage, scaledMarginX, leftContentY, scaledContentW, leftContentH, opts, leftSettings)
+        } else if (leftDominantSlots === 6) {
+          drawLayout1(pdf, leftPage[0], scaledMarginX, leftContentY, scaledContentW, leftContentH, opts, leftSettings)
+        } else {
+          drawLayout3(pdf, leftPage, scaledMarginX, leftContentY, scaledContentW, leftContentH, opts, leftSettings)
+        }
 
-    // Content area
-    const contentY = headerEndY + 2
-    const footerH = 18 // Espaço para o número da página
-    const contentH = pageH - contentY - footerH
+        drawPageFooter(pdf, pi + 1, totalPages, scaledLogicalPageW, scaledLogicalPageH, 0, scale)
+      }
 
-    // Determine which layout to use based on landscape mode and dominant slot type
-    const dominantSlots = opts.getSlots(page[0])
+      // Draw right page (pages[pi+1])
+      const rightPage = pi + 1 < opts.pages.length ? opts.pages[pi + 1] : null
+      if (rightPage && rightPage.length > 0) {
+        const rightSettings = opts.getPageSettings(rightPage)
+        const rightCategory = rightPage[0]?.category || opts.categoryName
+        const rightColor = opts.getBgColor(rightPage[0]?.bgClass, rightCategory)
+        const rightDominantSlots = opts.getSlots(rightPage[0])
 
-    // In landscape mode, use 8-per-page layout for better PowerPoint presentation
-    if (opts.isLandscape && dominantSlots === 1) {
-      // 8 per page in landscape (4x2 grid)
-      drawLayout8(pdf, page, MARGIN_X, contentY, contentW, contentH, opts, settings)
-    } else if (dominantSlots === 1) {
-      // 6 per page in portrait
-      drawLayout6(pdf, page, MARGIN_X, contentY, contentW, contentH, opts, settings)
-    } else if (dominantSlots === 6) {
-      // 1 per page
-      drawLayout1(pdf, page[0], MARGIN_X, contentY, contentW, contentH, opts, settings)
-    } else {
-      // 2 per page (default for slots=3)
-      drawLayout3(pdf, page, MARGIN_X, contentY, contentW, contentH, opts, settings)
+        const offsetX = 148.5  // Half of landscape width (297/2)
+        const scaledMarginX = MARGIN_X * scale
+        const scaledMarginTop = (MARGIN_TOP + 4) * scale
+        const scaledContentW = contentW * scale
+        const scaledLogicalPageW = logicalPageW * scale
+        const scaledLogicalPageH = logicalPageH * scale
+
+        const rightHeaderEndY = drawPageHeader(pdf, rightCategory, rightColor, scaledMarginTop, scaledLogicalPageW, rightSettings, opts.imageCache, offsetX, scale)
+        const rightContentY = rightHeaderEndY + 2 * scale
+        const rightFooterH = 18 * scale
+        const rightContentH = scaledLogicalPageH - rightContentY - rightFooterH
+
+        if (rightDominantSlots === 1) {
+          drawLayout6(pdf, rightPage, offsetX + scaledMarginX, rightContentY, scaledContentW, rightContentH, opts, rightSettings)
+        } else if (rightDominantSlots === 6) {
+          drawLayout1(pdf, rightPage[0], offsetX + scaledMarginX, rightContentY, scaledContentW, rightContentH, opts, rightSettings)
+        } else {
+          drawLayout3(pdf, rightPage, offsetX + scaledMarginX, rightContentY, scaledContentW, rightContentH, opts, rightSettings)
+        }
+
+        drawPageFooter(pdf, pi + 2, totalPages, scaledLogicalPageW, scaledLogicalPageH, offsetX, scale)
+      }
     }
+  } else {
+    // Normal mode: 1 page per physical page
+    for (let pi = 0; pi < opts.pages.length; pi++) {
+      const page = opts.pages[pi]
+      if (page.length === 0) continue
 
-    // Page footer
-    drawPageFooter(pdf, pi + 1, totalPages, pageW, pageH)
+      pdf.addPage('a4', 'portrait')
+
+      const settings = opts.getPageSettings(page)
+      const category = page[0]?.category || opts.categoryName
+      const color = opts.getBgColor(page[0]?.bgClass, category)
+
+      const headerEndY = drawPageHeader(pdf, category, color, MARGIN_TOP + 4, logicalPageW, settings, opts.imageCache, 0, 1)
+      const contentY = headerEndY + 2
+      const footerH = 18
+      const contentH = logicalPageH - contentY - footerH
+      const dominantSlots = opts.getSlots(page[0])
+
+      if (dominantSlots === 1) {
+        drawLayout6(pdf, page, MARGIN_X, contentY, contentW, contentH, opts, settings)
+      } else if (dominantSlots === 6) {
+        drawLayout1(pdf, page[0], MARGIN_X, contentY, contentW, contentH, opts, settings)
+      } else {
+        drawLayout3(pdf, page, MARGIN_X, contentY, contentW, contentH, opts, settings)
+      }
+
+      drawPageFooter(pdf, pi + 1, totalPages, logicalPageW, logicalPageH, 0, 1)
+    }
   }
 
   return pdf
 }
+

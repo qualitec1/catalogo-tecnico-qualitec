@@ -50,7 +50,6 @@ export async function preloadAllImages(
   logoUrl: string,
   onProgress?: (loaded: number, total: number) => void,
   categoryIconUrl?: string | null,
-  badgeIconUrl?: string | null,
   categoryAssets?: Record<string, any>
 ): Promise<Map<string, CachedImage>> {
 
@@ -75,10 +74,6 @@ export async function preloadAllImages(
         if (cIcon && (cIcon.startsWith('http://') || cIcon.startsWith('https://'))) {
           tasks.push({ key: `category_icon_${cat}`, url: `/api/proxy-image?url=${encodeURIComponent(cIcon)}` })
         }
-        const bIcon = asset.badge_icon_url || asset.badgeIconUrl
-        if (bIcon && (bIcon.startsWith('http://') || bIcon.startsWith('https://'))) {
-          tasks.push({ key: `badge_icon_${cat}`, url: `/api/proxy-image?url=${encodeURIComponent(bIcon)}` })
-        }
       }
     }
   }
@@ -86,11 +81,6 @@ export async function preloadAllImages(
   // Category icon (fallback/catalog-level)
   if (categoryIconUrl && (categoryIconUrl.startsWith('http://') || categoryIconUrl.startsWith('https://'))) {
     tasks.push({ key: '__category_icon__', url: `/api/proxy-image?url=${encodeURIComponent(categoryIconUrl)}` })
-  }
-
-  // Badge icon (fallback/catalog-level)
-  if (badgeIconUrl && (badgeIconUrl.startsWith('http://') || badgeIconUrl.startsWith('https://'))) {
-    tasks.push({ key: '__badge_icon__', url: `/api/proxy-image?url=${encodeURIComponent(badgeIconUrl)}` })
   }
 
   // Cover image

@@ -93,6 +93,41 @@
         </div>
       </div>
 
+      <!-- Opção: Formato de Impressão (Livreto) -->
+      <div class="border-t border-gray-200 pt-4 mb-5">
+        <h4 class="text-xs font-bold text-slate-800 mb-2 uppercase tracking-wider">Formato de Impressão</h4>
+        <p class="text-[10px] text-gray-500 mb-3">
+          Escolha como as páginas serão organizadas na folha impressa.
+        </p>
+        <div class="space-y-2">
+          <label class="flex items-start gap-3 p-3 border border-gray-200 rounded cursor-pointer hover:bg-gray-50 transition-colors">
+            <input type="radio" v-model="bookletMode" :value="false" class="mt-0.5 text-blue-650" />
+            <div>
+              <span class="text-xs font-bold text-slate-800 uppercase block flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-sm text-gray-600">description</span>
+                Normal (1 Página por Folha)
+              </span>
+              <span class="text-[10px] text-gray-500 block mt-0.5">
+                Cada página do PDF ocupa uma folha A4 inteira.
+              </span>
+            </div>
+          </label>
+          
+          <label class="flex items-start gap-3 p-3 border border-gray-200 rounded cursor-pointer hover:bg-gray-50 transition-colors">
+            <input type="radio" v-model="bookletMode" :value="true" class="mt-0.5 text-blue-650" />
+            <div>
+              <span class="text-xs font-bold text-slate-800 uppercase block flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-sm text-emerald-600">auto_stories</span>
+                Livreto (2 Páginas por Folha)
+              </span>
+              <span class="text-[10px] text-gray-500 block mt-0.5">
+                Imprime 2 páginas lado a lado em cada folha A4 paisagem. Ideal para imprimir como livro pequeno.
+              </span>
+            </div>
+          </label>
+        </div>
+      </div>
+
       <!-- Formulário rápido para Criar Nova Capa/Categoria -->
       <div class="border-t border-gray-200 pt-4 mb-5">
         <button 
@@ -168,13 +203,14 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: 'close'): void
-  (e: 'confirm', payload: { selection: 'dynamic' | 'GERAL' | 'specific', specificCategory: string, pdfType: 'web' | 'print' }): void
+  (e: 'confirm', payload: { selection: 'dynamic' | 'GERAL' | 'specific', specificCategory: string, pdfType: 'web' | 'print', bookletMode: boolean }): void
   (e: 'create-quick-category', payload: { name: string, color: string, imageName: string, imageBlob: string | null }): void
 }>()
 
 const coverCategorySelection = ref<'dynamic' | 'GERAL' | 'specific'>('dynamic')
 const specificCoverCategory = ref('')
 const pdfType = ref<'web' | 'print'>('web')
+const bookletMode = ref(false)
 
 // Quick Create State
 const showQuickCreate = ref(false)
@@ -237,7 +273,8 @@ const submitConfirm = () => {
   emit('confirm', {
     selection: coverCategorySelection.value,
     specificCategory: specificCoverCategory.value,
-    pdfType: pdfType.value
+    pdfType: pdfType.value,
+    bookletMode: bookletMode.value
   })
 }
 </script>

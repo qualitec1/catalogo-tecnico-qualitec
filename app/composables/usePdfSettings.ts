@@ -1,4 +1,5 @@
 import { useState } from '#app'
+import defaultSettings from '~/config/defaultPdfSettings.json'
 
 export interface PdfSettings {
   id?: string
@@ -9,146 +10,13 @@ export interface PdfSettings {
   card_layout_order: string
   font_size_specs: string
   divider_line_color: string
-  landscape_settings?: Record<string, any> | null
   [key: string]: any
 }
 
-// Retorna os defaults compartilhados entre portrait e landscape (configurações atuais do GERAL)
+// Retorna os defaults compartilhados (configurações padrão do arquivo JSON)
 const getSettingsDefaults = () => ({
-  title_font_size: '28px',
-  title_position_y: '-9px',
-  title_color: '#7F7F7F',
-  title_font_family: 'Calibri',
-  title_bold: true,
-  title_italic: false,
-  title_underline: false,
-  image_position: 'right',
-  card_layout_order: 'image-first',
-  font_size_specs: '8px',
-  divider_line_color: '#cbd5e1',
-  product_spacing: '25px',
-  product_image_offset_y: '0px',
-  product_image_offset_x: '0px',
-  pdf_image_scale: 1.0,
-  pdf_image_scale_x: 1.0,
-  pdf_image_scale_y: 1.0,
-  card_offset_x: '0px',
-  card_offset_y: '0px',
-  card_title_offset_x: '-7px',
-  card_title_offset_y: '7px',
-  card_title_font_size: '14px',
-  card_title_color: '#ffffff',
-  card_title_font_family: 'Inter',
-  card_title_bold: true,
-  card_title_italic: false,
-  card_title_underline: false,
-  card_model_font_size: '15px',
-  card_model_offset_x: '0px',
-  card_model_offset_y: '7px',
-  card_model_font_family: 'Inter',
-  card_model_bold: true,
-  card_model_italic: false,
-  card_model_underline: false,
-  card_model_color: '#ffffff',
-  card_model_label_font_size: '8px',
-  card_model_label_offset_x: '0px',
-  card_model_label_offset_y: '0px',
-  card_model_label_font_family: 'Inter',
-  card_model_label_bold: false,
-  card_model_label_italic: false,
-  card_model_label_underline: false,
-  card_model_label_color: '#ffffff',
-  card_model_label_text: 'Modelo',
-  specs_font_family: 'Calibri',
-  specs_bold: false,
-  specs_italic: false,
-  specs_underline: false,
-  specs_val_bold: false,
-  specs_val_italic: true,
-  specs_val_underline: false,
-  specs_label_width: '45%',
-  specs_value_width: '55%',
-  specs_padding_y: '4px',
-  specs_line_style: 'dashed',
-  specs_line_color: '#cbd5e1',
-  specs_bg_color: '#F1F1F1',
-  specs_color: '#374151',
-  specs_val_color: '#000000',
-  logo_width: '380px',
-  logo_height: '200px',
-  logo_position_x: '-60px',
-  logo_position_y: '-30px',
-  card_header_layout: 'model-left',
-  tag_font_family: 'Calibri',
-  tag_font_size: '9px',
-  tag_bold: false,
-  tag_italic: false,
-  tag_underline: false,
-  tag_offset_x: '50px',
-  tag_offset_y: '3px',
-  tag_color: '#ffffff',
-  badge_icon_size: '7.5mm',
-  badge_font_family: 'Calibri',
-  badge_font_size: '15pt',
-  badge_color: '#D9D9D9',
-  badge_position_x: '-12px',
-  badge_position_y: '35px',
-  badge_icon_offset_x: '5px',
-  badge_icon_offset_y: '0px',
-  badge_text_offset_x: '-8px',
-  badge_text_offset_y: '-5px',
-  cover_title_font_family: 'Roboto',
-  cover_title_font_size: '29px',
-  cover_title_bold: true,
-  cover_title_italic: false,
-  cover_title_underline: false,
-  cover_title_color: '#ffffff',
-  cover_title_offset_x: '0px',
-  cover_title_offset_y: '0px',
-  cover_subtitle_text: 'CATÁLOGO DE PRODUTOS',
-  cover_subtitle_font_family: 'Source Sans Pro',
-  cover_subtitle_font_size: '13px',
-  cover_subtitle_bold: false,
-  cover_subtitle_italic: false,
-  cover_subtitle_underline: false,
-  cover_subtitle_color: '#ffffff',
-  cover_subtitle_offset_x: '0px',
-  cover_subtitle_offset_y: '0px',
-  layout_settings: {
-    "1": {
-      "tagBold": false,
-      "blockGap": "1.5",
-      "tagItalic": false,
-      "specsWidth": "",
-      "tagOffsetX": "-5px",
-      "tagOffsetY": "70px",
-      "specsHeight": "",
-      "tagFontSize": "11px",
-      "headerHeight": "25",
-      "specsOffsetY": "",
-      "tagUnderline": false,
-      "cardModelBold": "",
-      "cardTitleBold": "",
-      "headerOffsetY": "",
-      "tagFontFamily": "Calibri",
-      "titleFontSize": "28px",
-      "titlePositionY": "-24px",
-      "titleFontFamily": "Calibri",
-      "cardModelOffsetY": "-1px",
-      "cardTitleOffsetX": "-5px",
-      "cardTitleOffsetY": "40px",
-      "cardModelFontSize": "11px",
-      "cardTitleFontSize": "14px",
-      "cardModelLabelBold": false,
-      "cardModelFontFamily": "Calibri",
-      "cardTitleFontFamily": "Calibri",
-      "cardModelLabelOffsetY": "-2px",
-      "cardModelLabelFontSize": "14px",
-      "cardModelLabelFontFamily": "Calibri"
-    },
-    "3": {
-      "blockGap": "2",
-      "specsBold": false,
+  ...defaultSettings
+})
       "titleBold": true,
       "specsWidth": "",
       "tagOffsetX": "-350px",
@@ -223,12 +91,6 @@ export default function usePdfSettings() {
         const mapping: Record<string, PdfSettings> = {}
         for (const item of data) {
           if (item.category) {
-            // Parse landscape_settings JSON se vier como string
-            let lsRaw = item.landscape_settings
-            if (typeof lsRaw === 'string') {
-              try { lsRaw = JSON.parse(lsRaw) } catch { lsRaw = null }
-            }
-
             const catKey = item.category.toUpperCase().trim()
             mapping[catKey] = {
               ...item,
@@ -307,7 +169,6 @@ export default function usePdfSettings() {
               logo_height: item.logo_height || '200px',
               logo_position_x: item.logo_position_x || '-60px',
               logo_position_y: item.logo_position_y || '-30px',
-              landscape_settings: lsRaw || null,
             }
             console.log(`[usePdfSettings] Loaded settings for category '${catKey}':`, JSON.stringify({
               logo_width: mapping[catKey].logo_width,
@@ -335,7 +196,6 @@ export default function usePdfSettings() {
       category: 'Geral',
       ...getSettingsDefaults(),
       orientation: 'portrait',
-      landscape_settings: null,
     }
     if (!category) {
       console.log('[usePdfSettings] getPdfSettings called with NO category, returning defaults')
@@ -347,37 +207,9 @@ export default function usePdfSettings() {
     return found
   }
 
-  /**
-   * Retorna as configurações de PDF para o modo paisagem.
-   * Mescla os defaults do portrait com os overrides salvos em landscape_settings.
-   * Se não houver landscape_settings configurado, cai de volta para o portrait.
-   */
-  const getLandscapePdfSettings = (category?: string): PdfSettings => {
-    const portraitSettings = getPdfSettings(category)
-    const lsOverrides = portraitSettings.landscape_settings
-    if (!lsOverrides || Object.keys(lsOverrides).length === 0) {
-      return portraitSettings // fallback: usa portrait se landscape não configurado
-    }
-
-    // Converte os overrides do landscape (que estão em camelCase) para snake_case para sobrescrever corretamente os campos correspondentes
-    const snakeOverrides: Record<string, any> = {}
-    for (const key of Object.keys(lsOverrides)) {
-      const snakeKey = key.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`)
-      snakeOverrides[snakeKey] = lsOverrides[key]
-    }
-
-    // Mescla: portrait como base + overrides de landscape por cima
-    return {
-      ...portraitSettings,
-      ...snakeOverrides,
-      orientation: 'landscape',
-    }
-  }
-
   return {
     pdfSettings,
     fetchPdfSettings,
     getPdfSettings,
-    getLandscapePdfSettings,
   }
 }

@@ -67,221 +67,6 @@
       </div>
     </div>
 
-    <!-- Badge do Cabeçalho (PDF - Acima do Título) -->
-    <div class="space-y-3 p-3 bg-slate-50 border border-slate-200 rounded">
-      <div class="flex items-center justify-between">
-        <label class="block text-[10px] text-slate-700 font-bold uppercase tracking-wider">Badge Superior (Acima do Título)</label>
-        <div class="flex items-center gap-1.5">
-          <button
-            type="button"
-            @click="emit('open-replicate-modal', category, ['badgeText', 'badgeIconUrl', 'badgeIconSize', 'badgeFontFamily', 'badgeFontSize', 'badgeColor', 'badgePositionX', 'badgePositionY', 'badgeIconOffsetX', 'badgeIconOffsetY', 'badgeTextOffsetX', 'badgeTextOffsetY'])"
-            class="text-[9px] text-blue-600 hover:text-blue-800 font-bold uppercase tracking-wider shrink-0"
-            title="Replicar esta configuração de badge para outras categorias"
-          >
-            Replicar
-          </button>
-          <span class="inline-flex items-center justify-center bg-blue-100 text-blue-600 rounded-full w-3.5 h-3.5 text-[9px] font-bold cursor-help" title="Exibe um pequeno ícone e frase (texto) imediatamente acima do título da categoria nas páginas do PDF.">!</span>
-        </div>
-      </div>
-      
-      <!-- Badge Text -->
-      <div class="space-y-1">
-        <label class="block text-[9px] text-gray-500 font-bold uppercase tracking-wider">Texto/Palavra do Badge</label>
-        <input
-          v-model="category.badgeText"
-          type="text"
-          @input="category.hasChanges = true"
-          placeholder="Ex: INSTRUMENTAÇÃO"
-          class="w-full border border-gray-300 rounded p-2 text-xs focus:ring-1 focus:ring-blue-600 focus:outline-none bg-white text-slate-800"
-        />
-      </div>
-
-      <!-- Badge Icon Upload -->
-      <div class="space-y-1.5">
-        <label class="block text-[9px] text-gray-500 font-bold uppercase tracking-wider">Ícone do Badge (PNG)</label>
-        
-        <div @click="triggerBadgeIconUpload" class="border border-dashed border-gray-300 p-2 flex flex-col items-center justify-center cursor-pointer hover:bg-gray-150 transition-colors rounded h-20 relative bg-white" title="Clique para fazer upload do ícone do badge">
-          <input type="file" ref="badgeIconFileInput" class="hidden" accept="image/*" @change="handleBadgeIconChange" :disabled="uploadingBadgeIcon" />
-          <div v-if="uploadingBadgeIcon" class="flex flex-col items-center">
-            <span class="material-symbols-outlined animate-spin text-blue-600 mb-0.5 text-lg">sync</span>
-            <span class="text-[9px] text-gray-400 font-bold uppercase">Enviando...</span>
-          </div>
-          <template v-else>
-            <img v-if="category.badgeIconUrl" :src="category.badgeIconUrl" class="max-h-10 max-w-full object-contain" />
-            <span v-else class="material-symbols-outlined text-gray-450 text-xl">image</span>
-            <span class="text-[9px] text-gray-500 font-semibold uppercase mt-1">{{ category.badgeIconUrl ? 'Trocar ícone' : 'Upload PNG' }}</span>
-          </template>
-        </div>
-
-        <!-- Badge Icon URL Input -->
-        <div class="flex items-center gap-2">
-          <input
-            v-model="category.badgeIconUrl"
-            type="text"
-            @input="category.hasChanges = true"
-            placeholder="https://exemplo.com/badge-icone.png"
-            class="flex-1 border border-gray-300 rounded p-2 text-xs focus:ring-1 focus:ring-blue-600 focus:outline-none bg-white text-slate-800"
-          />
-          <button
-            v-if="category.badgeIconUrl"
-            type="button"
-            @click="category.badgeIconUrl = null; category.hasChanges = true"
-            class="text-red-550 hover:text-red-750 text-xs font-semibold shrink-0"
-            title="Remover ícone do badge"
-          >
-            Remover
-          </button>
-        </div>
-      </div>
-
-      <!-- Ajustes Estéticos do Badge -->
-      <div class="grid grid-cols-2 gap-2 pt-2.5 border-t border-slate-200">
-        <!-- Tamanho do Ícone -->
-        <div class="space-y-1">
-          <label class="block text-[9px] text-gray-500 font-bold uppercase tracking-wider">Tamanho do Ícone</label>
-          <input
-            v-model="category.badgeIconSize"
-            type="text"
-            @input="category.hasChanges = true"
-            placeholder="Ex: 4.5mm"
-            class="w-full border border-gray-300 rounded p-1.5 text-xs focus:ring-1 focus:ring-blue-600 focus:outline-none bg-white text-slate-800"
-          />
-        </div>
-
-        <!-- Tamanho da Fonte -->
-        <div class="space-y-1">
-          <label class="block text-[9px] text-gray-500 font-bold uppercase tracking-wider">Tamanho da Fonte</label>
-          <input
-            v-model="category.badgeFontSize"
-            type="text"
-            @input="category.hasChanges = true"
-            placeholder="Ex: 8pt"
-            class="w-full border border-gray-300 rounded p-1.5 text-xs focus:ring-1 focus:ring-blue-600 focus:outline-none bg-white text-slate-800"
-          />
-        </div>
-
-        <!-- Fonte da Frase -->
-        <div class="space-y-1">
-          <label class="block text-[9px] text-gray-500 font-bold uppercase tracking-wider">Fonte da Frase</label>
-          <select
-            v-model="category.badgeFontFamily"
-            @change="category.hasChanges = true"
-            class="w-full border border-gray-300 rounded p-1.5 text-xs focus:ring-1 focus:ring-blue-600 focus:outline-none bg-white text-slate-800"
-          >
-            <option value="Arial">Arial</option>
-            <option value="Arial Black">Arial Black</option>
-            <option value="Calibri">Calibri</option>
-            <option value="Century Gothic">Century Gothic</option>
-            <option value="Comic Sans MS">Comic Sans MS</option>
-            <option value="Courier New">Courier New</option>
-            <option value="Georgia">Georgia</option>
-            <option value="Hanken Grotesk">Hanken Grotesk</option>
-            <option value="Impact">Impact</option>
-            <option value="Inter">Inter</option>
-            <option value="Montserrat">Montserrat</option>
-            <option value="Montserrat Extra Bold">Montserrat Extra Bold</option>
-            <option value="Outfit">Outfit</option>
-            <option value="Roboto">Roboto</option>
-            <option value="Segoe UI">Segoe UI</option>
-            <option value="Source Sans Pro">Source Sans Pro</option>
-            <option value="Tahoma">Tahoma</option>
-            <option value="Times New Roman">Times New Roman</option>
-            <option value="Trebuchet MS">Trebuchet MS</option>
-            <option value="Verdana">Verdana</option>
-          </select>
-        </div>
-
-        <!-- Cor da Frase -->
-        <div class="space-y-1">
-          <label class="block text-[9px] text-gray-500 font-bold uppercase tracking-wider">Cor da Frase</label>
-          <div class="flex items-center space-x-1">
-            <input
-              v-model="category.badgeColor"
-              type="color"
-              @change="category.hasChanges = true"
-              class="w-8 h-8 p-0 border-0 bg-transparent cursor-pointer rounded"
-            />
-            <input
-              v-model="category.badgeColor"
-              type="text"
-              @input="category.hasChanges = true"
-              placeholder="#334155"
-              class="flex-1 border border-gray-300 rounded p-1.5 text-[10px] focus:ring-1 focus:ring-blue-600 focus:outline-none bg-white font-mono text-slate-800 w-full"
-            />
-          </div>
-        </div>
-
-        <!-- Posição Geral (move tudo junto) -->
-        <div class="col-span-2 pt-1.5 border-t border-slate-100">
-          <label class="block text-[9px] text-blue-600 font-bold uppercase tracking-wider mb-1.5">⬛ Mover Tudo (Ícone + Frase)</label>
-          <div class="grid grid-cols-2 gap-2">
-            <div class="space-y-0.5">
-              <label class="flex items-center text-[8px] text-gray-400 font-semibold uppercase">
-                Offset X
-                <span class="inline-flex items-center justify-center bg-blue-100 text-blue-600 rounded-full w-3 h-3 text-[8px] font-bold cursor-help ml-1" title="Mover lados: Valores positivos (ex: 5px) movem para a direita. Valores negativos (ex: -5px) movem para a esquerda.">!</span>
-              </label>
-              <input v-model="category.badgePositionX" type="text" @input="category.hasChanges = true" placeholder="0px"
-                class="w-full border border-gray-300 rounded p-1.5 text-xs focus:ring-1 focus:ring-blue-600 focus:outline-none bg-white text-slate-800" />
-            </div>
-            <div class="space-y-0.5">
-              <label class="flex items-center text-[8px] text-gray-400 font-semibold uppercase">
-                Offset Y
-                <span class="inline-flex items-center justify-center bg-blue-100 text-blue-600 rounded-full w-3 h-3 text-[8px] font-bold cursor-help ml-1" title="Mover cima/baixo: Valores positivos (ex: 5px) movem para baixo. Valores negativos (ex: -5px) movem para cima.">!</span>
-              </label>
-              <input v-model="category.badgePositionY" type="text" @input="category.hasChanges = true" placeholder="0px"
-                class="w-full border border-gray-300 rounded p-1.5 text-xs focus:ring-1 focus:ring-blue-600 focus:outline-none bg-white text-slate-800" />
-            </div>
-          </div>
-        </div>
-
-        <!-- Posição Individual: só Ícone -->
-        <div class="col-span-2 pt-1.5 border-t border-slate-100">
-          <label class="block text-[9px] text-emerald-600 font-bold uppercase tracking-wider mb-1.5">🖼️ Mover só Ícone</label>
-          <div class="grid grid-cols-2 gap-2">
-            <div class="space-y-0.5">
-              <label class="flex items-center text-[8px] text-gray-400 font-semibold uppercase">
-                Offset X
-                <span class="inline-flex items-center justify-center bg-blue-100 text-blue-600 rounded-full w-3 h-3 text-[8px] font-bold cursor-help ml-1" title="Mover lados: Valores positivos (ex: 5px) movem para a direita. Valores negativos (ex: -5px) movem para a esquerda.">!</span>
-              </label>
-              <input v-model="category.badgeIconOffsetX" type="text" @input="category.hasChanges = true" placeholder="0px"
-                class="w-full border border-gray-300 rounded p-1.5 text-xs focus:ring-1 focus:ring-blue-600 focus:outline-none bg-white text-slate-800" />
-            </div>
-            <div class="space-y-0.5">
-              <label class="flex items-center text-[8px] text-gray-400 font-semibold uppercase">
-                Offset Y
-                <span class="inline-flex items-center justify-center bg-blue-100 text-blue-600 rounded-full w-3 h-3 text-[8px] font-bold cursor-help ml-1" title="Mover cima/baixo: Valores positivos (ex: 5px) movem para baixo. Valores negativos (ex: -5px) movem para cima.">!</span>
-              </label>
-              <input v-model="category.badgeIconOffsetY" type="text" @input="category.hasChanges = true" placeholder="0px"
-                class="w-full border border-gray-300 rounded p-1.5 text-xs focus:ring-1 focus:ring-blue-600 focus:outline-none bg-white text-slate-800" />
-            </div>
-          </div>
-        </div>
-
-        <!-- Posição Individual: só Frase -->
-        <div class="col-span-2 pt-1.5 border-t border-slate-100">
-          <label class="block text-[9px] text-purple-600 font-bold uppercase tracking-wider mb-1.5">✏️ Mover só Frase</label>
-          <div class="grid grid-cols-2 gap-2">
-            <div class="space-y-0.5">
-              <label class="flex items-center text-[8px] text-gray-400 font-semibold uppercase">
-                Offset X
-                <span class="inline-flex items-center justify-center bg-blue-100 text-blue-600 rounded-full w-3 h-3 text-[8px] font-bold cursor-help ml-1" title="Mover lados: Valores positivos (ex: 5px) movem para a direita. Valores negativos (ex: -5px) movem para a esquerda.">!</span>
-              </label>
-              <input v-model="category.badgeTextOffsetX" type="text" @input="category.hasChanges = true" placeholder="0px"
-                class="w-full border border-gray-300 rounded p-1.5 text-xs focus:ring-1 focus:ring-blue-600 focus:outline-none bg-white text-slate-800" />
-            </div>
-            <div class="space-y-0.5">
-              <label class="flex items-center text-[8px] text-gray-400 font-semibold uppercase">
-                Offset Y
-                <span class="inline-flex items-center justify-center bg-blue-100 text-blue-600 rounded-full w-3 h-3 text-[8px] font-bold cursor-help ml-1" title="Mover cima/baixo: Valores positivos (ex: 5px) movem para baixo. Valores negativos (ex: -5px) movem para cima.">!</span>
-              </label>
-              <input v-model="category.badgeTextOffsetY" type="text" @input="category.hasChanges = true" placeholder="0px"
-                class="w-full border border-gray-300 rounded p-1.5 text-xs focus:ring-1 focus:ring-blue-600 focus:outline-none bg-white text-slate-800" />
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <!-- Category Cover Image -->
     <div class="space-y-2">
       <label class="block text-[10px] text-gray-500 font-bold uppercase tracking-wider">Capa da Categoria</label>
@@ -408,11 +193,9 @@ const { getCoverImage, handleImageError } = useAdminCategorySettings()
 const fileInput = ref<HTMLInputElement | null>(null)
 const pdfFileInput = ref<HTMLInputElement | null>(null)
 const iconFileInput = ref<HTMLInputElement | null>(null)
-const badgeIconFileInput = ref<HTMLInputElement | null>(null)
 const uploadingImage = ref(false)
 const uploadingPdf = ref(false)
 const uploadingIcon = ref(false)
-const uploadingBadgeIcon = ref(false)
 
 const handleReplicateClick = () => {
   console.log('🔵 [AdminCategoryBaseSettings] REPLICAR LAYOUT PDF button clicked!', {
@@ -428,42 +211,6 @@ const triggerImageUpload = () => {
 
 const triggerIconUpload = () => {
   iconFileInput.value?.click()
-}
-
-const triggerBadgeIconUpload = () => {
-  badgeIconFileInput.value?.click()
-}
-
-const handleBadgeIconChange = async (event: Event) => {
-  const target = event.target as HTMLInputElement
-  const file = target.files?.[0]
-  if (!file) return
-
-  uploadingBadgeIcon.value = true
-  try {
-    const formData = new FormData()
-    formData.append('file', file)
-
-    const response = await fetch('/api/upload-r2', {
-      method: 'POST',
-      body: formData,
-    })
-
-    if (!response.ok) {
-      const errorData = await response.json()
-      throw new Error(errorData.statusMessage || 'Erro ao fazer upload do ícone do badge')
-    }
-
-    const data = await response.json()
-    props.category.badgeIconUrl = data.url
-    props.category.hasChanges = true
-  } catch (error: any) {
-    console.error('Error uploading badge icon to R2:', error)
-    alert(`Erro no upload do ícone do badge: ${error.message || error}`)
-  } finally {
-    uploadingBadgeIcon.value = false
-    target.value = ''
-  }
 }
 
 const handleIconChange = async (event: Event) => {
@@ -684,7 +431,6 @@ const handleResetToDefaults = () => {
   props.category.coverSubtitleOffsetX = '0px'
   props.category.coverSubtitleOffsetY = '0px'
   props.category.orientation = 'portrait'
-  props.category.landscapeSettings = null
   props.category.layout_settings = {
     "1": {
       "tagBold": false,

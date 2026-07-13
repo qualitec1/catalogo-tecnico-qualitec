@@ -8,15 +8,6 @@
       </h4>
     </div>
 
-    <!-- Default Orientation select -->
-    <div class="flex items-center gap-3 py-2">
-      <label class="text-[10px] text-gray-500 font-semibold uppercase whitespace-nowrap">Orientação Padrão:</label>
-      <select v-model="category.orientation" @change="category.hasChanges = true" class="border border-gray-300 p-1.5 text-xs rounded bg-white">
-        <option value="portrait">↕ Vertical (Retrato)</option>
-        <option value="landscape">↔ Horizontal (Paisagem)</option>
-      </select>
-    </div>
-
     <!-- Configure Layout Dropdown -->
     <div class="relative inline-block">
       <button
@@ -26,9 +17,7 @@
       >
         <span class="material-symbols-outlined text-sm">picture_as_pdf</span>
         <span>
-          {{ isPdfSettingsOpen(category.id)
-            ? (getPdfMode(category.id) === 'landscape' ? '↔ Editando Paisagem' : '↕ Editando Vertical')
-            : 'Configurar Layout PDF' }}
+          {{ isPdfSettingsOpen(category.id) ? '↕ Editando Vertical' : 'Configurar Layout PDF' }}
         </span>
         <span class="material-symbols-outlined text-sm">{{ isPdfMenuOpen(category.id) ? 'expand_less' : 'expand_more' }}</span>
       </button>
@@ -41,19 +30,10 @@
         <button
           @click="openPdfPanel(category.id, 'portrait')"
           class="w-full text-left px-4 py-2.5 text-xs font-semibold hover:bg-blue-50 flex items-center gap-2 transition-colors border-0"
-          :class="isPdfSettingsOpen(category.id) && getPdfMode(category.id) === 'portrait' ? 'text-blue-600 bg-blue-50' : 'text-slate-700'"
+          :class="isPdfSettingsOpen(category.id) ? 'text-blue-600 bg-blue-50' : 'text-slate-700'"
         >
           <span class="material-symbols-outlined text-sm">crop_portrait</span>
           ↕ Configurar Layout <strong>Vertical</strong>
-        </button>
-        <div class="border-t border-gray-100"></div>
-        <button
-          @click="openPdfPanel(category.id, 'landscape')"
-          class="w-full text-left px-4 py-2.5 text-xs font-semibold hover:bg-indigo-50 flex items-center gap-2 transition-colors border-0"
-          :class="isPdfSettingsOpen(category.id) && getPdfMode(category.id) === 'landscape' ? 'text-indigo-600 bg-indigo-50' : 'text-slate-700'"
-        >
-          <span class="material-symbols-outlined text-sm">crop_landscape</span>
-          ↔ Configurar Layout <strong>Paisagem</strong>
         </button>
         <div v-if="isPdfSettingsOpen(category.id)" class="border-t border-gray-100"></div>
         <button
@@ -68,27 +48,25 @@
     </div>
 
     <!-- Collapsible Settings Panel -->
-    <div v-show="isPdfSettingsOpen(category.id)" class="space-y-4 border-2 p-4 rounded transition-all duration-300 text-xs"
-      :class="getPdfMode(category.id) === 'landscape' ? 'border-indigo-300 bg-indigo-50/40' : 'border-gray-200 bg-gray-50'"
+    <div v-show="isPdfSettingsOpen(category.id)" class="space-y-4 border-2 p-4 rounded transition-all duration-300 text-xs border-gray-200 bg-gray-50"
     >
       <!-- Active Mode Indicator -->
-      <div class="flex items-center gap-2 pb-2 border-b" :class="getPdfMode(category.id) === 'landscape' ? 'border-indigo-200' : 'border-gray-200'">
-        <span class="material-symbols-outlined text-base" :class="getPdfMode(category.id) === 'landscape' ? 'text-indigo-600' : 'text-blue-600'">{{ getPdfMode(category.id) === 'landscape' ? 'crop_landscape' : 'crop_portrait' }}</span>
-        <span class="text-[11px] font-bold uppercase tracking-wider" :class="getPdfMode(category.id) === 'landscape' ? 'text-indigo-600' : 'text-blue-600'">
-          {{ getPdfMode(category.id) === 'landscape' ? '↔ Configurações de Paisagem (Horizontal)' : '↕ Configurações Verticais (Retrato)' }}
+      <div class="flex items-center gap-2 pb-2 border-b border-gray-200">
+        <span class="material-symbols-outlined text-base text-blue-600">crop_portrait</span>
+        <span class="text-[11px] font-bold uppercase tracking-wider text-blue-600">
+          ↕ Configurações Verticais (Retrato)
         </span>
-        <span v-if="getPdfMode(category.id) === 'landscape'" class="text-[9px] bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full font-semibold ml-auto">Independente do Retrato</span>
       </div>
 
       <!-- Density selection tabs -->
-      <div class="flex flex-wrap items-center justify-between gap-3 border-b pb-2 pt-1" :class="getPdfMode(category.id) === 'landscape' ? 'border-indigo-200' : 'border-gray-200'">
+      <div class="flex flex-wrap items-center justify-between gap-3 border-b pb-2 pt-1 border-gray-200">
         <div class="flex flex-wrap gap-1.5">
           <button
             type="button"
             @click="setEditDensity(category.id, 'geral')"
             class="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded transition-all flex items-center gap-1 border-0"
             :class="getEditDensity(category.id) === 'geral'
-              ? (getPdfMode(category.id) === 'landscape' ? 'bg-indigo-600 text-white' : 'bg-blue-600 text-white')
+              ? 'bg-blue-600 text-white'
               : 'bg-white text-slate-700 border border-gray-300 hover:bg-gray-50'"
           >
             Configurações Gerais
@@ -98,7 +76,7 @@
             @click="setEditDensity(category.id, '6')"
             class="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded transition-all flex items-center gap-1 border-0"
             :class="getEditDensity(category.id) === '6'
-              ? (getPdfMode(category.id) === 'landscape' ? 'bg-indigo-600 text-white' : 'bg-blue-600 text-white')
+              ? 'bg-blue-600 text-white'
               : 'bg-white text-slate-700 border border-gray-300 hover:bg-gray-50'"
           >
             1 por Página (Grande)
@@ -108,7 +86,7 @@
             @click="setEditDensity(category.id, '3')"
             class="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded transition-all flex items-center gap-1 border-0"
             :class="getEditDensity(category.id) === '3'
-              ? (getPdfMode(category.id) === 'landscape' ? 'bg-indigo-600 text-white' : 'bg-blue-600 text-white')
+              ? 'bg-blue-600 text-white'
               : 'bg-white text-slate-700 border border-gray-300 hover:bg-gray-50'"
           >
             2 por Página (Médio)
@@ -118,7 +96,7 @@
             @click="setEditDensity(category.id, '1')"
             class="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded transition-all flex items-center gap-1 border-0"
             :class="getEditDensity(category.id) === '1'
-              ? (getPdfMode(category.id) === 'landscape' ? 'bg-indigo-600 text-white' : 'bg-blue-600 text-white')
+              ? 'bg-blue-600 text-white'
               : 'bg-white text-slate-700 border border-gray-300 hover:bg-gray-50'"
           >
             6 por Página (Pequeno)
@@ -231,7 +209,6 @@ const handleReplicateSection = (fields: string[]) => {
 const {
   isPdfSettingsOpen,
   isPdfMenuOpen,
-  getPdfMode,
   togglePdfMenuOpen,
   openPdfPanel,
   closePdfPanel,

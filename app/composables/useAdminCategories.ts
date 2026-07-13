@@ -130,11 +130,6 @@ export function useAdminCategories(triggerToast: (msg: string, type?: 'success' 
             coverSubtitleColor: settings.cover_subtitle_color || '#ffffff',
             coverSubtitleOffsetX: settings.cover_subtitle_offset_x || '0px',
             coverSubtitleOffsetY: settings.cover_subtitle_offset_y || '0px',
-            landscapeSettings: (() => {
-              let ls = settings.landscape_settings
-              if (typeof ls === 'string') { try { ls = JSON.parse(ls) } catch { ls = null } }
-              return ls || {}
-            })(),
             
             uploading: false,
             hasChanges: false
@@ -299,10 +294,7 @@ export function useAdminCategories(triggerToast: (msg: string, type?: 'success' 
         orientation: catAsset.orientation || 'portrait',
         pdf_image_scale: catAsset.pdfImageScale !== undefined && catAsset.pdfImageScale !== null ? Number(catAsset.pdfImageScale) : 1.0,
         pdf_image_scale_x: catAsset.pdfImageScaleX !== undefined && catAsset.pdfImageScaleX !== null ? Number(catAsset.pdfImageScaleX) : 1.0,
-        pdf_image_scale_y: catAsset.pdfImageScaleY !== undefined && catAsset.pdfImageScaleY !== null ? Number(catAsset.pdfImageScaleY) : 1.0,
-        landscape_settings: catAsset.landscapeSettings && Object.keys(catAsset.landscapeSettings).length > 0
-          ? catAsset.landscapeSettings
-          : null
+        pdf_image_scale_y: catAsset.pdfImageScaleY !== undefined && catAsset.pdfImageScaleY !== null ? Number(catAsset.pdfImageScaleY) : 1.0
       }
       
       if (catAsset.pdfSettingsId) {
@@ -452,7 +444,6 @@ export function useAdminCategories(triggerToast: (msg: string, type?: 'success' 
         cover_subtitle_offset_x: '0px',
         cover_subtitle_offset_y: '0px',
         orientation: 'portrait',
-        landscape_settings: null,
         layout_settings: {
           "1": {
             "tagBold": false,
@@ -687,7 +678,6 @@ export function useAdminCategories(triggerToast: (msg: string, type?: 'success' 
         pdfImageScale: 'pdf_image_scale',
         pdfImageScaleX: 'pdf_image_scale_x',
         pdfImageScaleY: 'pdf_image_scale_y',
-        landscapeSettings: 'landscape_settings',
         layoutSettings: 'layout_settings',
         badgeIconSize: 'badge_icon_size',
         badgeFontFamily: 'badge_font_family',
@@ -806,11 +796,7 @@ export function useAdminCategories(triggerToast: (msg: string, type?: 'success' 
             const dbCol = fieldToDbCol[field]
             if (!dbCol) continue
 
-            if (field === 'landscapeSettings') {
-              payload[dbCol] = sourceData[field] && Object.keys(sourceData[field]).length > 0
-                ? sourceData[field]
-                : null
-            } else if (field === 'layoutSettings') {
+            if (field === 'layoutSettings') {
               payload[dbCol] = sourceData[field] || {}
             } else if (field === 'pdfImageScale' || field === 'pdfImageScaleX' || field === 'pdfImageScaleY') {
               payload[dbCol] = sourceData[field] !== undefined && sourceData[field] !== null ? Number(sourceData[field]) : 1.0
