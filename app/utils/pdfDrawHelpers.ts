@@ -593,6 +593,7 @@ export function drawSpecsTable(
 
     const labelFont = getFontName(settings.specs_font_family || settings.specsFontFamily)
     const labelStyle = getFontStyle(settings.specs_bold || settings.specsBold, settings.specs_italic || settings.specsItalic)
+    pdf.setFont(labelFont, labelStyle)
     const sColor = settings.specs_color || settings.specsColor || '#6b7280'
     pdf.setTextColor(sColor)
     for (let idx = 0; idx < labelLines.length; idx++) {
@@ -618,8 +619,8 @@ export function drawSpecsTable(
 
     curY += rowHeight + rowPad * 2
 
-    // Não desenhar linhas se o produto tiver imagem EX
-    if (i < specs.length - 1 && lineStyle !== 'none' && !hasExImage) {
+    // Desenhar linhas normalmente (não apagar se tiver imagem EX)
+    if (i < specs.length - 1 && lineStyle !== 'none') {
       setDrawRgb(pdf, lineColor)
       pdf.setLineWidth(0.15)
       
