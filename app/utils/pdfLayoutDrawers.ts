@@ -37,6 +37,7 @@ export function drawLayout3(
   opts: BuildOptions,
   settings: any
 ) {
+  const scale = opts.bookletMode ? 0.707 : 1
   const spacing = dimToMm(settings.product_spacing || settings.productSpacing, 4)
   const cardH = (contentH - spacing) / 2
   const offX = dimToMm(settings.product_image_offset_x || settings.productImageOffsetX, 0)
@@ -91,7 +92,7 @@ export function drawLayout3(
       specsX + specsOffX,
       cardY + headerH + blockGap + specsOffY + 1,
       specsW,
-      opts.pdfType === 'qrcode' ? specsH - 20 : specsH - 8,  // Reduced space for specs if QR code is present
+      opts.pdfType === 'qrcode' ? specsH - 20 * scale : specsH - 8 * scale,  // Reduced space for specs if QR code is present
       settings,
       false,
       product.exImageUrl || product.ex_image_url ? `ex_${product.id}` : null,
@@ -108,20 +109,21 @@ export function drawLayout3(
         cardY + headerH + blockGap + specsOffY,
         specsW,
         specsH,
-        opts.imageCache
+        opts.imageCache,
+        scale
       )
     } else {
-      drawDatasheetLink(pdf, product, specsX + specsOffX + specsW - 4, cardY + headerH + blockGap + specsOffY + specsH - 5, true, opts.forPrint)
+      drawDatasheetLink(pdf, product, specsX + specsOffX + specsW - 4, cardY + headerH + blockGap + specsOffY + specsH - 5 * scale, true, opts.forPrint, scale)
     }
 
     // Draw EX logo if present (positioned on the side of the header banner)
     const exKey = `ex_${product.id}`
     if (opts.imageCache.has(exKey)) {
-      const exW = 12
+      const exW = 12 * scale
       const exX = isImageLeft 
-        ? specsX + headerOffX - exW - 2 
-        : specsX + headerOffX + headerW + 2
-      const exY = cardY + headerOffY + 1.5
+        ? specsX + headerOffX - exW - 2 * scale 
+        : specsX + headerOffX + headerW + 2 * scale
+      const exY = cardY + headerOffY + 1.5 * scale
       addImageSafe(pdf, opts.imageCache, exKey, exX, exY, exW, exW)
     }
 
@@ -167,6 +169,7 @@ export function drawLayout6(
   opts: BuildOptions,
   settings: any
 ) {
+  const scale = opts.bookletMode ? 0.707 : 1
   const cols = 3
   const rows = 2
   const gapX = 4
@@ -232,7 +235,7 @@ export function drawLayout6(
       x + 1 + specsOffX,
       specsCellY + specsOffY,
       specsW - 2,
-      opts.pdfType === 'qrcode' ? specsH - 15 : specsH - 8,  // Reduced to specsH - 8 to leave clearance for the link at specsH - 5
+      opts.pdfType === 'qrcode' ? specsH - 15 * scale : specsH - 8 * scale,  // Reduced to specsH - 8 * scale to leave clearance for the link at specsH - 5 * scale
       settings,
       true,
       product.exImageUrl || product.ex_image_url ? `ex_${product.id}` : null,
@@ -249,18 +252,19 @@ export function drawLayout6(
         specsCellY + specsOffY,
         specsW,
         specsH,
-        opts.imageCache
+        opts.imageCache,
+        scale
       )
     } else {
-      drawDatasheetLink(pdf, product, x + specsOffX + specsW - 2, specsCellY + specsOffY + specsH - 5, true, opts.forPrint)
+      drawDatasheetLink(pdf, product, x + specsOffX + specsW - 2, specsCellY + specsOffY + specsH - 5 * scale, true, opts.forPrint, scale)
     }
 
     // Draw EX logo if present (positioned above the header banner on the right side)
     const exKey = `ex_${product.id}`
     if (opts.imageCache.has(exKey)) {
-      const exW = 9
-      const exX = x + headerOffX + headerW - exW - 2
-      const exY = headerCellY + headerOffY - exW - 1.5
+      const exW = 9 * scale
+      const exX = x + headerOffX + headerW - exW - 2 * scale
+      const exY = headerCellY + headerOffY - exW - 1.5 * scale
       addImageSafe(pdf, opts.imageCache, exKey, exX, exY, exW, exW)
     }
 
@@ -309,6 +313,7 @@ export function drawLayout1(
   opts: BuildOptions,
   settings: any
 ) {
+  const scale = opts.bookletMode ? 0.707 : 1
   const color = opts.getBgColor(product.bgClass || product.bg_class, product.category)
   const offX = dimToMm(settings.product_image_offset_x || settings.productImageOffsetX, 0)
   const offY = dimToMm(settings.product_image_offset_y || settings.productImageOffsetY, 0)
@@ -354,7 +359,7 @@ export function drawLayout1(
     contentX + 4 + specsOffX,
     cardY + headerH + blockGap + specsOffY + 1,
     specsW - 8,
-    opts.pdfType === 'qrcode' ? specsH - 20 : specsH - 8,  // Reduced space for specs if QR code is present
+    opts.pdfType === 'qrcode' ? specsH - 20 * scale : specsH - 8 * scale,  // Reduced space for specs if QR code is present
     settings,
     false,
     product.exImageUrl || product.ex_image_url ? `ex_${product.id}` : null,
@@ -371,18 +376,19 @@ export function drawLayout1(
       cardY + headerH + blockGap + specsOffY,
       specsW,
       specsH,
-      opts.imageCache
+      opts.imageCache,
+      scale
     )
   } else {
-    drawDatasheetLink(pdf, product, contentX + specsOffX + specsW - 5, cardY + headerH + blockGap + specsOffY + specsH - 5, true, opts.forPrint)
+    drawDatasheetLink(pdf, product, contentX + specsOffX + specsW - 5, cardY + headerH + blockGap + specsOffY + specsH - 5 * scale, true, opts.forPrint, scale)
   }
 
   // Draw EX logo if present (positioned above the header banner on the right side)
   const exKey = `ex_${product.id}`
   if (opts.imageCache.has(exKey)) {
-    const exW = 14
-    const exX = contentX + headerOffX + headerW - exW - 4
-    const exY = cardY + headerOffY - exW - 3
+    const exW = 14 * scale
+    const exX = contentX + headerOffX + headerW - exW - 4 * scale
+    const exY = cardY + headerOffY - exW - 3 * scale
     addImageSafe(pdf, opts.imageCache, exKey, exX, exY, exW, exW)
   }
 

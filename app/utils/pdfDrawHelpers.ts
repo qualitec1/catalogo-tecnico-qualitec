@@ -46,7 +46,7 @@ export function getDatasheetLink(product: any): string | null {
   return `/api/datasheet?id=${product.id}`
 }
 
-export function drawDatasheetLink(pdf: any, product: any, x: number, y: number, alignRight: boolean, forPrint: boolean = false) {
+export function drawDatasheetLink(pdf: any, product: any, x: number, y: number, alignRight: boolean, forPrint: boolean = false, scale: number = 1) {
   // Skip rendering the link if PDF is for print mode
   if (forPrint) return
   
@@ -54,42 +54,42 @@ export function drawDatasheetLink(pdf: any, product: any, x: number, y: number, 
   if (!linkUrl) return
 
   pdf.setFont('helvetica', 'bold')
-  pdf.setFontSize(6.5)
+  pdf.setFontSize(6.5 * scale)
   pdf.setTextColor(156, 163, 175) // Cinza claro #9CA3AF (gray-400)
 
   const linkText = 'Especificações Técnicas'
   const textWidth = pdf.getTextWidth(linkText)
   
-  const iconW = 2.2
-  const iconH = 2.2
-  const gap = 1.2
+  const iconW = 2.2 * scale
+  const iconH = 2.2 * scale
+  const gap = 1.2 * scale
   const totalW = textWidth + gap + iconW
   
   const textX = alignRight ? x - totalW : x
   const textY = y
   const iconX = textX + textWidth + gap
-  const iconY = textY - 2.2 // Align bottom of icon tray with text baseline (textY)
+  const iconY = textY - 2.2 * scale // Align bottom of icon tray with text baseline (textY)
 
   // Draw text
   pdf.text(linkText, textX, textY)
   
   // Draw vector download icon
   pdf.setDrawColor(156, 163, 175)
-  pdf.setLineWidth(0.18)
+  pdf.setLineWidth(0.18 * scale)
   
   // Tray
-  pdf.line(iconX, iconY + 1.2, iconX, iconY + 2.2)
-  pdf.line(iconX, iconY + 2.2, iconX + iconW, iconY + 2.2)
-  pdf.line(iconX + iconW, iconY + 1.2, iconX + iconW, iconY + 2.2)
+  pdf.line(iconX, iconY + 1.2 * scale, iconX, iconY + 2.2 * scale)
+  pdf.line(iconX, iconY + 2.2 * scale, iconX + iconW, iconY + 2.2 * scale)
+  pdf.line(iconX + iconW, iconY + 1.2 * scale, iconX + iconW, iconY + 2.2 * scale)
   
   // Arrow
   const centerX = iconX + iconW / 2
-  pdf.line(centerX, iconY, centerX, iconY + 1.6)
-  pdf.line(centerX - 0.6, iconY + 1.0, centerX, iconY + 1.6)
-  pdf.line(centerX + 0.6, iconY + 1.0, centerX, iconY + 1.6)
+  pdf.line(centerX, iconY, centerX, iconY + 1.6 * scale)
+  pdf.line(centerX - 0.6 * scale, iconY + 1.0 * scale, centerX, iconY + 1.6 * scale)
+  pdf.line(centerX + 0.6 * scale, iconY + 1.0 * scale, centerX, iconY + 1.6 * scale)
   
   // Clickable hotspot in PDF (covers text + icon)
-  pdf.link(textX, textY - 2.2, totalW, 2.8, { url: linkUrl })
+  pdf.link(textX, textY - 2.2 * scale, totalW, 2.8 * scale, { url: linkUrl })
 }
 
 export function drawDatasheetQrCode(
@@ -99,7 +99,8 @@ export function drawDatasheetQrCode(
   y: number,
   w: number,
   h: number,
-  imageCache: Map<string, CachedImage>
+  imageCache: Map<string, CachedImage>,
+  scale: number = 1
 ) {
   const key = `qrcode_${product.id}`
   const qrImg = imageCache.get(key)
@@ -108,12 +109,12 @@ export function drawDatasheetQrCode(
   // Determine QR code size based on specs block width
   // If specs block is narrow (layout 6), make QR code smaller (e.g. 11mm)
   // If specs block is wide (layouts 1 & 3), make QR code larger (e.g. 15mm)
-  const qrSize = w < 80 ? 11 : 15
+  const qrSize = (w < 80 ? 11 : 15) * scale
   
   // Position QR code in the bottom-right corner of the specs block
   // with a small margin of 2mm
-  const qrX = x + w - qrSize - 2
-  const qrY = y + h - qrSize - 2
+  const qrX = x + w - qrSize - 2 * scale
+  const qrY = y + h - qrSize - 2 * scale
 
   try {
     pdf.addImage(qrImg.dataUrl, qrImg.format, qrX, qrY, qrSize, qrSize, undefined, 'FAST')
