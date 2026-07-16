@@ -431,6 +431,11 @@ const handleResetToDefaults = () => {
   props.category.coverSubtitleOffsetX = '0px'
   props.category.coverSubtitleOffsetY = '0px'
   props.category.orientation = 'portrait'
+  props.category.bookletPdfImageScale = 1.0
+  props.category.bookletPdfImageScaleX = 1.0
+  props.category.bookletPdfImageScaleY = 1.0
+  props.category.bookletProductImageOffsetX = '0px'
+  props.category.bookletProductImageOffsetY = '0px'
   props.category.layout_settings = {
     "1": {
       "tagBold": false,

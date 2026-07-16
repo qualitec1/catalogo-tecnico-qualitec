@@ -101,4 +101,9 @@ export const defaultPdfSettings = {
   cover_subtitle_color: '#ffffff',
   cover_subtitle_offset_x: '0px',
   cover_subtitle_offset_y: '0px',
+  booklet_pdf_image_scale: 1.0,
+  booklet_pdf_image_scale_x: 1.0,
+  booklet_pdf_image_scale_y: 1.0,
+  booklet_product_image_offset_x: '0px',
+  booklet_product_image_offset_y: '0px',
 }
