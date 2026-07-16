@@ -100,6 +100,49 @@
       </label>
       <input v-model="target.pdfImageScaleY" type="number" step="0.1" @input="category.hasChanges = true" class="w-full border border-gray-300 p-2 rounded bg-white text-xs" :placeholder="density !== 'geral' ? 'Herdado: ' + translateValue('pdfImageScaleY', getGlobalValue(category, 'pdfImageScaleY')) : '1.0'" />
     </div>
+
+    <!-- Booklet Scale group -->
+    <div class="col-span-2 md:col-span-4 border-b border-gray-200 pb-1 mt-2 flex justify-between items-center">
+      <span class="text-[10px] font-bold text-indigo-600 uppercase tracking-wider">Dimensões & Offsets (Modo Livreto / Booklet)</span>
+      <button 
+        type="button" 
+        @click="$emit('replicate-section', ['bookletPdfImageScale', 'bookletPdfImageScaleX', 'bookletPdfImageScaleY', 'bookletProductImageOffsetX', 'bookletProductImageOffsetY'])" 
+        class="text-[9px] font-bold text-indigo-600 hover:text-indigo-700 bg-transparent border-0 cursor-pointer flex items-center gap-1 uppercase"
+      >
+        <span class="material-symbols-outlined text-xs">content_copy</span>
+        Replicar
+      </button>
+    </div>
+    <div>
+      <label class="flex items-center text-[10px] text-gray-500 font-semibold mb-1 uppercase">
+        Livreto Escala Proporcional
+      </label>
+      <input v-model="target.bookletPdfImageScale" type="number" step="0.1" @input="category.hasChanges = true" class="w-full border border-gray-300 p-2 rounded bg-white text-xs" :placeholder="density !== 'geral' ? 'Herdado: ' + translateValue('bookletPdfImageScale', getGlobalValue(category, 'bookletPdfImageScale')) : '1.0'" />
+    </div>
+    <div>
+      <label class="flex items-center text-[10px] text-gray-500 font-semibold mb-1 uppercase">
+        Livreto Escala Horizontal
+      </label>
+      <input v-model="target.bookletPdfImageScaleX" type="number" step="0.1" @input="category.hasChanges = true" class="w-full border border-gray-300 p-2 rounded bg-white text-xs" :placeholder="density !== 'geral' ? 'Herdado: ' + translateValue('bookletPdfImageScaleX', getGlobalValue(category, 'bookletPdfImageScaleX')) : '1.0'" />
+    </div>
+    <div>
+      <label class="flex items-center text-[10px] text-gray-500 font-semibold mb-1 uppercase">
+        Livreto Escala Vertical
+      </label>
+      <input v-model="target.bookletPdfImageScaleY" type="number" step="0.1" @input="category.hasChanges = true" class="w-full border border-gray-300 p-2 rounded bg-white text-xs" :placeholder="density !== 'geral' ? 'Herdado: ' + translateValue('bookletPdfImageScaleY', getGlobalValue(category, 'bookletPdfImageScaleY')) : '1.0'" />
+    </div>
+    <div>
+      <label class="flex items-center text-[10px] text-gray-500 font-semibold mb-1 uppercase">
+        Livreto Deslocamento X
+      </label>
+      <input v-model="target.bookletProductImageOffsetX" type="text" @input="category.hasChanges = true" class="w-full border border-gray-300 p-2 rounded bg-white text-xs" :placeholder="density !== 'geral' ? 'Herdado: ' + translateValue('bookletProductImageOffsetX', getGlobalValue(category, 'bookletProductImageOffsetX')) : '0px'" />
+    </div>
+    <div>
+      <label class="flex items-center text-[10px] text-gray-500 font-semibold mb-1 uppercase">
+        Livreto Deslocamento Y
+      </label>
+      <input v-model="target.bookletProductImageOffsetY" type="text" @input="category.hasChanges = true" class="w-full border border-gray-300 p-2 rounded bg-white text-xs" :placeholder="density !== 'geral' ? 'Herdado: ' + translateValue('bookletProductImageOffsetY', getGlobalValue(category, 'bookletProductImageOffsetY')) : '0px'" />
+    </div>
     <div class="hidden md:block"></div>
   </div>
 </template>

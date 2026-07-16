@@ -25,6 +25,52 @@ function parseSizeDim(val: any, fallback: number): number {
   return mm >= 1 ? mm : fallback
 }
 
+function getImageParams(product: any, settings: any, bookletMode: boolean) {
+  const globalScale = bookletMode
+    ? (settings.booklet_pdf_image_scale !== undefined && settings.booklet_pdf_image_scale !== null ? Number(settings.booklet_pdf_image_scale) : 1.0)
+    : (settings.pdf_image_scale !== undefined && settings.pdf_image_scale !== null ? Number(settings.pdf_image_scale) : 1.0)
+    
+  const individualScale = bookletMode
+    ? (product.bookletImageScale !== undefined && product.bookletImageScale !== null ? Number(product.bookletImageScale) : (product.booklet_image_scale !== undefined && product.booklet_image_scale !== null ? Number(product.booklet_image_scale) : 1.0))
+    : (product.imageScale !== undefined && product.imageScale !== null ? Number(product.imageScale) : (product.image_scale !== undefined && product.image_scale !== null ? Number(product.image_scale) : 1.0))
+
+  const finalScale = globalScale * individualScale
+  
+  const globalScaleX = bookletMode
+    ? (settings.booklet_pdf_image_scale_x !== undefined && settings.booklet_pdf_image_scale_x !== null ? Number(settings.booklet_pdf_image_scale_x) : 1.0)
+    : (settings.pdf_image_scale_x !== undefined && settings.pdf_image_scale_x !== null ? Number(settings.pdf_image_scale_x) : 1.0)
+
+  const globalScaleY = bookletMode
+    ? (settings.booklet_pdf_image_scale_y !== undefined && settings.booklet_pdf_image_scale_y !== null ? Number(settings.booklet_pdf_image_scale_y) : 1.0)
+    : (settings.pdf_image_scale_y !== undefined && settings.pdf_image_scale_y !== null ? Number(settings.pdf_image_scale_y) : 1.0)
+
+  const catOffX = dimToMm(bookletMode 
+    ? (settings.booklet_product_image_offset_x || settings.bookletProductImageOffsetX) 
+    : (settings.product_image_offset_x || settings.productImageOffsetX), 0)
+    
+  const catOffY = dimToMm(bookletMode 
+    ? (settings.booklet_product_image_offset_y || settings.bookletProductImageOffsetY) 
+    : (settings.product_image_offset_y || settings.productImageOffsetY), 0)
+
+  const prodOffX = bookletMode
+    ? (product.bookletImageOffsetX !== undefined && product.bookletImageOffsetX !== null ? Number(product.bookletImageOffsetX) : (product.booklet_image_offset_x !== undefined && product.booklet_image_offset_x !== null ? Number(product.booklet_image_offset_x) : 0))
+    : (product.imageOffsetX !== undefined && product.imageOffsetX !== null ? Number(product.imageOffsetX) : (product.image_offset_x !== undefined && product.image_offset_x !== null ? Number(product.image_offset_x) : 0))
+
+  const prodOffY = bookletMode
+    ? (product.bookletImageOffsetY !== undefined && product.bookletImageOffsetY !== null ? Number(product.bookletImageOffsetY) : (product.booklet_image_offset_y !== undefined && product.booklet_image_offset_y !== null ? Number(product.booklet_image_offset_y) : 0))
+    : (product.imageOffsetY !== undefined && product.imageOffsetY !== null ? Number(product.imageOffsetY) : (product.image_offset_y !== undefined && product.image_offset_y !== null ? Number(product.image_offset_y) : 0))
+
+  return {
+    finalScale,
+    globalScaleX,
+    globalScaleY,
+    catOffX,
+    catOffY,
+    prodOffX,
+    prodOffY
+  }
+}
+
 // ========================== Layout: slots=3 (2 per page) ==========================
 
 export function drawLayout3(
@@ -40,8 +86,6 @@ export function drawLayout3(
   const scale = opts.bookletMode ? 0.707 : 1
   const spacing = dimToMm(settings.product_spacing || settings.productSpacing, 4)
   const cardH = (contentH - spacing) / 2
-  const offX = dimToMm(settings.product_image_offset_x || settings.productImageOffsetX, 0)
-  const offY = dimToMm(settings.product_image_offset_y || settings.productImageOffsetY, 0)
 
   const isImageLeft = (settings.image_position || settings.imagePosition) === 'left' ||
                       (settings.card_layout_order || settings.cardLayoutOrder) === 'image-first'
@@ -127,22 +171,21 @@ export function drawLayout3(
       addImageSafe(pdf, opts.imageCache, exKey, exX, exY, exW, exW)
     }
 
-    // Calculate final scale: Global PDF scale × Individual product scale
-    const globalScale = (settings.pdf_image_scale !== undefined && settings.pdf_image_scale !== null) ? Number(settings.pdf_image_scale) : 1.0
-    const individualScale = (product.imageScale !== undefined && product.imageScale !== null) ? Number(product.imageScale) : ((product.image_scale !== undefined && product.image_scale !== null) ? Number(product.image_scale) : 1.0)
-    const finalScale = globalScale * individualScale
+    const imgParams = getImageParams(product, settings, opts.bookletMode)
 
     addImageSafe(
       pdf,
       opts.imageCache,
       `product_${product.id}`,
-      imgX + offX,
-      cardY + 4 + offY,
+      imgX + imgParams.catOffX,
+      cardY + 4 + imgParams.catOffY,
       imgW,
       cardH - 8,
-      finalScale,
-      (product.imageOffsetX !== undefined && product.imageOffsetX !== null) ? Number(product.imageOffsetX) : ((product.image_offset_x !== undefined && product.image_offset_x !== null) ? Number(product.image_offset_x) : 0),
-      (product.imageOffsetY !== undefined && product.imageOffsetY !== null) ? Number(product.imageOffsetY) : ((product.image_offset_y !== undefined && product.image_offset_y !== null) ? Number(product.image_offset_y) : 0)
+      imgParams.finalScale,
+      imgParams.prodOffX,
+      imgParams.prodOffY,
+      imgParams.globalScaleX,
+      imgParams.globalScaleY
     )
 
     // Não desenhar linha divisória se qualquer produto tiver imagem EX
@@ -173,13 +216,9 @@ export function drawLayout6(
   const cols = 3
   const rows = 2
   const gapX = 4
-  const spacing = dimToMm(settings.product_spacing || settings.productSpacing, 4)
-  const gapY = spacing
+  const gapY = dimToMm(settings.product_spacing || settings.productSpacing, 4)
   const cellW = (contentW - gapX * (cols - 1)) / cols
   const cellH = (contentH - gapY * (rows - 1)) / rows
-
-  const offX = dimToMm(settings.product_image_offset_x || settings.productImageOffsetX, 0)
-  const offY = dimToMm(settings.product_image_offset_y || settings.productImageOffsetY, 0)
 
   const isSpecsFirst = (settings.card_layout_order || settings.cardLayoutOrder) === 'specs-first'
 
@@ -268,22 +307,21 @@ export function drawLayout6(
       addImageSafe(pdf, opts.imageCache, exKey, exX, exY, exW, exW)
     }
 
-    // Calculate final scale: Global PDF scale × Individual product scale
-    const globalScale = (settings.pdf_image_scale !== undefined && settings.pdf_image_scale !== null) ? Number(settings.pdf_image_scale) : 1.0
-    const individualScale = (product.imageScale !== undefined && product.imageScale !== null) ? Number(product.imageScale) : ((product.image_scale !== undefined && product.image_scale !== null) ? Number(product.image_scale) : 1.0)
-    const finalScale = globalScale * individualScale
+    const imgParams = getImageParams(product, settings, opts.bookletMode)
 
     addImageSafe(
       pdf,
       opts.imageCache,
       `product_${product.id}`,
-      x + 2 + offX,
-      imgCellY + offY,
+      x + 2 + imgParams.catOffX,
+      imgCellY + imgParams.catOffY,
       cellW - 4,
       imgH - 2,
-      finalScale,
-      (product.imageOffsetX !== undefined && product.imageOffsetX !== null) ? Number(product.imageOffsetX) : ((product.image_offset_x !== undefined && product.image_offset_x !== null) ? Number(product.image_offset_x) : 0),
-      (product.imageOffsetY !== undefined && product.imageOffsetY !== null) ? Number(product.imageOffsetY) : ((product.image_offset_y !== undefined && product.image_offset_y !== null) ? Number(product.image_offset_y) : 0)
+      imgParams.finalScale,
+      imgParams.prodOffX,
+      imgParams.prodOffY,
+      imgParams.globalScaleX,
+      imgParams.globalScaleY
     )
   }
 
@@ -315,8 +353,6 @@ export function drawLayout1(
 ) {
   const scale = opts.bookletMode ? 0.707 : 1
   const color = opts.getBgColor(product.bgClass || product.bg_class, product.category)
-  const offX = dimToMm(settings.product_image_offset_x || settings.productImageOffsetX, 0)
-  const offY = dimToMm(settings.product_image_offset_y || settings.productImageOffsetY, 0)
 
   const isSpecsFirst = (settings.card_layout_order || settings.cardLayoutOrder) === 'specs-first'
 
@@ -392,21 +428,20 @@ export function drawLayout1(
     addImageSafe(pdf, opts.imageCache, exKey, exX, exY, exW, exW)
   }
 
-  // Calculate final scale: Global PDF scale × Individual product scale
-  const globalScale = (settings.pdf_image_scale !== undefined && settings.pdf_image_scale !== null) ? Number(settings.pdf_image_scale) : 1.0
-  const individualScale = (product.imageScale !== undefined && product.imageScale !== null) ? Number(product.imageScale) : ((product.image_scale !== undefined && product.image_scale !== null) ? Number(product.image_scale) : 1.0)
-  const finalScale = globalScale * individualScale
+  const imgParams = getImageParams(product, settings, opts.bookletMode)
 
   addImageSafe(
     pdf,
     opts.imageCache,
     `product_${product.id}`,
-    contentX + 10 + offX,
-    imgY + offY,
+    contentX + 10 + imgParams.catOffX,
+    imgY + imgParams.catOffY,
     contentW - 20,
     imgH - 4,
-    finalScale,
-    (product.imageOffsetX !== undefined && product.imageOffsetX !== null) ? Number(product.imageOffsetX) : ((product.image_offset_x !== undefined && product.image_offset_x !== null) ? Number(product.image_offset_x) : 0),
-    (product.imageOffsetY !== undefined && product.imageOffsetY !== null) ? Number(product.imageOffsetY) : ((product.image_offset_y !== undefined && product.image_offset_y !== null) ? Number(product.image_offset_y) : 0)
+    imgParams.finalScale,
+    imgParams.prodOffX,
+    imgParams.prodOffY,
+    imgParams.globalScaleX,
+    imgParams.globalScaleY
   )
 }

@@ -106,11 +106,11 @@
           </div>
         </div>
 
-        <!-- Image Customization Sliders Grid -->
+        <!-- Image Customization Sliders Grid (Vertical) -->
         <div class="bg-gray-50 p-4 rounded border border-gray-200 space-y-3">
           <div class="flex items-center gap-1.5 text-xs text-blue-600 font-bold">
-            <span class="material-symbols-outlined text-base">info</span>
-            <span>Ajuste da Imagem (Exclusivo para o PDF)</span>
+            <span class="material-symbols-outlined text-base">settings</span>
+            <span>Ajuste da Imagem (PDF Vertical / Retrato)</span>
           </div>
           <p class="text-[10px] text-gray-500 leading-relaxed bg-white/50 p-2 rounded border border-gray-200">
             <strong>Escala:</strong> Zoom da foto. | 
@@ -147,7 +147,48 @@
               </div>
             </div>
           </div>
+        </div>
+
+        <!-- Image Customization Sliders Grid (Booklet) -->
+        <div class="bg-gray-50 p-4 rounded border border-gray-200 space-y-3">
+          <div class="flex items-center gap-1.5 text-xs text-indigo-600 font-bold">
+            <span class="material-symbols-outlined text-base">menu_book</span>
+            <span>Ajuste da Imagem (PDF Livreto / Booklet)</span>
           </div>
+          <p class="text-[10px] text-gray-500 leading-relaxed bg-white/50 p-2 rounded border border-gray-200">
+            Ajustes exclusivos para quando o produto for gerado no layout de <strong>Livreto (A4 Paisagem Dobrável)</strong>.
+          </p>
+          
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div>
+              <div class="flex justify-between items-center mb-1.5">
+                <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-wider">Escala Livreto</label>
+                <span class="text-xs font-bold font-mono text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded">{{ localProduct.bookletImageScale !== undefined ? localProduct.bookletImageScale : 1.0 }}x</span>
+              </div>
+              <div class="flex items-center border border-gray-300 rounded px-3 py-2 bg-white h-[46px]">
+                <input v-model.number="localProduct.bookletImageScale" type="range" min="0.2" max="3.0" step="0.05" class="w-full accent-indigo-600 cursor-pointer" />
+              </div>
+            </div>
+            <div>
+              <div class="flex justify-between items-center mb-1.5">
+                <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-wider">Offset X Livreto</label>
+                <span class="text-xs font-bold font-mono text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded">{{ localProduct.bookletImageOffsetX || 0 }}px</span>
+              </div>
+              <div class="flex items-center border border-gray-300 rounded px-3 py-2 bg-white h-[46px]">
+                <input v-model.number="localProduct.bookletImageOffsetX" type="range" min="-200" max="200" step="2" class="w-full accent-indigo-600 cursor-pointer" />
+              </div>
+            </div>
+            <div>
+              <div class="flex justify-between items-center mb-1.5">
+                <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-wider">Offset Y Livreto</label>
+                <span class="text-xs font-bold font-mono text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded">{{ localProduct.bookletImageOffsetY || 0 }}px</span>
+              </div>
+              <div class="flex items-center border border-gray-300 rounded px-3 py-2 bg-white h-[46px]">
+                <input v-model.number="localProduct.bookletImageOffsetY" type="range" min="-200" max="200" step="2" class="w-full accent-indigo-600 cursor-pointer" />
+              </div>
+            </div>
+          </div>
+        </div>
 
         <!-- Specs Form Subcomponent -->
         <AdminProductSpecsForm :specs="localProduct.specs" />

@@ -23,6 +23,9 @@ export interface ProductPayload {
   imageScale?: number
   imageOffsetX?: number
   imageOffsetY?: number
+  bookletImageScale?: number
+  bookletImageOffsetX?: number
+  bookletImageOffsetY?: number
   exImageUrl?: string | null
   tagColorClass?: string
 }
@@ -43,6 +46,9 @@ export function useAdminProductForm(props: { product?: ProductPayload, isEdit?: 
     imageScale: 1.0,
     imageOffsetX: 0,
     imageOffsetY: 0,
+    bookletImageScale: 1.0,
+    bookletImageOffsetX: 0,
+    bookletImageOffsetY: 0,
     exImageUrl: '',
     specs: [
       { label: 'Diâmetro Nominal', value: '1.1/2" ou 2.1/2"' },

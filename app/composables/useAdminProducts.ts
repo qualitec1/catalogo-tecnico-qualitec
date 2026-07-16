@@ -37,6 +37,9 @@ export function useAdminProducts(triggerToast: (msg: string, type?: 'success' | 
           imageScale: item.image_scale !== null ? Number(item.image_scale) : 1.0,
           imageOffsetX: item.image_offset_x !== null ? Number(item.image_offset_x) : 0,
           imageOffsetY: item.image_offset_y !== null ? Number(item.image_offset_y) : 0,
+          bookletImageScale: item.booklet_image_scale !== null && item.booklet_image_scale !== undefined ? Number(item.booklet_image_scale) : 1.0,
+          bookletImageOffsetX: item.booklet_image_offset_x !== null && item.booklet_image_offset_x !== undefined ? Number(item.booklet_image_offset_x) : 0,
+          bookletImageOffsetY: item.booklet_image_offset_y !== null && item.booklet_image_offset_y !== undefined ? Number(item.booklet_image_offset_y) : 0,
           exImageUrl: item.ex_image_url || null
         }))
       }
@@ -76,6 +79,9 @@ export function useAdminProducts(triggerToast: (msg: string, type?: 'success' | 
         image_scale: product.imageScale || 1.0,
         image_offset_x: product.imageOffsetX || 0,
         image_offset_y: product.imageOffsetY || 0,
+        booklet_image_scale: product.bookletImageScale !== undefined ? product.bookletImageScale : 1.0,
+        booklet_image_offset_x: product.bookletImageOffsetX !== undefined ? product.bookletImageOffsetX : 0,
+        booklet_image_offset_y: product.bookletImageOffsetY !== undefined ? product.bookletImageOffsetY : 0,
         ex_image_url: product.exImageUrl || null
       }
 
@@ -110,6 +116,9 @@ export function useAdminProducts(triggerToast: (msg: string, type?: 'success' | 
         image_scale: product.imageScale || 1.0,
         image_offset_x: product.imageOffsetX || 0,
         image_offset_y: product.imageOffsetY || 0,
+        booklet_image_scale: product.bookletImageScale !== undefined ? product.bookletImageScale : 1.0,
+        booklet_image_offset_x: product.bookletImageOffsetX !== undefined ? product.bookletImageOffsetX : 0,
+        booklet_image_offset_y: product.bookletImageOffsetY !== undefined ? product.bookletImageOffsetY : 0,
         ex_image_url: product.exImageUrl || null
       }
       
@@ -366,6 +375,9 @@ export function useAdminProducts(triggerToast: (msg: string, type?: 'success' | 
           layout_slots: dbLayoutSlots,
           image: row['image_url'] || '/placeholder.png',
           image_scale: 1.0,  // Escala padrão de imagem
+          booklet_image_scale: 1.0,
+          booklet_image_offset_x: 0,
+          booklet_image_offset_y: 0,
           datasheet_url: resolvedDatasheetUrl,
           ex_image_url: exImageUrlVal,
           specs: specs

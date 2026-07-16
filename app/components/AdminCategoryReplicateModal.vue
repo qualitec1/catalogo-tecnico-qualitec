@@ -175,7 +175,12 @@ const replicationGroups = [
       { key: 'productImageOffsetY', label: 'Deslocamento Vertical Foto' },
       { key: 'pdfImageScale', label: 'Escala Proporcional Foto' },
       { key: 'pdfImageScaleX', label: 'Escala Horizontal Foto' },
-      { key: 'pdfImageScaleY', label: 'Escala Vertical Foto' }
+      { key: 'pdfImageScaleY', label: 'Escala Vertical Foto' },
+      { key: 'bookletPdfImageScale', label: 'Escala Proporcional Foto (Livreto)' },
+      { key: 'bookletPdfImageScaleX', label: 'Escala Horizontal Foto (Livreto)' },
+      { key: 'bookletPdfImageScaleY', label: 'Escala Vertical Foto (Livreto)' },
+      { key: 'bookletProductImageOffsetX', label: 'Deslocamento Horizontal Foto (Livreto)' },
+      { key: 'bookletProductImageOffsetY', label: 'Deslocamento Vertical Foto (Livreto)' }
     ]
   },
   {

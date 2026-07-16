@@ -105,6 +105,11 @@ export function useAdminCategories(triggerToast: (msg: string, type?: 'success' 
             pdfImageScale: settings.pdf_image_scale !== undefined && settings.pdf_image_scale !== null ? Number(settings.pdf_image_scale) : 1.0,
             pdfImageScaleX: settings.pdf_image_scale_x !== undefined && settings.pdf_image_scale_x !== null ? Number(settings.pdf_image_scale_x) : 1.0,
             pdfImageScaleY: settings.pdf_image_scale_y !== undefined && settings.pdf_image_scale_y !== null ? Number(settings.pdf_image_scale_y) : 1.0,
+            bookletPdfImageScale: settings.booklet_pdf_image_scale !== undefined && settings.booklet_pdf_image_scale !== null ? Number(settings.booklet_pdf_image_scale) : 1.0,
+            bookletPdfImageScaleX: settings.booklet_pdf_image_scale_x !== undefined && settings.booklet_pdf_image_scale_x !== null ? Number(settings.booklet_pdf_image_scale_x) : 1.0,
+            bookletPdfImageScaleY: settings.booklet_pdf_image_scale_y !== undefined && settings.booklet_pdf_image_scale_y !== null ? Number(settings.booklet_pdf_image_scale_y) : 1.0,
+            bookletProductImageOffsetX: settings.booklet_product_image_offset_x || '0px',
+            bookletProductImageOffsetY: settings.booklet_product_image_offset_y || '0px',
             cardTitleColor: settings.card_title_color || '#ffffff',
             cardTitleFontSize: settings.card_title_font_size || '14px',
             cardModelColor: settings.card_model_color || '#ffffff',
@@ -294,7 +299,12 @@ export function useAdminCategories(triggerToast: (msg: string, type?: 'success' 
         orientation: catAsset.orientation || 'portrait',
         pdf_image_scale: catAsset.pdfImageScale !== undefined && catAsset.pdfImageScale !== null ? Number(catAsset.pdfImageScale) : 1.0,
         pdf_image_scale_x: catAsset.pdfImageScaleX !== undefined && catAsset.pdfImageScaleX !== null ? Number(catAsset.pdfImageScaleX) : 1.0,
-        pdf_image_scale_y: catAsset.pdfImageScaleY !== undefined && catAsset.pdfImageScaleY !== null ? Number(catAsset.pdfImageScaleY) : 1.0
+        pdf_image_scale_y: catAsset.pdfImageScaleY !== undefined && catAsset.pdfImageScaleY !== null ? Number(catAsset.pdfImageScaleY) : 1.0,
+        booklet_pdf_image_scale: catAsset.bookletPdfImageScale !== undefined && catAsset.bookletPdfImageScale !== null ? Number(catAsset.bookletPdfImageScale) : 1.0,
+        booklet_pdf_image_scale_x: catAsset.bookletPdfImageScaleX !== undefined && catAsset.bookletPdfImageScaleX !== null ? Number(catAsset.bookletPdfImageScaleX) : 1.0,
+        booklet_pdf_image_scale_y: catAsset.bookletPdfImageScaleY !== undefined && catAsset.bookletPdfImageScaleY !== null ? Number(catAsset.bookletPdfImageScaleY) : 1.0,
+        booklet_product_image_offset_x: catAsset.bookletProductImageOffsetX || '0px',
+        booklet_product_image_offset_y: catAsset.bookletProductImageOffsetY || '0px'
       }
       
       if (catAsset.pdfSettingsId) {
@@ -678,6 +688,11 @@ export function useAdminCategories(triggerToast: (msg: string, type?: 'success' 
         pdfImageScale: 'pdf_image_scale',
         pdfImageScaleX: 'pdf_image_scale_x',
         pdfImageScaleY: 'pdf_image_scale_y',
+        bookletPdfImageScale: 'booklet_pdf_image_scale',
+        bookletPdfImageScaleX: 'booklet_pdf_image_scale_x',
+        bookletPdfImageScaleY: 'booklet_pdf_image_scale_y',
+        bookletProductImageOffsetX: 'booklet_product_image_offset_x',
+        bookletProductImageOffsetY: 'booklet_product_image_offset_y',
         layoutSettings: 'layout_settings',
         badgeIconSize: 'badge_icon_size',
         badgeFontFamily: 'badge_font_family',
@@ -798,7 +813,7 @@ export function useAdminCategories(triggerToast: (msg: string, type?: 'success' 
 
             if (field === 'layoutSettings') {
               payload[dbCol] = sourceData[field] || {}
-            } else if (field === 'pdfImageScale' || field === 'pdfImageScaleX' || field === 'pdfImageScaleY') {
+            } else if (field === 'pdfImageScale' || field === 'pdfImageScaleX' || field === 'pdfImageScaleY' || field === 'bookletPdfImageScale' || field === 'bookletPdfImageScaleX' || field === 'bookletPdfImageScaleY') {
               payload[dbCol] = sourceData[field] !== undefined && sourceData[field] !== null ? Number(sourceData[field]) : 1.0
             } else {
               payload[dbCol] = sourceData[field]
