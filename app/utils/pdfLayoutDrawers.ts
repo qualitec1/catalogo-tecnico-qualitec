@@ -216,7 +216,8 @@ export function drawLayout6(
   const cols = 3
   const rows = 2
   const gapX = 4
-  const gapY = dimToMm(settings.product_spacing || settings.productSpacing, 4)
+  const spacing = dimToMm(settings.product_spacing || settings.productSpacing, 4)
+  const gapY = spacing
   const cellW = (contentW - gapX * (cols - 1)) / cols
   const cellH = (contentH - gapY * (rows - 1)) / rows
 
