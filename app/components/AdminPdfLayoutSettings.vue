@@ -137,14 +137,14 @@
     <div>
       <label class="flex items-center text-[10px] text-gray-500 font-semibold mb-1 uppercase">
         Livreto Deslocamento X
-        <span class="inline-flex items-center justify-center bg-blue-100 text-blue-600 rounded-full w-3.5 h-3.5 text-[9px] font-bold cursor-help ml-1 shrink-0" title="Deslocamento horizontal da foto no modo livreto (Valores em px ou mm. Ex: 10px ou -5px).">!</span>
+        <span class="inline-flex items-center justify-center bg-blue-100 text-blue-600 rounded-full w-3.5 h-3.5 text-[9px] font-bold cursor-help ml-1 shrink-0" title="Deslocamento horizontal da foto no modo livreto. Valores negativos movem para a Esquerda, positivos para a Direita (Ex: 10px ou -5px).">!</span>
       </label>
       <input v-model="target.bookletProductImageOffsetX" type="text" @input="category.hasChanges = true" class="w-full border border-gray-300 p-2 rounded bg-white text-xs" :placeholder="density !== 'geral' ? 'Herdado: ' + translateValue('bookletProductImageOffsetX', getGlobalValue(category, 'bookletProductImageOffsetX')) : '0px'" />
     </div>
     <div>
       <label class="flex items-center text-[10px] text-gray-500 font-semibold mb-1 uppercase">
         Livreto Deslocamento Y
-        <span class="inline-flex items-center justify-center bg-blue-100 text-blue-600 rounded-full w-3.5 h-3.5 text-[9px] font-bold cursor-help ml-1 shrink-0" title="Deslocamento vertical da foto no modo livreto (Valores em px ou mm. Ex: 10px ou -5px).">!</span>
+        <span class="inline-flex items-center justify-center bg-blue-100 text-blue-600 rounded-full w-3.5 h-3.5 text-[9px] font-bold cursor-help ml-1 shrink-0" title="Deslocamento vertical da foto no modo livreto. Valores negativos movem para Cima, positivos para Baixo (Ex: 10px ou -5px).">!</span>
       </label>
       <input v-model="target.bookletProductImageOffsetY" type="text" @input="category.hasChanges = true" class="w-full border border-gray-300 p-2 rounded bg-white text-xs" :placeholder="density !== 'geral' ? 'Herdado: ' + translateValue('bookletProductImageOffsetY', getGlobalValue(category, 'bookletProductImageOffsetY')) : '0px'" />
     </div>
