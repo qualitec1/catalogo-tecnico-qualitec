@@ -7,7 +7,8 @@ import { addImageSafe } from './pdfImageLoader'
 import { 
   drawColoredHeader, 
   drawSpecsTable, 
-  drawDatasheetLink 
+  drawDatasheetLink,
+  drawDatasheetQrCode
 } from './pdfDrawHelpers'
 import type { BuildOptions } from './pdfDrawHelpers'
 
@@ -90,7 +91,7 @@ export function drawLayout3(
       specsX + specsOffX,
       cardY + headerH + blockGap + specsOffY + 1,
       specsW,
-      specsH - 8,  // Reduced bottom margin from 14 to 8 for more spec space
+      opts.pdfType === 'qrcode' ? specsH - 20 : specsH - 8,  // Reduced space for specs if QR code is present
       settings,
       false,
       product.exImageUrl || product.ex_image_url ? `ex_${product.id}` : null,
@@ -98,8 +99,31 @@ export function drawLayout3(
       !!(product.exImageUrl || product.ex_image_url) // hasExImage
     )
 
-    // Draw datasheet link at the bottom of grey block
-    drawDatasheetLink(pdf, product, specsX + specsOffX + specsW - 4, cardY + headerH + blockGap + specsOffY + specsH - 11, true, opts.forPrint)
+    // Draw datasheet link or QR Code at the bottom of grey block
+    if (opts.pdfType === 'qrcode') {
+      drawDatasheetQrCode(
+        pdf,
+        product,
+        specsX + specsOffX,
+        cardY + headerH + blockGap + specsOffY,
+        specsW,
+        specsH,
+        opts.imageCache
+      )
+    } else {
+      drawDatasheetLink(pdf, product, specsX + specsOffX + specsW - 4, cardY + headerH + blockGap + specsOffY + specsH - 5, true, opts.forPrint)
+    }
+
+    // Draw EX logo if present (positioned on the side of the header banner)
+    const exKey = `ex_${product.id}`
+    if (opts.imageCache.has(exKey)) {
+      const exW = 12
+      const exX = isImageLeft 
+        ? specsX + headerOffX - exW - 2 
+        : specsX + headerOffX + headerW + 2
+      const exY = cardY + headerOffY + 1.5
+      addImageSafe(pdf, opts.imageCache, exKey, exX, exY, exW, exW)
+    }
 
     // Calculate final scale: Global PDF scale × Individual product scale
     const globalScale = (settings.pdf_image_scale !== undefined && settings.pdf_image_scale !== null) ? Number(settings.pdf_image_scale) : 1.0
@@ -208,7 +232,7 @@ export function drawLayout6(
       x + 1 + specsOffX,
       specsCellY + specsOffY,
       specsW - 2,
-      specsH - 6,  // Reduced bottom margin from 12 to 6 for more spec space
+      opts.pdfType === 'qrcode' ? specsH - 15 : specsH - 8,  // Reduced to specsH - 8 to leave clearance for the link at specsH - 5
       settings,
       true,
       product.exImageUrl || product.ex_image_url ? `ex_${product.id}` : null,
@@ -216,8 +240,29 @@ export function drawLayout6(
       !!(product.exImageUrl || product.ex_image_url) // hasExImage
     )
 
-    // Draw datasheet link at the bottom of grey block
-    drawDatasheetLink(pdf, product, x + specsOffX + specsW - 2, specsCellY + specsOffY + specsH - 11, true, opts.forPrint)
+    // Draw datasheet link or QR Code at the bottom of grey block
+    if (opts.pdfType === 'qrcode') {
+      drawDatasheetQrCode(
+        pdf,
+        product,
+        x + specsOffX,
+        specsCellY + specsOffY,
+        specsW,
+        specsH,
+        opts.imageCache
+      )
+    } else {
+      drawDatasheetLink(pdf, product, x + specsOffX + specsW - 2, specsCellY + specsOffY + specsH - 5, true, opts.forPrint)
+    }
+
+    // Draw EX logo if present (positioned above the header banner on the right side)
+    const exKey = `ex_${product.id}`
+    if (opts.imageCache.has(exKey)) {
+      const exW = 9
+      const exX = x + headerOffX + headerW - exW - 2
+      const exY = headerCellY + headerOffY - exW - 1.5
+      addImageSafe(pdf, opts.imageCache, exKey, exX, exY, exW, exW)
+    }
 
     // Calculate final scale: Global PDF scale × Individual product scale
     const globalScale = (settings.pdf_image_scale !== undefined && settings.pdf_image_scale !== null) ? Number(settings.pdf_image_scale) : 1.0
@@ -309,7 +354,7 @@ export function drawLayout1(
     contentX + 4 + specsOffX,
     cardY + headerH + blockGap + specsOffY + 1,
     specsW - 8,
-    specsH - 8,  // Reduced bottom margin from 14 to 8 for more spec space
+    opts.pdfType === 'qrcode' ? specsH - 20 : specsH - 8,  // Reduced space for specs if QR code is present
     settings,
     false,
     product.exImageUrl || product.ex_image_url ? `ex_${product.id}` : null,
@@ -317,8 +362,29 @@ export function drawLayout1(
     !!(product.exImageUrl || product.ex_image_url)
   )
 
-  // Draw datasheet link at the bottom of grey block
-  drawDatasheetLink(pdf, product, contentX + specsOffX + specsW - 5, cardY + headerH + blockGap + specsOffY + specsH - 11, true, opts.forPrint)
+  // Draw datasheet link or QR Code at the bottom of grey block
+  if (opts.pdfType === 'qrcode') {
+    drawDatasheetQrCode(
+      pdf,
+      product,
+      contentX + specsOffX,
+      cardY + headerH + blockGap + specsOffY,
+      specsW,
+      specsH,
+      opts.imageCache
+    )
+  } else {
+    drawDatasheetLink(pdf, product, contentX + specsOffX + specsW - 5, cardY + headerH + blockGap + specsOffY + specsH - 5, true, opts.forPrint)
+  }
+
+  // Draw EX logo if present (positioned above the header banner on the right side)
+  const exKey = `ex_${product.id}`
+  if (opts.imageCache.has(exKey)) {
+    const exW = 14
+    const exX = contentX + headerOffX + headerW - exW - 4
+    const exY = cardY + headerOffY - exW - 3
+    addImageSafe(pdf, opts.imageCache, exKey, exX, exY, exW, exW)
+  }
 
   // Calculate final scale: Global PDF scale × Individual product scale
   const globalScale = (settings.pdf_image_scale !== undefined && settings.pdf_image_scale !== null) ? Number(settings.pdf_image_scale) : 1.0

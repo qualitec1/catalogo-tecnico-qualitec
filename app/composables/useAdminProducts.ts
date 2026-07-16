@@ -339,6 +339,23 @@ export function useAdminProducts(triggerToast: (msg: string, type?: 'success' | 
           })
         }
 
+        // Resolver datasheet_url: se for nome de arquivo, buscar no storage
+        let resolvedDatasheetUrl = row['datasheet_url'] || null
+        if (resolvedDatasheetUrl && !resolvedDatasheetUrl.startsWith('http')) {
+          // É uma referência de arquivo, tentar buscar no storage
+          const fileRef = resolvedDatasheetUrl.trim()
+          const { data: fileData } = await supabase
+            .from('uploaded_files')
+            .select('file_url')
+            .ilike('original_filename', fileRef)
+            .limit(1)
+            .single()
+          
+          if (fileData?.file_url) {
+            resolvedDatasheetUrl = fileData.file_url
+          }
+        }
+
         parsedProducts.push({
           title: row['title'],
           name_code: row['name_code'],
@@ -349,7 +366,7 @@ export function useAdminProducts(triggerToast: (msg: string, type?: 'success' | 
           layout_slots: dbLayoutSlots,
           image: row['image_url'] || '/placeholder.png',
           image_scale: 1.0,  // Escala padrão de imagem
-          datasheet_url: row['datasheet_url'] || null,
+          datasheet_url: resolvedDatasheetUrl,
           ex_image_url: exImageUrlVal,
           specs: specs
         })

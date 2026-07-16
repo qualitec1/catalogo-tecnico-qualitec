@@ -30,6 +30,7 @@ export interface BuildOptions {
   getBgColor: (bgClass: string | null | undefined, category?: string) => string
   getSlots: (product: any) => number
   forPrint?: boolean
+  pdfType?: 'web' | 'print' | 'qrcode'
 }
 
 export function getDatasheetLink(product: any): string | null {
@@ -56,16 +57,75 @@ export function drawDatasheetLink(pdf: any, product: any, x: number, y: number, 
   pdf.setFontSize(6.5)
   pdf.setTextColor(156, 163, 175) // Cinza claro #9CA3AF (gray-400)
 
-  const linkText = 'Baixar Ficha Técnica'
+  const linkText = 'Especificações Técnicas'
   const textWidth = pdf.getTextWidth(linkText)
   
-  const textX = alignRight ? x - textWidth : x
+  const iconW = 2.2
+  const iconH = 2.2
+  const gap = 1.2
+  const totalW = textWidth + gap + iconW
+  
+  const textX = alignRight ? x - totalW : x
   const textY = y
+  const iconX = textX + textWidth + gap
+  const iconY = textY - 2.2 // Align bottom of icon tray with text baseline (textY)
 
+  // Draw text
   pdf.text(linkText, textX, textY)
   
-  // Clickable hotspot in PDF
-  pdf.link(textX, textY - 2.2, textWidth, 2.8, { url: linkUrl })
+  // Draw vector download icon
+  pdf.setDrawColor(156, 163, 175)
+  pdf.setLineWidth(0.18)
+  
+  // Tray
+  pdf.line(iconX, iconY + 1.2, iconX, iconY + 2.2)
+  pdf.line(iconX, iconY + 2.2, iconX + iconW, iconY + 2.2)
+  pdf.line(iconX + iconW, iconY + 1.2, iconX + iconW, iconY + 2.2)
+  
+  // Arrow
+  const centerX = iconX + iconW / 2
+  pdf.line(centerX, iconY, centerX, iconY + 1.6)
+  pdf.line(centerX - 0.6, iconY + 1.0, centerX, iconY + 1.6)
+  pdf.line(centerX + 0.6, iconY + 1.0, centerX, iconY + 1.6)
+  
+  // Clickable hotspot in PDF (covers text + icon)
+  pdf.link(textX, textY - 2.2, totalW, 2.8, { url: linkUrl })
+}
+
+export function drawDatasheetQrCode(
+  pdf: any,
+  product: any,
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  imageCache: Map<string, CachedImage>
+) {
+  const key = `qrcode_${product.id}`
+  const qrImg = imageCache.get(key)
+  if (!qrImg) return
+
+  // Determine QR code size based on specs block width
+  // If specs block is narrow (layout 6), make QR code smaller (e.g. 11mm)
+  // If specs block is wide (layouts 1 & 3), make QR code larger (e.g. 15mm)
+  const qrSize = w < 80 ? 11 : 15
+  
+  // Position QR code in the bottom-right corner of the specs block
+  // with a small margin of 2mm
+  const qrX = x + w - qrSize - 2
+  const qrY = y + h - qrSize - 2
+
+  try {
+    pdf.addImage(qrImg.dataUrl, qrImg.format, qrX, qrY, qrSize, qrSize, undefined, 'FAST')
+    
+    // Also make the QR code image clickable!
+    const linkUrl = getDatasheetLink(product)
+    if (linkUrl) {
+      pdf.link(qrX, qrY, qrSize, qrSize, { url: linkUrl })
+    }
+  } catch (e) {
+    console.warn(`[pdfBuilder] Could not add QR code for product ${product.id}:`, e)
+  }
 }
 
 export function drawCoverPage(pdf: any, opts: BuildOptions) {
@@ -508,7 +568,7 @@ export function drawSpecsTable(
   const lineColor = settings.specs_line_color || '#cbd5e1'
   const lineStyle = settings.specs_line_style || 'dashed'
 
-  const hasExLogo = exImageKey && imageCache && imageCache.has(exImageKey)
+  const hasExLogo = false
   const exW = compact ? 8 : 12
 
   pdf.setFontSize(fontSize)

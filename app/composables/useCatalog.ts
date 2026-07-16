@@ -34,7 +34,7 @@ export function useCatalog() {
   const coverCategorySelection = ref<'dynamic' | 'GERAL' | 'specific'>('dynamic')
   const specificCoverCategory = ref('')
   const selectedCoverCategoryOverride = ref<string | undefined>(undefined)
-  const pdfTypeSelection = ref<'web' | 'print'>('web')
+  const pdfTypeSelection = ref<'web' | 'print' | 'qrcode'>('web')
   const bookletModeSelection = ref(false)
 
   const hasGeralCover = computed(() => {
@@ -171,7 +171,7 @@ export function useCatalog() {
     showPrintModal.value = false
   }
 
-  const confirmAndDownload = (payload?: { selection: 'dynamic' | 'GERAL' | 'specific', specificCategory: string, pdfType: 'web' | 'print', bookletMode: boolean }) => {
+  const confirmAndDownload = (payload?: { selection: 'dynamic' | 'GERAL' | 'specific', specificCategory: string, pdfType: 'web' | 'print' | 'qrcode', bookletMode: boolean }) => {
     if (payload) {
       coverCategorySelection.value = payload.selection
       specificCoverCategory.value = payload.specificCategory

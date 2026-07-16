@@ -90,6 +90,19 @@
               </span>
             </div>
           </label>
+
+          <label class="flex items-start gap-3 p-3 border border-gray-200 rounded cursor-pointer hover:bg-gray-50 transition-colors">
+            <input type="radio" v-model="pdfType" value="qrcode" class="mt-0.5 text-blue-650" />
+            <div>
+              <span class="text-xs font-bold text-slate-800 uppercase block flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-sm text-purple-600">qr_code_2</span>
+                PDF com QR Code
+              </span>
+              <span class="text-[10px] text-gray-500 block mt-0.5">
+                Substituir o link por um código QR nos cards. Ideal para leitura dinâmica em materiais impressos.
+              </span>
+            </div>
+          </label>
         </div>
       </div>
 
@@ -203,13 +216,13 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: 'close'): void
-  (e: 'confirm', payload: { selection: 'dynamic' | 'GERAL' | 'specific', specificCategory: string, pdfType: 'web' | 'print', bookletMode: boolean }): void
+  (e: 'confirm', payload: { selection: 'dynamic' | 'GERAL' | 'specific', specificCategory: string, pdfType: 'web' | 'print' | 'qrcode', bookletMode: boolean }): void
   (e: 'create-quick-category', payload: { name: string, color: string, imageName: string, imageBlob: string | null }): void
 }>()
 
 const coverCategorySelection = ref<'dynamic' | 'GERAL' | 'specific'>('dynamic')
 const specificCoverCategory = ref('')
-const pdfType = ref<'web' | 'print'>('web')
+const pdfType = ref<'web' | 'print' | 'qrcode'>('web')
 const bookletMode = ref(false)
 
 // Quick Create State

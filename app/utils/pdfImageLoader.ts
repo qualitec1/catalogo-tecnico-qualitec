@@ -1,6 +1,19 @@
 import { detectFormat, cleanWhiteHalo, fitImageInBox } from './pdfDocUtils'
 import type { CachedImage } from './pdfDocUtils'
 
+function getDatasheetLinkLocal(product: any): string | null {
+  if (!product) return null
+  const url = product.datasheetUrl || product.datasheet_url
+  if (url) return url
+  const name = product.datasheetName || product.datasheet_name
+  if (!name && !url) return null
+  
+  if (typeof window !== 'undefined') {
+    return `${window.location.origin}/api/datasheet?id=${product.id}`
+  }
+  return `/api/datasheet?id=${product.id}`
+}
+
 export async function loadSingleImage(url: string): Promise<CachedImage | null> {
   try {
     const resp = await fetch(url)
@@ -50,7 +63,8 @@ export async function preloadAllImages(
   logoUrl: string,
   onProgress?: (loaded: number, total: number) => void,
   categoryIconUrl?: string | null,
-  categoryAssets?: Record<string, any>
+  categoryAssets?: Record<string, any>,
+  pdfType?: 'web' | 'print' | 'qrcode'
 ): Promise<Map<string, CachedImage>> {
 
   const cache = new Map<string, CachedImage>()
@@ -156,6 +170,37 @@ export async function preloadAllImages(
       if (img) cache.set(t.key, img)
     })
   )
+
+  // Generate QR codes in parallel if pdfType is qrcode
+  if (pdfType === 'qrcode') {
+    try {
+      const QRCodeLib = await import('qrcode')
+      await Promise.all(
+        products.map(async (p) => {
+          const linkUrl = getDatasheetLinkLocal(p)
+          if (linkUrl) {
+            try {
+              const qrDataUrl = await QRCodeLib.toDataURL(linkUrl, {
+                margin: 1,
+                width: 150,
+                errorCorrectionLevel: 'M'
+              })
+              cache.set(`qrcode_${p.id}`, {
+                dataUrl: qrDataUrl,
+                width: 150,
+                height: 150,
+                format: 'PNG'
+              })
+            } catch (qrErr) {
+              console.error(`[pdfImageLoader] Error generating QR code for product ${p.id}:`, qrErr)
+            }
+          }
+        })
+      )
+    } catch (err) {
+      console.error('[pdfImageLoader] Failed to pre-generate QR codes:', err)
+    }
+  }
 
   return cache
 }

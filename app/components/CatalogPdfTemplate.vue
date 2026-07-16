@@ -25,7 +25,7 @@ const props = defineProps<{
   isGenerating: boolean,
   coverCategory?: string,
   publishMode?: boolean,
-  pdfType?: 'web' | 'print',
+  pdfType?: 'web' | 'print' | 'qrcode',
   bookletMode?: boolean
 }>()
 
@@ -260,7 +260,8 @@ watch(() => props.isGenerating, async (newVal) => {
           progressText.value = `Carregando imagens (${loaded}/${total})...`
         },
         categoryIconUrl.value,
-        categoryAssets.value
+        categoryAssets.value,
+        props.pdfType || 'web'
       )
 
       progressText.value = 'Construindo catálogo PDF...'
@@ -279,7 +280,7 @@ watch(() => props.isGenerating, async (newVal) => {
         getPageSettings,
         getBgColor,
         getSlots,
-        forPrint: props.pdfType === 'print',
+        pdfType: props.pdfType || 'web',
         bookletMode: props.bookletMode || false
       })
 
