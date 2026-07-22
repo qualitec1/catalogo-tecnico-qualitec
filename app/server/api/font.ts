@@ -10,10 +10,12 @@ export default defineEventHandler((event) => {
     throw createError({ statusCode: 400, statusMessage: 'Invalid font filename' })
   }
 
-  // Try multiple locations for the font file
+  // Try multiple locations for the font file (dev and prod)
   const paths = [
     resolve(process.cwd(), 'public', 'fonts', filename),
     resolve(process.cwd(), 'app', 'public', 'fonts', filename),
+    resolve(process.cwd(), '.output', 'public', 'fonts', filename),
+    resolve(process.cwd(), '..', 'public', 'fonts', filename),
   ]
 
   for (const fontPath of paths) {
