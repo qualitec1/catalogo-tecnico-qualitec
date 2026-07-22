@@ -75,7 +75,7 @@ export default function usePdfSettings() {
               card_model_label_font_size: item.card_model_label_font_size || '8px',
               card_model_label_offset_x: item.card_model_label_offset_x || '0px',
               card_model_label_offset_y: item.card_model_label_offset_y || '0px',
-              card_model_label_font_family: item.card_model_label_font_family || 'Inter',
+              card_model_label_font_family: item.card_model_label_font_family || 'Calibri',
               card_model_label_bold: item.card_model_label_bold !== null ? !!item.card_model_label_bold : false,
               card_model_label_italic: !!item.card_model_label_italic,
               card_model_label_underline: !!item.card_model_label_underline,
