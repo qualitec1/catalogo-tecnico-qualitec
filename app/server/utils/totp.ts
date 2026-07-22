@@ -1,4 +1,4 @@
-import { createHmac } from 'crypto'
+import { createHmac, timingSafeEqual } from 'crypto'
 
 const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567'
 
@@ -68,11 +68,28 @@ export function generateTOTP(secret: string, digits = 6, period = 30, timestamp 
 
 export function verifyTOTP(secret: string, token: string, window = 2, digits = 6, period = 30) {
   const normalizedToken = token.toString().trim()
+  
+  // Valida formato do token
+  if (!/^\d+$/.test(normalizedToken) || normalizedToken.length !== digits) {
+    return false
+  }
+  
   for (let errorWindow = -window; errorWindow <= window; errorWindow += 1) {
     const timestamp = Date.now() + errorWindow * period * 1000
     const candidate = generateTOTP(secret, digits, period, timestamp)
-    if (candidate === normalizedToken) {
-      return true
+    
+    // Comparação constant-time para prevenir timing attacks
+    try {
+      const tokenBuffer = Buffer.from(normalizedToken, 'utf8')
+      const candidateBuffer = Buffer.from(candidate, 'utf8')
+      
+      if (tokenBuffer.length === candidateBuffer.length && 
+          timingSafeEqual(tokenBuffer, candidateBuffer)) {
+        return true
+      }
+    } catch {
+      // timingSafeEqual lança erro se os buffers têm tamanhos diferentes
+      continue
     }
   }
   return false

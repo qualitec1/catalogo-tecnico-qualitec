@@ -16,8 +16,29 @@ export default defineEventHandler(async (event) => {
 
   const { data, error } = await supabaseAdmin.auth.signInWithPassword({ email, password })
   if (error || !data?.session) {
-    return sendError(event, createError({ statusCode: 401, statusMessage: error?.message || 'Invalid credentials' }))
+    // Log tentativa falha (importante para detecção de ataques)
+    console.warn('[Security] Failed login attempt:', {
+      timestamp: new Date().toISOString(),
+      email: email.replace(/(?<=.{2}).(?=.*@)/g, '*'), // Mascara email
+      ip: event.node.req.socket.remoteAddress,
+      error: error?.message
+    })
+    
+    // Mensagem genérica (não revela se o email existe)
+    return sendError(event, createError({ 
+      statusCode: 401, 
+      statusMessage: 'Credenciais inválidas' 
+    }))
   }
+
+  // Log de login bem-sucedido
+  console.info('[Security] Successful login:', {
+    timestamp: new Date().toISOString(),
+    email: email.replace(/(?<=.{2}).(?=.*@)/g, '*'),
+    user_id: data.user?.id,
+    ip: event.node.req.socket.remoteAddress,
+    totp_required: false
+  })
 
   const userId = data.user?.id
   if (userId) {

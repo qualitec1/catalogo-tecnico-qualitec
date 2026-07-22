@@ -7,7 +7,9 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "security:check": "powershell -ExecutionPolicy Bypass -File scripts/security-check.ps1",
+    "security:audit": "npm audit --audit-level=moderate"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1077.0",

@@ -30,7 +30,28 @@ export default defineEventHandler(async (event) => {
 
   // Se a imagem é uma URL pública (R2, wixstatic, etc), faz proxy
   if (data.image.startsWith('http://') || data.image.startsWith('https://')) {
+    // Validação SSRF - whitelist de domínios
+    const ALLOWED_DOMAINS = [
+      'pub-25a6482a064a4590a456d3dd2a76114b.r2.dev',
+      'static.wixstatic.com'
+    ]
+    
     try {
+      const url = new URL(data.image)
+      const hostname = url.hostname.toLowerCase()
+      
+      const isAllowed = ALLOWED_DOMAINS.some(allowed => 
+        hostname === allowed || hostname.endsWith(`.${allowed}`)
+      )
+      
+      if (!isAllowed) {
+        console.warn('[SSRF Prevention] Blocked product image URL:', data.image)
+        throw createError({ 
+          statusCode: 403, 
+          statusMessage: 'URL não permitida por razões de segurança' 
+        })
+      }
+      
       const res = await fetch(data.image)
       if (!res.ok) throw new Error(`HTTP ${res.status}`)
       const arrayBuffer = await res.arrayBuffer()
@@ -39,6 +60,7 @@ export default defineEventHandler(async (event) => {
       setHeader(event, 'Cache-Control', 'public, max-age=86400')
       return Buffer.from(arrayBuffer)
     } catch (e: any) {
+      if (e.statusCode === 403) throw e
       throw createError({ statusCode: 502, statusMessage: 'Imagem externa indisponível' })
     }
   }
