@@ -131,6 +131,9 @@ export async function preloadAllImages(
     }
   }
 
+  // Last page (última folha)
+  tasks.push({ key: '__last_page__', url: '/last_page.png' })
+
   // Product images
   for (const p of products) {
     const key = `product_${p.id}`

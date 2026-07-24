@@ -7,7 +7,8 @@ import {
   getFontName, 
   getFontStyle, 
   drawTextUnderline, 
-  truncateText 
+  truncateText,
+  sanitizePdfText
 } from './pdfDocUtils'
 import { addImageSafe } from './pdfImageLoader'
 import type { CachedImage } from './pdfDocUtils'
@@ -585,8 +586,11 @@ export function drawSpecsTable(
     const spec = specs[i]
     const currentSpecsValW = hasExLogo ? (valueW - exW - 1) : (valueW - 2)
 
-    const labelLines = pdf.splitTextToSize(spec.label || '', labelW - 2) as string[]
-    const valueLines = pdf.splitTextToSize(spec.value || '', currentSpecsValW) as string[]
+    const labelText = sanitizePdfText(spec.label)
+    const valueText = sanitizePdfText(spec.value)
+
+    const labelLines = pdf.splitTextToSize(labelText, labelW - 2) as string[]
+    const valueLines = pdf.splitTextToSize(valueText, currentSpecsValW) as string[]
     const numLines = Math.max(labelLines.length, valueLines.length)
     
     const rowHeight = (numLines - 1) * lineSpacing + 2.5

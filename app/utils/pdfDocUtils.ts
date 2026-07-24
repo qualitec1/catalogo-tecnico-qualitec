@@ -80,6 +80,21 @@ export function getFontName(fontFamily: string | undefined): string {
   return 'helvetica' // Default sans-serif fallback
 }
 
+export function sanitizePdfText(text: string | null | undefined): string {
+  if (!text) return ''
+  let str = String(text)
+  // Replace HTML entities
+  str = str.replace(/&deg;/gi, '°')
+           .replace(/&ordm;/gi, '°')
+           .replace(/&plusmn;/gi, '±')
+           .replace(/&nbsp;/gi, ' ')
+  // Replace non-breaking spaces
+  str = str.replace(/\u00a0/g, ' ')
+  // Replace masculine ordinal indicator 'º' (U+00BA) with degree sign '°' (U+00B0)
+  str = str.replace(/º/g, '°')
+  return str
+}
+
 export function getFontStyle(bold: boolean | undefined, italic: boolean | undefined): string {
   if (bold && italic) return 'bolditalic'
   if (bold) return 'bold'

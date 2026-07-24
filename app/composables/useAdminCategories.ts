@@ -373,178 +373,35 @@ export function useAdminCategories(triggerToast: (msg: string, type?: 'success' 
       const { error } = await supabase.from('category_assets').insert([payload])
       if (error) throw error
 
-      // Configurações padrão baseadas na categoria GERAL
-      await supabase.from('pdf_settings').insert([{
-        category: catName,
-        title_font_size: '28px',
-        title_position_y: '-9px',
-        title_color: '#7F7F7F',
-        title_font_family: 'Calibri',
-        title_bold: true,
-        title_italic: false,
-        title_underline: false,
-        image_position: 'right',
-        card_layout_order: 'image-first',
-        font_size_specs: '8px',
-        divider_line_color: '#cbd5e1',
-        product_spacing: '25px',
-        product_image_offset_y: '16px',
-        product_image_offset_x: '-10px',
-        pdf_image_scale: 1.0,
-        pdf_image_scale_x: 1.0,
-        pdf_image_scale_y: 1.0,
-        card_offset_x: '0px',
-        card_offset_y: '0px',
-        card_title_offset_x: '-7px',
-        card_title_offset_y: '7px',
-        card_title_font_size: '14px',
-        card_title_color: '#ffffff',
-        card_title_font_family: 'Calibri',
-        card_title_bold: true,
-        card_title_italic: false,
-        card_title_underline: false,
-        card_model_font_size: '15px',
-        card_model_offset_x: '0px',
-        card_model_offset_y: '7px',
-        card_model_font_family: 'Calibri',
-        card_model_bold: true,
-        card_model_italic: false,
-        card_model_underline: false,
-        card_model_color: '#ffffff',
-        card_model_label_font_size: '8px',
-        card_model_label_offset_x: '0px',
-        card_model_label_offset_y: '0px',
-        card_model_label_font_family: 'Calibri',
-        card_model_label_bold: false,
-        card_model_label_italic: false,
-        card_model_label_underline: false,
-        card_model_label_color: '#ffffff',
-        card_model_label_text: 'Modelo',
-        specs_font_family: 'Calibri',
-        specs_bold: false,
-        specs_italic: false,
-        specs_underline: false,
-        specs_val_bold: false,
-        specs_val_italic: true,
-        specs_val_underline: false,
-        specs_label_width: '45%',
-        specs_value_width: '55%',
-        specs_padding_y: '4px',
-        specs_line_style: 'dashed',
-        specs_line_color: '#cbd5e1',
-        specs_bg_color: '#F1F1F1',
-        specs_color: '#374151',
-        specs_val_color: '#000000',
-        logo_width: '380px',
-        logo_height: '200px',
-        logo_position_x: '-60px',
-        logo_position_y: '-30px',
-        card_header_layout: 'model-left',
-        tag_font_family: 'Calibri',
-        tag_font_size: '9px',
-        tag_bold: false,
-        tag_italic: false,
-        tag_underline: false,
-        tag_offset_x: '50px',
-        tag_offset_y: '3px',
-        tag_color: '#ffffff',
-        badge_icon_size: '7.5mm',
-        badge_font_family: 'Calibri',
-        badge_font_size: '15pt',
-        badge_color: '#D9D9D9',
-        badge_position_x: '-12px',
-        badge_position_y: '35px',
-        badge_icon_offset_x: '5px',
-        badge_icon_offset_y: '0px',
-        badge_text_offset_x: '-8px',
-        badge_text_offset_y: '-5px',
-        cover_title_font_family: 'Roboto',
-        cover_title_font_size: '29px',
-        cover_title_bold: true,
-        cover_title_italic: false,
-        cover_title_underline: false,
-        cover_title_color: '#ffffff',
-        cover_title_offset_x: '0px',
-        cover_title_offset_y: '0px',
-        cover_subtitle_text: 'CATÁLOGO DE PRODUTOS',
-        cover_subtitle_font_family: 'Source Sans Pro',
-        cover_subtitle_font_size: '13px',
-        cover_subtitle_bold: false,
-        cover_subtitle_italic: false,
-        cover_subtitle_underline: false,
-        cover_subtitle_color: '#ffffff',
-        cover_subtitle_offset_x: '0px',
-        cover_subtitle_offset_y: '0px',
-        orientation: 'portrait',
-        layout_settings: {
-          "1": {
-            "tagBold": false,
-            "blockGap": "1.5",
-            "tagItalic": false,
-            "tagOffsetX": "-5px",
-            "tagOffsetY": "70px",
-            "tagFontSize": "11px",
-            "headerHeight": "25",
-            "tagUnderline": false,
-            "cardModelOffsetY": "-1px",
-            "cardTitleOffsetX": "-5px",
-            "cardTitleOffsetY": "40px",
-            "cardModelFontSize": "11px",
-            "cardTitleFontSize": "14px",
-            "cardModelLabelBold": false,
-            "cardModelLabelOffsetY": "-2px",
-            "cardModelLabelFontSize": "14px"
-          },
-          "3": {
-            "blockGap": "2",
-            "specsBold": false,
-            "titleBold": true,
-            "tagOffsetX": "-350px",
-            "cardOffsetX": "0px",
-            "cardOffsetY": "0px",
-            "specsItalic": false,
-            "tagFontSize": "9",
-            "titleItalic": false,
-            "headerHeight": "34",
-            "specsBgColor": "#E6E7E8",
-            "specsValBold": true,
-            "cardModelBold": true,
-            "cardTitleBold": true,
-            "fontSizeSpecs": "8px",
-            "specsPaddingY": "4px",
-            "titleFontSize": "28px",
-            "coverTitleBold": true,
-            "productSpacing": "24px",
-            "specsLineColor": "#F2F2F2",
-            "specsLineStyle": "dotted",
-            "specsUnderline": false,
-            "specsValItalic": false,
-            "titlePositionY": "-13px",
-            "titleUnderline": false,
-            "cardLayoutOrder": "image-first",
-            "cardModelItalic": false,
-            "cardTitleItalic": false,
-            "specsLabelWidth": "45%",
-            "specsValueWidth": "55%",
-            "cardModelOffsetX": "330px",
-            "cardModelOffsetY": "0px",
-            "cardTitleOffsetX": "0px",
-            "cardTitleOffsetY": "0px",
-            "dividerLineColor": "#F2F2F2",
-            "cardModelFontSize": "28px",
-            "cardModelLabelBold": true,
-            "cardModelUnderline": false,
-            "cardTitleUnderline": false,
-            "coverTitleFontSize": "12px",
-            "cardModelLabelItalic": false,
-            "cardModelLabelUnderline": false
-          },
-          "6": {
-            "blockGap": "2",
-            "headerHeight": "40"
-          }
+      // Configurações padrão herdadas da categoria VÁLVULAS DE SEGURANÇA
+      const { data: templateSettings } = await supabase
+        .from('pdf_settings')
+        .select('*')
+        .or('category.ilike.%VÁLVULAS DE SEGURANÇA%,category.ilike.%GERAL%')
+        .order('id', { ascending: true })
+        .limit(1)
+
+      let settingsPayload: Record<string, any> = {}
+      if (templateSettings && templateSettings.length > 0) {
+        const source = templateSettings[0]
+        const { id, created_at, ...copiedSettings } = source
+        settingsPayload = {
+          ...copiedSettings,
+          category: catName,
+          layout_settings: JSON.parse(JSON.stringify(source.layout_settings || {}))
         }
-      }])
+      } else {
+        settingsPayload = {
+          category: catName,
+          title_font_family: 'Calibri',
+          card_title_font_family: 'Calibri',
+          card_model_font_family: 'Calibri',
+          specs_font_family: 'Calibri',
+          tag_font_family: 'Calibri'
+        }
+      }
+
+      await supabase.from('pdf_settings').insert([settingsPayload])
 
       triggerToast('Nova categoria criada com sucesso!', 'success')
       const { fetchAssets } = useCategoryColors()
@@ -820,18 +677,32 @@ export function useAdminCategories(triggerToast: (msg: string, type?: 'success' 
             }
           }
 
-          // Clean up overrides in layout_settings for target category so new geral values are not overridden by stale layout_settings
-          const currentLayoutSettings = targetCat.layout_settings || {}
-          for (const d of Object.keys(currentLayoutSettings)) {
-            if (currentLayoutSettings[d]) {
+          // Copy layout_settings from source category to target category so density layouts match perfectly
+          const sourceLayoutSettings = source.layout_settings || source.layoutSettings || {}
+          const targetLayoutSettings = JSON.parse(JSON.stringify(targetCat.layout_settings || {}))
+
+          if (!fields || !Array.isArray(fields)) {
+            // Replicating ALL settings: copy source's layout_settings completely
+            payload['layout_settings'] = JSON.parse(JSON.stringify(sourceLayoutSettings))
+          } else {
+            // Replicating specific fields: copy density overrides for those fields from source
+            for (const d of ['1', '3', '6']) {
+              if (!targetLayoutSettings[d]) targetLayoutSettings[d] = {}
+              const sourceD = sourceLayoutSettings[d] || {}
               for (const field of fieldsToCopy) {
-                delete currentLayoutSettings[d][field]
                 const dbCol = fieldToDbCol[field]
-                if (dbCol) delete currentLayoutSettings[d][dbCol]
+                const val = sourceD[field] !== undefined ? sourceD[field] : (dbCol ? sourceD[dbCol] : undefined)
+                if (val !== undefined && val !== null) {
+                  targetLayoutSettings[d][field] = val
+                  if (dbCol) targetLayoutSettings[d][dbCol] = val
+                } else {
+                  delete targetLayoutSettings[d][field]
+                  if (dbCol) delete targetLayoutSettings[d][dbCol]
+                }
               }
             }
+            payload['layout_settings'] = targetLayoutSettings
           }
-          payload['layout_settings'] = currentLayoutSettings
 
           if (targetCat.pdfSettingsId) {
             const { error: settingsError } = await supabase

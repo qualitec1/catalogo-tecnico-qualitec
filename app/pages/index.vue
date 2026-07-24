@@ -256,15 +256,31 @@ const handleQuickCreateCategory = async ({ name, color, imageName, imageBlob }: 
     const { error } = await supabase.from('category_assets').insert([payload])
     if (error) throw error
 
-    await supabase.from('pdf_settings').insert([{
-      category: name,
-      title_font_size: '36px',
-      title_position_y: '0px',
-      image_position: 'right',
-      card_layout_order: 'specs-first',
-      font_size_specs: '10px',
-      divider_line_color: '#cbd5e1'
-    }])
+    const { data: templateSettings } = await supabase
+      .from('pdf_settings')
+      .select('*')
+      .or('category.ilike.%VÁLVULAS DE SEGURANÇA%,category.ilike.%GERAL%')
+      .order('id', { ascending: true })
+      .limit(1)
+
+    let settingsPayload: Record<string, any> = {}
+    if (templateSettings && templateSettings.length > 0) {
+      const source = templateSettings[0]
+      const { id, created_at, ...copiedSettings } = source
+      settingsPayload = {
+        ...copiedSettings,
+        category: name,
+        layout_settings: JSON.parse(JSON.stringify(source.layout_settings || {}))
+      }
+    } else {
+      settingsPayload = {
+        category: name,
+        title_font_size: '28px',
+        title_position_y: '-9px'
+      }
+    }
+
+    await supabase.from('pdf_settings').insert([settingsPayload])
 
     await fetchAssets()
     coverCategorySelection.value = 'specific'
