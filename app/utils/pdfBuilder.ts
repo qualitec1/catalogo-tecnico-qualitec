@@ -19,9 +19,12 @@ const A4_H = 297
 
 async function registerFont(pdf: any, name: string, file: string, fontName: string, fontStyle: string) {
   try {
-    const response = await fetch(`/api/font?name=${file}`)
+    let response = await fetch(`/fonts/${file}`)
     if (!response.ok) {
-      console.warn(`[pdfBuilder] Failed to fetch font /api/font?name=${file} (status ${response.status})`)
+      response = await fetch(`/api/font?name=${file}`)
+    }
+    if (!response.ok) {
+      console.warn(`[pdfBuilder] Failed to fetch font /fonts/${file} or /api/font?name=${file} (status ${response.status})`)
       return
     }
     const buffer = await response.arrayBuffer()
