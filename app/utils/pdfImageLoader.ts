@@ -1,5 +1,6 @@
 import { detectFormat, cleanWhiteHalo, fitImageInBox } from './pdfDocUtils'
 import type { CachedImage } from './pdfDocUtils'
+import { LAST_PAGE_DATA_URL } from './lastPageData'
 
 function getDatasheetLinkLocal(product: any): string | null {
   if (!product) return null
@@ -14,7 +15,7 @@ function getDatasheetLinkLocal(product: any): string | null {
   return `/api/datasheet?id=${product.id}`
 }
 
-export async function loadSingleImage(url: string): Promise<CachedImage | null> {
+export async function loadSingleImage(url: string, skipHalo: boolean = false): Promise<CachedImage | null> {
   try {
     const resp = await fetch(url)
     if (!resp.ok) return null
@@ -34,7 +35,7 @@ export async function loadSingleImage(url: string): Promise<CachedImage | null> 
     })
 
     let finalDataUrl = dataUrl
-    if (detectFormat(dataUrl) === 'PNG' && typeof document !== 'undefined') {
+    if (!skipHalo && detectFormat(dataUrl) === 'PNG' && typeof document !== 'undefined') {
       try {
         finalDataUrl = cleanWhiteHalo(dataUrl, img)
       } catch (err) {
@@ -132,7 +133,17 @@ export async function preloadAllImages(
   }
 
   // Last page (última folha)
-  tasks.push({ key: '__last_page__', url: '/last_page.png' })
+  if (LAST_PAGE_DATA_URL) {
+    const img = new Image()
+    img.src = LAST_PAGE_DATA_URL
+    await new Promise<void>(r => { img.onload = () => r(); img.onerror = () => r() })
+    cache.set('__last_page__', {
+      dataUrl: LAST_PAGE_DATA_URL,
+      width: img.naturalWidth || 2480,
+      height: img.naturalHeight || 3508,
+      format: 'PNG',
+    })
+  }
 
   // Product images
   for (const p of products) {
@@ -182,7 +193,8 @@ export async function preloadAllImages(
   await Promise.allSettled(
     tasks.map(async (t) => {
       if (!t.url) return
-      const img = await loadSingleImage(t.url)
+      const isDocPage = t.key === '__logo__' || t.key === '__cover__' || t.key === '__last_page__' || t.key.startsWith('category_icon_')
+      const img = await loadSingleImage(t.url, isDocPage)
       loaded++
       onProgress?.(loaded, total)
       if (img) cache.set(t.key, img)

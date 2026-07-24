@@ -358,9 +358,12 @@ export async function buildCatalogPdf(opts: any): Promise<any> {
   // 3. Draw final back cover page (Última folha de todos os PDFs)
   if (opts.imageCache && opts.imageCache.has('__last_page__')) {
     pdf.addPage('a4', bookletMode ? 'landscape' : 'portrait')
-    const lastW = bookletMode ? 297 : 210
-    const lastH = bookletMode ? 210 : 297
-    addImageSafe(pdf, opts.imageCache, '__last_page__', 0, 0, lastW, lastH)
+    const lastImg = opts.imageCache.get('__last_page__')
+    if (lastImg) {
+      const lastW = bookletMode ? 297 : 210
+      const lastH = bookletMode ? 210 : 297
+      pdf.addImage(lastImg.dataUrl, lastImg.format || 'PNG', 0, 0, lastW, lastH)
+    }
   }
 
   return pdf
