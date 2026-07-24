@@ -5,6 +5,8 @@ const ALLOWED_DOMAINS = [
   'pub-25a6482a064a4590a456d3dd2a76114b.r2.dev', // Cloudflare R2
   'static.wixstatic.com', // Wix (se usado)
   'images.unsplash.com', // Unsplash (se usado)
+  'lh3.googleusercontent.com',
+  'googleusercontent.com',
   // Adicione outros domínios confiáveis aqui
 ]
 

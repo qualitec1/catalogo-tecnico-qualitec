@@ -71,7 +71,22 @@ export async function preloadAllImages(
   const tasks: { key: string; url: string | null }[] = []
 
   // Logo
-  tasks.push({ key: '__logo__', url: `/api/proxy-image?url=${encodeURIComponent(logoUrl)}` })
+  if (logoUrl) {
+    if (logoUrl.startsWith('data:')) {
+      const img = new Image()
+      img.src = logoUrl
+      await new Promise<void>(r => { img.onload = () => r(); img.onerror = () => r() })
+      cache.set('__logo__', {
+        dataUrl: logoUrl,
+        width: img.naturalWidth || 380,
+        height: img.naturalHeight || 120,
+        format: detectFormat(logoUrl),
+      })
+    } else {
+      const proxyUrl = (logoUrl.startsWith('/api/') || logoUrl.startsWith('/')) ? logoUrl : `/api/proxy-image?url=${encodeURIComponent(logoUrl)}`
+      tasks.push({ key: '__logo__', url: proxyUrl })
+    }
+  }
 
   // Category-specific icons (preloaded for all unique categories in products)
   if (categoryAssets) {
@@ -111,7 +126,7 @@ export async function preloadAllImages(
         format: detectFormat(coverSrc),
       })
     } else {
-      const proxyUrl = coverSrc.startsWith('/api/') ? coverSrc : `/api/proxy-image?url=${encodeURIComponent(coverSrc)}`
+      const proxyUrl = (coverSrc.startsWith('/api/') || coverSrc.startsWith('/')) ? coverSrc : `/api/proxy-image?url=${encodeURIComponent(coverSrc)}`
       tasks.push({ key: '__cover__', url: proxyUrl })
     }
   }
@@ -170,6 +185,13 @@ export async function preloadAllImages(
       if (img) cache.set(t.key, img)
     })
   )
+
+  // Fallback for logo if failed to load
+  if (!cache.has('__logo__')) {
+    const fallbackLogoSvg = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="380" height="120" viewBox="0 0 380 120"><rect width="380" height="120" rx="8" fill="%23ffffff"/><text x="20" y="70" font-family="Arial, sans-serif" font-weight="bold" font-size="48" fill="%231B388F">QUALITEC</text><text x="20" y="98" font-family="Arial, sans-serif" font-weight="600" font-size="20" fill="%23555555" letter-spacing="4">INDUSTRIAL</text></svg>`
+    const fallbackImg = await loadSingleImage(fallbackLogoSvg)
+    if (fallbackImg) cache.set('__logo__', fallbackImg)
+  }
 
   // Generate QR codes in parallel if pdfType is qrcode
   if (pdfType === 'qrcode') {
