@@ -437,7 +437,8 @@ export function drawPageHeader(
   settings: any,
   imageCache?: Map<string, CachedImage>,
   offsetX: number = 0,
-  scale: number = 1
+  scale: number = 1,
+  pageNum: number = 1
 ): number {
   const fontSize = parseFontSizePt(settings.title_font_size, 22) * scale
   const offsetY = dimToMm(settings.title_position_y || settings.titlePositionY, 0) * scale
@@ -451,26 +452,56 @@ export function drawPageHeader(
   pdf.setFontSize(fontSize)
   
   const iconSize = (fontSize * 0.45 + 4) * scale
-  let textX = offsetX + MARGIN_X * scale
+  const catNorm = category.toUpperCase().trim()
+  const iconKey = imageCache && imageCache.has(`category_icon_${catNorm}`)
+    ? `category_icon_${catNorm}`
+    : (imageCache && imageCache.has('__category_icon__') ? '__category_icon__' : null)
 
-  if (imageCache && imageCache.has('__category_icon__')) {
-    const iconY = y + offsetY
-    addImageSafe(pdf, imageCache, '__category_icon__', textX, iconY, iconSize, iconSize)
-    textX = offsetX + (MARGIN_X + iconSize / scale + 2) * scale
-  }
-
-  const textY = y + offsetY + fontSize * 0.35
   const catUpper = category.toUpperCase()
-  
-  pdf.text(catUpper, textX, textY)
+  const textWidth = pdf.getTextWidth(catUpper)
+  const textY = y + offsetY + fontSize * 0.35
 
-  // Draw underline manually if configured
-  if (settings.title_underline || settings.titleUnderline) {
-    const textWidth = pdf.getTextWidth(catUpper)
-    setDrawRgb(pdf, titleColor)
-    pdf.setLineWidth(0.2 * scale)
-    const lineY = textY + 0.8 * scale
-    pdf.line(textX, lineY, textX + textWidth, lineY)
+  let textX: number
+
+  if (pageNum % 2 === 0) {
+    // EVEN PAGE: ALIGN TO THE RIGHT
+    const rightEdge = offsetX + (pageW - MARGIN_X) * scale
+
+    if (iconKey) {
+      const iconX = rightEdge - iconSize
+      const iconY = y + offsetY
+      addImageSafe(pdf, imageCache, iconKey, iconX, iconY, iconSize, iconSize)
+      textX = rightEdge - iconSize - (2 * scale) - textWidth
+    } else {
+      textX = rightEdge - textWidth
+    }
+
+    pdf.text(catUpper, textX, textY)
+
+    if (settings.title_underline || settings.titleUnderline) {
+      setDrawRgb(pdf, titleColor)
+      pdf.setLineWidth(0.2 * scale)
+      const lineY = textY + 0.8 * scale
+      pdf.line(textX, lineY, textX + textWidth, lineY)
+    }
+  } else {
+    // ODD PAGE: ALIGN TO THE LEFT
+    textX = offsetX + MARGIN_X * scale
+
+    if (iconKey) {
+      const iconY = y + offsetY
+      addImageSafe(pdf, imageCache, iconKey, textX, iconY, iconSize, iconSize)
+      textX = offsetX + (MARGIN_X + iconSize / scale + 2) * scale
+    }
+
+    pdf.text(catUpper, textX, textY)
+
+    if (settings.title_underline || settings.titleUnderline) {
+      setDrawRgb(pdf, titleColor)
+      pdf.setLineWidth(0.2 * scale)
+      const lineY = textY + 0.8 * scale
+      pdf.line(textX, lineY, textX + textWidth, lineY)
+    }
   }
 
   return y + offsetY + fontSize * 0.45 + 4 * scale

@@ -278,7 +278,7 @@ export async function buildCatalogPdf(opts: any): Promise<any> {
         const scaledLogicalPageW = logicalPageW * scale
         const scaledLogicalPageH = logicalPageH * scale
 
-        const leftHeaderEndY = drawPageHeader(pdf, leftCategory, leftColor, scaledMarginTop, scaledLogicalPageW, leftSettings, opts.imageCache, 0, scale)
+        const leftHeaderEndY = drawPageHeader(pdf, leftCategory, leftColor, scaledMarginTop, scaledLogicalPageW, leftSettings, opts.imageCache, 0, scale, pi + 1)
         const leftContentY = leftHeaderEndY + 2 * scale
         const leftFooterH = 18 * scale
         const leftContentH = scaledLogicalPageH - leftContentY - leftFooterH
@@ -309,7 +309,7 @@ export async function buildCatalogPdf(opts: any): Promise<any> {
         const scaledLogicalPageW = logicalPageW * scale
         const scaledLogicalPageH = logicalPageH * scale
 
-        const rightHeaderEndY = drawPageHeader(pdf, rightCategory, rightColor, scaledMarginTop, scaledLogicalPageW, rightSettings, opts.imageCache, offsetX, scale)
+        const rightHeaderEndY = drawPageHeader(pdf, rightCategory, rightColor, scaledMarginTop, scaledLogicalPageW, rightSettings, opts.imageCache, offsetX, scale, pi + 2)
         const rightContentY = rightHeaderEndY + 2 * scale
         const rightFooterH = 18 * scale
         const rightContentH = scaledLogicalPageH - rightContentY - rightFooterH
@@ -337,7 +337,7 @@ export async function buildCatalogPdf(opts: any): Promise<any> {
       const category = page[0]?.category || opts.categoryName
       const color = opts.getBgColor(page[0]?.bgClass, category)
 
-      const headerEndY = drawPageHeader(pdf, category, color, MARGIN_TOP + 4, logicalPageW, settings, opts.imageCache, 0, 1)
+      const headerEndY = drawPageHeader(pdf, category, color, MARGIN_TOP + 4, logicalPageW, settings, opts.imageCache, 0, 1, pi + 1)
       const contentY = headerEndY + 2
       const footerH = 18
       const contentH = logicalPageH - contentY - footerH
