@@ -170,6 +170,72 @@ export function cleanWhiteHalo(dataUrl: string, imgEl: HTMLImageElement): string
   }
   
   ctx.putImageData(imgData, 0, 0)
+  
+  // Auto-crop and auto-padding to ensure uniform product proportions
+  try {
+    let minX = canvas.width
+    let maxX = 0
+    let minY = canvas.height
+    let maxY = 0
+    let hasContent = false
+
+    // Ignore outermost 1% to prevent edge noise or scanner lines from blocking the crop
+    const borderIgnore = Math.max(2, Math.round(canvas.width * 0.01))
+
+    for (let y = borderIgnore; y < canvas.height - borderIgnore; y++) {
+      for (let x = borderIgnore; x < canvas.width - borderIgnore; x++) {
+        const idx = (y * canvas.width + x) * 4
+        const r = data[idx]
+        const g = data[idx+1]
+        const b = data[idx+2]
+        const a = data[idx+3]
+
+        // Treat as background if transparent (a < 30) or extremely light/white (r,g,b > 240)
+        const isBg = a < 30 || (r > 240 && g > 240 && b > 240)
+        if (!isBg) {
+          if (x < minX) minX = x
+          if (x > maxX) maxX = x
+          if (y < minY) minY = y
+          if (y > maxY) maxY = y
+          hasContent = true
+        }
+      }
+    }
+
+    if (hasContent) {
+      const w = maxX - minX + 1
+      const h = maxY - minY + 1
+
+      if (w > 5 && h > 5) {
+        // Target: product should fill at most 80% of width or height of the original canvas
+        const targetW = canvas.width
+        const targetH = canvas.height
+        const maxAllowedW = targetW * 0.8
+        const maxAllowedH = targetH * 0.8
+
+        let scale = Math.min(maxAllowedW / w, maxAllowedH / h)
+        // Cap upscaling to avoid pixelation on very small images
+        scale = Math.min(scale, 2.0)
+
+        const newW = w * scale
+        const newH = h * scale
+
+        const canvas2 = document.createElement('canvas')
+        canvas2.width = targetW
+        canvas2.height = targetH
+        const ctx2 = canvas2.getContext('2d')
+        if (ctx2) {
+          const destX = (targetW - newW) / 2
+          const destY = (targetH - newH) / 2
+          ctx2.drawImage(canvas, minX, minY, w, h, destX, destY, newW, newH)
+          return canvas2.toDataURL('image/png')
+        }
+      }
+    }
+  } catch (err) {
+    console.warn('[pdfDocUtils] Error during auto-crop/padding:', err)
+  }
+  
   return canvas.toDataURL('image/png')
 }
 

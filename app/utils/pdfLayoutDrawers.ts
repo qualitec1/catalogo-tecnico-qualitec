@@ -1,12 +1,12 @@
-import { 
-  dimToMm, 
-  setFillRgb, 
-  setDrawRgb 
+import {
+  dimToMm,
+  setFillRgb,
+  setDrawRgb
 } from './pdfDocUtils'
 import { addImageSafe } from './pdfImageLoader'
-import { 
-  drawColoredHeader, 
-  drawSpecsTable, 
+import {
+  drawColoredHeader,
+  drawSpecsTable,
   drawDatasheetLink,
   drawDatasheetQrCode
 } from './pdfDrawHelpers'
@@ -29,13 +29,13 @@ function getImageParams(product: any, settings: any, bookletMode: boolean) {
   const globalScale = bookletMode
     ? (settings.booklet_pdf_image_scale !== undefined && settings.booklet_pdf_image_scale !== null ? Number(settings.booklet_pdf_image_scale) : 1.0)
     : (settings.pdf_image_scale !== undefined && settings.pdf_image_scale !== null ? Number(settings.pdf_image_scale) : 1.0)
-    
+
   const individualScale = bookletMode
     ? (product.bookletImageScale !== undefined && product.bookletImageScale !== null ? Number(product.bookletImageScale) : (product.booklet_image_scale !== undefined && product.booklet_image_scale !== null ? Number(product.booklet_image_scale) : 1.0))
     : (product.imageScale !== undefined && product.imageScale !== null ? Number(product.imageScale) : (product.image_scale !== undefined && product.image_scale !== null ? Number(product.image_scale) : 1.0))
 
   const finalScale = globalScale * individualScale
-  
+
   const globalScaleX = bookletMode
     ? (settings.booklet_pdf_image_scale_x !== undefined && settings.booklet_pdf_image_scale_x !== null ? Number(settings.booklet_pdf_image_scale_x) : 1.0)
     : (settings.pdf_image_scale_x !== undefined && settings.pdf_image_scale_x !== null ? Number(settings.pdf_image_scale_x) : 1.0)
@@ -44,12 +44,12 @@ function getImageParams(product: any, settings: any, bookletMode: boolean) {
     ? (settings.booklet_pdf_image_scale_y !== undefined && settings.booklet_pdf_image_scale_y !== null ? Number(settings.booklet_pdf_image_scale_y) : 1.0)
     : (settings.pdf_image_scale_y !== undefined && settings.pdf_image_scale_y !== null ? Number(settings.pdf_image_scale_y) : 1.0)
 
-  const catOffX = dimToMm(bookletMode 
-    ? (settings.booklet_product_image_offset_x || settings.bookletProductImageOffsetX) 
+  const catOffX = dimToMm(bookletMode
+    ? (settings.booklet_product_image_offset_x || settings.bookletProductImageOffsetX)
     : (settings.product_image_offset_x || settings.productImageOffsetX), 0)
-    
-  const catOffY = dimToMm(bookletMode 
-    ? (settings.booklet_product_image_offset_y || settings.bookletProductImageOffsetY) 
+
+  const catOffY = dimToMm(bookletMode
+    ? (settings.booklet_product_image_offset_y || settings.bookletProductImageOffsetY)
     : (settings.product_image_offset_y || settings.productImageOffsetY), 0)
 
   const prodOffX = bookletMode
@@ -88,7 +88,7 @@ export function drawLayout3(
   const cardH = (contentH - spacing) / 2
 
   const isImageLeft = (settings.image_position || settings.imagePosition) === 'left' ||
-                      (settings.card_layout_order || settings.cardLayoutOrder) === 'image-first'
+    (settings.card_layout_order || settings.cardLayoutOrder) === 'image-first'
 
   // Block positioning / sizing overrides
   const defaultHeaderH = 18
@@ -164,8 +164,8 @@ export function drawLayout3(
     const exKey = `ex_${product.id}`
     if (opts.imageCache.has(exKey)) {
       const exW = 12 * scale
-      const exX = isImageLeft 
-        ? specsX + headerOffX - exW - 2 * scale 
+      const exX = isImageLeft
+        ? specsX + headerOffX - exW - 2 * scale
         : specsX + headerOffX + headerW + 2 * scale
       const exY = cardY + headerOffY + 1.5 * scale
       addImageSafe(pdf, opts.imageCache, exKey, exX, exY, exW, exW)

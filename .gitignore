@@ -37,4 +37,6 @@ recovery_catalog/
 database_backup_original.json
 edit.form
 mcps/
+backups/
+
 

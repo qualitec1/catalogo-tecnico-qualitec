@@ -35,7 +35,7 @@ export async function loadSingleImage(url: string, skipHalo: boolean = false): P
     })
 
     let finalDataUrl = dataUrl
-    if (!skipHalo && detectFormat(dataUrl) === 'PNG' && typeof document !== 'undefined') {
+    if (!skipHalo && typeof document !== 'undefined') {
       try {
         finalDataUrl = cleanWhiteHalo(dataUrl, img)
       } catch (err) {
@@ -162,7 +162,7 @@ export async function preloadAllImages(
       img.src = dataUrl
       await new Promise<void>(r => { img.onload = () => r(); img.onerror = () => r() })
       let finalDataUrl = dataUrl
-      if (detectFormat(dataUrl) === 'PNG' && typeof document !== 'undefined') {
+       if (typeof document !== 'undefined') {
         try {
           finalDataUrl = cleanWhiteHalo(dataUrl, img)
         } catch (err) {
