@@ -173,6 +173,12 @@ export function drawLayout3(
 
     const imgParams = getImageParams(product, settings, opts.bookletMode)
 
+    // Bounding box for clipping: entire card area to allow overlaying while keeping within the block
+    const clipImgX = contentX
+    const clipImgY = cardY
+    const clipImgW = contentW
+    const clipImgH = cardH
+
     addImageSafe(
       pdf,
       opts.imageCache,
@@ -185,7 +191,11 @@ export function drawLayout3(
       imgParams.prodOffX,
       imgParams.prodOffY,
       imgParams.globalScaleX,
-      imgParams.globalScaleY
+      imgParams.globalScaleY,
+      clipImgX,
+      clipImgY,
+      clipImgW,
+      clipImgH
     )
 
     // Não desenhar linha divisória se qualquer produto tiver imagem EX
@@ -310,6 +320,12 @@ export function drawLayout6(
 
     const imgParams = getImageParams(product, settings, opts.bookletMode)
 
+    // Bounding box for clipping: entire cell area to allow overlaying while keeping within the block
+    const clipCellX = x
+    const clipCellY = y
+    const clipCellW = cellW
+    const clipCellH = cellH
+
     addImageSafe(
       pdf,
       opts.imageCache,
@@ -322,7 +338,11 @@ export function drawLayout6(
       imgParams.prodOffX,
       imgParams.prodOffY,
       imgParams.globalScaleX,
-      imgParams.globalScaleY
+      imgParams.globalScaleY,
+      clipCellX,
+      clipCellY,
+      clipCellW,
+      clipCellH
     )
   }
 
@@ -431,6 +451,12 @@ export function drawLayout1(
 
   const imgParams = getImageParams(product, settings, opts.bookletMode)
 
+  // Bounding box for clipping: entire content area to allow overlaying while keeping within the page margins
+  const clipFullX = contentX
+  const clipFullY = contentY
+  const clipFullW = contentW
+  const clipFullH = contentH
+
   addImageSafe(
     pdf,
     opts.imageCache,
@@ -443,6 +469,10 @@ export function drawLayout1(
     imgParams.prodOffX,
     imgParams.prodOffY,
     imgParams.globalScaleX,
-    imgParams.globalScaleY
+    imgParams.globalScaleY,
+    clipFullX,
+    clipFullY,
+    clipFullW,
+    clipFullH
   )
 }

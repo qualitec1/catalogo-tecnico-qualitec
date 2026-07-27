@@ -252,14 +252,20 @@ export function addImageSafe(
   maxH: number,
   scale: number = 1.0,
   prodOffX: number = 0,
-  prodOffY: number = 0
+  prodOffY: number = 0,
+  globalScaleX: number = 1.0,
+  globalScaleY: number = 1.0,
+  clipX?: number,
+  clipY?: number,
+  clipW?: number,
+  clipH?: number
 ) {
   const img = cache.get(key)
   if (!img) return
   const fit = fitImageInBox(img, maxW, maxH)
 
-  const w = fit.w * scale
-  const h = fit.h * scale
+  const w = fit.w * scale * globalScaleX
+  const h = fit.h * scale * globalScaleY
 
   // Center the scaled image inside the bounding box
   const centerX = x + (maxW - w) / 2
@@ -272,8 +278,38 @@ export function addImageSafe(
   const finalX = centerX + prodOffXmm
   const finalY = centerY + prodOffYmm
 
+  // Determine clipping region: use explicit clip params or fall back to bounding box
+  const useClipX = clipX !== undefined ? clipX : x
+  const useClipY = clipY !== undefined ? clipY : y
+  const useClipW = clipW !== undefined ? clipW : maxW
+  const useClipH = clipH !== undefined ? clipH : maxH
+
   try {
+    // Apply clipping rectangle so the image never overflows the bounding box
+    const gState = typeof pdf.saveGraphicsState === 'function'
+    if (gState) {
+      pdf.saveGraphicsState()
+      // Use internal PDF operators to define clipping path without any visible stroke/fill
+      // re = rectangle path operator, W = set clipping, n = end path without painting
+      if (pdf.internal && typeof pdf.internal.write === 'function') {
+        // Convert mm to PDF points (jsPDF internally uses a scale factor)
+        const k = pdf.internal.scaleFactor || 1
+        const pageHeight = pdf.internal.pageSize.getHeight()
+        const pdfX = useClipX * k
+        const pdfY = (pageHeight - useClipY - useClipH) * k
+        const pdfW = useClipW * k
+        const pdfH = useClipH * k
+        pdf.internal.write(
+          `${pdfX.toFixed(2)} ${pdfY.toFixed(2)} ${pdfW.toFixed(2)} ${pdfH.toFixed(2)} re W n`
+        )
+      }
+    }
+
     pdf.addImage(img.dataUrl, img.format, finalX, finalY, w, h, undefined, 'FAST')
+
+    if (gState) {
+      pdf.restoreGraphicsState()
+    }
   } catch (e) {
     console.warn(`[pdfBuilder] Could not add image ${key}:`, e)
   }
