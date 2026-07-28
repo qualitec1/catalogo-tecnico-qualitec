@@ -101,8 +101,8 @@
       </div>
 
       <!-- Product Grid -->
-      <div v-if="filteredProducts.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div v-for="product in filteredProducts" :key="product.id">
+      <div v-if="paginatedProducts.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div v-for="product in paginatedProducts" :key="product.id">
           <ProductCard 
             :product="product" 
             :isSelected="selectedProducts.has(product.id)" 
@@ -120,12 +120,16 @@
       </div>
 
       <!-- Pagination -->
-      <div class="mt-16 flex justify-center items-center gap-2">
-        <button @click="activePage = Math.max(1, activePage - 1)" class="w-10 h-10 border border-gray-300 flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors bg-white cursor-pointer">
+      <div v-if="totalPages > 1" class="mt-16 flex justify-center items-center gap-2">
+        <button 
+          @click="activePage = Math.max(1, activePage - 1)" 
+          :disabled="activePage === 1"
+          class="w-10 h-10 border border-gray-300 flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors bg-white cursor-pointer disabled:opacity-40 disabled:pointer-events-none"
+        >
           <span class="material-symbols-outlined">chevron_left</span>
         </button>
         <button 
-          v-for="page in 3" 
+          v-for="page in totalPages" 
           :key="page"
           @click="activePage = page"
           class="w-10 h-10 border font-medium text-sm transition-colors cursor-pointer"
@@ -133,7 +137,11 @@
         >
           {{ page }}
         </button>
-        <button @click="activePage = Math.min(3, activePage + 1)" class="w-10 h-10 border border-gray-300 flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors bg-white cursor-pointer">
+        <button 
+          @click="activePage = Math.min(totalPages, activePage + 1)" 
+          :disabled="activePage === totalPages"
+          class="w-10 h-10 border border-gray-300 flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors bg-white cursor-pointer disabled:opacity-40 disabled:pointer-events-none"
+        >
           <span class="material-symbols-outlined">chevron_right</span>
         </button>
       </div>
@@ -256,6 +264,8 @@ const {
   activePage,
   availableCategories,
   filteredProducts,
+  paginatedProducts,
+  totalPages,
   toggleProduct,
   selectAll,
   clearSelection,

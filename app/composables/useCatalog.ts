@@ -136,6 +136,19 @@ export function useCatalog() {
     })
   })
 
+  const paginatedProducts = computed(() => {
+    const start = (activePage.value - 1) * 30
+    return filteredProducts.value.slice(start, start + 30)
+  })
+
+  const totalPages = computed(() => {
+    return Math.max(1, Math.ceil(filteredProducts.value.length / 30))
+  })
+
+  watch([searchQuery, selectedCategory], () => {
+    activePage.value = 1
+  })
+
   const toggleProduct = (id: number) => {
     if (selectedProducts.value.has(id)) {
       selectedProducts.value.delete(id)
@@ -301,6 +314,8 @@ export function useCatalog() {
     activePage,
     availableCategories,
     filteredProducts,
+    paginatedProducts,
+    totalPages,
     toggleProduct,
     selectAll,
     clearSelection,
