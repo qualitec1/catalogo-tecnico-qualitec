@@ -35,9 +35,22 @@ export async function loadSingleImage(url: string, skipHalo: boolean = false): P
     })
 
     let finalDataUrl = dataUrl
+    let finalWidth = img.naturalWidth || 200
+    let finalHeight = img.naturalHeight || 200
+
     if (!skipHalo && typeof document !== 'undefined') {
       try {
         finalDataUrl = cleanWhiteHalo(dataUrl, img)
+        
+        // Dynamically load the final processed data URL to get its exact rectangular dimensions
+        const finalImg = new Image()
+        finalImg.src = finalDataUrl
+        await new Promise<void>(r => {
+          finalImg.onload = () => r()
+          finalImg.onerror = () => r()
+        })
+        finalWidth = finalImg.naturalWidth || 700
+        finalHeight = finalImg.naturalHeight || 700
       } catch (err) {
         console.warn('[pdfBuilder] Error cleaning white halo:', err)
       }
@@ -45,8 +58,8 @@ export async function loadSingleImage(url: string, skipHalo: boolean = false): P
 
     return {
       dataUrl: finalDataUrl,
-      width: img.naturalWidth || 200,
-      height: img.naturalHeight || 200,
+      width: finalWidth,
+      height: finalHeight,
       format: detectFormat(finalDataUrl),
     }
   } catch {
@@ -162,17 +175,28 @@ export async function preloadAllImages(
       img.src = dataUrl
       await new Promise<void>(r => { img.onload = () => r(); img.onerror = () => r() })
       let finalDataUrl = dataUrl
+      let finalWidth = img.naturalWidth || 400
+      let finalHeight = img.naturalHeight || 300
        if (typeof document !== 'undefined') {
         try {
           finalDataUrl = cleanWhiteHalo(dataUrl, img)
+          
+          const finalImg = new Image()
+          finalImg.src = finalDataUrl
+          await new Promise<void>(r => {
+            finalImg.onload = () => r()
+            finalImg.onerror = () => r()
+          })
+          finalWidth = finalImg.naturalWidth || 700
+          finalHeight = finalImg.naturalHeight || 700
         } catch (err) {
           console.warn('[pdfBuilder] Error cleaning white halo for blob:', err)
         }
       }
       cache.set(key, {
         dataUrl: finalDataUrl,
-        width: img.naturalWidth || 400,
-        height: img.naturalHeight || 300,
+        width: finalWidth,
+        height: finalHeight,
         format: detectFormat(finalDataUrl),
       })
       continue
@@ -258,18 +282,58 @@ export function addImageSafe(
   clipX?: number,
   clipY?: number,
   clipW?: number,
-  clipH?: number
+  clipH?: number,
+  alignTop: boolean = false,
+  alignBottom: boolean = false
 ) {
   const img = cache.get(key)
   if (!img) return
-  const fit = fitImageInBox(img, maxW, maxH)
+  
+  let w: number, h: number
+  const imgRatio = img.width / img.height
 
-  const w = fit.w * scale * globalScaleX
-  const h = fit.h * scale * globalScaleY
+  if (alignTop) {
+    // Fit to width first (to keep horizontal size uniform and filling the box)
+    w = maxW * scale * globalScaleX
+    h = w / imgRatio
 
-  // Center the scaled image inside the bounding box
+    // Allow height to overflow the box (maxH) by up to 11mm (into the green banner area)
+    // but scale down if it would exceed that limit to prevent overlapping specs table.
+    const limitH = maxH + 11
+    if (h > limitH) {
+      h = limitH
+      w = h * imgRatio
+    }
+  } else {
+    // Normal fitting (center-aligned both ways or bottom-aligned)
+    const fit = fitImageInBox(img, maxW, maxH)
+    w = fit.w * scale * globalScaleX
+    h = fit.h * scale * globalScaleY
+
+    if (w > maxW) {
+      const ratio = maxW / w
+      w = maxW
+      h = h * ratio
+    }
+    if (h > maxH) {
+      const ratio = maxH / h
+      h = maxH
+      w = w * ratio
+    }
+  }
+
+  // Center the scaled image inside the bounding box horizontally
   const centerX = x + (maxW - w) / 2
-  const centerY = y + (maxH - h) / 2
+  
+  // Center, top-align, or bottom-align vertically
+  let centerY: number
+  if (alignBottom) {
+    centerY = y + maxH - h
+  } else if (alignTop) {
+    centerY = y
+  } else {
+    centerY = y + (maxH - h) / 2
+  }
 
   // Convert product offsets (in pixels) to mm
   const prodOffXmm = prodOffX * 0.264
@@ -278,38 +342,9 @@ export function addImageSafe(
   const finalX = centerX + prodOffXmm
   const finalY = centerY + prodOffYmm
 
-  // Determine clipping region: use explicit clip params or fall back to bounding box
-  const useClipX = clipX !== undefined ? clipX : x
-  const useClipY = clipY !== undefined ? clipY : y
-  const useClipW = clipW !== undefined ? clipW : maxW
-  const useClipH = clipH !== undefined ? clipH : maxH
-
   try {
-    // Apply clipping rectangle so the image never overflows the bounding box
-    const gState = typeof pdf.saveGraphicsState === 'function'
-    if (gState) {
-      pdf.saveGraphicsState()
-      // Use internal PDF operators to define clipping path without any visible stroke/fill
-      // re = rectangle path operator, W = set clipping, n = end path without painting
-      if (pdf.internal && typeof pdf.internal.write === 'function') {
-        // Convert mm to PDF points (jsPDF internally uses a scale factor)
-        const k = pdf.internal.scaleFactor || 1
-        const pageHeight = pdf.internal.pageSize.getHeight()
-        const pdfX = useClipX * k
-        const pdfY = (pageHeight - useClipY - useClipH) * k
-        const pdfW = useClipW * k
-        const pdfH = useClipH * k
-        pdf.internal.write(
-          `${pdfX.toFixed(2)} ${pdfY.toFixed(2)} ${pdfW.toFixed(2)} ${pdfH.toFixed(2)} re W n`
-        )
-      }
-    }
-
+    // Draw the image without any clipping to ensure it is never cut off
     pdf.addImage(img.dataUrl, img.format, finalX, finalY, w, h, undefined, 'FAST')
-
-    if (gState) {
-      pdf.restoreGraphicsState()
-    }
   } catch (e) {
     console.warn(`[pdfBuilder] Could not add image ${key}:`, e)
   }

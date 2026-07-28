@@ -207,33 +207,58 @@ export function cleanWhiteHalo(dataUrl: string, imgEl: HTMLImageElement): string
       const h = maxY - minY + 1
 
       if (w > 5 && h > 5) {
-        // Target: product should fill at most 80% of width or height of the original canvas
-        const targetW = canvas.width
-        const targetH = canvas.height
-        const maxAllowedW = targetW * 0.8
-        const maxAllowedH = targetH * 0.8
+        // Target: maximum dimension should be exactly 700px, keeping exact rectangular ratio (no padding)
+        let targetW: number
+        let targetH: number
 
-        let scale = Math.min(maxAllowedW / w, maxAllowedH / h)
-        // Cap upscaling to avoid pixelation on very small images
-        scale = Math.min(scale, 2.0)
-
-        const newW = w * scale
-        const newH = h * scale
+        if (w > h) {
+          targetW = 700
+          targetH = Math.round(700 * (h / w))
+        } else {
+          targetH = 700
+          targetW = Math.round(700 * (w / h))
+        }
 
         const canvas2 = document.createElement('canvas')
         canvas2.width = targetW
         canvas2.height = targetH
         const ctx2 = canvas2.getContext('2d')
         if (ctx2) {
-          const destX = (targetW - newW) / 2
-          const destY = (targetH - newH) / 2
-          ctx2.drawImage(canvas, minX, minY, w, h, destX, destY, newW, newH)
+          // Draw the cropped area of the original canvas, scaling it to fill canvas2 exactly (0% internal padding)
+          ctx2.drawImage(canvas, minX, minY, w, h, 0, 0, targetW, targetH)
           return canvas2.toDataURL('image/png')
         }
       }
     }
   } catch (err) {
     console.warn('[pdfDocUtils] Error during auto-crop/padding:', err)
+  }
+  
+  // Fallback: scale original image to 700px max dimension, keeping aspect ratio (0% padding)
+  try {
+    const w = imgEl.naturalWidth || imgEl.width
+    const h = imgEl.naturalHeight || imgEl.height
+    let targetW: number
+    let targetH: number
+
+    if (w > h) {
+      targetW = 700
+      targetH = Math.round(700 * (h / w))
+    } else {
+      targetH = 700
+      targetW = Math.round(700 * (w / h))
+    }
+
+    const canvas2 = document.createElement('canvas')
+    canvas2.width = targetW
+    canvas2.height = targetH
+    const ctx2 = canvas2.getContext('2d')
+    if (ctx2) {
+      ctx2.drawImage(imgEl, 0, 0, targetW, targetH)
+      return canvas2.toDataURL('image/png')
+    }
+  } catch (err) {
+    console.warn('[pdfDocUtils] Error during fallback canvas scaling:', err)
   }
   
   return canvas.toDataURL('image/png')

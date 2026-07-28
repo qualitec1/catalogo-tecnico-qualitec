@@ -320,7 +320,16 @@ export function drawLayout6(
 
     const imgParams = getImageParams(product, settings, opts.bookletMode)
 
-    // Bounding box for clipping: entire cell area to allow overlaying while keeping within the block
+    // Define the floor level (red line): 3.5mm inside the green category banner
+    const floorY = y + imgH + 3.5
+
+    // Define a virtual box (41mm width, 38mm height) aligned to the left (x + 2) and bottom-aligned to floorY
+    const boxW = 41
+    const boxH = 38
+    const boxX = x + 2
+    const boxY = floorY - boxH
+
+    // Bounding box for clipping (entire cell area)
     const clipCellX = x
     const clipCellY = y
     const clipCellW = cellW
@@ -330,19 +339,21 @@ export function drawLayout6(
       pdf,
       opts.imageCache,
       `product_${product.id}`,
-      x + 2 + imgParams.catOffX,
-      imgCellY + imgParams.catOffY,
-      cellW - 4,
-      imgH - 2,
-      imgParams.finalScale,
-      imgParams.prodOffX,
-      imgParams.prodOffY,
+      boxX,
+      boxY,
+      boxW,
+      boxH,
+      1.0,  // scale = 1.0 (bypass individual product scale overrides for perfect uniformity)
+      0,    // prodOffX = 0 (bypass individual product offsets to keep centered in the square)
+      0,    // prodOffY = 0 (bypass individual product offsets to keep aligned at the top)
       imgParams.globalScaleX,
       imgParams.globalScaleY,
       clipCellX,
       clipCellY,
       clipCellW,
-      clipCellH
+      clipCellH,
+      false, // alignTop = false
+      true   // alignBottom = true (keep the bottom of the product sitting exactly on the floorY)
     )
   }
 
