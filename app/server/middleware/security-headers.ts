@@ -12,19 +12,24 @@ export default defineEventHandler((event) => {
   headers.setHeader('X-XSS-Protection', '1; mode=block')
 
   // Content Security Policy - política restritiva
-  const csp = [
-    "default-src 'self'",
-    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://fonts.googleapis.com", // unsafe-eval necessário para Nuxt dev
-    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-    "font-src 'self' https://fonts.gstatic.com",
-    "img-src 'self' data: https: blob:",
-    "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://pub-*.r2.dev",
-    "frame-ancestors 'none'",
-    "base-uri 'self'",
-    "form-action 'self'"
-  ].join('; ')
-  
-  headers.setHeader('Content-Security-Policy', csp)
+  // Apenas aplica CSP para rotas que não sejam da API
+  if (!event.path.startsWith('/api/')) {
+    const isDev = process.env.NODE_ENV !== 'production'
+    const csp = [
+      "default-src 'self'",
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://fonts.googleapis.com" + (isDev ? " blob:" : ""),
+      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+      "font-src 'self' https://fonts.gstatic.com",
+      "img-src 'self' data: https: blob:",
+      "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://pub-*.r2.dev" + (isDev ? " ws: wss:" : ""),
+      "frame-ancestors 'none'",
+      "base-uri 'self'",
+      "form-action 'self'",
+      isDev ? "worker-src 'self' blob:" : ""
+    ].filter(Boolean).join('; ')
+    
+    headers.setHeader('Content-Security-Policy', csp)
+  }
 
   // Força HTTPS em produção
   if (process.env.NODE_ENV === 'production') {

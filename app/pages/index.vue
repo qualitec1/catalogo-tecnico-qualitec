@@ -1,16 +1,44 @@
 <template>
   <div class="bg-gray-50 text-gray-900 min-h-screen flex flex-col">
     <!-- Header -->
-    <header class="bg-white w-full top-0 sticky z-50 border-b border-gray-200 shadow-sm">
-      <div class="flex justify-between items-center h-16 px-8 max-w-7xl mx-auto">
-        <div class="flex items-center">
-          <img alt="Qualitec Industrial" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCJOpxk8IRBgRW2bvQlS_z4LoXARfSvqvz2saPXY9SVEh_22Bcd1VS5ijTW9c3L5WiWT0idDIuscN94pofAxJzmGnXWNILAeSKTQdpe0NSl8pmXlo5Mo2KzPIESuDMk-6ap5WOs_icm6enTpaiHanmAbwntVxfvVTPLdAKIwMg7L88cyvuALuJQqv2-2ntPUxn3BgVkSCLfjyupjGSuOW5zhpBXbfo-ac3ZkUg-WHHUrhMMhz1XIsk_yPD5jMMWbkCwWOJV1BBvHWM">
+    <header class="w-full top-0 sticky z-50 shadow-sm select-none">
+      <!-- Top Row (White Background) -->
+      <div class="bg-white border-b border-gray-100">
+        <div class="flex justify-between items-center h-16 px-8 max-w-7xl mx-auto">
+          <!-- Logo -->
+          <div class="relative h-16 w-96 flex items-center">
+            <img 
+              alt="Qualitec Industrial" 
+              class="absolute h-36 w-auto object-contain -translate-y-1/2 top-1/2"
+              style="left: 160px;" 
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuCJOpxk8IRBgRW2bvQlS_z4LoXARfSvqvz2saPXY9SVEh_22Bcd1VS5ijTW9c3L5WiWT0idDIuscN94pofAxJzmGnXWNILAeSKTQdpe0NSl8pmXlo5Mo2KzPIESuDMk-6ap5WOs_icm6enTpaiHanmAbwntVxfvVTPLdAKIwMg7L88cyvuALuJQqv2-2ntPUxn3BgVkSCLfjyupjGSuOW5zhpBXbfo-ac3ZkUg-WHHUrhMMhz1XIsk_yPD5jMMWbkCwWOJV1BBvHWM"
+            >
+          </div>
+          <!-- Top Navigation -->
+          <nav class="flex items-center space-x-12" style="margin-right: 120px;">
+            <a href="#" class="text-sm font-normal text-gray-600 hover:text-gray-900 transition-colors">Home</a>
+            <a href="#" class="text-sm font-normal text-gray-600 hover:text-gray-900 transition-colors">Nossa Empresa</a>
+            <a href="#" class="text-sm font-normal text-gray-600 hover:text-gray-900 transition-colors">Contato</a>
+          </nav>
         </div>
-        <nav class="hidden md:flex items-center h-full">
-          <a class="text-sm font-medium text-blue-600 border-b-2 border-blue-600 pb-1 cursor-pointer font-bold" href="#">Catálogo</a>
-        </nav>
-        <div class="w-24"></div>
       </div>
+
+      <!-- Bottom Row (Light Gray Background) -->
+      <div class="bg-gray-100 border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-8 py-4 flex justify-center items-center">
+          <nav class="flex flex-wrap justify-center items-center gap-x-20 gap-y-2">
+            <a href="#" class="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">Criôgenia</a>
+            <a href="#" class="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">Óleo & Gás</a>
+            <a href="#" class="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">Gases Técnicos</a>
+            <a href="#" class="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">Energia</a>
+            <a href="#" class="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">Açúcar & Álcool</a>
+            <a href="#" class="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">Alimentícia</a>
+          </nav>
+        </div>
+      </div>
+
+      <!-- Thin White Bar -->
+      <div class="bg-white h-3 w-full border-b border-gray-200"></div>
     </header>
 
     <!-- Main Content -->
@@ -112,17 +140,27 @@
     </main>
 
     <!-- Footer -->
-    <footer class="bg-blue-900 text-white w-full mt-20">
-      <div class="flex flex-col md:flex-row justify-between items-center py-8 px-8 max-w-7xl mx-auto">
-        <div class="flex flex-col md:flex-row items-center gap-4 md:gap-12 mb-6 md:mb-0 text-center md:text-left">
-          <span class="text-xl font-bold">Qualitec</span>
-          <p class="text-sm opacity-70">Qualitec © 2024 - Todos os direitos reservados.</p>
+    <footer class="bg-[#f5f5f5] text-[#555555] w-full mt-20 border-t border-gray-200/50">
+      <div class="max-w-7xl mx-auto py-14 flex flex-col md:flex-row justify-between gap-8 text-[13px] leading-relaxed" style="padding-left: 192px; padding-right: 210px;">
+        <!-- Left Column: Address and Info -->
+        <div class="flex flex-col space-y-1 text-[#666666]">
+          <p class="text-[#333333] mb-1">Qualitec C S I M Ltda</p>
+          <p>Rua Fazenda Monte Alegre, 367</p>
+          <p>05160-060 - São Paulo - SP</p>
+          <p>Tel: +55 11 3908 7100</p>
+          <p>
+            <a href="mailto:vendas@qualitecinstrumentos.com.br" class="hover:text-gray-900 transition-colors">vendas@qualitecinstrumentos.com.br</a>
+          </p>
+          <p class="pt-6 text-[#777777]">Todos os direitos reservados - 2024</p>
         </div>
-        <nav class="flex flex-wrap justify-center gap-8">
-          <a class="text-sm text-gray-300 hover:text-white transition-colors cursor-pointer" href="#">Normas Técnicas</a>
-          <a class="text-sm text-gray-300 hover:text-white transition-colors cursor-pointer" href="#">Documentação</a>
-          <a class="text-sm text-gray-300 hover:text-white transition-colors cursor-pointer" href="#">Termos de Uso</a>
-        </nav>
+
+        <!-- Right Column: Exclusivity info -->
+        <div class="flex flex-col space-y-1 text-[#666666] md:pr-12">
+          <p class="text-[#333333] mb-1">Representante Exclusivo</p>
+          <p>HEROSE GmbH</p>
+          <p>Generant Inc</p>
+          <p>DataOnline LLC</p>
+        </div>
       </div>
     </footer>
 

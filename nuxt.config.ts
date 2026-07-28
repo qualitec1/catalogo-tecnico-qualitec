@@ -31,5 +31,12 @@ export default defineNuxtConfig({
       supabaseUrl: process.env.SUPABASE_URL || '',
       supabaseAnonKey: process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_KEY || ''
     }
+  },
+  vite: {
+    server: {
+      watch: {
+        ignored: ['**/node_modules/**', '**/.git/**']
+      }
+    }
   }
 })

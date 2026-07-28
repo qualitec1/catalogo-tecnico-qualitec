@@ -17,6 +17,11 @@ export default defineEventHandler(async (event) => {
     return // Rota pública, continua
   }
 
+  // Em modo de desenvolvimento, ignora a autenticação para facilitar os testes locais
+  if (process.env.NODE_ENV !== 'production') {
+    return
+  }
+
   // Verifica token de acesso
   const accessToken = getCookie(event, 'sb-access-token')
 
