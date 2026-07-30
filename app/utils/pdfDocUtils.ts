@@ -95,7 +95,7 @@ export function sanitizeSpecValue(val: string | null | undefined, label?: string
   str = str.replace(/°\s*°/g, '°')
 
   // Fix diameter / inch quote missing on last diameter item
-  const isDiameterOrConnection = label ? /diâmetro|diametro|conexão|conexao/i.test(label) : true
+  const isDiameterOrConnection = label ? /diâmetro|diametro|conexão|conexao|nenndurchmesser|durchmesser|diameter|size/i.test(label) : true
   if (isDiameterOrConnection || /"|\|/.test(str)) {
     str = str.replace(/"{2,}/g, '"')
     if (str.includes('|')) {

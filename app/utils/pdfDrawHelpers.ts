@@ -486,13 +486,33 @@ export function drawPageHeader(
   pdf.setFont(fontName, fontStyle)
   pdf.setFontSize(fontSize)
   
-  const iconSize = (fontSize * 0.45 + 4) * scale
+  const { currentLang } = useTranslations()
+  const lang = (settings as any)?.lang || currentLang.value || 'pt'
+  let catUpper = category.toUpperCase().trim()
+
+  if (lang !== 'pt') {
+    if (categoryDict[catUpper] && categoryDict[catUpper][lang as 'en' | 'de']) {
+      catUpper = categoryDict[catUpper][lang as 'en' | 'de']
+    } else if (catUpper === 'GERAL') {
+      catUpper = lang === 'en' ? 'GENERAL' : 'ALLGEMEIN'
+    } else if (catUpper === 'VÁLVULAS 3 VIAS') {
+      catUpper = lang === 'en' ? '3-WAY VALVES' : '3-WEGE-VENTILE'
+    } else if (catUpper === 'VÁLVULAS CRIOGÊNICAS') {
+      catUpper = lang === 'en' ? 'CRYOGENIC VALVES' : 'KRYO-VENTILE'
+    } else if (catUpper === 'VÁLVULAS DE SEGURANÇA') {
+      catUpper = lang === 'en' ? 'SAFETY VALVES' : 'SICHERHEITSVENTILE'
+    } else if (catUpper === 'VÁLVULAS GLOBO') {
+      catUpper = lang === 'en' ? 'GLOBE VALVES' : 'GLOBE-VENTILE'
+    } else if (catUpper === 'TRANSMISSORES DE PRESSÃO') {
+      catUpper = lang === 'en' ? 'PRESSURE TRANSMITTERS' : 'DRUCKMESSUMFORMER'
+    }
+  }
+
   const catNorm = category.toUpperCase().trim()
   const iconKey = imageCache && imageCache.has(`category_icon_${catNorm}`)
     ? `category_icon_${catNorm}`
     : (imageCache && imageCache.has('__category_icon__') ? '__category_icon__' : null)
 
-  const catUpper = category.toUpperCase()
   const textWidth = pdf.getTextWidth(catUpper)
   const textY = y + offsetY + fontSize * 0.35
 
@@ -752,8 +772,15 @@ export function drawColoredHeader(
 
   const modelLabelFont = getFontName(settings.card_model_label_font_family || settings.cardModelLabelFontFamily || settings.card_model_font_family || settings.cardModelFontFamily)
   const modelLabelStyle = getFontStyle(settings.card_model_label_bold || settings.cardModelLabelBold, settings.card_model_label_italic || settings.cardModelLabelItalic)
-  const modelLabelSize = parseFontSizePt(settings.card_model_label_font_size || settings.cardModelLabelFontSize, compact ? 5.33 : 7.33)
-  const modelLabelText: string = settings.card_model_label_text || settings.cardModelLabelText || 'Modelo'
+  const { currentLang } = useTranslations()
+  const lang = (settings as any)?.lang || currentLang.value || 'pt'
+  let rawModelLabel: string = settings.card_model_label_text || settings.cardModelLabelText || 'Modelo'
+  let modelLabelText = rawModelLabel
+  if (!settings.card_model_label_text && !settings.cardModelLabelText || rawModelLabel.trim() === 'Modelo') {
+    if (lang === 'en') modelLabelText = 'Model'
+    else if (lang === 'de') modelLabelText = 'Modell'
+    else modelLabelText = 'Modelo'
+  }
 
   const titleOffX = dimToMm(settings.card_title_offset_x || settings.cardTitleOffsetX, 0)
   const titleOffY = dimToMm(settings.card_title_offset_y || settings.cardTitleOffsetY, 0)
