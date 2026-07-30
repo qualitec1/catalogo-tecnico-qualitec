@@ -6,11 +6,6 @@ import { drawCoverPage, drawCoverPageLandscape, drawPageHeader, drawPageFooter }
 import { drawLayout1, drawLayout3, drawLayout6 } from './pdfLayoutDrawers'
 import { getFontName } from './pdfDocUtils'
 
-// Re-export types and functions to preserve API contract
-export type { CachedImage } from './pdfDocUtils'
-export type { BuildOptions } from './pdfDrawHelpers'
-export { preloadAllImages } from './pdfImageLoader'
-
 // Margin and dimension constants
 const MARGIN_X = 13
 const MARGIN_TOP = 8

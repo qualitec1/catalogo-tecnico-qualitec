@@ -772,6 +772,7 @@ export function drawColoredHeader(
 
   const modelLabelFont = getFontName(settings.card_model_label_font_family || settings.cardModelLabelFontFamily || settings.card_model_font_family || settings.cardModelFontFamily)
   const modelLabelStyle = getFontStyle(settings.card_model_label_bold || settings.cardModelLabelBold, settings.card_model_label_italic || settings.cardModelLabelItalic)
+  const modelLabelSize = parseFontSizePt(settings.card_model_label_font_size || settings.cardModelLabelFontSize, compact ? 5.33 : 7.33)
   const { currentLang } = useTranslations()
   const lang = (settings as any)?.lang || currentLang.value || 'pt'
   let rawModelLabel: string = settings.card_model_label_text || settings.cardModelLabelText || 'Modelo'

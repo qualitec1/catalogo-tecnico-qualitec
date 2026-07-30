@@ -16,7 +16,8 @@
 import { ref, computed, watch } from 'vue'
 import type { Product } from '~/components/ProductCard.vue'
 import { hexToBase64 } from '../utils/image'
-import { preloadAllImages, buildCatalogPdf } from '../utils/pdfBuilder'
+import { preloadAllImages } from '../utils/pdfImageLoader'
+import { buildCatalogPdf } from '../utils/pdfBuilder'
 
 const QUALITEC_LOGO_URL = 'https://lh3.googleusercontent.com/aida-public/AB6AXuCJOpxk8IRBgRW2bvQlS_z4LoXARfSvqvz2saPXY9SVEh_22Bcd1VS5ijTW9c3L5WiWT0idDIuscN94pofAxJzmGnXWNILAeSKTQdpe0NSl8pmXlo5Mo2KzPIESuDMk-6ap5WOs_icm6enTpaiHanmAbwntVxfvVTPLdAKIwMg7L88cyvuALuJQqv2-2ntPUxn3BgVkSCLfjyupjGSuOW5zhpBXbfo-ac3ZkUg-WHHUrhMMhz1XIsk_yPD5jMMWbkCwWOJV1BBvHWM'
 
