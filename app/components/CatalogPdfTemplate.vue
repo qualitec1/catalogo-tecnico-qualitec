@@ -59,9 +59,21 @@ const pages = computed(() => {
     groups[cat].push(product)
   }
 
+  const geralSettings = getPdfSettings('GERAL')
+  const savedCategoryOrder: string[] = geralSettings?.layout_settings?.category_order || []
+
   const sortedCategories = Object.keys(groups).sort((a, b) => {
     const aN = a.toUpperCase().trim()
     const bN = b.toUpperCase().trim()
+
+    if (savedCategoryOrder && savedCategoryOrder.length > 0) {
+      const idxA = savedCategoryOrder.indexOf(aN)
+      const idxB = savedCategoryOrder.indexOf(bN)
+      if (idxA !== -1 && idxB !== -1) return idxA - idxB
+      if (idxA !== -1) return -1
+      if (idxB !== -1) return 1
+    }
+
     if (aN === 'VÁLVULAS' || aN === 'VALVULAS') return -1
     if (bN === 'VÁLVULAS' || bN === 'VALVULAS') return 1
     if (aN === 'INCÊNDIO' || aN === 'INCENDIO') return -1

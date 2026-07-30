@@ -15,7 +15,8 @@ export function useAdminProducts(triggerToast: (msg: string, type?: 'success' | 
       const { data, error } = await supabase
         .from('products')
         .select('id, tag, tag_color_class, name_code, title, image, datasheet_name, datasheet_url, bg_class, card_layout, category, specs, layout_slots, image_scale, image_offset_x, image_offset_y, ex_image_url')
-        .order('id')
+        .order('sort_order', { ascending: true })
+        .order('id', { ascending: true })
       if (error) throw error
       if (data) {
         products.value = data.map((item: any) => ({

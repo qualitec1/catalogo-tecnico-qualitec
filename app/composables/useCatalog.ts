@@ -48,10 +48,12 @@ export function useCatalog() {
   const loadProducts = async () => {
     loading.value = true
     try {
+      fetchPdfSettings()
       const { data, error } = await supabase
         .from('products')
         .select('id, tag, tag_color_class, name_code, title, image, datasheet_name, datasheet_url, bg_class, card_layout, category, specs, layout_slots, image_scale, image_offset_x, image_offset_y, ex_image_url')
-        .order('id')
+        .order('sort_order', { ascending: true })
+        .order('id', { ascending: true })
       
       if (error) throw error
       if (data) {
@@ -110,6 +112,8 @@ export function useCatalog() {
   const selectedCategory = ref('TODAS')
   const activePage = ref(1)
 
+  const { getPdfSettings, fetchPdfSettings } = usePdfSettings()
+
   const availableCategories = computed(() => {
     const cats = new Set<string>()
     products.value.forEach(p => {
@@ -117,7 +121,19 @@ export function useCatalog() {
         cats.add(p.category.toUpperCase().trim())
       }
     })
-    return Array.from(cats).sort()
+    const geralSettings = getPdfSettings('GERAL')
+    const savedCategoryOrder: string[] = geralSettings?.layout_settings?.category_order || []
+
+    return Array.from(cats).sort((a, b) => {
+      if (savedCategoryOrder && savedCategoryOrder.length > 0) {
+        const idxA = savedCategoryOrder.indexOf(a)
+        const idxB = savedCategoryOrder.indexOf(b)
+        if (idxA !== -1 && idxB !== -1) return idxA - idxB
+        if (idxA !== -1) return -1
+        if (idxB !== -1) return 1
+      }
+      return a.localeCompare(b)
+    })
   })
 
   const filteredProducts = computed(() => {

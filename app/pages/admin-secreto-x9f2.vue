@@ -51,14 +51,18 @@
       />
 
       <!-- Tabs Navigation -->
-      <div class="flex border-b border-gray-200 bg-white p-2 rounded shadow-sm mb-6">
-        <button @click="currentTab = 'produtos'" :class="currentTab === 'produtos' ? 'bg-slate-900 text-white font-bold' : 'text-slate-600 hover:bg-slate-100 font-semibold'" class="px-6 py-2.5 text-xs uppercase tracking-wider rounded transition-colors mr-2 border-0">
+      <div class="flex border-b border-gray-200 bg-white p-2 rounded shadow-sm mb-6 flex-wrap gap-2">
+        <button @click="currentTab = 'produtos'" :class="currentTab === 'produtos' ? 'bg-slate-900 text-white font-bold' : 'text-slate-600 hover:bg-slate-100 font-semibold'" class="px-6 py-2.5 text-xs uppercase tracking-wider rounded transition-colors border-0 cursor-pointer">
           Equipamentos
         </button>
-        <button @click="currentTab = 'categorias'" :class="currentTab === 'categorias' ? 'bg-slate-900 text-white font-bold' : 'text-slate-600 hover:bg-slate-100 font-semibold'" class="px-6 py-2.5 text-xs uppercase tracking-wider rounded transition-colors mr-2 border-0">
+        <button @click="currentTab = 'categorias'" :class="currentTab === 'categorias' ? 'bg-slate-900 text-white font-bold' : 'text-slate-600 hover:bg-slate-100 font-semibold'" class="px-6 py-2.5 text-xs uppercase tracking-wider rounded transition-colors border-0 cursor-pointer">
           Categorias & Customização PDF
         </button>
-        <button @click="currentTab = 'arquivos'" :class="currentTab === 'arquivos' ? 'bg-slate-900 text-white font-bold' : 'text-slate-600 hover:bg-slate-100 font-semibold'" class="px-6 py-2.5 text-xs uppercase tracking-wider rounded transition-colors border-0">
+        <button @click="currentTab = 'ordem'" :class="currentTab === 'ordem' ? 'bg-slate-900 text-white font-bold' : 'text-slate-600 hover:bg-slate-100 font-semibold'" class="px-6 py-2.5 text-xs uppercase tracking-wider rounded transition-colors border-0 cursor-pointer flex items-center gap-1">
+          <span class="material-symbols-outlined text-base">swap_vert</span>
+          Ajustar Ordens
+        </button>
+        <button @click="currentTab = 'arquivos'" :class="currentTab === 'arquivos' ? 'bg-slate-900 text-white font-bold' : 'text-slate-600 hover:bg-slate-100 font-semibold'" class="px-6 py-2.5 text-xs uppercase tracking-wider rounded transition-colors border-0 cursor-pointer">
           Upload de Arquivos
         </button>
       </div>
@@ -98,6 +102,13 @@
           @delete-category="deleteCategoryAsset"
           @replicate-settings="replicateCategorySettings"
           @publish-catalog="handlePublishCatalog"
+        />
+      </div>
+
+      <!-- Tab: Order Management -->
+      <div v-show="currentTab === 'ordem'">
+        <AdminOrderSettings 
+          :trigger-toast="triggerToast"
         />
       </div>
 
