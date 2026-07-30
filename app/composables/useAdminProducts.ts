@@ -340,14 +340,85 @@ export function useAdminProducts(triggerToast: (msg: string, type?: 'success' | 
           }
         }
 
-        const categoryValue = row['category'] ? row['category'].toUpperCase().trim() : 'GERAL'
-        
-        // Validar se a categoria existe no sistema
+        let rawCat = row['category'] ? row['category'].trim() : 'GERAL'
+        let categoryValue = rawCat.toUpperCase().trim()
+
+        // Mapeamento de sinonimos e traducoes de categorias (Ex: 3-Wege-Ventil -> VÁLVULAS 3 VIAS)
+        const categoryAliasesMap: Record<string, { base: string; lang: string }> = {
+          '3-WAY VALVE': { base: 'VÁLVULAS 3 VIAS', lang: 'en' },
+          '3-WAY VALVES': { base: 'VÁLVULAS 3 VIAS', lang: 'en' },
+          '3 WAY VALVE': { base: 'VÁLVULAS 3 VIAS', lang: 'en' },
+          '3-WEGE-VENTIL': { base: 'VÁLVULAS 3 VIAS', lang: 'de' },
+          '3-WEGE VENTIL': { base: 'VÁLVULAS 3 VIAS', lang: 'de' },
+          '3 WEGE VENTIL': { base: 'VÁLVULAS 3 VIAS', lang: 'de' },
+          '3-WEGE-VENTILE': { base: 'VÁLVULAS 3 VIAS', lang: 'de' },
+
+          'CRYOGENIC VALVE': { base: 'VÁLVULAS CRIOGÊNICAS', lang: 'en' },
+          'CRYOGENIC VALVES': { base: 'VÁLVULAS CRIOGÊNICAS', lang: 'en' },
+          'KRYO-VENTIL': { base: 'VÁLVULAS CRIOGÊNICAS', lang: 'de' },
+          'KRYO-VENTILE': { base: 'VÁLVULAS CRIOGÊNICAS', lang: 'de' },
+          'KRYO VENTIL': { base: 'VÁLVULAS CRIOGÊNICAS', lang: 'de' },
+          'KRYOVENTIL': { base: 'VÁLVULAS CRIOGÊNICAS', lang: 'de' },
+
+          'SAFETY VALVE': { base: 'VÁLVULAS DE SEGURANÇA', lang: 'en' },
+          'SAFETY VALVES': { base: 'VÁLVULAS DE SEGURANÇA', lang: 'en' },
+          'SICHERHEITSVENTIL': { base: 'VÁLVULAS DE SEGURANÇA', lang: 'de' },
+          'SICHERHEITSVENTILE': { base: 'VÁLVULAS DE SEGURANÇA', lang: 'de' },
+
+          'GLOBE VALVE': { base: 'VÁLVULAS GLOBO', lang: 'en' },
+          'GLOBE VALVES': { base: 'VÁLVULAS GLOBO', lang: 'en' },
+          'VENTIL': { base: 'VÁLVULAS GLOBO', lang: 'de' },
+          'VENTILE': { base: 'VÁLVULAS GLOBO', lang: 'de' },
+
+          'PRESSURE TRANSMITTER': { base: 'TRANSMISSORES DE PRESSÃO', lang: 'en' },
+          'PRESSURE TRANSMITTERS': { base: 'TRANSMISSORES DE PRESSÃO', lang: 'en' },
+          'DRUCKMESSUMFORMER': { base: 'TRANSMISSORES DE PRESSÃO', lang: 'de' },
+          'DRUCKUMFORMER': { base: 'TRANSMISSORES DE PRESSÃO', lang: 'de' },
+        }
+
+        const aliasMatch = categoryAliasesMap[categoryValue]
+        if (aliasMatch) {
+          categoryValue = aliasMatch.base
+          const hasLangSpec = specs.some(s => ['idioma', 'lang', 'language'].includes(s.label.toLowerCase()))
+          if (!hasLangSpec) {
+            specs.push({ label: 'Idioma', value: aliasMatch.lang })
+          }
+        } else {
+          // Auto-detectar idioma pelo conteúdo se não tiver coluna especificada
+          const hasLangSpec = specs.some(s => ['idioma', 'lang', 'language'].includes(s.label.toLowerCase()))
+          if (!hasLangSpec) {
+            const fullText = ((row['title'] || '') + ' ' + rawCat).toLowerCase()
+            if (fullText.includes('ventil') || fullText.includes('deutsch') || fullText.includes('sicherheits')) {
+              specs.push({ label: 'Idioma', value: 'de' })
+            } else if (fullText.includes('valve') || fullText.includes('english') || fullText.includes('safety')) {
+              specs.push({ label: 'Idioma', value: 'en' })
+            }
+          }
+        }
+
+        // Auto-criar categoria se não existir no banco para nunca barrar o upload
         if (!validCategories.has(categoryValue)) {
-          invalidCategories.push({
-            line: i + 1,
-            category: row['category'] || '(vazio)'
-          })
+          if (categoryValue && categoryValue !== '(VAZIO)') {
+            validCategories.add(categoryValue)
+            try {
+              await supabase.from('category_assets').insert([{
+                category: categoryValue,
+                cover_image_url: '/placeholder.png',
+                color_hex: '#005db7'
+              }])
+              await supabase.from('pdf_settings').insert([{
+                category: categoryValue,
+                orientation: 'portrait'
+              }])
+            } catch (catErr) {
+              console.warn('[CSV Import] Auto-criacao de categoria aviso:', catErr)
+            }
+          } else {
+            invalidCategories.push({
+              line: i + 1,
+              category: row['category'] || '(vazio)'
+            })
+          }
         }
 
         // Resolver datasheet_url: se for nome de arquivo, buscar no storage

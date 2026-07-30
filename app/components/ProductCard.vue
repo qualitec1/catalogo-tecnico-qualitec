@@ -35,7 +35,7 @@
       <!-- Modelo -->
       <div class="flex justify-end mb-1.5">
         <div class="text-right">
-          <span class="text-white/80 text-[9px] font-semibold uppercase tracking-wider block">Modelo</span>
+          <span class="text-white/80 text-[9px] font-semibold uppercase tracking-wider block">{{ t.model }}</span>
           <h4 class="text-white text-2xl font-bold leading-none">{{ product.nameCode }}</h4>
         </div>
       </div>
@@ -57,9 +57,9 @@
               :style="{ color: ss.card_specs_label_color, fontSize: ss.card_specs_label_font_size }"
             >{{ spec.label }}</td>
             <td 
-              class="py-1.5 px-0 font-medium text-right align-top leading-tight" 
+              class="py-1.5 px-0 font-medium text-right align-top leading-tight whitespace-pre-line" 
               :style="{ color: ss.card_specs_value_color, fontSize: ss.card_specs_value_font_size }"
-            >{{ sanitizeSpecValue(spec.value, spec.label) }}</td>
+            >{{ formatSpecValueForSite(spec.value, spec.label) }}</td>
           </tr>
         </tbody>
       </table>
@@ -77,10 +77,10 @@
         @mouseleave="btnHover = false"
       >
         <span class="material-symbols-outlined text-sm">description</span>
-        {{ ss.btn_doc_text || 'VER DOCUMENTAÇÃO' }}
+        {{ docButtonText }}
       </a>
       <div v-else class="text-[11px] text-gray-400 text-center py-1">
-        Nenhuma documentação disponível
+        {{ t.noDocs }}
       </div>
     </div>
   </article>
@@ -90,6 +90,7 @@
 import { ref, computed } from 'vue'
 import useCategoryColors from '~/composables/useCategoryColors'
 import useSiteSettings from '~/composables/useSiteSettings'
+import useTranslations from '~/composables/useTranslations'
 import { sanitizeSpecValue } from '~/utils/pdfDocUtils'
 
 export interface Spec {
@@ -136,7 +137,22 @@ defineEmits<{
 
 const { getCategoryColor } = useCategoryColors()
 const { siteSettings } = useSiteSettings()
+const { t, currentLang } = useTranslations()
 const ss = siteSettings
+
+const docButtonText = computed(() => {
+  if (currentLang.value === 'en') return 'SPECIFICATION SHEET'
+  if (currentLang.value === 'de') return 'DATENBLATT'
+  return ss.value.btn_doc_text || t.value.viewDocs
+})
+
+const formatSpecValueForSite = (val: string | null | undefined, label?: string): string => {
+  if (!val) return ''
+  let text = sanitizeSpecValue(val, label)
+  // Convert HTML line breaks <br> to real newlines \n
+  text = text.replace(/<br\s*\/?>/gi, '\n')
+  return text
+}
 
 const btnHover = ref(false)
 

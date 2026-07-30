@@ -9,16 +9,68 @@
           <div class="relative h-16 w-96 flex items-center">
             <img 
               alt="Qualitec Industrial" 
-              class="absolute h-36 w-auto object-contain -translate-y-1/2 top-1/2"
+              class="absolute h-36 w-auto object-contain -translate-y-1/2 top-1/2 pointer-events-none"
               style="left: 160px;" 
               src="https://lh3.googleusercontent.com/aida-public/AB6AXuCJOpxk8IRBgRW2bvQlS_z4LoXARfSvqvz2saPXY9SVEh_22Bcd1VS5ijTW9c3L5WiWT0idDIuscN94pofAxJzmGnXWNILAeSKTQdpe0NSl8pmXlo5Mo2KzPIESuDMk-6ap5WOs_icm6enTpaiHanmAbwntVxfvVTPLdAKIwMg7L88cyvuALuJQqv2-2ntPUxn3BgVkSCLfjyupjGSuOW5zhpBXbfo-ac3ZkUg-WHHUrhMMhz1XIsk_yPD5jMMWbkCwWOJV1BBvHWM"
             >
           </div>
-          <!-- Top Navigation -->
-          <nav class="flex items-center space-x-12" style="margin-right: 120px;">
-            <a href="#" class="text-sm font-normal text-gray-600 hover:text-gray-900 transition-colors">Home</a>
-            <a href="#" class="text-sm font-normal text-gray-600 hover:text-gray-900 transition-colors">Nossa Empresa</a>
-            <a href="#" class="text-sm font-normal text-gray-600 hover:text-gray-900 transition-colors">Contato</a>
+          <!-- Top Navigation & Language Flags -->
+          <nav class="flex items-center space-x-8" style="margin-right: 60px;">
+            <a href="#" class="text-sm font-normal text-gray-600 hover:text-gray-900 transition-colors">{{ t.home }}</a>
+            <a href="#" class="text-sm font-normal text-gray-600 hover:text-gray-900 transition-colors">{{ t.about }}</a>
+            <a href="#" class="text-sm font-normal text-gray-600 hover:text-gray-900 transition-colors">{{ t.contact }}</a>
+
+            <!-- Flags Selector -->
+            <div class="flex items-center gap-2 border-l border-gray-200 pl-6 ml-2">
+              <button 
+                @click="currentLang = 'pt'" 
+                class="p-1 rounded-md transition-all border cursor-pointer flex items-center justify-center"
+                :class="currentLang === 'pt' ? 'bg-blue-50 border-blue-500 shadow-xs ring-2 ring-blue-500/20 scale-105' : 'border-transparent opacity-60 hover:opacity-100 bg-transparent'"
+                title="Português (Brasil)"
+              >
+                <!-- SVG Flag Brazil -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-4 rounded-xs shadow-2xs object-cover" viewBox="0 0 720 504">
+                  <rect width="720" height="504" fill="#009c3b"/>
+                  <polygon points="360,42 678,252 360,462 42,252" fill="#ffdf00"/>
+                  <circle cx="360" cy="252" r="126" fill="#002776"/>
+                  <path d="M 235,260 A 136,136 0 0,1 485,244" fill="none" stroke="#ffffff" stroke-width="12"/>
+                </svg>
+              </button>
+
+              <button 
+                @click="currentLang = 'en'" 
+                class="p-1 rounded-md transition-all border cursor-pointer flex items-center justify-center"
+                :class="currentLang === 'en' ? 'bg-blue-50 border-blue-500 shadow-xs ring-2 ring-blue-500/20 scale-105' : 'border-transparent opacity-60 hover:opacity-100 bg-transparent'"
+                title="English (United Kingdom)"
+              >
+                <!-- SVG Flag UK / England -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-4 rounded-xs shadow-2xs object-cover" viewBox="0 0 60 30">
+                  <clipPath id="uk-clip"><path d="M0,0 v30 h60 v-30 z"/></clipPath>
+                  <clipPath id="uk-diag"><path d="M30,15 h30 v15 z M30,15 h-30 v-15 z M30,15 h30 v-15 z M30,15 h-30 v15 z"/></clipPath>
+                  <g clip-path="url(#uk-clip)">
+                    <path d="M0,0 v30 h60 v-30 z" fill="#012169"/>
+                    <path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/>
+                    <path d="M0,0 L60,30 M60,0 L0,30" clip-path="url(#uk-diag)" stroke="#C8102E" stroke-width="4"/>
+                    <path d="M30,0 v30 M0,15 h60" stroke="#fff" stroke-width="10"/>
+                    <path d="M30,0 v30 M0,15 h60" stroke="#C8102E" stroke-width="6"/>
+                  </g>
+                </svg>
+              </button>
+
+              <button 
+                @click="currentLang = 'de'" 
+                class="p-1 rounded-md transition-all border cursor-pointer flex items-center justify-center"
+                :class="currentLang === 'de' ? 'bg-blue-50 border-blue-500 shadow-xs ring-2 ring-blue-500/20 scale-105' : 'border-transparent opacity-60 hover:opacity-100 bg-transparent'"
+                title="Deutsch (Deutschland)"
+              >
+                <!-- SVG Flag Germany -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-4 rounded-xs shadow-2xs object-cover" viewBox="0 0 5 3">
+                  <rect width="5" height="3" fill="#000000"/>
+                  <rect width="5" height="2" y="1" fill="#DD0000"/>
+                  <rect width="5" height="1" y="2" fill="#FFCC00"/>
+                </svg>
+              </button>
+            </div>
           </nav>
         </div>
       </div>
@@ -27,12 +79,17 @@
       <div class="bg-gray-100 border-b border-gray-200">
         <div class="max-w-7xl mx-auto px-8 py-4 flex justify-center items-center">
           <nav class="flex flex-wrap justify-center items-center gap-x-20 gap-y-2">
-            <a href="#" class="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">Criôgenia</a>
-            <a href="#" class="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">Óleo & Gás</a>
-            <a href="#" class="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">Gases Técnicos</a>
-            <a href="#" class="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">Energia</a>
-            <a href="#" class="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">Açúcar & Álcool</a>
-            <a href="#" class="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">Alimentícia</a>
+            <button 
+              v-for="segment in translatedSegments"
+              :key="segment.key"
+              @click="toggleSegmentFilter(segment.key)"
+              class="text-sm font-medium transition-colors border-0 bg-transparent cursor-pointer p-0"
+              :class="selectedSegment === segment.key 
+                ? 'text-blue-700 font-bold underline underline-offset-4 decoration-2' 
+                : 'text-gray-600 hover:text-gray-900'"
+            >
+              {{ segment.label }}
+            </button>
           </nav>
         </div>
       </div>
@@ -43,73 +100,14 @@
 
     <!-- Main Content -->
     <main class="max-w-7xl mx-auto px-8 py-6 flex-grow w-full">
-      <!-- Toolbar -->
-      <div class="bg-white border border-gray-200 p-6 mb-8 shadow-sm">
-        <div class="flex flex-col gap-5">
-          <!-- Filters Row -->
-          <div class="flex flex-col sm:flex-row gap-3 w-full">
-            <!-- Search input -->
-            <div class="relative group flex-1">
-              <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-lg">search</span>
-              <input 
-                v-model="searchQuery"
-                class="pl-10 pr-4 py-2.5 border border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-sm w-full outline-none transition-all bg-white" 
-                placeholder="BUSCAR EQUIPAMENTO..." 
-                type="text"
-              >
-            </div>
-          </div>
-
-          <!-- Category Group Buttons -->
-          <div v-if="showCategoryButtons && categoryButtonGroups.length > 0" class="pt-3 border-t border-gray-100">
-            <!-- Group Buttons Row -->
-            <div class="flex flex-wrap items-center gap-2">
-              <button 
-                v-for="group in categoryButtonGroups" 
-                :key="group.name"
-                @click="toggleGroup(group.name)"
-                class="px-4 py-2 text-xs font-bold uppercase tracking-wider rounded transition-all border cursor-pointer flex items-center gap-1.5"
-                :class="openGroup === group.name 
-                  ? 'bg-slate-900 text-white border-slate-900 shadow-sm' 
-                  : selectedCategory !== 'TODAS' && group.categories.includes(selectedCategory)
-                    ? 'bg-blue-600 text-white border-blue-600 shadow-sm'
-                    : 'bg-slate-50 text-slate-700 border-gray-200 hover:bg-slate-100 hover:border-gray-300'"
-              >
-                <span class="material-symbols-outlined text-sm">{{ openGroup === group.name ? 'expand_less' : 'expand_more' }}</span>
-                {{ group.name }}
-              </button>
-            </div>
-
-            <!-- Expanded Subcategories -->
-            <Transition
-              enter-active-class="transition-all duration-200 ease-out"
-              enter-from-class="opacity-0 -translate-y-1 max-h-0"
-              enter-to-class="opacity-100 translate-y-0 max-h-40"
-              leave-active-class="transition-all duration-150 ease-in"
-              leave-from-class="opacity-100 translate-y-0 max-h-40"
-              leave-to-class="opacity-0 -translate-y-1 max-h-0"
-            >
-              <div v-if="openGroup" class="mt-2 flex flex-wrap items-center gap-2 overflow-hidden">
-                <button 
-                  v-for="cat in getGroupCategories(openGroup)" 
-                  :key="cat"
-                  @click="selectedCategory = selectedCategory === cat ? 'TODAS' : cat"
-                  class="px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider rounded transition-all border cursor-pointer flex items-center gap-1.5"
-                  :class="selectedCategory === cat 
-                    ? 'bg-blue-600 text-white border-blue-600 shadow-sm' 
-                    : 'bg-white text-slate-600 border-gray-200 hover:bg-blue-50 hover:border-blue-300 hover:text-blue-700'"
-                >
-                  <span class="w-2 h-2 rounded-full" :style="{ backgroundColor: getCategoryColor(cat) || '#3b82f6' }"></span>
-                  {{ cat }}
-                  <span class="text-[10px] opacity-75 px-1 rounded bg-black/10">
-                    {{ getCategoryProductCount(cat) }}
-                  </span>
-                </button>
-              </div>
-            </Transition>
-          </div>
-        </div>
-      </div>
+      <!-- Toolbar Component -->
+      <CatalogSearchToolbar 
+        v-model:searchQuery="searchQuery"
+        v-model:selectedCategory="selectedCategory"
+        :products="products"
+        :category-button-groups="categoryButtonGroups"
+        :show-category-buttons="showCategoryButtons"
+      />
 
       <!-- Product Grid -->
       <div v-if="paginatedProducts.length > 0" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
@@ -247,11 +245,13 @@ import { useCatalog } from '../composables/useCatalog'
 import useCategoryColors from '../composables/useCategoryColors'
 import usePdfSettings from '../composables/usePdfSettings'
 import useSiteSettings from '../composables/useSiteSettings'
+import useTranslations from '../composables/useTranslations'
 
 const supabase = useSupabaseClient()
 const { getCategoryColor } = useCategoryColors()
 const { getPdfSettings } = usePdfSettings()
 const { fetchSiteSettings } = useSiteSettings()
+const { t, translatedSegments } = useTranslations()
 
 const {
   products,
@@ -268,6 +268,8 @@ const {
   selectedProductObjects,
   searchQuery,
   selectedCategory,
+  selectedSegment,
+  currentLang,
   activePage,
   availableCategories,
   filteredProducts,
@@ -300,10 +302,12 @@ const {
   closeImageModal
 } = useCatalog()
 
-const getCategoryProductCount = (categoryName: string) => {
-  if (!categoryName) return 0
-  const catUpper = categoryName.toUpperCase().trim()
-  return products.value.filter(p => p.category && p.category.toUpperCase().trim() === catUpper).length
+const toggleSegmentFilter = (segment: string) => {
+  if (selectedSegment.value === segment) {
+    selectedSegment.value = ''
+  } else {
+    selectedSegment.value = segment
+  }
 }
 
 const showCategoryButtons = computed(() => {
@@ -316,27 +320,12 @@ interface ButtonGroup {
   categories: string[]
 }
 
-const openGroup = ref<string | null>(null)
-
 const categoryButtonGroups = computed<ButtonGroup[]>(() => {
   const geralSettings = getPdfSettings('GERAL')
   const groups: ButtonGroup[] = geralSettings?.layout_settings?.category_button_groups || []
   // Only return groups that have at least one category with products
   return groups.filter(g => g.categories && g.categories.length > 0)
 })
-
-const toggleGroup = (groupName: string) => {
-  if (openGroup.value === groupName) {
-    openGroup.value = null
-  } else {
-    openGroup.value = groupName
-  }
-}
-
-const getGroupCategories = (groupName: string): string[] => {
-  const group = categoryButtonGroups.value.find(g => g.name === groupName)
-  return group?.categories || []
-}
 
 const handleQuickCreateCategory = async ({ name, color, imageName, imageBlob }: any) => {
   try {

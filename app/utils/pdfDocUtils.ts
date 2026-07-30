@@ -119,7 +119,7 @@ export function sanitizeSpecValue(val: string | null | undefined, label?: string
     }
   }
 
-  str = str.replace(/\s{2,}/g, ' ')
+  str = str.replace(/[ \t]{2,}/g, ' ')
   return str
 }
 

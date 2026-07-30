@@ -107,12 +107,25 @@ export function useCatalog() {
     }
   }, { immediate: true })
 
-  // Search & Categories
+  // Search, Categories, Sectors & Language
   const searchQuery = ref('')
   const selectedCategory = ref('TODAS')
+  const selectedSegment = ref('')
+  const { currentLang } = useTranslations()
   const activePage = ref(1)
 
   const { getPdfSettings, fetchPdfSettings } = usePdfSettings()
+
+  const normalizeText = (text: string) => {
+    return (text || '')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .replace(/&/g, 'e')
+      .replace(/[^a-z0-9]/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim()
+  }
 
   const availableCategories = computed(() => {
     const cats = new Set<string>()
@@ -137,17 +150,74 @@ export function useCatalog() {
   })
 
   const filteredProducts = computed(() => {
+    // Check if there are products with explicit language markers
+    const hasExplicitLang = products.value.some(p => {
+      return (p.specs || []).some(s => {
+        const lbl = normalizeText(s.label)
+        return (lbl === 'idioma' || lbl === 'lang' || lbl === 'language') && s.value
+      })
+    })
+
     return products.value.filter(product => {
+      // 0. Language Filter (if multi-language products are uploaded)
+      if (hasExplicitLang) {
+        const langSpec = (product.specs || []).find(s => {
+          const lbl = normalizeText(s.label)
+          return lbl === 'idioma' || lbl === 'lang' || lbl === 'language'
+        })
+        const pLang = langSpec ? normalizeText(langSpec.value) : 'pt'
+        
+        // Match pt/en/de codes or full names portugues/english/deutsch
+        const targetLang = currentLang.value
+        let isLangMatch = false
+        if (targetLang === 'pt' && (pLang === 'pt' || pLang.includes('portugues') || pLang.includes('brazil') || pLang.includes('br'))) isLangMatch = true
+        else if (targetLang === 'en' && (pLang === 'en' || pLang.includes('ing') || pLang.includes('english') || pLang.includes('uk') || pLang.includes('us'))) isLangMatch = true
+        else if (targetLang === 'de' && (pLang === 'de' || pLang.includes('alem') || pLang.includes('deutsch') || pLang.includes('german'))) isLangMatch = true
+
+        if (!isLangMatch) return false
+      }
+
+      // 1. Category Filter
       if (selectedCategory.value !== 'TODAS' && product.category !== selectedCategory.value) {
         return false
       }
-      if (searchQuery.value.trim() !== '') {
-        const query = searchQuery.value.toLowerCase()
-        const matchesTitle = product.title.toLowerCase().includes(query)
-        const matchesCode = product.nameCode.toLowerCase().includes(query)
-        const matchesTag = product.tag.toLowerCase().includes(query)
-        return matchesTitle || matchesCode || matchesTag
+
+      // 2. Sector / Segment Filter
+      if (selectedSegment.value.trim() !== '') {
+        const segQuery = normalizeText(selectedSegment.value)
+        
+        const matchesTitle = normalizeText(product.title).includes(segQuery)
+        const matchesCode = normalizeText(product.nameCode).includes(segQuery)
+        const matchesTag = normalizeText(product.tag).includes(segQuery)
+        const matchesCategory = normalizeText(product.category).includes(segQuery)
+        const matchesDescription = normalizeText(product.description).includes(segQuery)
+        
+        const matchesSpecs = (product.specs || []).some(spec => {
+          return normalizeText(spec.label).includes(segQuery) || normalizeText(spec.value).includes(segQuery)
+        })
+
+        if (!matchesTitle && !matchesCode && !matchesTag && !matchesCategory && !matchesDescription && !matchesSpecs) {
+          return false
+        }
       }
+
+      // 3. Search Query Filter
+      if (searchQuery.value.trim() !== '') {
+        const query = normalizeText(searchQuery.value)
+        const matchesTitle = normalizeText(product.title).includes(query)
+        const matchesCode = normalizeText(product.nameCode).includes(query)
+        const matchesTag = normalizeText(product.tag).includes(query)
+        const matchesCategory = normalizeText(product.category).includes(query)
+        const matchesDescription = normalizeText(product.description).includes(query)
+        const matchesSpecs = (product.specs || []).some(spec => {
+          return normalizeText(spec.label).includes(query) || normalizeText(spec.value).includes(query)
+        })
+
+        if (!matchesTitle && !matchesCode && !matchesTag && !matchesCategory && !matchesDescription && !matchesSpecs) {
+          return false
+        }
+      }
+
       return true
     })
   })
@@ -161,7 +231,7 @@ export function useCatalog() {
     return Math.max(1, Math.ceil(filteredProducts.value.length / 30))
   })
 
-  watch([searchQuery, selectedCategory], () => {
+  watch([searchQuery, selectedCategory, selectedSegment, currentLang], () => {
     activePage.value = 1
   })
 
@@ -327,6 +397,8 @@ export function useCatalog() {
     selectedProductObjects,
     searchQuery,
     selectedCategory,
+    selectedSegment,
+    currentLang,
     activePage,
     availableCategories,
     filteredProducts,
