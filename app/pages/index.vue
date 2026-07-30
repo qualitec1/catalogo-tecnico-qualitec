@@ -60,34 +60,53 @@
             </div>
           </div>
 
-          <!-- Category Quick Filter Buttons -->
-          <div v-if="showCategoryButtons && availableCategories.length > 0" class="pt-3 border-t border-gray-100 flex flex-wrap items-center gap-2">
-            <button 
-              @click="selectedCategory = 'TODAS'" 
-              class="px-3.5 py-1.5 text-xs font-bold uppercase tracking-wider rounded transition-all border cursor-pointer flex items-center gap-1.5"
-              :class="selectedCategory === 'TODAS' 
-                ? 'bg-slate-900 text-white border-slate-900 shadow-sm' 
-                : 'bg-slate-50 text-slate-700 border-gray-200 hover:bg-slate-100 hover:border-gray-300'"
-            >
-              <span class="material-symbols-outlined text-sm">grid_view</span>
-              TODAS ({{ products.length }})
-            </button>
+          <!-- Category Group Buttons -->
+          <div v-if="showCategoryButtons && categoryButtonGroups.length > 0" class="pt-3 border-t border-gray-100">
+            <!-- Group Buttons Row -->
+            <div class="flex flex-wrap items-center gap-2">
+              <button 
+                v-for="group in categoryButtonGroups" 
+                :key="group.name"
+                @click="toggleGroup(group.name)"
+                class="px-4 py-2 text-xs font-bold uppercase tracking-wider rounded transition-all border cursor-pointer flex items-center gap-1.5"
+                :class="openGroup === group.name 
+                  ? 'bg-slate-900 text-white border-slate-900 shadow-sm' 
+                  : selectedCategory !== 'TODAS' && group.categories.includes(selectedCategory)
+                    ? 'bg-blue-600 text-white border-blue-600 shadow-sm'
+                    : 'bg-slate-50 text-slate-700 border-gray-200 hover:bg-slate-100 hover:border-gray-300'"
+              >
+                <span class="material-symbols-outlined text-sm">{{ openGroup === group.name ? 'expand_less' : 'expand_more' }}</span>
+                {{ group.name }}
+              </button>
+            </div>
 
-            <button 
-              v-for="cat in availableCategories" 
-              :key="cat"
-              @click="selectedCategory = selectedCategory === cat ? 'TODAS' : cat"
-              class="px-3.5 py-1.5 text-xs font-bold uppercase tracking-wider rounded transition-all border cursor-pointer flex items-center gap-1.5"
-              :class="selectedCategory === cat 
-                ? 'bg-blue-600 text-white border-blue-600 shadow-sm' 
-                : 'bg-slate-50 text-slate-700 border-gray-200 hover:bg-blue-50 hover:border-blue-300 hover:text-blue-700'"
+            <!-- Expanded Subcategories -->
+            <Transition
+              enter-active-class="transition-all duration-200 ease-out"
+              enter-from-class="opacity-0 -translate-y-1 max-h-0"
+              enter-to-class="opacity-100 translate-y-0 max-h-40"
+              leave-active-class="transition-all duration-150 ease-in"
+              leave-from-class="opacity-100 translate-y-0 max-h-40"
+              leave-to-class="opacity-0 -translate-y-1 max-h-0"
             >
-              <span class="w-2 h-2 rounded-full" :style="{ backgroundColor: getCategoryColor(cat) || '#3b82f6' }"></span>
-              {{ cat }}
-              <span class="text-[10px] opacity-75 px-1.5 py-0.2 rounded bg-black/10">
-                {{ getCategoryProductCount(cat) }}
-              </span>
-            </button>
+              <div v-if="openGroup" class="mt-2 flex flex-wrap items-center gap-2 overflow-hidden">
+                <button 
+                  v-for="cat in getGroupCategories(openGroup)" 
+                  :key="cat"
+                  @click="selectedCategory = selectedCategory === cat ? 'TODAS' : cat"
+                  class="px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider rounded transition-all border cursor-pointer flex items-center gap-1.5"
+                  :class="selectedCategory === cat 
+                    ? 'bg-blue-600 text-white border-blue-600 shadow-sm' 
+                    : 'bg-white text-slate-600 border-gray-200 hover:bg-blue-50 hover:border-blue-300 hover:text-blue-700'"
+                >
+                  <span class="w-2 h-2 rounded-full" :style="{ backgroundColor: getCategoryColor(cat) || '#3b82f6' }"></span>
+                  {{ cat }}
+                  <span class="text-[10px] opacity-75 px-1 rounded bg-black/10">
+                    {{ getCategoryProductCount(cat) }}
+                  </span>
+                </button>
+              </div>
+            </Transition>
           </div>
         </div>
       </div>
@@ -227,10 +246,12 @@ import { ref, computed, watch, onMounted } from 'vue'
 import { useCatalog } from '../composables/useCatalog'
 import useCategoryColors from '../composables/useCategoryColors'
 import usePdfSettings from '../composables/usePdfSettings'
+import useSiteSettings from '../composables/useSiteSettings'
 
 const supabase = useSupabaseClient()
 const { getCategoryColor } = useCategoryColors()
 const { getPdfSettings } = usePdfSettings()
+const { fetchSiteSettings } = useSiteSettings()
 
 const {
   products,
@@ -289,6 +310,33 @@ const showCategoryButtons = computed(() => {
   const geralSettings = getPdfSettings('GERAL')
   return geralSettings?.layout_settings?.show_category_buttons !== false
 })
+
+interface ButtonGroup {
+  name: string
+  categories: string[]
+}
+
+const openGroup = ref<string | null>(null)
+
+const categoryButtonGroups = computed<ButtonGroup[]>(() => {
+  const geralSettings = getPdfSettings('GERAL')
+  const groups: ButtonGroup[] = geralSettings?.layout_settings?.category_button_groups || []
+  // Only return groups that have at least one category with products
+  return groups.filter(g => g.categories && g.categories.length > 0)
+})
+
+const toggleGroup = (groupName: string) => {
+  if (openGroup.value === groupName) {
+    openGroup.value = null
+  } else {
+    openGroup.value = groupName
+  }
+}
+
+const getGroupCategories = (groupName: string): string[] => {
+  const group = categoryButtonGroups.value.find(g => g.name === groupName)
+  return group?.categories || []
+}
 
 const handleQuickCreateCategory = async ({ name, color, imageName, imageBlob }: any) => {
   try {
@@ -354,7 +402,8 @@ watch(modalImageSrc, (newVal) => {
 onMounted(async () => {
   await Promise.all([
     fetchAssets(),
-    loadProducts()
+    loadProducts(),
+    fetchSiteSettings()
   ])
 })
 </script>

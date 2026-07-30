@@ -40,12 +40,118 @@
             <span class="material-symbols-outlined text-blue-600 text-base">smart_button</span>
             Exibir Botões de Atalho de Categoria no Site
           </h4>
-          <p class="text-xs text-slate-500 mt-0.5">Exibe uma barra de botões interativos com cada categoria abaixo da caixa de busca no catálogo público.</p>
+          <p class="text-xs text-slate-500 mt-0.5">Exibe uma barra de botões interativos com grupos de categorias abaixo da caixa de busca no catálogo público.</p>
         </div>
         <label class="relative inline-flex items-center cursor-pointer">
           <input type="checkbox" v-model="showCategoryButtons" class="sr-only peer">
           <div class="w-11 h-6 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
         </label>
+      </div>
+
+      <!-- Configuração de Grupos de Botões -->
+      <div v-if="showCategoryButtons" class="bg-white border border-slate-200 p-5 rounded-lg space-y-4">
+        <div class="flex justify-between items-center flex-wrap gap-2 border-b border-gray-100 pb-3">
+          <div>
+            <h4 class="text-xs font-bold text-slate-800 uppercase tracking-wide flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-blue-600 text-base">folder_open</span>
+              Grupos de Botões (Submenus de Categorias)
+            </h4>
+            <p class="text-xs text-slate-500 mt-0.5">Crie botões principais (ex: "VÁLVULAS") e selecione quais categorias aparecerão quando o usuário clicar nele.</p>
+          </div>
+          <div class="flex gap-2">
+            <button 
+              @click="autoGenerateGroups" 
+              class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded text-xs font-bold uppercase tracking-wider flex items-center gap-1 border border-slate-300 cursor-pointer"
+              title="Agrupar automaticamente por prefixo (ex: VÁLVULAS, TRANSMISSORES)"
+            >
+              <span class="material-symbols-outlined text-sm">auto_awesome</span>
+              Gerar Grupos Auto
+            </button>
+            <button 
+              @click="addGroup" 
+              class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded text-xs font-bold uppercase tracking-wider flex items-center gap-1 border-0 cursor-pointer"
+            >
+              <span class="material-symbols-outlined text-sm">add</span>
+              Novo Grupo
+            </button>
+          </div>
+        </div>
+
+        <div v-if="categoryGroups.length === 0" class="py-6 text-center text-gray-400 text-xs border border-dashed rounded">
+          Nenhum grupo de botões criado. Clique em "Novo Grupo" ou "Gerar Grupos Auto".
+        </div>
+
+        <div v-else class="space-y-4">
+          <div 
+            v-for="(group, gIdx) in categoryGroups" 
+            :key="gIdx"
+            class="bg-slate-50 border border-gray-200 p-4 rounded-lg space-y-3"
+          >
+            <!-- Group Header -->
+            <div class="flex items-center justify-between gap-3">
+              <div class="flex items-center gap-2 flex-1">
+                <span class="w-6 h-6 rounded-full bg-slate-800 text-white font-bold text-xs flex items-center justify-center">
+                  {{ gIdx + 1 }}
+                </span>
+                <input 
+                  v-model="group.name" 
+                  type="text" 
+                  placeholder="NOME DO GRUPO (EX: VÁLVULAS)"
+                  class="font-bold text-xs text-slate-800 border border-gray-300 rounded px-2.5 py-1 uppercase focus:ring-1 focus:ring-blue-600 focus:outline-none bg-white w-full sm:w-72"
+                />
+              </div>
+
+              <div class="flex items-center gap-1">
+                <button 
+                  @click="moveGroupUp(gIdx)"
+                  :disabled="gIdx === 0"
+                  class="p-1 rounded hover:bg-gray-200 text-gray-600 disabled:opacity-30 border-0 bg-transparent cursor-pointer"
+                  title="Subir grupo"
+                >
+                  <span class="material-symbols-outlined text-base">arrow_upward</span>
+                </button>
+                <button 
+                  @click="moveGroupDown(gIdx)"
+                  :disabled="gIdx === categoryGroups.length - 1"
+                  class="p-1 rounded hover:bg-gray-200 text-gray-600 disabled:opacity-30 border-0 bg-transparent cursor-pointer"
+                  title="Descer grupo"
+                >
+                  <span class="material-symbols-outlined text-base">arrow_downward</span>
+                </button>
+                <button 
+                  @click="removeGroup(gIdx)"
+                  class="p-1 rounded hover:bg-red-100 text-red-600 border-0 bg-transparent cursor-pointer ml-1"
+                  title="Remover grupo"
+                >
+                  <span class="material-symbols-outlined text-base">delete</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Categories Selection for Group -->
+            <div class="pl-8 space-y-1.5">
+              <span class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block">Categorias associadas a este grupo:</span>
+              <div class="flex flex-wrap gap-2">
+                <label 
+                  v-for="catName in categoriesList" 
+                  :key="catName"
+                  class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs border cursor-pointer select-none transition-colors"
+                  :class="group.categories.includes(catName) 
+                    ? 'bg-blue-50 border-blue-300 text-blue-800 font-bold' 
+                    : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'"
+                >
+                  <input 
+                    type="checkbox" 
+                    :value="catName" 
+                    v-model="group.categories"
+                    class="rounded border-gray-300 text-blue-600 focus:ring-0 w-3.5 h-3.5"
+                  />
+                  {{ catName }}
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div class="flex justify-between items-center pt-2">
@@ -203,9 +309,15 @@ const supabase = useSupabaseClient()
 
 const activeSubTab = ref<'categorias' | 'produtos'>('categorias')
 
+interface CategoryGroup {
+  name: string
+  categories: string[]
+}
+
 // ===== CATEGORIAS =====
 const categoriesList = ref<string[]>([])
 const showCategoryButtons = ref(true)
+const categoryGroups = ref<CategoryGroup[]>([])
 const loadingCategories = ref(true)
 const savingCategories = ref(false)
 
@@ -219,6 +331,7 @@ const loadCategories = async () => {
     const geralSetting = (pdfData || []).find((s: any) => s.category === 'GERAL')
     const savedOrder: string[] = geralSetting?.layout_settings?.category_order || []
     showCategoryButtons.value = geralSetting?.layout_settings?.show_category_buttons !== false
+    categoryGroups.value = geralSetting?.layout_settings?.category_button_groups || []
 
     const validCategoriesSet = new Set<string>()
     ;(catData || []).forEach((c: any) => {
@@ -242,11 +355,60 @@ const loadCategories = async () => {
     }
     const remaining = Array.from(validCategoriesSet).sort()
     categoriesList.value = [...ordered, ...remaining]
+
+    // If no groups exist yet, auto generate default groups
+    if (categoryGroups.value.length === 0 && categoriesList.value.length > 0) {
+      autoGenerateGroups()
+    }
   } catch (err: any) {
     console.error('[AdminOrderSettings] Error loading categories:', err)
   } finally {
     loadingCategories.value = false
   }
+}
+
+const addGroup = () => {
+  categoryGroups.value.push({
+    name: 'NOVO GRUPO',
+    categories: []
+  })
+}
+
+const removeGroup = (index: number) => {
+  categoryGroups.value.splice(index, 1)
+}
+
+const moveGroupUp = (index: number) => {
+  if (index <= 0) return
+  const temp = categoryGroups.value[index]
+  categoryGroups.value[index] = categoryGroups.value[index - 1]
+  categoryGroups.value[index - 1] = temp
+}
+
+const moveGroupDown = (index: number) => {
+  if (index >= categoryGroups.value.length - 1) return
+  const temp = categoryGroups.value[index]
+  categoryGroups.value[index] = categoryGroups.value[index + 1]
+  categoryGroups.value[index + 1] = temp
+}
+
+const autoGenerateGroups = () => {
+  const map: Record<string, string[]> = {}
+  categoriesList.value.forEach(cat => {
+    // Group by first word (e.g. VÁLVULAS, TRANSMISSORES)
+    const firstWord = cat.trim().split(' ')[0].toUpperCase()
+    if (!map[firstWord]) map[firstWord] = []
+    map[firstWord].push(cat)
+  })
+
+  const newGroups: CategoryGroup[] = []
+  Object.keys(map).forEach(key => {
+    newGroups.push({
+      name: key,
+      categories: map[key]
+    })
+  })
+  categoryGroups.value = newGroups
 }
 
 const moveCategoryUp = (index: number) => {
@@ -275,6 +437,7 @@ const saveCategoriesOrder = async () => {
     const currentLayout = geralData?.layout_settings || {}
     currentLayout.category_order = categoriesList.value
     currentLayout.show_category_buttons = showCategoryButtons.value
+    currentLayout.category_button_groups = categoryGroups.value
 
     if (geralData?.id) {
       await supabase

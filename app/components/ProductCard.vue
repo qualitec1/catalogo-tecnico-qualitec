@@ -3,7 +3,10 @@
     <!-- Header com Tag e Checkbox -->
     <div class="px-3.5 py-2.5 border-b border-gray-200">
       <div class="flex justify-between items-center">
-        <span class="text-[11px] font-bold tracking-wider uppercase" :style="{ color: getTagColor(product.tagColorClass) }">
+        <span 
+          class="tracking-wider uppercase" 
+          :style="tagStyle"
+        >
           {{ product.tag }}
         </span>
         <input 
@@ -45,12 +48,18 @@
     </div>
 
     <!-- Tabela de Especificações - Fundo Cinza -->
-    <div class="flex-grow bg-gray-100 p-3.5">
-      <table class="w-full">
+    <div class="flex-grow p-3.5" :style="{ backgroundColor: ss.card_specs_bg_color }">
+      <table class="w-full" :style="{ fontFamily: ss.card_specs_font_family }">
         <tbody>
           <tr v-for="(spec, idx) in product.specs" :key="idx" class="border-b border-gray-300/40 last:border-0">
-            <td class="py-1.5 px-0 text-[11px] font-semibold text-gray-700 align-top leading-tight">{{ spec.label }}</td>
-            <td class="py-1.5 px-0 text-xs font-medium text-gray-900 text-right align-top leading-tight">{{ sanitizeSpecValue(spec.value, spec.label) }}</td>
+            <td 
+              class="py-1.5 px-0 font-semibold align-top leading-tight" 
+              :style="{ color: ss.card_specs_label_color, fontSize: ss.card_specs_label_font_size }"
+            >{{ spec.label }}</td>
+            <td 
+              class="py-1.5 px-0 font-medium text-right align-top leading-tight" 
+              :style="{ color: ss.card_specs_value_color, fontSize: ss.card_specs_value_font_size }"
+            >{{ sanitizeSpecValue(spec.value, spec.label) }}</td>
           </tr>
         </tbody>
       </table>
@@ -62,10 +71,13 @@
         v-if="product.datasheetUrl" 
         :href="product.datasheetUrl" 
         target="_blank"
-        class="w-full py-2 bg-[#376092] hover:bg-[#2b4c74] text-white font-semibold text-xs transition-colors rounded uppercase tracking-wide flex items-center justify-center gap-1.5 no-underline"
+        class="w-full py-2 flex items-center justify-center gap-1.5 no-underline transition-colors"
+        :style="btnDocStyle"
+        @mouseenter="btnHover = true"
+        @mouseleave="btnHover = false"
       >
         <span class="material-symbols-outlined text-sm">description</span>
-        VER DOCUMENTAÇÃO
+        {{ ss.btn_doc_text || 'VER DOCUMENTAÇÃO' }}
       </a>
       <div v-else class="text-[11px] text-gray-400 text-center py-1">
         Nenhuma documentação disponível
@@ -75,7 +87,9 @@
 </template>
 
 <script setup lang="ts">
+import { ref, computed } from 'vue'
 import useCategoryColors from '~/composables/useCategoryColors'
+import useSiteSettings from '~/composables/useSiteSettings'
 import { sanitizeSpecValue } from '~/utils/pdfDocUtils'
 
 export interface Spec {
@@ -121,6 +135,30 @@ defineEmits<{
 }>()
 
 const { getCategoryColor } = useCategoryColors()
+const { siteSettings } = useSiteSettings()
+const ss = siteSettings
+
+const btnHover = ref(false)
+
+const btnDocStyle = computed(() => ({
+  backgroundColor: btnHover.value ? ss.value.btn_doc_hover_color : ss.value.btn_doc_bg_color,
+  color: ss.value.btn_doc_text_color,
+  fontFamily: ss.value.btn_doc_font_family,
+  fontSize: ss.value.btn_doc_font_size,
+  fontWeight: ss.value.btn_doc_bold ? 'bold' : '600',
+  fontStyle: ss.value.btn_doc_italic ? 'italic' : 'normal',
+  textTransform: ss.value.btn_doc_uppercase ? 'uppercase' as const : 'none' as const,
+  borderRadius: ss.value.btn_doc_border_radius,
+  letterSpacing: '0.05em',
+}))
+
+const tagStyle = computed(() => ({
+  color: getTagColor(props.product.tagColorClass),
+  fontFamily: ss.value.card_tag_font_family,
+  fontSize: ss.value.card_tag_font_size,
+  fontWeight: ss.value.card_tag_bold ? 'bold' : 'normal',
+  fontStyle: ss.value.card_tag_italic ? 'italic' : 'normal',
+}))
 
 const getBgColor = (bgClass: string, category?: string) => {
   const catColor = getCategoryColor(category)

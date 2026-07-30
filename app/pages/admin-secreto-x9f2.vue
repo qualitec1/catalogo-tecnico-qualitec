@@ -72,6 +72,10 @@
         <button @click="currentTab = 'arquivos'" :class="currentTab === 'arquivos' ? 'bg-slate-900 text-white font-bold' : 'text-slate-600 hover:bg-slate-100 font-semibold'" class="px-6 py-2.5 text-xs uppercase tracking-wider rounded transition-colors border-0 cursor-pointer">
           Upload de Arquivos
         </button>
+        <button @click="currentTab = 'site'" :class="currentTab === 'site' ? 'bg-slate-900 text-white font-bold' : 'text-slate-600 hover:bg-slate-100 font-semibold'" class="px-6 py-2.5 text-xs uppercase tracking-wider rounded transition-colors border-0 cursor-pointer flex items-center gap-1">
+          <span class="material-symbols-outlined text-base">palette</span>
+          Personalizar Site
+        </button>
       </div>
 
       <!-- Tab: Products -->
@@ -123,6 +127,13 @@
       <div v-show="currentTab === 'arquivos'">
         <AdminFileManager 
           @toast="showToastMessage"
+        />
+      </div>
+
+      <!-- Tab: Site Customization -->
+      <div v-show="currentTab === 'site'">
+        <AdminSiteSettings 
+          :trigger-toast="triggerToast"
         />
       </div>
     </main>
