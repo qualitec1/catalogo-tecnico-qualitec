@@ -15,7 +15,7 @@ export const segmentList: SegmentItem[] = [
   { key: 'Óleo & Gás', pt: 'Óleo & Gás', en: 'Oil & Gas', de: 'Öl & Gas' },
   { key: 'Gases Técnicos', pt: 'Gases Técnicos', en: 'Technical Gases', de: 'Technische Gase' },
   { key: 'Energia', pt: 'Energia', en: 'Energy', de: 'Energie' },
-  { key: 'Açúcar & Álcool', pt: 'Açúcar & Álcool', en: 'Sugar & Alcohol', de: 'Zucker & Alkohol' },
+  { key: 'Açúcar & Álcool', pt: 'Açúcar & Álcool', en: 'Sugar & Ethanol', de: 'Zucker & Alkohol' },
   { key: 'Alimentícia', pt: 'Alimentícia', en: 'Food Industry', de: 'Lebensmittel' },
 ]
 

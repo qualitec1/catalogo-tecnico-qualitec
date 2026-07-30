@@ -97,7 +97,7 @@ export function useCatalog() {
   // Selected products
   const selectedProducts = ref<Set<number>>(new Set())
   const selectedProductObjects = computed(() => {
-    return products.value.filter(p => selectedProducts.value.has(p.id))
+    return filteredProducts.value.filter(p => selectedProducts.value.has(p.id))
   })
 
   // Pre-select all products once loaded
@@ -149,8 +149,27 @@ export function useCatalog() {
     })
   })
 
+  const getProductLanguage = (product: any): string => {
+    const langSpec = (product.specs || []).find((s: any) => {
+      const lbl = normalizeText(s.label)
+      return lbl === 'idioma' || lbl === 'lang' || lbl === 'language'
+    })
+    if (langSpec && langSpec.value) {
+      const normVal = normalizeText(langSpec.value)
+      if (normVal === 'de' || normVal.includes('alem') || normVal.includes('deutsch') || normVal.includes('german')) return 'de'
+      if (normVal === 'en' || normVal.includes('ing') || normVal.includes('english') || normVal.includes('uk') || normVal.includes('us')) return 'en'
+      if (normVal === 'pt' || normVal.includes('portugues') || normVal.includes('brazil') || normVal.includes('br')) return 'pt'
+    }
+
+    // Fallback: detect keywords in specs, title, or category
+    const specText = (product.specs || []).map((s: any) => (s.label || '') + ' ' + (s.value || '')).join(' ')
+    const fullText = (product.title + ' ' + (product.category || '') + ' ' + specText).toLowerCase()
+    if (fullText.includes('ventil') || fullText.includes('deutsch') || fullText.includes('sicherheits') || fullText.includes('nennweite') || fullText.includes('druckklasse')) return 'de'
+    if (fullText.includes('valve') || fullText.includes('english') || fullText.includes('safety') || fullText.includes('transmitter')) return 'en'
+    return 'pt'
+  }
+
   const filteredProducts = computed(() => {
-    // Check if there are products with explicit language markers
     const hasExplicitLang = products.value.some(p => {
       return (p.specs || []).some(s => {
         const lbl = normalizeText(s.label)
@@ -159,22 +178,12 @@ export function useCatalog() {
     })
 
     return products.value.filter(product => {
-      // 0. Language Filter (if multi-language products are uploaded)
+      // 0. Language Filter (if multi-language products are present)
       if (hasExplicitLang) {
-        const langSpec = (product.specs || []).find(s => {
-          const lbl = normalizeText(s.label)
-          return lbl === 'idioma' || lbl === 'lang' || lbl === 'language'
-        })
-        const pLang = langSpec ? normalizeText(langSpec.value) : 'pt'
-        
-        // Match pt/en/de codes or full names portugues/english/deutsch
-        const targetLang = currentLang.value
-        let isLangMatch = false
-        if (targetLang === 'pt' && (pLang === 'pt' || pLang.includes('portugues') || pLang.includes('brazil') || pLang.includes('br'))) isLangMatch = true
-        else if (targetLang === 'en' && (pLang === 'en' || pLang.includes('ing') || pLang.includes('english') || pLang.includes('uk') || pLang.includes('us'))) isLangMatch = true
-        else if (targetLang === 'de' && (pLang === 'de' || pLang.includes('alem') || pLang.includes('deutsch') || pLang.includes('german'))) isLangMatch = true
-
-        if (!isLangMatch) return false
+        const pLang = getProductLanguage(product)
+        if (pLang !== currentLang.value) {
+          return false
+        }
       }
 
       // 1. Category Filter
@@ -184,16 +193,35 @@ export function useCatalog() {
 
       // 2. Sector / Segment Filter
       if (selectedSegment.value.trim() !== '') {
-        const segQuery = normalizeText(selectedSegment.value)
+        const sectorSynonymsMap: Record<string, string[]> = {
+          'criogenia': ['criogenia', 'cryogenics', 'kryotechnik'],
+          'oleo e gas': ['oleo e gas', 'oleo & gas', 'oil & gas', 'oil and gas', 'ol & gas', 'ol und gas'],
+          'gases tecnicos': ['gases tecnicos', 'technical gases', 'technische gase'],
+          'energia': ['energia', 'energy', 'energie'],
+          'acucar e alcool': ['acucar e alcool', 'acucar & alcool', 'sugar & ethanol', 'sugar and ethanol', 'sugar & alcohol', 'sugar and alcohol', 'zucker & alkohol', 'zucker und alkohol'],
+          'alimenticia': ['alimenticia', 'food industry', 'food', 'lebensmittel']
+        }
+
+        const normKey = normalizeText(selectedSegment.value)
+        let segSynonyms = [normKey]
+        for (const [key, synonyms] of Object.entries(sectorSynonymsMap)) {
+          const normSyns = synonyms.map(s => normalizeText(s))
+          if (normalizeText(key) === normKey || normSyns.includes(normKey)) {
+            segSynonyms = normSyns
+            break
+          }
+        }
         
-        const matchesTitle = normalizeText(product.title).includes(segQuery)
-        const matchesCode = normalizeText(product.nameCode).includes(segQuery)
-        const matchesTag = normalizeText(product.tag).includes(segQuery)
-        const matchesCategory = normalizeText(product.category).includes(segQuery)
-        const matchesDescription = normalizeText(product.description).includes(segQuery)
+        const matchesTitle = segSynonyms.some(syn => normalizeText(product.title).includes(syn))
+        const matchesCode = segSynonyms.some(syn => normalizeText(product.nameCode).includes(syn))
+        const matchesTag = segSynonyms.some(syn => normalizeText(product.tag).includes(syn))
+        const matchesCategory = segSynonyms.some(syn => normalizeText(product.category).includes(syn))
+        const matchesDescription = segSynonyms.some(syn => normalizeText(product.description).includes(syn))
         
         const matchesSpecs = (product.specs || []).some(spec => {
-          return normalizeText(spec.label).includes(segQuery) || normalizeText(spec.value).includes(segQuery)
+          const nLabel = normalizeText(spec.label)
+          const nVal = normalizeText(spec.value)
+          return segSynonyms.some(syn => nLabel.includes(syn) || nVal.includes(syn))
         })
 
         if (!matchesTitle && !matchesCode && !matchesTag && !matchesCategory && !matchesDescription && !matchesSpecs) {

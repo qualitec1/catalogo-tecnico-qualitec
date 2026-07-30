@@ -51,11 +51,11 @@
     <div class="flex-grow p-3.5" :style="{ backgroundColor: ss.card_specs_bg_color }">
       <table class="w-full" :style="{ fontFamily: ss.card_specs_font_family }">
         <tbody>
-          <tr v-for="(spec, idx) in product.specs" :key="idx" class="border-b border-gray-300/40 last:border-0">
+          <tr v-for="(spec, idx) in visibleSpecs" :key="idx" class="border-b border-gray-300/40 last:border-0">
             <td 
-              class="py-1.5 px-0 font-semibold align-top leading-tight" 
+              class="py-1.5 px-0 font-semibold align-top leading-tight whitespace-pre-line" 
               :style="{ color: ss.card_specs_label_color, fontSize: ss.card_specs_label_font_size }"
-            >{{ spec.label }}</td>
+            >{{ formatSpecLabelForSite(spec.label) }}</td>
             <td 
               class="py-1.5 px-0 font-medium text-right align-top leading-tight whitespace-pre-line" 
               :style="{ color: ss.card_specs_value_color, fontSize: ss.card_specs_value_font_size }"
@@ -153,6 +153,24 @@ const formatSpecValueForSite = (val: string | null | undefined, label?: string):
   text = text.replace(/<br\s*\/?>/gi, '\n')
   return text
 }
+
+const formatSpecLabelForSite = (label: string | null | undefined): string => {
+  if (!label) return ''
+  let l = label.trim()
+  if (l.toLowerCase().includes('reinigung für sauerstoffbetrieb') || l.toLowerCase().includes('reinigung fur sauerstoffbetrieb')) {
+    return 'Reinigung für\nSauerstoffbetrieb'
+  }
+  return l
+}
+
+const visibleSpecs = computed(() => {
+  if (!props.product?.specs) return []
+  const hiddenLabels = ['idioma', 'lang', 'language', 'category_display']
+  return props.product.specs.filter(s => {
+    if (!s || !s.label) return false
+    return !hiddenLabels.includes(s.label.toLowerCase().trim())
+  })
+})
 
 const btnHover = ref(false)
 

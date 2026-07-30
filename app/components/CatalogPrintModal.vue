@@ -58,6 +58,57 @@
         </div>
       </div>
 
+      <!-- Opção: Idioma do Catálogo (PDF) -->
+      <div class="border-t border-gray-200 pt-4 mb-5">
+        <h4 class="text-xs font-bold text-slate-800 mb-2 uppercase tracking-wider flex items-center gap-2">
+          <span class="material-symbols-outlined text-sm text-blue-600">translate</span>
+          Idioma do Catálogo (PDF)
+        </h4>
+        <p class="text-[10px] text-gray-500 mb-3">
+          Selecione o idioma dos produtos e especificações que serão incluídos no PDF.
+        </p>
+        <div class="grid grid-cols-3 gap-2">
+          <button 
+            type="button"
+            @click="currentLang = 'pt'" 
+            class="p-2.5 rounded border text-left cursor-pointer transition-all flex items-center gap-2"
+            :class="currentLang === 'pt' ? 'bg-blue-50 border-blue-600 ring-2 ring-blue-500/20' : 'bg-white border-gray-200 hover:bg-gray-50'"
+          >
+            <span class="text-base">🇧🇷</span>
+            <div>
+              <span class="text-xs font-bold text-slate-800 block leading-tight">Português</span>
+              <span class="text-[9px] text-gray-500">PT-BR</span>
+            </div>
+          </button>
+
+          <button 
+            type="button"
+            @click="currentLang = 'en'" 
+            class="p-2.5 rounded border text-left cursor-pointer transition-all flex items-center gap-2"
+            :class="currentLang === 'en' ? 'bg-blue-50 border-blue-600 ring-2 ring-blue-500/20' : 'bg-white border-gray-200 hover:bg-gray-50'"
+          >
+            <span class="text-base">🇬🇧</span>
+            <div>
+              <span class="text-xs font-bold text-slate-800 block leading-tight">English</span>
+              <span class="text-[9px] text-gray-500">EN-UK</span>
+            </div>
+          </button>
+
+          <button 
+            type="button"
+            @click="currentLang = 'de'" 
+            class="p-2.5 rounded border text-left cursor-pointer transition-all flex items-center gap-2"
+            :class="currentLang === 'de' ? 'bg-blue-50 border-blue-600 ring-2 ring-blue-500/20' : 'bg-white border-gray-200 hover:bg-gray-50'"
+          >
+            <span class="text-base">🇩🇪</span>
+            <div>
+              <span class="text-xs font-bold text-slate-800 block leading-tight">Deutsch</span>
+              <span class="text-[9px] text-gray-500">DE</span>
+            </div>
+          </button>
+        </div>
+      </div>
+
       <!-- Opção: PDF para WEB ou IMPRESSÃO -->
       <div class="border-t border-gray-200 pt-4 mb-5">
         <h4 class="text-xs font-bold text-slate-800 mb-2 uppercase tracking-wider">Tipo de PDF</h4>
@@ -207,6 +258,9 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import useTranslations from '../composables/useTranslations'
+
+const { currentLang } = useTranslations()
 
 const props = defineProps<{
   open: boolean

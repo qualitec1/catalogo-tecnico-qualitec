@@ -11,7 +11,42 @@ import {
   sanitizePdfText
 } from './pdfDocUtils'
 import { addImageSafe } from './pdfImageLoader'
-import type { CachedImage } from './pdfDocUtils'
+import useTranslations, { categoryDict } from '../composables/useTranslations'
+
+export function getCoverTexts(categoryName: string, settings: any, lang: string = 'pt') {
+  let rawSub = settings.cover_subtitle_text || settings.coverSubtitleText
+  let subText = rawSub
+  if (!rawSub || rawSub.trim() === '' || rawSub.trim().toUpperCase() === 'CATÁLOGO DE PRODUTOS') {
+    if (lang === 'en') subText = 'PRODUCT CATALOG'
+    else if (lang === 'de') subText = 'PRODUKTKATALOG'
+    else subText = 'CATÁLOGO DE PRODUTOS'
+  }
+
+  let title = categoryName === 'VÁLVULAS'
+    ? 'VÁLVULAS DE SEGURANÇA E ALÍVIO'
+    : (categoryName || 'GERAL').toUpperCase()
+
+  if (lang !== 'pt') {
+    const normUpper = title.trim().toUpperCase()
+    if (categoryDict[normUpper] && categoryDict[normUpper][lang as 'en' | 'de']) {
+      title = categoryDict[normUpper][lang as 'en' | 'de']
+    } else if (normUpper === 'GERAL') {
+      title = lang === 'en' ? 'GENERAL' : 'ALLGEMEIN'
+    } else if (normUpper === 'VÁLVULAS 3 VIAS') {
+      title = lang === 'en' ? '3-WAY VALVES' : '3-WEGE-VENTILE'
+    } else if (normUpper === 'VÁLVULAS CRIOGÊNICAS') {
+      title = lang === 'en' ? 'CRYOGENIC VALVES' : 'KRYO-VENTILE'
+    } else if (normUpper === 'VÁLVULAS DE SEGURANÇA') {
+      title = lang === 'en' ? 'SAFETY VALVES' : 'SICHERHEITSVENTILE'
+    } else if (normUpper === 'VÁLVULAS GLOBO') {
+      title = lang === 'en' ? 'GLOBE VALVES' : 'GLOBE-VENTILE'
+    } else if (normUpper === 'TRANSMISSORES DE PRESSÃO') {
+      title = lang === 'en' ? 'PRESSURE TRANSMITTERS' : 'DRUCKMESSUMFORMER'
+    }
+  }
+
+  return { subText, title }
+}
 
 // A4 dimensions in mm
 const A4_W = 210
@@ -154,8 +189,11 @@ export function drawCoverPage(pdf: any, opts: BuildOptions) {
   setFillRgb(pdf, '#f0f2f5')
   pdf.rect(0, bandTop, pageW, bandBottom - bandTop, 'F')
 
-  // Cover Subtitle settings
-  const subText = settings.cover_subtitle_text || settings.coverSubtitleText || 'CATÁLOGO DE PRODUTOS'
+  // Cover Subtitle & Title Translated settings
+  const { currentLang } = useTranslations()
+  const lang = (opts as any).lang || currentLang.value || 'pt'
+  const { subText, title: catName } = getCoverTexts(opts.categoryName, settings, lang)
+
   const subFont = getFontName(settings.cover_subtitle_font_family || settings.coverSubtitleFontFamily)
   const subStyle = getFontStyle(settings.cover_subtitle_bold || settings.coverSubtitleBold, settings.cover_subtitle_italic || settings.coverSubtitleItalic)
   const subSize = parseFontSizePt(settings.cover_subtitle_font_size || settings.coverSubtitleFontSize, 8)
@@ -196,9 +234,6 @@ export function drawCoverPage(pdf: any, opts: BuildOptions) {
   pdf.setFont(titleFont, titleStyle)
   pdf.setFontSize(titleSize)
   pdf.setTextColor(titleColor)
-  const catName = opts.categoryName === 'VÁLVULAS'
-    ? 'VÁLVULAS DE SEGURANÇA E ALÍVIO'
-    : opts.categoryName.toUpperCase()
   const titleLines = pdf.splitTextToSize(catName, blockW - 26)
   const mainTitleX = textX + titleOffX
   const mainTitleY = blockTop + 24 + titleOffY
@@ -250,8 +285,11 @@ export function drawCoverPageScaled(pdf: any, opts: BuildOptions, offsetX: numbe
   setFillRgb(pdf, '#f0f2f5')
   pdf.rect(offsetX, bandTop, pageW * scale, bandBottom - bandTop, 'F')
 
-  // Cover Subtitle settings
-  const subText = settings.cover_subtitle_text || settings.coverSubtitleText || 'CATÁLOGO DE PRODUTOS'
+  // Cover Subtitle & Title Translated settings
+  const { currentLang } = useTranslations()
+  const lang = (opts as any).lang || currentLang.value || 'pt'
+  const { subText, title: catName } = getCoverTexts(opts.categoryName, settings, lang)
+
   const subFont = getFontName(settings.cover_subtitle_font_family || settings.coverSubtitleFontFamily)
   const subStyle = getFontStyle(settings.cover_subtitle_bold || settings.coverSubtitleBold, settings.cover_subtitle_italic || settings.coverSubtitleItalic)
   const subSize = parseFontSizePt(settings.cover_subtitle_font_size || settings.coverSubtitleFontSize, 8) * scale
@@ -292,9 +330,6 @@ export function drawCoverPageScaled(pdf: any, opts: BuildOptions, offsetX: numbe
   pdf.setFont(titleFont, titleStyle)
   pdf.setFontSize(titleSize)
   pdf.setTextColor(titleColor)
-  const catName = opts.categoryName === 'VÁLVULAS'
-    ? 'VÁLVULAS DE SEGURANÇA E ALÍVIO'
-    : opts.categoryName.toUpperCase()
   const titleLines = pdf.splitTextToSize(catName, blockW - 26 * scale)
   const mainTitleX = textX + titleOffX
   const mainTitleY = blockTop + 24 * scale + titleOffY
@@ -362,7 +397,10 @@ export function drawCoverPageLandscape(pdf: any, opts: BuildOptions) {
   addImageSafe(pdf, opts.imageCache, '__logo__', logoX, logoY, logoWidth, logoHeight)
 
   // 4. Textos dentro do bloco colorido (centralizados verticalmente no bloco)
-  const subText = settings.cover_subtitle_text || settings.coverSubtitleText || 'CATÁLOGO DE PRODUTOS'
+  const { currentLang } = useTranslations()
+  const lang = (opts as any).lang || currentLang.value || 'pt'
+  const { subText, title: catName } = getCoverTexts(opts.categoryName, settings, lang)
+
   const subFont = getFontName(settings.cover_subtitle_font_family || settings.coverSubtitleFontFamily)
   const subStyle = getFontStyle(settings.cover_subtitle_bold || settings.coverSubtitleBold, settings.cover_subtitle_italic || settings.coverSubtitleItalic)
   const subSize = parseFontSizePt(settings.cover_subtitle_font_size || settings.coverSubtitleFontSize, 8)
@@ -396,9 +434,6 @@ export function drawCoverPageLandscape(pdf: any, opts: BuildOptions) {
   pdf.setFont(titleFont, titleStyle)
   pdf.setFontSize(titleSize)
   setTextRgb(pdf, titleColor)
-  const catName = opts.categoryName === 'VÁLVULAS'
-    ? 'VÁLVULAS DE SEGURANÇA E ALÍVIO'
-    : opts.categoryName.toUpperCase()
   const titleLines = pdf.splitTextToSize(catName, blockW - 40)
   const mainTitleX = blockX + textX + titleOffX
   const mainTitleY = blockY + 40 + titleOffY  // 40mm do topo do bloco (abaixo do subtitle)
@@ -567,7 +602,12 @@ export function drawSpecsTable(
   imageCache: Map<string, CachedImage> | null = null,
   hasExImage: boolean = false
 ): number {
-  if (!specs || specs.length === 0) return y
+  const hiddenLabels = ['idioma', 'lang', 'language', 'category_display']
+  const cleanSpecs = (specs || []).filter(s => {
+    if (!s || !s.label) return false
+    return !hiddenLabels.includes(s.label.toLowerCase().trim())
+  })
+  if (cleanSpecs.length === 0) return y
 
   let labelPct = 0.45
   let valuePct = 0.55
@@ -613,8 +653,8 @@ export function drawSpecsTable(
     addImageSafe(pdf, imageCache!, exImageKey!, exX, exY, exW, exW)
   }
 
-  for (let i = 0; i < specs.length; i++) {
-    const spec = specs[i]
+  for (let i = 0; i < cleanSpecs.length; i++) {
+    const spec = cleanSpecs[i]
     const currentSpecsValW = hasExLogo ? (valueW - exW - 1) : (valueW - 2)
 
     const labelText = sanitizePdfText(spec.label)
