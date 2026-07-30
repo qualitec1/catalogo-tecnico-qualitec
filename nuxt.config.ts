@@ -35,7 +35,7 @@ export default defineNuxtConfig({
   vite: {
     server: {
       watch: {
-        ignored: ['**/node_modules/**', '**/.git/**']
+        ignored: ['**/node_modules/**', '**/.git/**', '**/.nuxt/**', '**/.output/**', '**/.gemini/**']
       }
     }
   }

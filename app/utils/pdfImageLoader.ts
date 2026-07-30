@@ -15,10 +15,14 @@ function getDatasheetLinkLocal(product: any): string | null {
   return `/api/datasheet?id=${product.id}`
 }
 
-export async function loadSingleImage(url: string, skipHalo: boolean = false): Promise<CachedImage | null> {
+export async function loadSingleImage(url: string, skipHalo: boolean = false, fallbackUrl?: string): Promise<CachedImage | null> {
   try {
-    const resp = await fetch(url)
-    if (!resp.ok) return null
+    let resp = await fetch(url).catch(() => null)
+    if ((!resp || !resp.ok) && fallbackUrl && fallbackUrl !== url) {
+      resp = await fetch(fallbackUrl).catch(() => null)
+    }
+    if (!resp || !resp.ok) return null
+
     const blob = await resp.blob()
     const dataUrl = await new Promise<string>((resolve, reject) => {
       const reader = new FileReader()
@@ -40,17 +44,18 @@ export async function loadSingleImage(url: string, skipHalo: boolean = false): P
 
     if (!skipHalo && typeof document !== 'undefined') {
       try {
-        finalDataUrl = cleanWhiteHalo(dataUrl, img)
-        
-        // Dynamically load the final processed data URL to get its exact rectangular dimensions
-        const finalImg = new Image()
-        finalImg.src = finalDataUrl
-        await new Promise<void>(r => {
-          finalImg.onload = () => r()
-          finalImg.onerror = () => r()
-        })
-        finalWidth = finalImg.naturalWidth || 700
-        finalHeight = finalImg.naturalHeight || 700
+        const cleaned = cleanWhiteHalo(dataUrl, img)
+        if (cleaned) {
+          finalDataUrl = cleaned
+          const finalImg = new Image()
+          finalImg.src = finalDataUrl
+          await new Promise<void>(r => {
+            finalImg.onload = () => r()
+            finalImg.onerror = () => r()
+          })
+          finalWidth = finalImg.naturalWidth || img.naturalWidth || 700
+          finalHeight = finalImg.naturalHeight || img.naturalHeight || 700
+        }
       } catch (err) {
         console.warn('[pdfBuilder] Error cleaning white halo:', err)
       }
@@ -62,7 +67,8 @@ export async function loadSingleImage(url: string, skipHalo: boolean = false): P
       height: finalHeight,
       format: detectFormat(finalDataUrl),
     }
-  } catch {
+  } catch (err) {
+    console.error('[pdfImageLoader] Failed to load image from url:', url, err)
     return null
   }
 }
@@ -82,7 +88,13 @@ export async function preloadAllImages(
 ): Promise<Map<string, CachedImage>> {
 
   const cache = new Map<string, CachedImage>()
-  const tasks: { key: string; url: string | null }[] = []
+  const tasks: { key: string; url: string | null; fallbackUrl?: string }[] = []
+
+  // Preload default placeholder fallback image
+  const placeholderImg = await loadSingleImage('/placeholder.png', true).catch(() => null)
+  if (placeholderImg) {
+    cache.set('__placeholder__', placeholderImg)
+  }
 
   // Logo
   if (logoUrl) {
@@ -98,7 +110,7 @@ export async function preloadAllImages(
       })
     } else {
       const proxyUrl = (logoUrl.startsWith('/api/') || logoUrl.startsWith('/')) ? logoUrl : `/api/proxy-image?url=${encodeURIComponent(logoUrl)}`
-      tasks.push({ key: '__logo__', url: proxyUrl })
+      tasks.push({ key: '__logo__', url: proxyUrl, fallbackUrl: logoUrl })
     }
   }
 
@@ -115,7 +127,7 @@ export async function preloadAllImages(
       if (asset) {
         const cIcon = asset.icon_url || asset.iconUrl
         if (cIcon && (cIcon.startsWith('http://') || cIcon.startsWith('https://'))) {
-          tasks.push({ key: `category_icon_${cat}`, url: `/api/proxy-image?url=${encodeURIComponent(cIcon)}` })
+          tasks.push({ key: `category_icon_${cat}`, url: `/api/proxy-image?url=${encodeURIComponent(cIcon)}`, fallbackUrl: cIcon })
         }
       }
     }
@@ -123,7 +135,7 @@ export async function preloadAllImages(
 
   // Category icon (fallback/catalog-level)
   if (categoryIconUrl && (categoryIconUrl.startsWith('http://') || categoryIconUrl.startsWith('https://'))) {
-    tasks.push({ key: '__category_icon__', url: `/api/proxy-image?url=${encodeURIComponent(categoryIconUrl)}` })
+    tasks.push({ key: '__category_icon__', url: `/api/proxy-image?url=${encodeURIComponent(categoryIconUrl)}`, fallbackUrl: categoryIconUrl })
   }
 
   // Cover image
@@ -141,7 +153,7 @@ export async function preloadAllImages(
       })
     } else {
       const proxyUrl = (coverSrc.startsWith('/api/') || coverSrc.startsWith('/')) ? coverSrc : `/api/proxy-image?url=${encodeURIComponent(coverSrc)}`
-      tasks.push({ key: '__cover__', url: proxyUrl })
+      tasks.push({ key: '__cover__', url: proxyUrl, fallbackUrl: coverSrc })
     }
   }
 
@@ -177,18 +189,20 @@ export async function preloadAllImages(
       let finalDataUrl = dataUrl
       let finalWidth = img.naturalWidth || 400
       let finalHeight = img.naturalHeight || 300
-       if (typeof document !== 'undefined') {
+      if (typeof document !== 'undefined') {
         try {
-          finalDataUrl = cleanWhiteHalo(dataUrl, img)
-          
-          const finalImg = new Image()
-          finalImg.src = finalDataUrl
-          await new Promise<void>(r => {
-            finalImg.onload = () => r()
-            finalImg.onerror = () => r()
-          })
-          finalWidth = finalImg.naturalWidth || 700
-          finalHeight = finalImg.naturalHeight || 700
+          const cleaned = cleanWhiteHalo(dataUrl, img)
+          if (cleaned) {
+            finalDataUrl = cleaned
+            const finalImg = new Image()
+            finalImg.src = finalDataUrl
+            await new Promise<void>(r => {
+              finalImg.onload = () => r()
+              finalImg.onerror = () => r()
+            })
+            finalWidth = finalImg.naturalWidth || img.naturalWidth || 700
+            finalHeight = finalImg.naturalHeight || img.naturalHeight || 700
+          }
         } catch (err) {
           console.warn('[pdfBuilder] Error cleaning white halo for blob:', err)
         }
@@ -202,23 +216,55 @@ export async function preloadAllImages(
       continue
     }
 
-    if (p.image && (p.image.startsWith('http://') || p.image.startsWith('https://'))) {
-      tasks.push({ key, url: `/api/proxy-image?url=${encodeURIComponent(p.image)}` })
+    if (p.image && typeof p.image === 'string') {
+      const trimmedImg = p.image.trim()
+      if (trimmedImg.startsWith('data:')) {
+        const img = new Image()
+        img.src = trimmedImg
+        await new Promise<void>(r => { img.onload = () => r(); img.onerror = () => r() })
+        cache.set(key, {
+          dataUrl: trimmedImg,
+          width: img.naturalWidth || 400,
+          height: img.naturalHeight || 300,
+          format: detectFormat(trimmedImg),
+        })
+      } else if (trimmedImg.startsWith('http://') || trimmedImg.startsWith('https://')) {
+        tasks.push({ 
+          key, 
+          url: `/api/proxy-image?url=${encodeURIComponent(trimmedImg)}`,
+          fallbackUrl: trimmedImg 
+        })
+      } else if (trimmedImg.startsWith('/')) {
+        tasks.push({ key, url: trimmedImg, fallbackUrl: trimmedImg })
+      }
     }
+
     const exUrl = p.exImageUrl || p.ex_image_url
-    if (exUrl && (exUrl.startsWith('http://') || exUrl.startsWith('https://'))) {
-      tasks.push({ key: `ex_${p.id}`, url: `/api/proxy-image?url=${encodeURIComponent(exUrl)}` })
+    if (exUrl && typeof exUrl === 'string') {
+      const trimmedEx = exUrl.trim()
+      if (trimmedEx.startsWith('http://') || trimmedEx.startsWith('https://')) {
+        tasks.push({ 
+          key: `ex_${p.id}`, 
+          url: `/api/proxy-image?url=${encodeURIComponent(trimmedEx)}`,
+          fallbackUrl: trimmedEx
+        })
+      } else if (trimmedEx.startsWith('/')) {
+        tasks.push({ key: `ex_${p.id}`, url: trimmedEx, fallbackUrl: trimmedEx })
+      }
     }
   }
 
-  // Fetch all in parallel
+  // Fetch all in parallel with fallback support
   let loaded = 0
   const total = tasks.length
   await Promise.allSettled(
     tasks.map(async (t) => {
       if (!t.url) return
       const isDocPage = t.key === '__logo__' || t.key === '__cover__' || t.key === '__last_page__' || t.key.startsWith('category_icon_')
-      const img = await loadSingleImage(t.url, isDocPage)
+      let img = await loadSingleImage(t.url, isDocPage, t.fallbackUrl)
+      if (!img && t.fallbackUrl && t.fallbackUrl !== t.url) {
+        img = await loadSingleImage(t.fallbackUrl, isDocPage)
+      }
       loaded++
       onProgress?.(loaded, total)
       if (img) cache.set(t.key, img)
@@ -286,7 +332,10 @@ export function addImageSafe(
   alignTop: boolean = false,
   alignBottom: boolean = false
 ) {
-  const img = cache.get(key)
+  let img = cache.get(key)
+  if (!img && key.startsWith('product_')) {
+    img = cache.get('__placeholder__')
+  }
   if (!img) return
   
   let w: number, h: number

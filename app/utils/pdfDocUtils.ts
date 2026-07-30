@@ -182,57 +182,73 @@ export function truncateText(pdf: any, text: string, maxWidth: number): string {
 }
 
 export function cleanWhiteHalo(dataUrl: string, imgEl: HTMLImageElement): string {
-  const canvas = document.createElement('canvas')
-  canvas.width = imgEl.naturalWidth || imgEl.width
-  canvas.height = imgEl.naturalHeight || imgEl.height
-  const ctx = canvas.getContext('2d')
-  if (!ctx) return dataUrl
-  
-  ctx.drawImage(imgEl, 0, 0)
-  const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height)
-  const data = imgData.data
-  
-  for (let i = 0; i < data.length; i += 4) {
-    const r = data[i]
-    const g = data[i+1]
-    const b = data[i+2]
-    const a = data[i+3]
-    
-    if (a > 0 && a < 255) {
-      if (r > 200 && g > 200 && b > 200) {
-        const maxVal = Math.max(r, g, b)
-        if (maxVal > 220) {
-          data[i+3] = 0 // fully transparent
-        } else {
-          const factor = (maxVal - 200) / 20
-          data[i+3] = Math.max(0, Math.round(a * (1 - factor)))
+  try {
+    const origW = imgEl.naturalWidth || imgEl.width || 400
+    const origH = imgEl.naturalHeight || imgEl.height || 300
+    if (origW <= 0 || origH <= 0) return dataUrl
+
+    // Cap initial canvas max dimension to 800px to ensure ultra-fast processing and zero memory crashes on high-res (10MB+) images
+    const maxDim = 800
+    let drawW = origW
+    let drawH = origH
+    if (origW > maxDim || origH > maxDim) {
+      if (origW > origH) {
+        drawW = maxDim
+        drawH = Math.round(maxDim * (origH / origW))
+      } else {
+        drawH = maxDim
+        drawW = Math.round(maxDim * (origW / origH))
+      }
+    }
+
+    const canvas = document.createElement('canvas')
+    canvas.width = drawW
+    canvas.height = drawH
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return dataUrl
+
+    ctx.drawImage(imgEl, 0, 0, drawW, drawH)
+    const imgData = ctx.getImageData(0, 0, drawW, drawH)
+    const data = imgData.data
+
+    for (let i = 0; i < data.length; i += 4) {
+      const r = data[i]
+      const g = data[i+1]
+      const b = data[i+2]
+      const a = data[i+3]
+
+      if (a > 0 && a < 255) {
+        if (r > 200 && g > 200 && b > 200) {
+          const maxVal = Math.max(r, g, b)
+          if (maxVal > 220) {
+            data[i+3] = 0 // fully transparent
+          } else {
+            const factor = (maxVal - 200) / 20
+            data[i+3] = Math.max(0, Math.round(a * (1 - factor)))
+          }
         }
       }
     }
-  }
-  
-  ctx.putImageData(imgData, 0, 0)
-  
-  // Auto-crop and auto-padding to ensure uniform product proportions
-  try {
-    let minX = canvas.width
+
+    ctx.putImageData(imgData, 0, 0)
+
+    // Auto-crop and auto-padding to ensure uniform product proportions
+    let minX = drawW
     let maxX = 0
-    let minY = canvas.height
+    let minY = drawH
     let maxY = 0
     let hasContent = false
 
-    // Ignore outermost 1% to prevent edge noise or scanner lines from blocking the crop
-    const borderIgnore = Math.max(2, Math.round(canvas.width * 0.01))
+    const borderIgnore = Math.max(2, Math.round(drawW * 0.01))
 
-    for (let y = borderIgnore; y < canvas.height - borderIgnore; y++) {
-      for (let x = borderIgnore; x < canvas.width - borderIgnore; x++) {
-        const idx = (y * canvas.width + x) * 4
+    for (let y = borderIgnore; y < drawH - borderIgnore; y++) {
+      for (let x = borderIgnore; x < drawW - borderIgnore; x++) {
+        const idx = (y * drawW + x) * 4
         const r = data[idx]
         const g = data[idx+1]
         const b = data[idx+2]
         const a = data[idx+3]
 
-        // Treat as background if transparent (a < 30) or extremely light/white (r,g,b > 240)
         const isBg = a < 30 || (r > 240 && g > 240 && b > 240)
         if (!isBg) {
           if (x < minX) minX = x
@@ -249,7 +265,6 @@ export function cleanWhiteHalo(dataUrl: string, imgEl: HTMLImageElement): string
       const h = maxY - minY + 1
 
       if (w > 5 && h > 5) {
-        // Target: maximum dimension should be exactly 700px, keeping exact rectangular ratio (no padding)
         let targetW: number
         let targetH: number
 
@@ -266,44 +281,17 @@ export function cleanWhiteHalo(dataUrl: string, imgEl: HTMLImageElement): string
         canvas2.height = targetH
         const ctx2 = canvas2.getContext('2d')
         if (ctx2) {
-          // Draw the cropped area of the original canvas, scaling it to fill canvas2 exactly (0% internal padding)
           ctx2.drawImage(canvas, minX, minY, w, h, 0, 0, targetW, targetH)
           return canvas2.toDataURL('image/png')
         }
       }
     }
-  } catch (err) {
-    console.warn('[pdfDocUtils] Error during auto-crop/padding:', err)
-  }
-  
-  // Fallback: scale original image to 700px max dimension, keeping aspect ratio (0% padding)
-  try {
-    const w = imgEl.naturalWidth || imgEl.width
-    const h = imgEl.naturalHeight || imgEl.height
-    let targetW: number
-    let targetH: number
 
-    if (w > h) {
-      targetW = 700
-      targetH = Math.round(700 * (h / w))
-    } else {
-      targetH = 700
-      targetW = Math.round(700 * (w / h))
-    }
-
-    const canvas2 = document.createElement('canvas')
-    canvas2.width = targetW
-    canvas2.height = targetH
-    const ctx2 = canvas2.getContext('2d')
-    if (ctx2) {
-      ctx2.drawImage(imgEl, 0, 0, targetW, targetH)
-      return canvas2.toDataURL('image/png')
-    }
+    return canvas.toDataURL('image/png')
   } catch (err) {
-    console.warn('[pdfDocUtils] Error during fallback canvas scaling:', err)
+    console.warn('[pdfDocUtils] Error during cleanWhiteHalo:', err)
+    return dataUrl
   }
-  
-  return canvas.toDataURL('image/png')
 }
 
 export function setFillRgb(pdf: any, hex: string) {
