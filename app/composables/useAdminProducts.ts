@@ -1,4 +1,5 @@
 import { ref } from 'vue'
+import { sanitizeSpecValue } from '~/utils/pdfDocUtils'
 
 export function useAdminProducts(triggerToast: (msg: string, type?: 'success' | 'error') => void) {
   const supabase = useSupabaseClient()
@@ -75,7 +76,7 @@ export function useAdminProducts(triggerToast: (msg: string, type?: 'success' | 
         tag_color_class: tagColorClass,
         bg_class: bgClass,
         layout_slots: product.layoutSlots,
-        specs: product.specs,
+        specs: (product.specs || []).map((s: any) => ({ label: s.label, value: sanitizeSpecValue(s.value, s.label) })),
         image_scale: product.imageScale || 1.0,
         image_offset_x: product.imageOffsetX || 0,
         image_offset_y: product.imageOffsetY || 0,
@@ -112,7 +113,7 @@ export function useAdminProducts(triggerToast: (msg: string, type?: 'success' | 
         tag_color_class: tagColorClass,
         bg_class: bgClass,
         layout_slots: product.layoutSlots,
-        specs: product.specs,
+        specs: (product.specs || []).map((s: any) => ({ label: s.label, value: sanitizeSpecValue(s.value, s.label) })),
         image_scale: product.imageScale || 1.0,
         image_offset_x: product.imageOffsetX || 0,
         image_offset_y: product.imageOffsetY || 0,

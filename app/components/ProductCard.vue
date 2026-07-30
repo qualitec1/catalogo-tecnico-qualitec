@@ -49,7 +49,7 @@
         <tbody>
           <tr v-for="(spec, idx) in product.specs" :key="idx" class="border-b border-gray-300/50 last:border-0">
             <td class="py-2.5 px-0 text-xs font-semibold text-gray-700 align-top">{{ spec.label }}</td>
-            <td class="py-2.5 px-0 text-sm text-gray-900 text-right align-top">{{ spec.value }}</td>
+            <td class="py-2.5 px-0 text-sm text-gray-900 text-right align-top">{{ sanitizeSpecValue(spec.value, spec.label) }}</td>
           </tr>
         </tbody>
       </table>
@@ -75,6 +75,7 @@
 
 <script setup lang="ts">
 import useCategoryColors from '~/composables/useCategoryColors'
+import { sanitizeSpecValue } from '~/utils/pdfDocUtils'
 
 export interface Spec {
   label: string;

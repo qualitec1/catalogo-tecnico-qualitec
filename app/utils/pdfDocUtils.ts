@@ -80,18 +80,60 @@ export function getFontName(fontFamily: string | undefined): string {
   return 'helvetica' // Default sans-serif fallback
 }
 
-export function sanitizePdfText(text: string | null | undefined): string {
-  if (!text) return ''
-  let str = String(text)
-  // Replace HTML entities
+export function sanitizeSpecValue(val: string | null | undefined, label?: string): string {
+  if (!val) return ''
+  let str = String(val).trim()
+  // Replace temperature / degree symbol variants with standard degree sign ° (U+00B0)
+  str = str.replace(/[\u1D52\u1D48\u00BA\u02DAº]/g, '°')
   str = str.replace(/&deg;/gi, '°')
            .replace(/&ordm;/gi, '°')
            .replace(/&plusmn;/gi, '±')
            .replace(/&nbsp;/gi, ' ')
-  // Replace non-breaking spaces
   str = str.replace(/\u00a0/g, ' ')
-  // Replace masculine ordinal indicator 'º' (U+00BA) with degree sign '°' (U+00B0)
-  str = str.replace(/º/g, '°')
+  str = str.replace(/(\d+)\s*C\b/g, '$1 °C')
+  str = str.replace(/\s*°\s*C/g, ' °C')
+  str = str.replace(/°\s*°/g, '°')
+
+  // Fix diameter / inch quote missing on last diameter item
+  const isDiameterOrConnection = label ? /diâmetro|diametro|conexão|conexao/i.test(label) : true
+  if (isDiameterOrConnection || /"|\|/.test(str)) {
+    str = str.replace(/"{2,}/g, '"')
+    if (str.includes('|')) {
+      const parts = str.split('|').map(p => p.trim())
+      const fixedParts = parts.map(part => {
+        let p = part.replace(/"{2,}/g, '"')
+        if (isDiameterOrConnection || parts.some(item => item.includes('"'))) {
+          if (/(?:\d+\/\d+|\d+(?:\.\d+)?|\d+\.\d+\/\d+)$/.test(p) && !p.endsWith('"')) {
+            p = p + '"'
+          }
+        }
+        return p
+      })
+      str = fixedParts.join(' | ')
+    } else {
+      if (isDiameterOrConnection) {
+        if (/(?:\d+\/\d+|\d+(?:\.\d+)?|\d+\.\d+\/\d+)$/.test(str) && !str.endsWith('"')) {
+          str = str + '"'
+        }
+      }
+    }
+  }
+
+  str = str.replace(/\s{2,}/g, ' ')
+  return str
+}
+
+export function sanitizePdfText(text: string | null | undefined): string {
+  if (!text) return ''
+  let str = String(text)
+  str = str.replace(/&deg;/gi, '°')
+           .replace(/&ordm;/gi, '°')
+           .replace(/&plusmn;/gi, '±')
+           .replace(/&nbsp;/gi, ' ')
+  str = str.replace(/\u00a0/g, ' ')
+  str = str.replace(/[\u1D52\u1D48\u00BA\u02DAº]/g, '°')
+  str = str.replace(/(\d+)\s*C\b/g, '$1 °C')
+  str = str.replace(/\s*°\s*C/g, ' °C')
   return str
 }
 
