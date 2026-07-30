@@ -33,7 +33,22 @@
 
     <!-- SEÇÃO 1: ORDENAÇÃO DE CATEGORIAS -->
     <div v-if="activeSubTab === 'categorias'" class="space-y-4">
-      <div class="flex justify-between items-center">
+      <!-- Toggle de exibição dos botões no site -->
+      <div class="bg-slate-50 border border-slate-200 p-4 rounded-lg flex items-center justify-between">
+        <div>
+          <h4 class="text-xs font-bold text-slate-800 uppercase tracking-wide flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-blue-600 text-base">smart_button</span>
+            Exibir Botões de Atalho de Categoria no Site
+          </h4>
+          <p class="text-xs text-slate-500 mt-0.5">Exibe uma barra de botões interativos com cada categoria abaixo da caixa de busca no catálogo público.</p>
+        </div>
+        <label class="relative inline-flex items-center cursor-pointer">
+          <input type="checkbox" v-model="showCategoryButtons" class="sr-only peer">
+          <div class="w-11 h-6 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+        </label>
+      </div>
+
+      <div class="flex justify-between items-center pt-2">
         <h3 class="text-sm font-bold text-slate-700 uppercase tracking-wide flex items-center gap-2">
           <span class="material-symbols-outlined text-gray-500">format_list_numbered</span>
           Ordem das Categorias no Catálogo
@@ -190,6 +205,7 @@ const activeSubTab = ref<'categorias' | 'produtos'>('categorias')
 
 // ===== CATEGORIAS =====
 const categoriesList = ref<string[]>([])
+const showCategoryButtons = ref(true)
 const loadingCategories = ref(true)
 const savingCategories = ref(false)
 
@@ -202,6 +218,7 @@ const loadCategories = async () => {
 
     const geralSetting = (pdfData || []).find((s: any) => s.category === 'GERAL')
     const savedOrder: string[] = geralSetting?.layout_settings?.category_order || []
+    showCategoryButtons.value = geralSetting?.layout_settings?.show_category_buttons !== false
 
     const validCategoriesSet = new Set<string>()
     ;(catData || []).forEach((c: any) => {
@@ -257,6 +274,7 @@ const saveCategoriesOrder = async () => {
 
     const currentLayout = geralData?.layout_settings || {}
     currentLayout.category_order = categoriesList.value
+    currentLayout.show_category_buttons = showCategoryButtons.value
 
     if (geralData?.id) {
       await supabase
@@ -269,7 +287,7 @@ const saveCategoriesOrder = async () => {
         .insert([{ category: 'GERAL', layout_settings: currentLayout }])
     }
 
-    props.triggerToast?.('Ordem das categorias salva com sucesso!', 'success')
+    props.triggerToast?.('Ordem e configurações das categorias salvas com sucesso!', 'success')
   } catch (err: any) {
     console.error('[AdminOrderSettings] Error saving category order:', err)
     props.triggerToast?.(`Erro ao salvar ordem das categorias: ${err.message || err}`, 'error')

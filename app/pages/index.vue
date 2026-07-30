@@ -42,71 +42,61 @@
     </header>
 
     <!-- Main Content -->
-    <main class="max-w-7xl mx-auto px-8 py-10 flex-grow w-full">
-      <!-- Hero Section -->
-      <section class="mb-8">
-        <div class="border-l-4 border-gray-700 pl-6 mb-4">
-          <h1 class="text-4xl font-normal text-gray-800">Catálogo Técnico Qualitec</h1>
-        </div>
-        <p class="text-gray-500 text-base leading-relaxed">
-          Selecione os produtos desejados para gerar seu catálogo técnico personalizado.
-        </p>
-      </section>
-
+    <main class="max-w-7xl mx-auto px-8 py-6 flex-grow w-full">
       <!-- Toolbar -->
       <div class="bg-white border border-gray-200 p-6 mb-8 shadow-sm">
-        <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
-          <!-- Filters -->
-          <div class="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
+        <div class="flex flex-col gap-5">
+          <!-- Filters Row -->
+          <div class="flex flex-col sm:flex-row gap-3 w-full">
             <!-- Search input -->
-            <div class="relative group">
+            <div class="relative group flex-1">
               <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-lg">search</span>
               <input 
                 v-model="searchQuery"
-                class="pl-10 pr-4 py-2.5 border border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-sm w-full sm:w-64 outline-none transition-all bg-white" 
+                class="pl-10 pr-4 py-2.5 border border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-sm w-full outline-none transition-all bg-white" 
                 placeholder="BUSCAR EQUIPAMENTO..." 
                 type="text"
               >
             </div>
-
-            <!-- Category filter -->
-            <div class="relative">
-              <select 
-                v-model="selectedCategory"
-                class="pl-4 pr-10 py-2.5 border border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-sm w-full sm:w-56 appearance-none bg-white outline-none cursor-pointer uppercase"
-              >
-                <option value="TODAS">CATEGORIA: TODAS</option>
-                <option v-for="cat in availableCategories" :key="cat" :value="cat">{{ cat }}</option>
-              </select>
-              <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none text-lg">expand_more</span>
-            </div>
           </div>
 
-          <!-- Actions -->
-          <div class="flex flex-wrap items-center gap-4 w-full lg:w-auto justify-end">
-            <button @click="selectAll" class="text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors flex items-center gap-2 border-0 bg-transparent cursor-pointer">
-              <span class="material-symbols-outlined text-base">select_all</span>
-              SELECIONAR TODOS
+          <!-- Category Quick Filter Buttons -->
+          <div v-if="showCategoryButtons && availableCategories.length > 0" class="pt-3 border-t border-gray-100 flex flex-wrap items-center gap-2">
+            <button 
+              @click="selectedCategory = 'TODAS'" 
+              class="px-3.5 py-1.5 text-xs font-bold uppercase tracking-wider rounded transition-all border cursor-pointer flex items-center gap-1.5"
+              :class="selectedCategory === 'TODAS' 
+                ? 'bg-slate-900 text-white border-slate-900 shadow-sm' 
+                : 'bg-slate-50 text-slate-700 border-gray-200 hover:bg-slate-100 hover:border-gray-300'"
+            >
+              <span class="material-symbols-outlined text-sm">grid_view</span>
+              TODAS ({{ products.length }})
             </button>
-            <button @click="clearSelection" class="text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors flex items-center gap-2 border-0 bg-transparent cursor-pointer">
-              <span class="material-symbols-outlined text-base">close</span>
-              LIMPAR SELEÇÃO
-            </button>
-            <button @click="downloadCatalog" class="bg-blue-600 text-white px-6 py-2.5 text-sm font-medium flex items-center gap-2 hover:bg-blue-700 transition-all shadow-md border-0 cursor-pointer">
-              <span class="material-symbols-outlined text-base">picture_as_pdf</span>
-              BAIXAR CATÁLOGO TÉCNICO ({{ selectedProducts.size }})
+
+            <button 
+              v-for="cat in availableCategories" 
+              :key="cat"
+              @click="selectedCategory = selectedCategory === cat ? 'TODAS' : cat"
+              class="px-3.5 py-1.5 text-xs font-bold uppercase tracking-wider rounded transition-all border cursor-pointer flex items-center gap-1.5"
+              :class="selectedCategory === cat 
+                ? 'bg-blue-600 text-white border-blue-600 shadow-sm' 
+                : 'bg-slate-50 text-slate-700 border-gray-200 hover:bg-blue-50 hover:border-blue-300 hover:text-blue-700'"
+            >
+              <span class="w-2 h-2 rounded-full" :style="{ backgroundColor: getCategoryColor(cat) || '#3b82f6' }"></span>
+              {{ cat }}
+              <span class="text-[10px] opacity-75 px-1.5 py-0.2 rounded bg-black/10">
+                {{ getCategoryProductCount(cat) }}
+              </span>
             </button>
           </div>
         </div>
       </div>
 
       <!-- Product Grid -->
-      <div v-if="paginatedProducts.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div v-if="paginatedProducts.length > 0" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
         <div v-for="product in paginatedProducts" :key="product.id">
           <ProductCard 
             :product="product" 
-            :isSelected="selectedProducts.has(product.id)" 
-            @toggleSelect="toggleProduct"
             @openImage="openImageModal"
           />
         </div>
@@ -172,15 +162,7 @@
       </div>
     </footer>
 
-    <!-- Print Settings Modal -->
-    <CatalogPrintModal
-      :open="showPrintModal"
-      :hasGeralCover="hasGeralCover"
-      :listableCategories="listableCategories"
-      @close="closePrintModal"
-      @confirm="confirmAndDownload"
-      @create-quick-category="handleQuickCreateCategory"
-    />
+
 
     <!-- Image Modal -->
     <div 
@@ -241,10 +223,14 @@
 </template>
 
 <script setup lang="ts">
-import { watch, onMounted } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { useCatalog } from '../composables/useCatalog'
+import useCategoryColors from '../composables/useCategoryColors'
+import usePdfSettings from '../composables/usePdfSettings'
 
 const supabase = useSupabaseClient()
+const { getCategoryColor } = useCategoryColors()
+const { getPdfSettings } = usePdfSettings()
 
 const {
   products,
@@ -292,6 +278,17 @@ const {
   openImageModal,
   closeImageModal
 } = useCatalog()
+
+const getCategoryProductCount = (categoryName: string) => {
+  if (!categoryName) return 0
+  const catUpper = categoryName.toUpperCase().trim()
+  return products.value.filter(p => p.category && p.category.toUpperCase().trim() === catUpper).length
+}
+
+const showCategoryButtons = computed(() => {
+  const geralSettings = getPdfSettings('GERAL')
+  return geralSettings?.layout_settings?.show_category_buttons !== false
+})
 
 const handleQuickCreateCategory = async ({ name, color, imageName, imageBlob }: any) => {
   try {

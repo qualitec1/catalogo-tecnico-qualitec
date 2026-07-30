@@ -8,6 +8,13 @@
           <h1 class="text-lg font-bold uppercase tracking-wider">Painel Administrativo</h1>
         </div>
         <div class="flex items-center space-x-4">
+          <button 
+            @click="openAdminDownloadModal" 
+            class="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs uppercase px-4 py-2 rounded flex items-center gap-1.5 transition-colors border-0 cursor-pointer shadow-sm"
+          >
+            <span class="material-symbols-outlined text-base">picture_as_pdf</span>
+            Gerar / Baixar PDF
+          </button>
           <NuxtLink to="/" class="text-xs text-gray-300 hover:text-white transition-colors uppercase font-bold flex items-center">
             <span class="material-symbols-outlined text-sm mr-1">arrow_back</span>
             Ver Catálogo
@@ -154,6 +161,24 @@
       @complete="isAdminGeneratingPdf = false"
       @published="handleAdminPdfPublished"
     />
+
+    <!-- Admin Catalog Download Modal -->
+    <CatalogPrintModal
+      :open="showAdminPrintModal"
+      :hasGeralCover="adminHasGeralCover"
+      :listableCategories="adminListableCategories"
+      @close="closeAdminPrintModal"
+      @confirm="confirmAndDownloadAdminCatalog"
+    />
+
+    <!-- Admin PDF Generator Template -->
+    <CatalogPdfTemplate 
+      :is-generating="isAdminGeneratingCatalogPdf" 
+      :products="adminCatalogSelectedProductObjects" 
+      :coverCategory="adminEffectiveCoverCategory"
+      :pdfType="adminPdfTypeSelection"
+      :bookletMode="adminBookletModeSelection"
+    />
   </div>
 </template>
 
@@ -161,10 +186,34 @@
 import { ref, onMounted, watch } from 'vue'
 import { useAdminCategories } from '../composables/useAdminCategories'
 import { useAdminProducts } from '../composables/useAdminProducts'
+import { useCatalog } from '../composables/useCatalog'
 
 definePageMeta({
   layout: false
 })
+
+const {
+  fetchAssets: fetchAdminCatalogAssets,
+  loadProducts: loadAdminCatalogProducts,
+  showPrintModal: showAdminPrintModal,
+  hasGeralCover: adminHasGeralCover,
+  listableCategories: adminListableCategories,
+  selectedProductObjects: adminCatalogSelectedProductObjects,
+  selectAll: adminCatalogSelectAll,
+  isGeneratingPdf: isAdminGeneratingCatalogPdf,
+  pdfTypeSelection: adminPdfTypeSelection,
+  bookletModeSelection: adminBookletModeSelection,
+  downloadCatalog: triggerAdminCatalogDownload,
+  closePrintModal: closeAdminPrintModal,
+  confirmAndDownload: confirmAndDownloadAdminCatalog,
+  effectiveCoverCategory: adminEffectiveCoverCategory
+} = useCatalog()
+
+const openAdminDownloadModal = async () => {
+  await Promise.all([fetchAdminCatalogAssets(), loadAdminCatalogProducts()])
+  adminCatalogSelectAll()
+  showAdminPrintModal.value = true
+}
 
 const supabase = useSupabaseClient()
 
