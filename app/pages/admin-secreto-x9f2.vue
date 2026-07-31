@@ -88,6 +88,7 @@
           :importing="importing"
           @edit="openEditModal" 
           @delete="deleteProduct"
+          @delete-multiple="deleteMultipleProducts"
           @delete-all="deleteAllProducts"
           @csv-upload="handleCsvUpload"
           @scroll-to-form="scrollToForm"
@@ -111,6 +112,7 @@
           @create-category="saveNewCategoryAsset"
           @save-category="saveCategoryAsset"
           @delete-category="deleteCategoryAsset"
+          @delete-multiple-categories="deleteMultipleCategoryAssets"
           @replicate-settings="replicateCategorySettings"
           @publish-catalog="handlePublishCatalog"
         />
@@ -259,6 +261,7 @@ const {
   saveCategoryAsset,
   saveNewCategoryAsset,
   deleteCategoryAsset,
+  deleteMultipleCategoryAssets,
   replicateCategorySettings
 } = useAdminCategories(triggerToast)
 
@@ -272,6 +275,7 @@ const {
   saveNewProduct,
   saveProductEdit,
   deleteProduct,
+  deleteMultipleProducts,
   deleteAllProducts,
   handleCsvUpload
 } = useAdminProducts(triggerToast)

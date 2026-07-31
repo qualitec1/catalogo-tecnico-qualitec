@@ -170,6 +170,24 @@ export function useAdminProducts(triggerToast: (msg: string, type?: 'success' | 
     }
   }
 
+  const deleteMultipleProducts = async (ids: number[]) => {
+    if (!ids || ids.length === 0) return
+    if (confirm(`Deseja realmente remover os ${ids.length} equipamentos selecionados? Esta ação não pode ser desfeita.`)) {
+      loading.value = true
+      try {
+        const { error } = await supabase.from('products').delete().in('id', ids)
+        if (error) throw error
+        triggerToast(`${ids.length} equipamentos removidos com sucesso!`, 'success')
+        await fetchProducts()
+      } catch (err: any) {
+        console.error(err)
+        triggerToast(`Erro ao remover equipamentos selecionados: ${err.message || err}`, 'error')
+      } finally {
+        loading.value = false
+      }
+    }
+  }
+
   const deleteAllProducts = async () => {
     if (confirm('Deseja realmente remover TODOS os produtos do catálogo? Esta ação não pode ser desfeita.')) {
       loading.value = true
@@ -511,6 +529,7 @@ export function useAdminProducts(triggerToast: (msg: string, type?: 'success' | 
     saveNewProduct,
     saveProductEdit,
     deleteProduct,
+    deleteMultipleProducts,
     deleteAllProducts,
     handleCsvUpload
   }

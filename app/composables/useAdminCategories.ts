@@ -457,6 +457,40 @@ export function useAdminCategories(triggerToast: (msg: string, type?: 'success' 
     }
   }
 
+  const deleteMultipleCategoryAssets = async (ids: string[]) => {
+    if (!ids || ids.length === 0) return
+    if (!confirm(`Tem certeza que deseja excluir as ${ids.length} categorias selecionadas? Esta ação é irreversível.`)) return
+
+    saving.value = true
+    try {
+      const targetCategories = categoryAssetsList.value.filter(c => ids.includes(c.id))
+      const catNames = targetCategories.map(c => c.category)
+
+      const { error: assetsErr } = await supabase.from('category_assets').delete().in('id', ids)
+      if (assetsErr) throw assetsErr
+
+      if (catNames.length > 0) {
+        const { error: settingsErr } = await supabase.from('pdf_settings').delete().in('category', catNames)
+        if (settingsErr) console.warn('pdf_settings delete warning:', settingsErr)
+      }
+
+      triggerToast(`${ids.length} categorias excluídas com sucesso!`, 'success')
+      
+      const { fetchAssets } = useCategoryColors()
+      const { fetchPdfSettings } = usePdfSettings()
+      await Promise.all([
+        fetchAssets(),
+        fetchPdfSettings(),
+        fetchCategoryAssetsAdmin()
+      ])
+    } catch (err: any) {
+      console.error(err)
+      triggerToast(`Erro ao excluir categorias selecionadas: ${err.message || err}`, 'error')
+    } finally {
+      saving.value = false
+    }
+  }
+
   const replicateCategorySettings = async ({ source, targetIds, fields, density }: { source: any, targetIds: string[], fields?: string[] | null, density?: string }) => {
     console.log('🔥🔥🔥 [REPLICATE] Function called!', { source: source?.category, targetIds, fields, density })
     saving.value = true
@@ -773,6 +807,7 @@ export function useAdminCategories(triggerToast: (msg: string, type?: 'success' 
     saveCategoryAsset,
     saveNewCategoryAsset,
     deleteCategoryAsset,
+    deleteMultipleCategoryAssets,
     replicateCategorySettings
   }
 }

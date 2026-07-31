@@ -10,6 +10,14 @@
             <span class="material-symbols-outlined text-sm mr-1">upload_file</span>
             {{ importing ? 'Importando...' : 'Importar CSV' }}
           </button>
+          <button 
+            v-if="selectedIds.length > 0"
+            @click="confirmDeleteSelected" 
+            class="flex items-center px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white font-semibold text-xs rounded transition-colors border-0 cursor-pointer shadow-sm"
+          >
+            <span class="material-symbols-outlined text-sm mr-1">delete</span>
+            Excluir Selecionados ({{ selectedIds.length }})
+          </button>
           <button @click="confirmDeleteAll" :disabled="products.length === 0" class="flex items-center px-3 py-1.5 border border-red-650 text-red-655 hover:bg-red-50 font-semibold text-xs rounded transition-colors disabled:opacity-50">
             <span class="material-symbols-outlined text-sm mr-1">delete_sweep</span>
             Excluir Todos
@@ -32,6 +40,9 @@
         <table class="w-full text-left text-xs border-collapse">
           <thead>
             <tr class="border-b border-gray-200 text-gray-500 uppercase tracking-wider font-semibold">
+              <th class="py-3 px-2 w-8">
+                <input type="checkbox" :checked="isAllSelected" @change="toggleSelectAll" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer" title="Selecionar Todos da Página" />
+              </th>
               <th class="py-3 px-2">Imagem</th>
               <th class="py-3 px-2">Modelo / SKU</th>
               <th class="py-3 px-2">Nome</th>
@@ -40,7 +51,10 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="product in paginatedProducts" :key="product.id" class="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+            <tr v-for="product in paginatedProducts" :key="product.id" class="border-b border-gray-100 hover:bg-gray-50 transition-colors" :class="{ 'bg-blue-50/40': selectedIds.includes(product.id) }">
+              <td class="py-3 px-2 w-8">
+                <input type="checkbox" :value="product.id" v-model="selectedIds" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer" />
+              </td>
               <td class="py-3 px-2">
                 <div class="w-12 h-12 flex items-center justify-center border border-gray-200 bg-white p-1 rounded overflow-hidden">
                   <img :src="getProductImage(product)" class="max-w-full max-h-full object-contain" @error="handleImageError" />
@@ -119,14 +133,24 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: 'edit', product: Product): void
   (e: 'delete', id: number): void
+  (e: 'delete-multiple', ids: number[]): void
   (e: 'delete-all'): void
   (e: 'csv-upload', file: File): void
 }>()
 
+const selectedIds = ref<number[]>([])
+
 const confirmDeleteAll = () => {
   if (confirm('Deseja realmente REMOVER TODOS os produtos do catálogo? Esta ação é irreversível e apagará todos os itens cadastrados.')) {
     emit('delete-all')
+    selectedIds.value = []
   }
+}
+
+const confirmDeleteSelected = () => {
+  if (selectedIds.value.length === 0) return
+  emit('delete-multiple', [...selectedIds.value])
+  selectedIds.value = []
 }
 
 const searchQuery = ref('')
@@ -143,6 +167,21 @@ const filteredProducts = computed(() => {
     p.category.toLowerCase().includes(query)
   )
 })
+
+const isAllSelected = computed(() => {
+  if (!paginatedProducts.value || paginatedProducts.value.length === 0) return false
+  return paginatedProducts.value.every(p => selectedIds.value.includes(p.id))
+})
+
+const toggleSelectAll = () => {
+  const pageIds = paginatedProducts.value.map(p => p.id)
+  if (isAllSelected.value) {
+    selectedIds.value = selectedIds.value.filter(id => !pageIds.includes(id))
+  } else {
+    const set = new Set([...selectedIds.value, ...pageIds])
+    selectedIds.value = Array.from(set)
+  }
+}
 
 const totalPages = computed(() => Math.ceil(filteredProducts.value.length / itemsPerPage))
 const startIndex = computed(() => (currentPage.value - 1) * itemsPerPage)

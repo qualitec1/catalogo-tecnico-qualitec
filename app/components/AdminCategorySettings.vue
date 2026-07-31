@@ -38,25 +38,64 @@
       <p class="text-xs uppercase tracking-wider">Nenhuma categoria cadastrada</p>
     </div>
 
-    <!-- Category list with layout configurations -->
-    <div v-else class="grid grid-cols-1 gap-6">
-      <div v-for="category in localCategories" :key="category.id" class="bg-white border border-gray-200 rounded shadow-[0_4px_4px_rgba(0,0,0,0.05)] p-6 relative">
-        <div class="flex flex-col lg:flex-row gap-6 justify-between">
-          <!-- Left side: Category identification, Cover image and color -->
-          <AdminCategoryBaseSettings
-            :category="category"
-            :saving="saving"
-            @save-category="$emit('save-category', $event)"
-            @publish-catalog="$emit('publish-catalog', $event)"
-            @open-replicate-modal="openReplicateModal"
-            @delete-category="$emit('delete-category', $event)"
+    <!-- Main category view (Toolbar + Cards) -->
+    <div v-else class="space-y-6">
+      <!-- Bulk Category Selection Toolbar -->
+      <div class="bg-white border border-gray-200 px-6 py-3 rounded shadow-[0_2px_4px_rgba(0,0,0,0.02)] flex items-center justify-between">
+        <label class="flex items-center gap-2 cursor-pointer text-xs font-semibold text-slate-700">
+          <input 
+            type="checkbox" 
+            :checked="selectedCategoryIds.length === localCategories.length && localCategories.length > 0"
+            @change="toggleSelectAllCategories"
+            class="rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
           />
+          <span>Selecionar Todas as Categorias ({{ selectedCategoryIds.length }}/{{ localCategories.length }})</span>
+        </label>
 
-          <!-- Right side: PDF Layout Configuration (Collapsible) -->
-          <AdminCategoryPdfSettings
-            :category="category"
-            @replicate-section="(data) => openReplicateModal(category, data.fields, data.density)"
-          />
+        <button 
+          v-if="selectedCategoryIds.length > 0"
+          @click="confirmDeleteSelectedCategories"
+          class="flex items-center gap-1.5 px-3.5 py-1.5 bg-red-600 hover:bg-red-700 text-white font-semibold text-xs rounded transition-colors border-0 cursor-pointer shadow-sm"
+        >
+          <span class="material-symbols-outlined text-sm">delete</span>
+          Excluir Categorias Selecionadas ({{ selectedCategoryIds.length }})
+        </button>
+      </div>
+
+      <!-- Category list with layout configurations -->
+      <div class="grid grid-cols-1 gap-6">
+        <div 
+          v-for="category in localCategories" 
+          :key="category.id" 
+          class="bg-white border rounded shadow-[0_4px_4px_rgba(0,0,0,0.05)] p-6 relative transition-all"
+          :class="selectedCategoryIds.includes(category.id) ? 'border-blue-500 ring-2 ring-blue-500/20 bg-blue-50/10' : 'border-gray-200'"
+        >
+          <div class="absolute top-4 left-4 z-10">
+            <input 
+              type="checkbox" 
+              :value="category.id" 
+              v-model="selectedCategoryIds" 
+              class="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 cursor-pointer"
+              title="Selecionar Categoria"
+            />
+          </div>
+          <div class="flex flex-col lg:flex-row gap-6 justify-between pl-6">
+            <!-- Left side: Category identification, Cover image and color -->
+            <AdminCategoryBaseSettings
+              :category="category"
+              :saving="saving"
+              @save-category="$emit('save-category', $event)"
+              @publish-catalog="$emit('publish-catalog', $event)"
+              @open-replicate-modal="openReplicateModal"
+              @delete-category="$emit('delete-category', $event)"
+            />
+
+            <!-- Right side: PDF Layout Configuration (Collapsible) -->
+            <AdminCategoryPdfSettings
+              :category="category"
+              @replicate-section="(data) => openReplicateModal(category, data.fields, data.density)"
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -101,9 +140,26 @@ const emit = defineEmits<{
   (e: 'create-category', name: string): void
   (e: 'save-category', category: Category): void
   (e: 'delete-category', id: string): void
+  (e: 'delete-multiple-categories', ids: string[]): void
   (e: 'replicate-settings', payload: { source: Category, targetIds: string[], fields: string[] | null, density?: string }): void
   (e: 'publish-catalog', category: Category): void
 }>()
+
+const selectedCategoryIds = ref<string[]>([])
+
+const toggleSelectAllCategories = () => {
+  if (selectedCategoryIds.value.length === localCategories.value.length) {
+    selectedCategoryIds.value = []
+  } else {
+    selectedCategoryIds.value = localCategories.value.map(c => c.id)
+  }
+}
+
+const confirmDeleteSelectedCategories = () => {
+  if (selectedCategoryIds.value.length === 0) return
+  emit('delete-multiple-categories', [...selectedCategoryIds.value])
+  selectedCategoryIds.value = []
+}
 
 const newCategoryName = ref('')
 const newCategorySegmentType = ref<'especifica' | 'geral'>('especifica')
