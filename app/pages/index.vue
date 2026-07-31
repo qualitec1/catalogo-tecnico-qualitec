@@ -6,8 +6,8 @@
     @touchend="handleTouchEnd"
   >
     <div 
-      class="min-w-[1024px] lg:min-w-0 transition-transform duration-100 ease-out origin-top-left flex flex-col min-h-screen"
-      :style="{ transform: `scale(${mobileZoom})`, width: mobileZoom !== 1 ? `${100 / mobileZoom}%` : '100%' }"
+      class="w-[1280px] mx-auto transition-transform duration-100 ease-out origin-top-left flex flex-col min-h-screen"
+      :style="{ transform: `scale(${mobileZoom})`, width: '1280px' }"
     >
     <!-- Header -->
     <header class="w-full top-0 sticky z-50 shadow-sm select-none">
@@ -119,7 +119,7 @@
       />
 
       <!-- Product Grid -->
-      <div v-if="paginatedProducts.length > 0" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+      <div v-if="paginatedProducts.length > 0" class="grid grid-cols-4 gap-5">
         <div v-for="product in paginatedProducts" :key="product.id">
           <ProductCard 
             :product="product" 
@@ -315,7 +315,7 @@ const zoomOutMobile = () => {
 }
 
 const resetZoomMobile = () => {
-  mobileZoom.value = 1.0
+  updateMobileAutoZoom()
 }
 
 const getTouchDistance = (e: TouchEvent) => {
@@ -483,7 +483,23 @@ watch(modalImageSrc, (newVal) => {
   }
 })
 
+const updateMobileAutoZoom = () => {
+  if (typeof window !== 'undefined') {
+    const screenWidth = window.innerWidth
+    if (screenWidth < 1280) {
+      const calculated = Number((screenWidth / 1280).toFixed(3))
+      mobileZoom.value = Math.max(0.2, Math.min(1.0, calculated))
+    } else {
+      mobileZoom.value = 1.0
+    }
+  }
+}
+
 onMounted(async () => {
+  updateMobileAutoZoom()
+  if (typeof window !== 'undefined') {
+    window.addEventListener('resize', updateMobileAutoZoom)
+  }
   await Promise.all([
     fetchAssets(),
     loadProducts(),
