@@ -56,12 +56,12 @@
         </div>
 
         <div class="flex items-center gap-2">
-          <span class="text-xs shrink-0 w-12 font-bold text-gray-600">🇩🇪 DE</span>
+          <span class="text-xs shrink-0 w-12 font-bold text-gray-600">🇪🇸 ES</span>
           <input 
-            v-model="category.coverTitleDe" 
+            v-model="category.coverTitleEs" 
             type="text" 
             @input="category.hasChanges = true" 
-            placeholder="Ex: KRYO-VENTILE" 
+            placeholder="Ex: VÁLVULAS CRIOGÉNICAS" 
             class="flex-1 border border-gray-300 rounded p-1.5 text-xs focus:ring-1 focus:ring-blue-600 focus:outline-none bg-white text-slate-800 uppercase"
           />
         </div>
