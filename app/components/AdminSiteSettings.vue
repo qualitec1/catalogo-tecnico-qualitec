@@ -604,6 +604,14 @@ const parsedVideo = computed(() => {
     }
   }
 
+  // Wix static or third-party videos with CORS restrictions
+  if (url.includes('wixstatic.com')) {
+    return {
+      type: 'direct',
+      url: `/api/proxy-video?url=${encodeURIComponent(url)}`
+    }
+  }
+
   return {
     type: 'direct',
     url

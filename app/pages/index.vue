@@ -97,7 +97,7 @@
           <video 
             v-else
             ref="heroVideoRef"
-            class="absolute inset-0 w-full h-full object-cover z-10 min-w-full min-h-full"
+            class="absolute inset-0 w-full h-full object-cover z-10 min-w-full min-h-full pointer-events-none"
             autoplay
             loop
             muted
@@ -105,6 +105,7 @@
             playsinline
             webkit-playsinline
             preload="auto"
+            referrerpolicy="no-referrer"
             @loadedmetadata="playVideo"
             @loadeddata="playVideo"
             @canplay="playVideo"
@@ -428,26 +429,32 @@ function getCardBgStyle(hex: string, opacityPercent: number) {
 }
 
 const playVideo = () => {
-  if (heroVideoRef.value) {
-    heroVideoRef.value.muted = true
-    heroVideoRef.value.defaultMuted = true
-    const p = heroVideoRef.value.play()
-    if (p !== undefined) {
-      p.catch(err => {
-        console.warn('[HeroVideo] Autoplay attempt warning:', err)
-        const retry = () => {
-          if (heroVideoRef.value) {
-            heroVideoRef.value.play().catch(() => {})
-          }
-          window.removeEventListener('click', retry)
-          window.removeEventListener('scroll', retry)
-          window.removeEventListener('touchstart', retry)
+  const el = heroVideoRef.value
+  if (!el) return
+
+  el.muted = true
+  el.defaultMuted = true
+  el.volume = 0
+  el.setAttribute('muted', '')
+  el.setAttribute('playsinline', '')
+
+  const p = el.play()
+  if (p !== undefined) {
+    p.catch(err => {
+      console.warn('[HeroVideo] Autoplay blocked, registering gesture listener:', err)
+      const handleUserGesture = () => {
+        if (heroVideoRef.value) {
+          heroVideoRef.value.muted = true
+          heroVideoRef.value.play().catch(() => {})
         }
-        window.addEventListener('click', retry, { once: true })
-        window.addEventListener('scroll', retry, { once: true })
-        window.addEventListener('touchstart', retry, { once: true })
+        ['click', 'touchstart', 'scroll', 'pointerdown', 'keydown'].forEach(evt => {
+          window.removeEventListener(evt, handleUserGesture)
+        })
+      }
+      ['click', 'touchstart', 'scroll', 'pointerdown', 'keydown'].forEach(evt => {
+        window.addEventListener(evt, handleUserGesture, { once: true, passive: true })
       })
-    }
+    })
   }
 }
 
@@ -490,6 +497,14 @@ const parsedVideo = computed(() => {
     return {
       type: 'vimeo',
       url: `https://player.vimeo.com/video/${id}?autoplay=1&muted=1&loop=1&background=1&autopause=0`
+    }
+  }
+
+  // Wix static or third-party videos with CORS restrictions
+  if (url.includes('wixstatic.com')) {
+    return {
+      type: 'direct',
+      url: `/api/proxy-video?url=${encodeURIComponent(url)}`
     }
   }
 
