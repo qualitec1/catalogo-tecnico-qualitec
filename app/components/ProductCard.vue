@@ -141,9 +141,11 @@ const { t, currentLang } = useTranslations()
 const ss = siteSettings
 
 const docButtonText = computed(() => {
-  if (currentLang.value === 'en') return 'SPECIFICATION SHEET'
-  if (currentLang.value === 'de') return 'DATENBLATT'
-  return ss.value.btn_doc_text || t.value.viewDocs
+  // Prefer DB-backed translation (handles PT/EN/ES automatically)
+  const translated = t.value.viewDocs
+  if (translated) return translated
+  // Fallback: admin site-settings custom text (PT only)
+  return ss.value.btn_doc_text || 'Ficha de Especificação'
 })
 
 const formatSpecValueForSite = (val: string | null | undefined, label?: string): string => {
