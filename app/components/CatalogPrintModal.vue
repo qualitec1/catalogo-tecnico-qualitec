@@ -65,7 +65,7 @@
           Produtos Incluídos no PDF
         </h4>
         <p class="text-[10px] text-gray-500 mb-3">
-          Escolha se deseja incluir todos os produtos ou imprimir apenas os equipamentos de uma categoria específica.
+          Escolha se deseja incluir todos os produtos ou selecione as categorias que deseja imprimir.
         </p>
         <div class="space-y-3">
           <label class="flex items-center gap-3 p-3 border border-gray-200 rounded cursor-pointer hover:bg-gray-50 transition-colors">
@@ -76,13 +76,45 @@
           <div class="border border-gray-200 rounded p-3 space-y-2">
             <label class="flex items-center gap-3 cursor-pointer">
               <input type="radio" v-model="productFilterMode" value="category" class="text-blue-650" />
-              <span class="text-xs font-bold text-slate-800 uppercase">Imprimir por Categoria Específica</span>
+              <span class="text-xs font-bold text-slate-800 uppercase">Imprimir por Categorias Selecionadas</span>
             </label>
-            <div v-if="productFilterMode === 'category'" class="pl-6 pt-1">
-              <select v-model="filterCategory" class="w-full border border-gray-300 p-2 text-xs rounded bg-white text-slate-700 uppercase">
-                <option value="" disabled>Selecione a categoria dos produtos...</option>
-                <option v-for="cat in listableCategories" :key="cat" :value="cat">{{ formatCategoryOptionLabel(cat) }}</option>
-              </select>
+            <div v-if="productFilterMode === 'category'" class="pl-6 pt-1 space-y-2">
+              <!-- Select All / None controls -->
+              <div class="flex items-center gap-3 mb-1">
+                <button 
+                  type="button"
+                  @click="selectAllFilterCategories"
+                  class="text-[10px] text-blue-600 hover:text-blue-800 font-bold uppercase bg-transparent border-0 cursor-pointer p-0"
+                >Selecionar Todas</button>
+                <span class="text-gray-300">|</span>
+                <button 
+                  type="button"
+                  @click="clearFilterCategories"
+                  class="text-[10px] text-gray-500 hover:text-gray-700 font-bold uppercase bg-transparent border-0 cursor-pointer p-0"
+                >Limpar</button>
+              </div>
+              <!-- Category checkboxes -->
+              <div class="max-h-40 overflow-y-auto border border-gray-200 rounded bg-white">
+                <label 
+                  v-for="cat in listableCategories" 
+                  :key="cat" 
+                  class="flex items-center gap-2 px-3 py-2 cursor-pointer hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-b-0"
+                >
+                  <input 
+                    type="checkbox" 
+                    :value="cat" 
+                    v-model="filterCategories" 
+                    class="text-blue-600 rounded"
+                  />
+                  <span class="text-xs text-slate-700 uppercase flex-1">{{ formatCategoryOptionLabel(cat) }}</span>
+                </label>
+              </div>
+              <p v-if="filterCategories.length > 0" class="text-[10px] text-gray-500 mt-1">
+                {{ filterCategories.length }} categoria{{ filterCategories.length > 1 ? 's' : '' }} selecionada{{ filterCategories.length > 1 ? 's' : '' }}
+              </p>
+              <p v-else class="text-[10px] text-amber-600 mt-1">
+                Selecione ao menos uma categoria.
+              </p>
             </div>
           </div>
         </div>
@@ -276,7 +308,7 @@
         </button>
         <button 
           @click="submitConfirm" 
-          :disabled="coverCategorySelection === 'specific' && !specificCoverCategory" 
+          :disabled="(coverCategorySelection === 'specific' && !specificCoverCategory) || (productFilterMode === 'category' && filterCategories.length === 0)" 
           class="w-1/2 bg-blue-600 text-white py-2.5 text-xs font-bold rounded hover:bg-blue-700 transition-colors disabled:opacity-40 border-0 cursor-pointer"
         >
           CONFIRMAR E GERAR
@@ -326,6 +358,7 @@ const emit = defineEmits<{
     specificCategory: string,
     productFilterMode: 'all' | 'category',
     filterCategory: string,
+    filterCategories: string[],
     pdfType: 'web' | 'print' | 'qrcode',
     bookletMode: boolean
   }): void
@@ -336,8 +369,17 @@ const coverCategorySelection = ref<'dynamic' | 'GERAL' | 'specific'>('dynamic')
 const specificCoverCategory = ref('')
 const productFilterMode = ref<'all' | 'category'>('all')
 const filterCategory = ref('')
+const filterCategories = ref<string[]>([])
 const pdfType = ref<'web' | 'print' | 'qrcode'>('web')
 const bookletMode = ref(false)
+
+const selectAllFilterCategories = () => {
+  filterCategories.value = [...props.listableCategories]
+}
+
+const clearFilterCategories = () => {
+  filterCategories.value = []
+}
 
 watch(coverCategorySelection, (newVal) => {
   if (newVal === 'specific' && !specificCoverCategory.value && props.listableCategories && props.listableCategories.length > 0) {
@@ -346,8 +388,8 @@ watch(coverCategorySelection, (newVal) => {
 })
 
 watch(productFilterMode, (newVal) => {
-  if (newVal === 'category' && !filterCategory.value && props.listableCategories && props.listableCategories.length > 0) {
-    filterCategory.value = props.listableCategories[0]
+  if (newVal === 'category' && filterCategories.value.length === 0 && props.listableCategories && props.listableCategories.length > 0) {
+    filterCategories.value = [...props.listableCategories]
   }
 })
 
@@ -416,11 +458,16 @@ const handleQuickCreateCategory = async () => {
 }
 
 const submitConfirm = () => {
+  // Prevent confirming without categories when in category mode
+  if (productFilterMode.value === 'category' && filterCategories.value.length === 0) {
+    return
+  }
   emit('confirm', {
     selection: coverCategorySelection.value,
     specificCategory: specificCoverCategory.value,
     productFilterMode: productFilterMode.value,
-    filterCategory: filterCategory.value,
+    filterCategory: filterCategories.value.length > 0 ? filterCategories.value[0] : filterCategory.value,
+    filterCategories: filterCategories.value,
     pdfType: pdfType.value,
     bookletMode: bookletMode.value
   })

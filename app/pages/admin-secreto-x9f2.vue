@@ -192,6 +192,7 @@
       :coverCategory="adminEffectiveCoverCategory"
       :pdfType="adminPdfTypeSelection"
       :bookletMode="adminBookletModeSelection"
+      @complete="isAdminGeneratingCatalogPdf = false"
     />
   </div>
 </template>

@@ -19,10 +19,10 @@
       <div v-if="showCategoryButtons && categoryButtonGroups.length > 0" class="pt-3 border-t border-gray-100">
         <!-- Group Buttons Row -->
         <div class="flex flex-wrap items-center gap-2">
-          <button 
-            v-for="group in categoryButtonGroups" 
-            :key="group.name"
-            @click="toggleGroup(group.name)"
+          <template v-for="group in categoryButtonGroups" :key="group.name">
+            <button 
+              v-if="getGroupCategories(group.name).length > 0"
+              @click="toggleGroup(group.name)"
             class="px-4 py-2 text-xs font-bold uppercase tracking-wider rounded transition-all border cursor-pointer flex items-center gap-1.5"
             :class="openGroup === group.name 
               ? 'bg-slate-900 text-white border-slate-900 shadow-sm' 
@@ -33,6 +33,7 @@
             <span class="material-symbols-outlined text-sm">{{ openGroup === group.name ? 'expand_less' : 'expand_more' }}</span>
             {{ translateCategory(group.name) }}
           </button>
+          </template>
         </div>
 
         <!-- Expanded Subcategories -->
@@ -109,7 +110,8 @@ const toggleGroup = (groupName: string) => {
 
 const getGroupCategories = (groupName: string): string[] => {
   const group = props.categoryButtonGroups.find(g => g.name === groupName)
-  return group?.categories || []
+  if (!group || !group.categories) return []
+  return group.categories.filter(cat => getCategoryProductCount(cat) > 0)
 }
 
 const getCategoryProductCount = (categoryName: string) => {

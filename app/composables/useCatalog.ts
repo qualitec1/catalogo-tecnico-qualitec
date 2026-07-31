@@ -1,4 +1,4 @@
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, nextTick } from 'vue'
 
 export interface Product {
   id: number
@@ -332,11 +332,12 @@ export function useCatalog() {
     showPrintModal.value = false
   }
 
-  const confirmAndDownload = (payload?: {
+  const confirmAndDownload = async (payload?: {
     selection: 'dynamic' | 'GERAL' | 'specific',
     specificCategory: string,
     productFilterMode?: 'all' | 'category',
     filterCategory?: string,
+    filterCategories?: string[],
     pdfType: 'web' | 'print' | 'qrcode',
     bookletMode: boolean
   }) => {
@@ -346,10 +347,16 @@ export function useCatalog() {
       pdfTypeSelection.value = payload.pdfType
       bookletModeSelection.value = payload.bookletMode
 
-      if (payload.productFilterMode === 'category' && payload.filterCategory) {
-        const catUpper = payload.filterCategory.toUpperCase().trim()
-        const matchingProds = filteredProducts.value.filter(p => p.category && p.category.toUpperCase().trim() === catUpper)
-        selectedProducts.value = new Set(matchingProds.map(p => p.id))
+      if (payload.productFilterMode === 'category') {
+        // Support multi-category filter
+        const cats = payload.filterCategories && payload.filterCategories.length > 0
+          ? payload.filterCategories
+          : (payload.filterCategory ? [payload.filterCategory] : [])
+        if (cats.length > 0) {
+          const catUppers = cats.map(c => c.toUpperCase().trim())
+          const matchingProds = filteredProducts.value.filter(p => p.category && catUppers.includes(p.category.toUpperCase().trim()))
+          selectedProducts.value = new Set(matchingProds.map(p => p.id))
+        }
       } else if (payload.productFilterMode === 'all') {
         selectedProducts.value = new Set(filteredProducts.value.map(p => p.id))
       }
@@ -394,6 +401,10 @@ export function useCatalog() {
       selectedCoverCategoryOverride.value = specificCoverCategory.value
     }
 
+    // Force reset + nextTick to guarantee the watcher in CatalogPdfTemplate fires
+    // even if isGeneratingPdf was already true from a previous generation
+    isGeneratingPdf.value = false
+    await nextTick()
     isGeneratingPdf.value = true
     showPrintModal.value = false
   }
