@@ -1,5 +1,6 @@
 import { ref } from 'vue'
 import { sanitizeSpecValue } from '~/utils/pdfDocUtils'
+import { cleanupDuplicateCategories } from './useAdminCategories'
 
 export function useAdminProducts(triggerToast: (msg: string, type?: 'success' | 'error') => void) {
   const supabase = useSupabaseClient()
@@ -270,6 +271,7 @@ export function useAdminProducts(triggerToast: (msg: string, type?: 'success' | 
       // Buscar categorias válidas do banco
       let validCategories: Set<string>
       try {
+        await cleanupDuplicateCategories(supabase)
         const { data: categoriesData, error: catError } = await supabase
           .from('pdf_settings')
           .select('category')
@@ -371,64 +373,114 @@ export function useAdminProducts(triggerToast: (msg: string, type?: 'success' | 
         }
 
         let rawCat = row['category'] ? row['category'].trim() : 'GERAL'
-        let categoryValue = rawCat.toUpperCase().trim()
+        const normRawCat = (rawCat || '')
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .toUpperCase()
+          .replace(/[^A-Z0-9]/g, ' ')
+          .replace(/\s+/g, ' ')
+          .trim()
 
-        // Mapeamento de sinonimos e traducoes de categorias (Ex: 3-Wege-Ventil -> VÁLVULAS 3 VIAS)
+        let categoryValue = rawCat.toUpperCase().trim()
+        let detectedLang: string | null = null
+
+        // Mapeamento de sinonimos e traducoes de categorias (Ex: VÁLVULAS DE SEGURIDAD -> VÁLVULAS DE SEGURANÇA)
         const categoryAliasesMap: Record<string, { base: string; lang: string }> = {
           '3-WAY VALVE': { base: 'VÁLVULAS 3 VIAS', lang: 'en' },
           '3-WAY VALVES': { base: 'VÁLVULAS 3 VIAS', lang: 'en' },
           '3 WAY VALVE': { base: 'VÁLVULAS 3 VIAS', lang: 'en' },
-          '3-WEGE-VENTIL': { base: 'VÁLVULAS 3 VIAS', lang: 'de' },
-          '3-WEGE VENTIL': { base: 'VÁLVULAS 3 VIAS', lang: 'de' },
-          '3 WEGE VENTIL': { base: 'VÁLVULAS 3 VIAS', lang: 'de' },
-          '3-WEGE-VENTILE': { base: 'VÁLVULAS 3 VIAS', lang: 'de' },
+          '3 WAY VALVES': { base: 'VÁLVULAS 3 VIAS', lang: 'en' },
+          'VÁLVULAS 3 VÍAS': { base: 'VÁLVULAS 3 VIAS', lang: 'es' },
+          'VALVULAS 3 VIAS': { base: 'VÁLVULAS 3 VIAS', lang: 'pt' },
 
           'CRYOGENIC VALVE': { base: 'VÁLVULAS CRIOGÊNICAS', lang: 'en' },
           'CRYOGENIC VALVES': { base: 'VÁLVULAS CRIOGÊNICAS', lang: 'en' },
-          'KRYO-VENTIL': { base: 'VÁLVULAS CRIOGÊNICAS', lang: 'de' },
-          'KRYO-VENTILE': { base: 'VÁLVULAS CRIOGÊNICAS', lang: 'de' },
-          'KRYO VENTIL': { base: 'VÁLVULAS CRIOGÊNICAS', lang: 'de' },
-          'KRYOVENTIL': { base: 'VÁLVULAS CRIOGÊNICAS', lang: 'de' },
+          'VÁLVULAS CRIOGÉNICAS': { base: 'VÁLVULAS CRIOGÊNICAS', lang: 'es' },
+          'VALVULAS CRIOGENICAS': { base: 'VÁLVULAS CRIOGÊNICAS', lang: 'pt' },
 
           'SAFETY VALVE': { base: 'VÁLVULAS DE SEGURANÇA', lang: 'en' },
           'SAFETY VALVES': { base: 'VÁLVULAS DE SEGURANÇA', lang: 'en' },
-          'SICHERHEITSVENTIL': { base: 'VÁLVULAS DE SEGURANÇA', lang: 'de' },
-          'SICHERHEITSVENTILE': { base: 'VÁLVULAS DE SEGURANÇA', lang: 'de' },
+          'VÁLVULAS DE SEGURIDAD': { base: 'VÁLVULAS DE SEGURANÇA', lang: 'es' },
+          'VALVULAS DE SEGURIDAD': { base: 'VÁLVULAS DE SEGURANÇA', lang: 'es' },
+          'VALVULAS DE SEGURANCA': { base: 'VÁLVULAS DE SEGURANÇA', lang: 'pt' },
 
           'GLOBE VALVE': { base: 'VÁLVULAS GLOBO', lang: 'en' },
           'GLOBE VALVES': { base: 'VÁLVULAS GLOBO', lang: 'en' },
-          'VENTIL': { base: 'VÁLVULAS GLOBO', lang: 'de' },
-          'VENTILE': { base: 'VÁLVULAS GLOBO', lang: 'de' },
+          'VALVULAS GLOBO': { base: 'VÁLVULAS GLOBO', lang: 'pt' },
 
           'PRESSURE TRANSMITTER': { base: 'TRANSMISSORES DE PRESSÃO', lang: 'en' },
           'PRESSURE TRANSMITTERS': { base: 'TRANSMISSORES DE PRESSÃO', lang: 'en' },
-          'DRUCKMESSUMFORMER': { base: 'TRANSMISSORES DE PRESSÃO', lang: 'de' },
-          'DRUCKUMFORMER': { base: 'TRANSMISSORES DE PRESSÃO', lang: 'de' },
+          'TRANSMISORES DE PRESIÓN': { base: 'TRANSMISSORES DE PRESSÃO', lang: 'es' },
+          'TRANSMISORES DE PRESION': { base: 'TRANSMISSORES DE PRESSÃO', lang: 'es' },
+          'TRANSMISSORES DE PRESSAO': { base: 'TRANSMISSORES DE PRESSÃO', lang: 'pt' },
+
+          'GERAL': { base: 'GERAL', lang: 'pt' },
+          'GENERAL': { base: 'GERAL', lang: 'en' }
         }
 
-        const aliasMatch = categoryAliasesMap[categoryValue]
-        if (aliasMatch) {
-          categoryValue = aliasMatch.base
-          const hasLangSpec = specs.some(s => ['idioma', 'lang', 'language'].includes(s.label.toLowerCase()))
-          if (!hasLangSpec) {
-            specs.push({ label: 'Idioma', value: aliasMatch.lang })
+        // 1. Check aliases map using normalized strings
+        for (const [aliasKey, aliasData] of Object.entries(categoryAliasesMap)) {
+          const normAlias = aliasKey
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .toUpperCase()
+            .replace(/[^A-Z0-9]/g, ' ')
+            .replace(/\s+/g, ' ')
+            .trim()
+          if (normAlias === normRawCat) {
+            categoryValue = aliasData.base
+            detectedLang = aliasData.lang
+            break
           }
-        } else {
-          // Auto-detectar idioma pelo conteúdo se não tiver coluna especificada
-          const hasLangSpec = specs.some(s => ['idioma', 'lang', 'language'].includes(s.label.toLowerCase()))
-          if (!hasLangSpec) {
-            const fullText = ((row['title'] || '') + ' ' + rawCat).toLowerCase()
-            if (fullText.includes('ventil') || fullText.includes('deutsch') || fullText.includes('sicherheits')) {
-              specs.push({ label: 'Idioma', value: 'de' })
-            } else if (fullText.includes('valve') || fullText.includes('english') || fullText.includes('safety')) {
-              specs.push({ label: 'Idioma', value: 'en' })
+        }
+
+        // 2. If no alias match, match normalized string against existing validCategories from DB
+        if (!detectedLang) {
+          for (const existingCat of validCategories) {
+            const normExisting = existingCat
+              .normalize('NFD')
+              .replace(/[\u0300-\u036f]/g, '')
+              .toUpperCase()
+              .replace(/[^A-Z0-9]/g, ' ')
+              .replace(/\s+/g, ' ')
+              .trim()
+            if (normExisting === normRawCat) {
+              categoryValue = existingCat
+              break
             }
           }
         }
 
-        // Auto-criar categoria se não existir no banco para nunca barrar o upload
+        // 3. Ensure explicit language spec exists in specs array
+        const hasLangSpec = specs.some(s => {
+          const lbl = (s.label || '').toLowerCase().trim()
+          return lbl === 'idioma' || lbl === 'lang' || lbl === 'language' || lbl === 'sprache'
+        })
+
+        if (!hasLangSpec) {
+          if (!detectedLang) {
+            const fullText = ((row['title'] || '') + ' ' + rawCat).toLowerCase()
+            if (fullText.includes('espanol') || fullText.includes('español') || fullText.includes('seguridad') || fullText.includes('presion') || fullText.includes('presión')) {
+              detectedLang = 'es'
+            } else if (fullText.includes('valve') || fullText.includes('english') || fullText.includes('safety') || fullText.includes('transmitter')) {
+              detectedLang = 'en'
+            } else {
+              detectedLang = 'pt'
+            }
+          }
+          specs.push({ label: 'Idioma', value: detectedLang })
+        }
+
+        // Auto-criar categoria se realmente não existir no banco (mesmo após normalização)
         if (!validCategories.has(categoryValue)) {
-          if (categoryValue && categoryValue !== '(VAZIO)') {
+          const normCatValue = categoryValue.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase().replace(/[^A-Z0-9]/g, ' ').replace(/\s+/g, ' ').trim()
+          const matchedDB = Array.from(validCategories).find(c => {
+            return c.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase().replace(/[^A-Z0-9]/g, ' ').replace(/\s+/g, ' ').trim() === normCatValue
+          })
+
+          if (matchedDB) {
+            categoryValue = matchedDB
+          } else if (categoryValue && categoryValue !== '(VAZIO)') {
             validCategories.add(categoryValue)
             try {
               await supabase.from('category_assets').insert([{

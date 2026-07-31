@@ -170,22 +170,26 @@ export function useCatalog() {
     })
     if (langSpec && langSpec.value) {
       const normVal = normalizeText(langSpec.value)
-      if (normVal === 'de' || normVal.includes('alem') || normVal.includes('deutsch') || normVal.includes('german')) return 'de'
+      if (normVal === 'es' || normVal.includes('espanol') || normVal.includes('spanish') || normVal.includes('esp')) return 'es'
+      if (normVal === 'de' || normVal.includes('alem') || normVal.includes('deutsch') || normVal.includes('german')) return 'es'
       if (normVal === 'en' || normVal.includes('ing') || normVal.includes('english') || normVal.includes('uk') || normVal.includes('us')) return 'en'
       if (normVal === 'pt' || normVal.includes('portugues') || normVal.includes('brazil') || normVal.includes('br')) return 'pt'
     }
 
-    // Fallback: detect German or English keywords in title, category, or specs
+    // Fallback: detect Spanish or English keywords in title, category, or specs
     const specText = (product.specs || []).map((s: any) => (s.label || '') + ' ' + (s.value || '')).join(' ')
     const fullText = (product.title + ' ' + (product.category || '') + ' ' + specText).toLowerCase()
     
-    // German language indicators
+    // Spanish language indicators (and German fallbacks)
     if (
-      fullText.includes('kryo-ventil') || fullText.includes('kryo ventil') || fullText.includes('sicherheitsventil') ||
-      fullText.includes('3-wege-ventil') || fullText.includes('globe-ventil') || fullText.includes('druckmessumformer') ||
-      fullText.includes('druckumformer') || fullText.includes('deutsch') || fullText.includes('nennweite') || fullText.includes('druckstufe')
+      fullText.includes('espanol') || fullText.includes('español') || fullText.includes('seguridad') ||
+      fullText.includes('presion') || fullText.includes('presión') || fullText.includes('transmisor') ||
+      fullText.includes('criogenica') || fullText.includes('criogénica') || fullText.includes('kryo-ventil') ||
+      fullText.includes('kryo ventil') || fullText.includes('sicherheitsventil') || fullText.includes('3-wege-ventil') ||
+      fullText.includes('globe-ventil') || fullText.includes('druckmessumformer') || fullText.includes('druckumformer') ||
+      fullText.includes('deutsch')
     ) {
-      return 'de'
+      return 'es'
     }
     
     // English language indicators
@@ -283,12 +287,12 @@ export function useCatalog() {
   }, { immediate: true })
 
   const paginatedProducts = computed(() => {
-    const start = (activePage.value - 1) * 30
-    return filteredProducts.value.slice(start, start + 30)
+    const start = (activePage.value - 1) * 28
+    return filteredProducts.value.slice(start, start + 28)
   })
 
   const totalPages = computed(() => {
-    return Math.max(1, Math.ceil(filteredProducts.value.length / 30))
+    return Math.max(1, Math.ceil(filteredProducts.value.length / 28))
   })
 
   const categoryProductCounts = computed(() => {

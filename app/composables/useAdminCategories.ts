@@ -1,6 +1,147 @@
 import { ref } from 'vue'
 import { hexToBase64 } from '../utils/image'
 
+export const cleanupDuplicateCategories = async (supabase: any) => {
+  try {
+    const canonicals = [
+      'GERAL',
+      'VÁLVULAS CRIOGÊNICAS',
+      'TRANSMISSORES DE PRESSÃO',
+      'VÁLVULAS 3 VIAS',
+      'VÁLVULAS DE SEGURANÇA',
+      'VÁLVULAS GLOBO'
+    ]
+
+    const { data: assets } = await supabase.from('category_assets').select('id, category')
+    const { data: pdfSettings } = await supabase.from('pdf_settings').select('id, category')
+
+    if (!assets || assets.length === 0) return
+
+    const normalizeCat = (text: string) => {
+      return (text || '')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toUpperCase()
+        .replace(/[^A-Z0-9]/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim()
+    }
+
+    const aliasMap: Record<string, string> = {
+      '3 WAY VALVE': 'VÁLVULAS 3 VIAS',
+      '3 WAY VALVES': 'VÁLVULAS 3 VIAS',
+      '3-WAY VALVE': 'VÁLVULAS 3 VIAS',
+      '3-WAY VALVES': 'VÁLVULAS 3 VIAS',
+      '3 WEGE VENTIL': 'VÁLVULAS 3 VIAS',
+      '3 WEGE VENTILE': 'VÁLVULAS 3 VIAS',
+      '3-WEGE VENTIL': 'VÁLVULAS 3 VIAS',
+      '3-WEGE-VENTIL': 'VÁLVULAS 3 VIAS',
+      '3-WEGE-VENTILE': 'VÁLVULAS 3 VIAS',
+      'VALVULAS 3 VIAS': 'VÁLVULAS 3 VIAS',
+
+      'CRYOGENIC VALVE': 'VÁLVULAS CRIOGÊNICAS',
+      'CRYOGENIC VALVES': 'VÁLVULAS CRIOGÊNICAS',
+      'KRYO VENTIL': 'VÁLVULAS CRIOGÊNICAS',
+      'KRYO VENTILE': 'VÁLVULAS CRIOGÊNICAS',
+      'KRYO-VENTIL': 'VÁLVULAS CRIOGÊNICAS',
+      'KRYO-VENTILE': 'VÁLVULAS CRIOGÊNICAS',
+      'KRYOVENTIL': 'VÁLVULAS CRIOGÊNICAS',
+      'KRYOVENTILE': 'VÁLVULAS CRIOGÊNICAS',
+      'VALVULAS CRIOGENICAS': 'VÁLVULAS CRIOGÊNICAS',
+
+      'SAFETY VALVE': 'VÁLVULAS DE SEGURANÇA',
+      'SAFETY VALVES': 'VÁLVULAS DE SEGURANÇA',
+      'SICHERHEITSVENTIL': 'VÁLVULAS DE SEGURANÇA',
+      'SICHERHEITSVENTILE': 'VÁLVULAS DE SEGURANÇA',
+      'VALVULAS DE SEGURANCA': 'VÁLVULAS DE SEGURANÇA',
+
+      'GLOBE VALVE': 'VÁLVULAS GLOBO',
+      'GLOBE VALVES': 'VÁLVULAS GLOBO',
+      'VENTIL': 'VÁLVULAS GLOBO',
+      'VENTILE': 'VÁLVULAS GLOBO',
+      'VALVULAS GLOBO': 'VÁLVULAS GLOBO',
+
+      'PRESSURE TRANSMITTER': 'TRANSMISSORES DE PRESSÃO',
+      'PRESSURE TRANSMITTERS': 'TRANSMISSORES DE PRESSÃO',
+      'DRUCKMESSUMFORMER': 'TRANSMISSORES DE PRESSÃO',
+      'DRUCKUMFORMER': 'TRANSMISSORES DE PRESSÃO',
+      'TRANSMISSORES DE PRESSAO': 'TRANSMISSORES DE PRESSÃO',
+
+      'GERAL': 'GERAL',
+      'GENERAL': 'GERAL',
+      'ALLGEMEIN': 'GERAL'
+    }
+
+    const normAliasMap: Record<string, string> = {}
+    for (const [k, v] of Object.entries(aliasMap)) {
+      normAliasMap[normalizeCat(k)] = v
+    }
+
+    const deleteAssetIds: string[] = []
+    let cleanedAny = false
+
+    for (const asset of assets) {
+      const cat = asset.category
+      if (canonicals.includes(cat)) continue
+
+      const norm = normalizeCat(cat)
+      let canonicalTarget = normAliasMap[norm] || null
+
+      if (!canonicalTarget) {
+        for (const can of canonicals) {
+          if (normalizeCat(can) === norm) {
+            canonicalTarget = can
+            break
+          }
+        }
+      }
+
+      if (canonicalTarget && canonicalTarget !== cat) {
+        await supabase.from('products').update({ category: canonicalTarget }).eq('category', cat)
+        deleteAssetIds.push(asset.id)
+        cleanedAny = true
+      }
+    }
+
+    if (deleteAssetIds.length > 0) {
+      await supabase.from('category_assets').delete().in('id', deleteAssetIds)
+    }
+
+    if (pdfSettings) {
+      const deleteSettingsIds: string[] = []
+      for (const setting of pdfSettings) {
+        const cat = setting.category
+        if (canonicals.includes(cat)) continue
+
+        const norm = normalizeCat(cat)
+        let canonicalTarget = normAliasMap[norm] || null
+        if (!canonicalTarget) {
+          for (const can of canonicals) {
+            if (normalizeCat(can) === norm) {
+              canonicalTarget = can
+              break
+            }
+          }
+        }
+
+        if (canonicalTarget && canonicalTarget !== cat) {
+          deleteSettingsIds.push(setting.id)
+          cleanedAny = true
+        }
+      }
+      if (deleteSettingsIds.length > 0) {
+        await supabase.from('pdf_settings').delete().in('id', deleteSettingsIds)
+      }
+    }
+
+    if (cleanedAny) {
+      console.log('[Cleanup] Duplicate categories cleaned successfully!')
+    }
+  } catch (err) {
+    console.error('[Cleanup Error]', err)
+  }
+}
+
 export function useAdminCategories(triggerToast: (msg: string, type?: 'success' | 'error') => void) {
   const supabase = useSupabaseClient()
   const categoryAssetsList = ref<any[]>([])
@@ -10,6 +151,7 @@ export function useAdminCategories(triggerToast: (msg: string, type?: 'success' 
   const fetchCategoryAssetsAdmin = async () => {
     loadingCategories.value = true
     try {
+      await cleanupDuplicateCategories(supabase)
       const { data: assets } = await supabase.from('category_assets').select('*').order('category')
       const { data: pdfSettingsData } = await supabase.from('pdf_settings').select('*')
       

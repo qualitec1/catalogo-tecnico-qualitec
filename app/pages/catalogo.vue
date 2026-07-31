@@ -1,17 +1,16 @@
 <template>
-  <div class="bg-gray-50 text-gray-900 min-h-screen flex flex-col w-[1280px] max-w-none mx-auto shadow-sm">
+  <div class="bg-gray-50 text-gray-900 min-h-screen flex flex-col w-full max-w-[2560px] mx-auto shadow-sm">
     <!-- Header -->
     <header class="w-full top-0 sticky z-50 shadow-sm select-none">
       <!-- Top Row (White Background) -->
       <div class="bg-white border-b border-gray-100">
-        <div class="flex justify-between items-center h-16 px-8 max-w-7xl mx-auto">
+        <div class="flex justify-between items-center h-16 px-8 max-w-[2560px] w-full mx-auto">
           <!-- Logo -->
-          <div class="relative h-16 w-96 flex items-center">
-            <NuxtLink to="/">
+          <div class="h-16 flex items-center">
+            <NuxtLink to="/" class="flex items-center">
               <img 
                 alt="Qualitec Industrial" 
-                class="absolute h-36 w-auto object-contain -translate-y-1/2 top-1/2 cursor-pointer"
-                style="left: 160px;" 
+                class="h-12 w-auto object-contain cursor-pointer" 
                 src="https://lh3.googleusercontent.com/aida-public/AB6AXuCJOpxk8IRBgRW2bvQlS_z4LoXARfSvqvz2saPXY9SVEh_22Bcd1VS5ijTW9c3L5WiWT0idDIuscN94pofAxJzmGnXWNILAeSKTQdpe0NSl8pmXlo5Mo2KzPIESuDMk-6ap5WOs_icm6enTpaiHanmAbwntVxfvVTPLdAKIwMg7L88cyvuALuJQqv2-2ntPUxn3BgVkSCLfjyupjGSuOW5zhpBXbfo-ac3ZkUg-WHHUrhMMhz1XIsk_yPD5jMMWbkCwWOJV1BBvHWM"
               >
             </NuxtLink>
@@ -60,16 +59,15 @@
               </button>
 
               <button 
-                @click="currentLang = 'de'" 
+                @click="currentLang = 'es'" 
                 class="p-1 rounded-md transition-all border cursor-pointer flex items-center justify-center"
-                :class="currentLang === 'de' ? 'bg-blue-50 border-blue-500 shadow-xs ring-2 ring-blue-500/20 scale-105' : 'border-transparent opacity-60 hover:opacity-100 bg-transparent'"
-                title="Deutsch (Deutschland)"
+                :class="currentLang === 'es' ? 'bg-blue-50 border-blue-500 shadow-xs ring-2 ring-blue-500/20 scale-105' : 'border-transparent opacity-60 hover:opacity-100 bg-transparent'"
+                title="Español (España)"
               >
-                <!-- SVG Flag Germany -->
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-4 rounded-xs shadow-2xs object-cover" viewBox="0 0 5 3">
-                  <rect width="5" height="3" fill="#000000"/>
-                  <rect width="5" height="2" y="1" fill="#DD0000"/>
-                  <rect width="5" height="1" y="2" fill="#FFCC00"/>
+                <!-- SVG Flag Spain -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-4 rounded-xs shadow-2xs object-cover" viewBox="0 0 750 500">
+                  <rect width="750" height="500" fill="#c60b1e"/>
+                  <rect width="750" height="250" y="125" fill="#ffc400"/>
                 </svg>
               </button>
             </div>
@@ -79,7 +77,7 @@
 
       <!-- Bottom Row (Light Gray Background) -->
       <div class="bg-gray-100 border-b border-gray-200">
-        <div class="max-w-7xl mx-auto px-8 py-4 flex justify-center items-center">
+        <div class="max-w-[2560px] w-full mx-auto px-8 py-4 flex justify-center items-center">
           <nav class="flex flex-wrap justify-center items-center gap-x-20 gap-y-2">
             <button 
               v-for="segment in translatedSegments"
@@ -101,7 +99,7 @@
     </header>
 
     <!-- Main Content -->
-    <main class="max-w-7xl mx-auto px-8 py-6 flex-grow w-full">
+    <main class="max-w-[2560px] w-full mx-auto px-6 py-6 flex-grow">
       <!-- Toolbar Component -->
       <CatalogSearchToolbar 
         v-model:searchQuery="searchQuery"
@@ -111,8 +109,8 @@
         :show-category-buttons="showCategoryButtons"
       />
 
-      <!-- Product Grid -->
-      <div v-if="paginatedProducts.length > 0" class="grid grid-cols-4 gap-5">
+      <!-- Product Grid (4 items per row on desktop) -->
+      <div v-if="paginatedProducts.length > 0" class="responsive-catalog-grid gap-5">
         <div v-for="product in paginatedProducts" :key="product.id">
           <ProductCard 
             :product="product" 
@@ -158,7 +156,7 @@
 
     <!-- Footer -->
     <footer class="bg-[#f5f5f5] text-[#555555] w-full mt-20 border-t border-gray-200/50">
-      <div class="max-w-7xl mx-auto py-14 flex flex-col md:flex-row justify-between gap-8 text-[13px] leading-relaxed" style="padding-left: 192px; padding-right: 210px;">
+      <div class="max-w-[2560px] w-full mx-auto py-14 px-8 md:px-16 flex flex-col md:flex-row justify-between gap-8 text-[13px] leading-relaxed">
         <!-- Left Column: Address and Info -->
         <div class="flex flex-col space-y-1 text-[#666666]">
           <p class="text-[#333333] mb-1">Qualitec C S I M Ltda</p>
@@ -268,7 +266,7 @@ const { t, translatedSegments } = useTranslations()
 useHead({
   title: 'Qualitec Industrial | Catálogo Técnico',
   meta: [
-    { name: 'viewport', content: 'width=1280, initial-scale=0.35, minimum-scale=0.1, maximum-scale=5.0, user-scalable=yes' }
+    { name: 'viewport', content: 'width=device-width, initial-scale=1.0, user-scalable=yes' }
   ]
 })
 
@@ -428,3 +426,28 @@ onMounted(async () => {
   }
 })
 </script>
+
+<style scoped>
+.responsive-catalog-grid {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+
+@media (min-width: 540px) {
+  .responsive-catalog-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 768px) {
+  .responsive-catalog-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .responsive-catalog-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+</style>

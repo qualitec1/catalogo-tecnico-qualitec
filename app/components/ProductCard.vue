@@ -20,10 +20,10 @@
     </div>
 
     <!-- Imagem do Produto -->
-    <div class="bg-white flex items-center justify-center p-4 min-h-[190px]">
+    <div class="bg-white flex items-center justify-center p-3.5 min-h-[230px]">
       <img 
         :alt="product.title" 
-        class="w-full h-full object-contain max-h-[160px] cursor-pointer hover:opacity-90 transition-opacity" 
+        class="w-full h-full object-contain max-h-[200px] cursor-pointer hover:opacity-90 transition-opacity" 
         :src="getProductImage(product)"
         @error="handleImageError"
         @click="$emit('openImage', product)"
@@ -31,11 +31,11 @@
     </div>
 
     <!-- Cabeçalho Colorido com Modelo e Título -->
-    <div class="p-3.5" :style="{ backgroundColor: getBgColor(product.bgClass, product.category) }">
+    <div class="p-3" :style="{ backgroundColor: getBgColor(product.bgClass, product.category) }">
       <!-- Modelo -->
-      <div class="flex justify-end mb-1.5">
+      <div class="flex justify-end mb-1">
         <div class="text-right">
-          <span class="text-white/80 text-[9px] font-semibold uppercase tracking-wider block">{{ t.model }}</span>
+          <span class="text-white/80 text-[10px] font-semibold uppercase tracking-wider block">{{ t.model }}</span>
           <h4 class="text-white text-2xl font-bold leading-none">{{ product.nameCode }}</h4>
         </div>
       </div>
@@ -44,21 +44,21 @@
       <h3 class="text-white text-base font-bold leading-tight">{{ product.title }}</h3>
       
       <!-- Descrição (se houver) -->
-      <p v-if="product.description" class="text-white/90 text-xs mt-1.5 leading-snug">{{ product.description }}</p>
+      <p v-if="product.description" class="text-white/90 text-xs mt-1 leading-snug">{{ product.description }}</p>
     </div>
 
     <!-- Tabela de Especificações - Fundo Cinza -->
-    <div class="flex-grow p-3.5" :style="{ backgroundColor: ss.card_specs_bg_color }">
+    <div class="flex-grow p-3" :style="{ backgroundColor: ss.card_specs_bg_color }">
       <table class="w-full" :style="{ fontFamily: ss.card_specs_font_family }">
         <tbody>
           <tr v-for="(spec, idx) in visibleSpecs" :key="idx" class="border-b border-gray-300/40 last:border-0">
             <td 
-              class="py-1.5 px-0 font-semibold align-top leading-tight whitespace-pre-line" 
-              :style="{ color: ss.card_specs_label_color, fontSize: ss.card_specs_label_font_size }"
+              class="py-2 pr-2 pl-0 font-medium align-top leading-snug text-sm sm:text-[14.5px] text-gray-700 whitespace-pre-line" 
+              :style="{ color: ss.card_specs_label_color, fontSize: '14.5px' }"
             >{{ formatSpecLabelForSite(spec.label) }}</td>
             <td 
-              class="py-1.5 px-0 font-medium text-right align-top leading-tight whitespace-pre-line" 
-              :style="{ color: ss.card_specs_value_color, fontSize: ss.card_specs_value_font_size }"
+              class="py-2 px-0 font-normal text-right align-top leading-snug text-sm sm:text-[14.5px] text-gray-900 whitespace-pre-line" 
+              :style="{ color: ss.card_specs_value_color, fontSize: '14.5px' }"
             >{{ formatSpecValueForSite(spec.value, spec.label) }}</td>
           </tr>
         </tbody>
@@ -66,12 +66,12 @@
     </div>
 
     <!-- Botão de Ação -->
-    <div class="p-3 bg-white border-t border-gray-200">
+    <div class="p-2.5 bg-white border-t border-gray-200">
       <a 
         v-if="product.datasheetUrl" 
         :href="product.datasheetUrl" 
         target="_blank"
-        class="w-full py-2 flex items-center justify-center gap-1.5 no-underline transition-colors"
+        class="w-full py-2 flex items-center justify-center gap-1.5 text-xs sm:text-sm font-semibold no-underline transition-colors rounded-xs shadow-2xs"
         :style="btnDocStyle"
         @mouseenter="btnHover = true"
         @mouseleave="btnHover = false"
@@ -79,7 +79,7 @@
         <span class="material-symbols-outlined text-sm">description</span>
         {{ docButtonText }}
       </a>
-      <div v-else class="text-[11px] text-gray-400 text-center py-1">
+      <div v-else class="text-[11px] text-gray-400 text-center py-1 font-medium">
         {{ t.noDocs }}
       </div>
     </div>

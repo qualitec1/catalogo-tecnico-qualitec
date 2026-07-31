@@ -158,14 +158,14 @@
 
           <button 
             type="button"
-            @click="currentLang = 'de'" 
+            @click="currentLang = 'es'" 
             class="p-2.5 rounded border text-left cursor-pointer transition-all flex items-center gap-2"
-            :class="currentLang === 'de' ? 'bg-blue-50 border-blue-600 ring-2 ring-blue-500/20' : 'bg-white border-gray-200 hover:bg-gray-50'"
+            :class="currentLang === 'es' ? 'bg-blue-50 border-blue-600 ring-2 ring-blue-500/20' : 'bg-white border-gray-200 hover:bg-gray-50'"
           >
-            <span class="text-base">🇩🇪</span>
+            <span class="text-base">🇪🇸</span>
             <div>
-              <span class="text-xs font-bold text-slate-800 block leading-tight">Deutsch</span>
-              <span class="text-[9px] text-gray-500">DE</span>
+              <span class="text-xs font-bold text-slate-800 block leading-tight">Español</span>
+              <span class="text-[9px] text-gray-500">ES</span>
             </div>
           </button>
         </div>
