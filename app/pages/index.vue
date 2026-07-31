@@ -73,15 +73,36 @@
       <!-- Hero Section -->
       <section class="relative w-full h-[520px] md:h-[600px] flex items-center justify-center overflow-hidden">
         <!-- Video Background -->
-        <video 
-          v-if="siteSettings.hero_bg_type === 'video' && siteSettings.hero_bg_video_url"
-          class="absolute inset-0 w-full h-full object-cover z-0"
-          autoplay
-          loop
-          muted
-          playsinline
-          :src="siteSettings.hero_bg_video_url"
-        ></video>
+        <template v-if="siteSettings.hero_bg_type === 'video' && siteSettings.hero_bg_video_url">
+          <!-- YouTube or Vimeo Iframe Embed -->
+          <div 
+            v-if="parsedVideo.type === 'youtube' || parsedVideo.type === 'vimeo'" 
+            class="absolute inset-0 w-full h-full overflow-hidden pointer-events-none z-0"
+          >
+            <iframe 
+              class="w-[160%] h-[160%] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 object-cover pointer-events-none scale-125 border-0"
+              :src="parsedVideo.url"
+              allow="autoplay; fullscreen; picture-in-picture"
+            ></iframe>
+          </div>
+
+          <!-- Direct HTML5 MP4 / WebM Video -->
+          <video 
+            v-else
+            ref="heroVideoRef"
+            class="absolute inset-0 w-full h-full object-cover z-0"
+            autoplay
+            loop
+            muted
+            :muted="true"
+            playsinline
+            webkit-playsinline
+            @loadedmetadata="playVideo"
+            @canplay="playVideo"
+            :src="parsedVideo.url"
+          ></video>
+        </template>
+
         <!-- Image Background -->
         <img 
           v-else
@@ -377,12 +398,59 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch, nextTick } from 'vue'
 
 const { siteSettings, fetchSiteSettings } = useSiteSettings()
+const heroVideoRef = ref<HTMLVideoElement | null>(null)
+
+const playVideo = () => {
+  if (heroVideoRef.value) {
+    heroVideoRef.value.muted = true
+    heroVideoRef.value.play().catch(err => {
+      console.warn('[HeroVideo] Autoplay error:', err)
+    })
+  }
+}
 
 onMounted(() => {
   fetchSiteSettings()
+  playVideo()
+})
+
+watch(() => siteSettings.value.hero_bg_video_url, () => {
+  nextTick(() => {
+    playVideo()
+  })
+})
+
+const parsedVideo = computed(() => {
+  const url = (siteSettings.value.hero_bg_video_url || '').trim()
+  if (!url) return { type: 'none', url: '' }
+
+  // YouTube match
+  const ytMatch = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w-]{11})/)
+  if (ytMatch && ytMatch[1]) {
+    const id = ytMatch[1]
+    return {
+      type: 'youtube',
+      url: `https://www.youtube.com/embed/${id}?autoplay=1&mute=1&loop=1&playlist=${id}&controls=0&disabledkb=1&modestbranding=1&rel=0&showinfo=0&playsinline=1&enablejsapi=1`
+    }
+  }
+
+  // Vimeo match
+  const vimeoMatch = url.match(/vimeo\.com\/(?:video\/)?([0-9]+)/)
+  if (vimeoMatch && vimeoMatch[1]) {
+    const id = vimeoMatch[1]
+    return {
+      type: 'vimeo',
+      url: `https://player.vimeo.com/video/${id}?autoplay=1&muted=1&loop=1&background=1&autopause=0`
+    }
+  }
+
+  return {
+    type: 'direct',
+    url
+  }
 })
 
 const heroHorizontalClass = computed(() => {

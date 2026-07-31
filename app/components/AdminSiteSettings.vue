@@ -236,15 +236,26 @@
               class="relative w-full h-80 rounded-lg overflow-hidden border border-gray-300 bg-slate-900 shadow-inner select-none cursor-crosshair flex"
             >
               <!-- Background Video -->
-              <video 
-                v-if="settings.hero_bg_type === 'video' && settings.hero_bg_video_url"
-                class="absolute inset-0 w-full h-full object-cover z-0 pointer-events-none"
-                autoplay
-                loop
-                muted
-                playsinline
-                :src="settings.hero_bg_video_url"
-              ></video>
+              <template v-if="settings.hero_bg_type === 'video' && settings.hero_bg_video_url">
+                <iframe 
+                  v-if="parsedVideo.type === 'youtube' || parsedVideo.type === 'vimeo'"
+                  class="w-[160%] h-[160%] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 object-cover pointer-events-none scale-125 border-0 z-0"
+                  :src="parsedVideo.url"
+                  allow="autoplay; fullscreen"
+                ></iframe>
+                <video 
+                  v-else
+                  ref="adminPreviewVideoRef"
+                  class="absolute inset-0 w-full h-full object-cover z-0 pointer-events-none"
+                  autoplay
+                  loop
+                  muted
+                  :muted="true"
+                  playsinline
+                  webkit-playsinline
+                  :src="parsedVideo.url"
+                ></video>
+              </template>
               <!-- Background Image -->
               <img 
                 v-else
@@ -525,6 +536,36 @@ const defaultSettings: SiteSettings = {
 }
 
 const settings = reactive<SiteSettings>({ ...defaultSettings })
+
+const parsedVideo = computed(() => {
+  const url = (settings.hero_bg_video_url || '').trim()
+  if (!url) return { type: 'none', url: '' }
+
+  // YouTube match
+  const ytMatch = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w-]{11})/)
+  if (ytMatch && ytMatch[1]) {
+    const id = ytMatch[1]
+    return {
+      type: 'youtube',
+      url: `https://www.youtube.com/embed/${id}?autoplay=1&mute=1&loop=1&playlist=${id}&controls=0&disabledkb=1&modestbranding=1&rel=0&showinfo=0&playsinline=1&enablejsapi=1`
+    }
+  }
+
+  // Vimeo match
+  const vimeoMatch = url.match(/vimeo\.com\/(?:video\/)?([0-9]+)/)
+  if (vimeoMatch && vimeoMatch[1]) {
+    const id = vimeoMatch[1]
+    return {
+      type: 'vimeo',
+      url: `https://player.vimeo.com/video/${id}?autoplay=1&muted=1&loop=1&background=1&autopause=0`
+    }
+  }
+
+  return {
+    type: 'direct',
+    url
+  }
+})
 
 const previewHorizontalClass = computed(() => {
   const pos = settings.hero_card_position || 'left'
