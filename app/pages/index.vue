@@ -89,16 +89,41 @@
           class="absolute inset-0 w-full h-full object-cover z-0" 
           :src="siteSettings.hero_bg_image_url || 'https://lh3.googleusercontent.com/aida/AP1WRLuQGJlvhXgSbL5PCfgd-rVegzYgpPNJgtHn0Ea6Nm0tVayzLhjzQkKmbYMugrdMebtxFro3tlHv1N8ozueW3IWAmerLpn5BMh0-V4suiSBYyv-_1zhWqzLrg3b4d-rpkTVAeU22eoHKYZCmNp_AZySP90gelzHtlnS-8x3nRmtLSJEw4C0yhBjOP0LTv8cqJJere8bX1erK4A1HpU_AQV5WthPlinuCGSknmAf4oBmhbRpEqOyxTA2YAMo'"
         />
+
+        <!-- Preset Mode Container -->
         <div 
-          class="relative z-20 w-full h-full px-4 md:px-10 max-w-[1280px] mx-auto flex transition-all duration-300"
+          v-if="siteSettings.hero_card_position_mode === 'preset'"
+          class="relative z-20 w-full h-full px-4 md:px-10 max-w-[1280px] mx-auto flex transition-all duration-300 pointer-events-none"
           :class="[heroHorizontalClass, heroVerticalClass]"
         >
           <div 
-            class="backdrop-blur-xs p-8 md:p-12 max-w-xl rounded shadow-lg transition-all duration-300"
+            class="backdrop-blur-xs p-8 md:p-12 max-w-xl rounded shadow-lg transition-all duration-300 pointer-events-auto"
             :style="{ backgroundColor: siteSettings.hero_card_bg_color || '#74b934' }"
           >
             <h1 
               class="font-['Rubik',sans-serif] text-2xl md:text-4xl font-medium leading-tight whitespace-pre-line"
+              :style="{ color: siteSettings.hero_card_text_color || '#ffffff' }"
+            >
+              {{ siteSettings.hero_card_text || '“ O seu desafio diário, nós resolvemos todos os dias com segurança e confiabilidade “' }}
+            </h1>
+          </div>
+        </div>
+
+        <!-- Custom Free Positioning Container -->
+        <div 
+          v-else
+          class="absolute z-20 max-w-[90vw] md:max-w-xl px-4 transition-all duration-150 pointer-events-auto"
+          :style="{
+            left: (siteSettings.hero_card_offset_x ?? 10) + '%',
+            top: (siteSettings.hero_card_offset_y ?? 55) + '%',
+          }"
+        >
+          <div 
+            class="backdrop-blur-xs p-6 md:p-10 rounded shadow-lg transition-all duration-300"
+            :style="{ backgroundColor: siteSettings.hero_card_bg_color || '#74b934' }"
+          >
+            <h1 
+              class="font-['Rubik',sans-serif] text-xl md:text-3xl font-medium leading-tight whitespace-pre-line"
               :style="{ color: siteSettings.hero_card_text_color || '#ffffff' }"
             >
               {{ siteSettings.hero_card_text || '“ O seu desafio diário, nós resolvemos todos os dias com segurança e confiabilidade “' }}

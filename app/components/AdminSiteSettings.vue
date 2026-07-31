@@ -25,7 +25,7 @@
             <span class="material-symbols-outlined text-blue-600">featured_video</span>
             Banner Principal da Home (Hero)
           </h3>
-          <span class="text-[10px] bg-blue-100 text-blue-700 font-bold px-2 py-0.5 rounded uppercase">Edição de Imagem, Vídeo e Card</span>
+          <span class="text-[10px] bg-blue-100 text-blue-700 font-bold px-2 py-0.5 rounded uppercase">Edição de Imagem, Vídeo e Posição Livre</span>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -101,8 +101,89 @@
               ></textarea>
             </div>
 
-            <!-- Posição Horizontal e Vertical do Card -->
-            <div class="grid grid-cols-2 gap-4">
+            <!-- Modo de Posicionamento -->
+            <div class="space-y-2 border-t border-slate-200 pt-3">
+              <label class="block text-[10px] text-gray-600 font-bold uppercase tracking-wider">Modo de Posicionamento do Card</label>
+              <div class="flex items-center gap-4">
+                <label class="flex items-center gap-2 cursor-pointer text-xs font-semibold text-slate-700">
+                  <input type="radio" v-model="settings.hero_card_position_mode" value="custom" class="text-blue-600 focus:ring-blue-500" />
+                  <span class="flex items-center gap-1"><span class="material-symbols-outlined text-base">open_with</span> Livre (Arrastar ou Ajustar X / Y)</span>
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer text-xs font-semibold text-slate-700">
+                  <input type="radio" v-model="settings.hero_card_position_mode" value="preset" class="text-blue-600 focus:ring-blue-500" />
+                  <span class="flex items-center gap-1"><span class="material-symbols-outlined text-base">grid_view</span> Posições Fixas</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Posição Livre (Sliders & Controles de X e Y) -->
+            <div v-if="settings.hero_card_position_mode === 'custom'" class="space-y-4 bg-white p-3.5 rounded border border-gray-200">
+              <p class="text-[11px] text-blue-800 font-medium flex items-center gap-1">
+                <span class="material-symbols-outlined text-sm text-blue-600">pan_tool</span>
+                Arraste o card verde na caixa de preview ao lado ou ajuste as barras abaixo:
+              </p>
+
+              <!-- Slider Horizontal X -->
+              <div class="space-y-1">
+                <div class="flex justify-between items-center text-[10px] text-gray-600 font-bold uppercase">
+                  <span>Posição Horizontal (X): {{ settings.hero_card_offset_x }}%</span>
+                  <span class="text-gray-400 font-normal">Esquerda -> Direita</span>
+                </div>
+                <div class="flex items-center gap-3">
+                  <input 
+                    type="range" 
+                    min="0" 
+                    max="75" 
+                    step="1" 
+                    v-model.number="settings.hero_card_offset_x" 
+                    class="flex-1 accent-blue-600 cursor-pointer" 
+                  />
+                  <input 
+                    type="number" 
+                    min="0" 
+                    max="75" 
+                    v-model.number="settings.hero_card_offset_x" 
+                    class="w-16 border border-gray-300 p-1 text-xs text-center rounded bg-white font-mono" 
+                  />
+                </div>
+              </div>
+
+              <!-- Slider Vertical Y -->
+              <div class="space-y-1">
+                <div class="flex justify-between items-center text-[10px] text-gray-600 font-bold uppercase">
+                  <span>Posição Vertical (Y): {{ settings.hero_card_offset_y }}%</span>
+                  <span class="text-gray-400 font-normal">Topo -> Base</span>
+                </div>
+                <div class="flex items-center gap-3">
+                  <input 
+                    type="range" 
+                    min="0" 
+                    max="75" 
+                    step="1" 
+                    v-model.number="settings.hero_card_offset_y" 
+                    class="flex-1 accent-blue-600 cursor-pointer" 
+                  />
+                  <input 
+                    type="number" 
+                    min="0" 
+                    max="75" 
+                    v-model.number="settings.hero_card_offset_y" 
+                    class="w-16 border border-gray-300 p-1 text-xs text-center rounded bg-white font-mono" 
+                  />
+                </div>
+              </div>
+
+              <!-- Atalhos Rápidos de Posição -->
+              <div class="pt-2 border-t border-gray-100 flex flex-wrap gap-1.5">
+                <button @click="setPresetOffset(5, 55)" class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-[10px] font-bold rounded cursor-pointer transition-colors">Canto Inferior Esquerdo</button>
+                <button @click="setPresetOffset(30, 30)" class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-[10px] font-bold rounded cursor-pointer transition-colors">Centro</button>
+                <button @click="setPresetOffset(5, 5)" class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-[10px] font-bold rounded cursor-pointer transition-colors">Topo Esquerdo</button>
+                <button @click="setPresetOffset(50, 55)" class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-[10px] font-bold rounded cursor-pointer transition-colors">Canto Inferior Direito</button>
+              </div>
+            </div>
+
+            <!-- Posição Fixa (Preset Selects) -->
+            <div v-else class="grid grid-cols-2 gap-4">
               <div class="space-y-1.5">
                 <label class="block text-[10px] text-gray-600 font-bold uppercase tracking-wider">Alinhamento Horizontal</label>
                 <select v-model="settings.hero_card_position" class="w-full border border-gray-300 px-3 py-2 text-xs rounded bg-white text-slate-800 focus:ring-1 focus:ring-blue-600 focus:outline-none cursor-pointer">
@@ -142,17 +223,22 @@
             </div>
           </div>
 
-          <!-- Coluna da Direita: Preview ao Vivo do Banner -->
+          <!-- Coluna da Direita: Preview Interativo com Drag & Drop -->
           <div class="space-y-2">
             <label class="block text-[10px] text-gray-600 font-bold uppercase tracking-wider flex items-center justify-between">
-              <span>Preview em Tempo Real</span>
-              <span class="text-gray-400 font-normal">Ao vivo</span>
+              <span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm text-blue-600">touch_app</span> Preview Interativo (Clique e Arraste)</span>
+              <span class="text-emerald-600 font-bold">X: {{ settings.hero_card_offset_x }}% | Y: {{ settings.hero_card_offset_y }}%</span>
             </label>
-            <div class="relative w-full h-72 rounded-lg overflow-hidden border border-gray-300 bg-slate-900 shadow-inner flex">
+            
+            <div 
+              ref="previewContainerRef"
+              @mousedown="onCardMouseDown"
+              class="relative w-full h-80 rounded-lg overflow-hidden border border-gray-300 bg-slate-900 shadow-inner select-none cursor-crosshair flex"
+            >
               <!-- Background Video -->
               <video 
                 v-if="settings.hero_bg_type === 'video' && settings.hero_bg_video_url"
-                class="absolute inset-0 w-full h-full object-cover z-0"
+                class="absolute inset-0 w-full h-full object-cover z-0 pointer-events-none"
                 autoplay
                 loop
                 muted
@@ -162,13 +248,36 @@
               <!-- Background Image -->
               <img 
                 v-else
-                class="absolute inset-0 w-full h-full object-cover z-0" 
+                class="absolute inset-0 w-full h-full object-cover z-0 pointer-events-none" 
                 :src="settings.hero_bg_image_url || 'https://lh3.googleusercontent.com/aida/AP1WRLuQGJlvhXgSbL5PCfgd-rVegzYgpPNJgtHn0Ea6Nm0tVayzLhjzQkKmbYMugrdMebtxFro3tlHv1N8ozueW3IWAmerLpn5BMh0-V4suiSBYyv-_1zhWqzLrg3b4d-rpkTVAeU22eoHKYZCmNp_AZySP90gelzHtlnS-8x3nRmtLSJEw4C0yhBjOP0LTv8cqJJere8bX1erK4A1HpU_AQV5WthPlinuCGSknmAf4oBmhbRpEqOyxTA2YAMo'"
               />
 
-              <!-- Container position preview -->
+              <!-- Preview Card (Mode: Custom vs Preset) -->
               <div 
-                class="relative z-10 w-full h-full p-4 flex transition-all duration-300"
+                v-if="settings.hero_card_position_mode === 'custom'"
+                class="absolute z-10 p-3 max-w-[220px] rounded shadow-xl transition-all duration-75 cursor-grab active:cursor-grabbing backdrop-blur-xs ring-2 ring-blue-500/50 hover:ring-blue-500"
+                :style="{
+                  left: settings.hero_card_offset_x + '%',
+                  top: settings.hero_card_offset_y + '%',
+                  backgroundColor: settings.hero_card_bg_color || '#74b934'
+                }"
+              >
+                <div class="text-[9px] text-white/80 font-mono mb-1 flex items-center justify-between pointer-events-none">
+                  <span>⋮⋮ ARRASTE</span>
+                  <span>{{ settings.hero_card_offset_x }}%, {{ settings.hero_card_offset_y }}%</span>
+                </div>
+                <p 
+                  class="font-medium text-[11px] leading-snug whitespace-pre-line pointer-events-none"
+                  :style="{ color: settings.hero_card_text_color || '#ffffff' }"
+                >
+                  {{ settings.hero_card_text || '“ O seu desafio diário, nós resolvemos todos os dias com segurança e confiabilidade “' }}
+                </p>
+              </div>
+
+              <!-- Preset Mode Preview -->
+              <div 
+                v-else
+                class="relative z-10 w-full h-full p-4 flex transition-all duration-300 pointer-events-none"
                 :class="[previewHorizontalClass, previewVerticalClass]"
               >
                 <div 
@@ -331,6 +440,8 @@ const loading = ref(true)
 const saving = ref(false)
 const uploadingBg = ref(false)
 const bgFileInput = ref<HTMLInputElement | null>(null)
+const previewContainerRef = ref<HTMLElement | null>(null)
+const isDraggingCard = ref(false)
 
 const fontOptions = [
   'Inter', 'Roboto', 'Arial', 'Verdana', 'Helvetica', 'Georgia', 'Tahoma',
@@ -374,6 +485,9 @@ interface SiteSettings {
   hero_card_text_color: string
   hero_card_position: 'left' | 'center' | 'right'
   hero_card_vertical_align: 'top' | 'center' | 'bottom'
+  hero_card_position_mode: 'custom' | 'preset'
+  hero_card_offset_x: number
+  hero_card_offset_y: number
 }
 
 const defaultSettings: SiteSettings = {
@@ -405,6 +519,9 @@ const defaultSettings: SiteSettings = {
   hero_card_text_color: '#ffffff',
   hero_card_position: 'left',
   hero_card_vertical_align: 'center',
+  hero_card_position_mode: 'custom',
+  hero_card_offset_x: 10,
+  hero_card_offset_y: 55,
 }
 
 const settings = reactive<SiteSettings>({ ...defaultSettings })
@@ -422,6 +539,47 @@ const previewVerticalClass = computed(() => {
   if (align === 'bottom') return 'items-end'
   return 'items-center'
 })
+
+const setPresetOffset = (x: number, y: number) => {
+  settings.hero_card_position_mode = 'custom'
+  settings.hero_card_offset_x = x
+  settings.hero_card_offset_y = y
+}
+
+// Drag and Drop Logic
+const onCardMouseDown = (e: MouseEvent) => {
+  if (settings.hero_card_position_mode !== 'custom') return
+  isDraggingCard.value = true
+  updateCardPositionFromMouse(e)
+  window.addEventListener('mousemove', onCardMouseMove)
+  window.addEventListener('mouseup', onCardMouseUp)
+}
+
+const onCardMouseMove = (e: MouseEvent) => {
+  if (!isDraggingCard.value) return
+  updateCardPositionFromMouse(e)
+}
+
+const onCardMouseUp = () => {
+  isDraggingCard.value = false
+  window.removeEventListener('mousemove', onCardMouseMove)
+  window.removeEventListener('mouseup', onCardMouseUp)
+}
+
+const updateCardPositionFromMouse = (e: MouseEvent) => {
+  if (!previewContainerRef.value) return
+  const rect = previewContainerRef.value.getBoundingClientRect()
+  
+  let relX = ((e.clientX - rect.left) / rect.width) * 100
+  let relY = ((e.clientY - rect.top) / rect.height) * 100
+
+  // Constrain between 0% and 75%
+  relX = Math.max(0, Math.min(75, Math.round(relX)))
+  relY = Math.max(0, Math.min(75, Math.round(relY)))
+
+  settings.hero_card_offset_x = relX
+  settings.hero_card_offset_y = relY
+}
 
 const triggerBgUpload = () => {
   bgFileInput.value?.click()

@@ -33,6 +33,9 @@ export interface SiteVisualSettings {
   hero_card_text_color: string
   hero_card_position: 'left' | 'center' | 'right'
   hero_card_vertical_align: 'top' | 'center' | 'bottom'
+  hero_card_position_mode: 'custom' | 'preset'
+  hero_card_offset_x: number
+  hero_card_offset_y: number
 }
 
 const defaults: SiteVisualSettings = {
@@ -64,6 +67,9 @@ const defaults: SiteVisualSettings = {
   hero_card_text_color: '#ffffff',
   hero_card_position: 'left',
   hero_card_vertical_align: 'center',
+  hero_card_position_mode: 'custom',
+  hero_card_offset_x: 10,
+  hero_card_offset_y: 55,
 }
 
 export default function useSiteSettings() {
