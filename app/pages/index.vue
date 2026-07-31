@@ -20,11 +20,60 @@
             </NuxtLink>
           </div>
 
-          <!-- Nav links -->
-          <nav class="hidden md:flex items-center gap-12">
-            <NuxtLink to="/" class="text-sm text-gray-600 hover:text-gray-900 transition-colors font-bold text-blue-700">{{ t.home }}</NuxtLink>
-            <NuxtLink to="/#sobre" class="text-sm text-gray-600 hover:text-gray-900 transition-colors">{{ t.about }}</NuxtLink>
-            <a href="#contato" class="text-sm text-gray-600 hover:text-gray-900 transition-colors">{{ t.contact }}</a>
+          <!-- Nav links & Language Flags -->
+          <nav class="hidden md:flex items-center space-x-8" style="margin-right: 60px;">
+            <NuxtLink to="/" class="text-sm font-normal text-blue-700 font-bold transition-colors">{{ t.home }}</NuxtLink>
+            <NuxtLink to="/catalogo" class="text-sm font-normal text-gray-600 hover:text-gray-900 transition-colors">{{ t.catalog }}</NuxtLink>
+            <NuxtLink to="/#sobre" class="text-sm font-normal text-gray-600 hover:text-gray-900 transition-colors">{{ t.about }}</NuxtLink>
+            <a href="#contato" class="text-sm font-normal text-gray-600 hover:text-gray-900 transition-colors">{{ t.contact }}</a>
+
+            <!-- Flags Selector -->
+            <div class="flex items-center gap-2 border-l border-gray-200 pl-6 ml-2">
+              <button 
+                @click="currentLang = 'pt'" 
+                class="p-1 rounded-md transition-all border cursor-pointer flex items-center justify-center"
+                :class="currentLang === 'pt' ? 'bg-blue-50 border-blue-500 shadow-xs ring-2 ring-blue-500/20 scale-105' : 'border-transparent opacity-60 hover:opacity-100 bg-transparent'"
+                title="Português (Brasil)"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-4 rounded-xs shadow-2xs object-cover" viewBox="0 0 720 504">
+                  <rect width="720" height="504" fill="#009c3b"/>
+                  <polygon points="360,42 678,252 360,462 42,252" fill="#ffdf00"/>
+                  <circle cx="360" cy="252" r="126" fill="#002776"/>
+                  <path d="M 235,260 A 136,136 0 0,1 485,244" fill="none" stroke="#ffffff" stroke-width="12"/>
+                </svg>
+              </button>
+
+              <button 
+                @click="currentLang = 'en'" 
+                class="p-1 rounded-md transition-all border cursor-pointer flex items-center justify-center"
+                :class="currentLang === 'en' ? 'bg-blue-50 border-blue-500 shadow-xs ring-2 ring-blue-500/20 scale-105' : 'border-transparent opacity-60 hover:opacity-100 bg-transparent'"
+                title="English (United Kingdom)"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-4 rounded-xs shadow-2xs object-cover" viewBox="0 0 60 30">
+                  <clipPath id="uk-clip-index"><path d="M0,0 v30 h60 v-30 z"/></clipPath>
+                  <clipPath id="uk-diag-index"><path d="M30,15 h30 v15 z M30,15 h-30 v-15 z M30,15 h30 v-15 z M30,15 h-30 v15 z"/></clipPath>
+                  <g clip-path="url(#uk-clip-index)">
+                    <path d="M0,0 v30 h60 v-30 z" fill="#012169"/>
+                    <path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/>
+                    <path d="M0,0 L60,30 M60,0 L0,30" clip-path="url(#uk-diag-index)" stroke="#C8102E" stroke-width="4"/>
+                    <path d="M30,0 v30 M0,15 h60" stroke="#fff" stroke-width="10"/>
+                    <path d="M30,0 v30 M0,15 h60" stroke="#C8102E" stroke-width="6"/>
+                  </g>
+                </svg>
+              </button>
+
+              <button 
+                @click="currentLang = 'es'" 
+                class="p-1 rounded-md transition-all border cursor-pointer flex items-center justify-center"
+                :class="currentLang === 'es' ? 'bg-blue-50 border-blue-500 shadow-xs ring-2 ring-blue-500/20 scale-105' : 'border-transparent opacity-60 hover:opacity-100 bg-transparent'"
+                title="Español (España)"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-4 rounded-xs shadow-2xs object-cover" viewBox="0 0 750 500">
+                  <rect width="750" height="500" fill="#c60b1e"/>
+                  <rect width="750" height="250" y="125" fill="#ffc400"/>
+                </svg>
+              </button>
+            </div>
           </nav>
 
           <!-- Mobile toggle -->
@@ -54,8 +103,14 @@
       <!-- Mobile drawer -->
       <div v-if="mobileMenuOpen" class="bg-white border-t border-gray-100 px-6 py-4 flex flex-col gap-3">
         <NuxtLink to="/" class="text-sm font-bold text-blue-700" @click="mobileMenuOpen = false">{{ t.home }}</NuxtLink>
+        <NuxtLink to="/catalogo" class="text-sm font-semibold text-gray-600" @click="mobileMenuOpen = false">{{ t.catalog }}</NuxtLink>
         <NuxtLink to="/#sobre" class="text-sm font-semibold text-gray-600" @click="mobileMenuOpen = false">{{ t.about }}</NuxtLink>
         <a href="#contato" @click="mobileMenuOpen = false" class="text-sm font-semibold text-gray-600">{{ t.contact }}</a>
+        <div class="flex items-center gap-2 pt-2 border-t border-gray-100">
+          <button @click="currentLang = 'pt'" class="px-2 py-1 text-xs rounded border" :class="currentLang === 'pt' ? 'bg-blue-50 border-blue-500 font-bold' : 'border-gray-200'">🇧🇷 PT</button>
+          <button @click="currentLang = 'en'" class="px-2 py-1 text-xs rounded border" :class="currentLang === 'en' ? 'bg-blue-50 border-blue-500 font-bold' : 'border-gray-200'">🇬🇧 EN</button>
+          <button @click="currentLang = 'es'" class="px-2 py-1 text-xs rounded border" :class="currentLang === 'es' ? 'bg-blue-50 border-blue-500 font-bold' : 'border-gray-200'">🇪🇸 ES</button>
+        </div>
         <hr class="border-gray-200 my-1">
         <NuxtLink
           v-for="seg in translatedSegments"
