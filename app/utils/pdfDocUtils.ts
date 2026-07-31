@@ -94,47 +94,56 @@ export function sanitizeSpecValue(val: string | null | undefined, label?: string
   str = str.replace(/\s*°\s*C/g, ' °C')
   str = str.replace(/°\s*°/g, '°')
 
-  // Fix diameter / inch quote missing on last diameter item
-  const isDiameterOrConnection = label ? /diâmetro|diametro|conexão|conexao|nenndurchmesser|durchmesser|diameter|size/i.test(label) : true
-  if (isDiameterOrConnection || /"|\|/.test(str)) {
-    str = str.replace(/"{2,}/g, '"')
-    if (str.includes('|')) {
-      const parts = str.split('|').map(p => p.trim())
-      const fixedParts = parts.map(part => {
-        let p = part.replace(/"{2,}/g, '"')
-        if (isDiameterOrConnection || parts.some(item => item.includes('"'))) {
-          if (/(?:\d+\/\d+|\d+(?:\.\d+)?|\d+\.\d+\/\d+)$/.test(p) && !p.endsWith('"')) {
-            p = p + '"'
-          }
-        }
-        return p
-      })
-      str = fixedParts.join(' | ')
-    } else {
-      if (isDiameterOrConnection) {
-        if (/(?:\d+\/\d+|\d+(?:\.\d+)?|\d+\.\d+\/\d+)$/.test(str) && !str.endsWith('"')) {
-          str = str + '"'
+  // Clean duplicate quotes
+  str = str.replace(/"{2,}/g, '"')
+
+  // Fix diameter / inch quote missing on diameter, connection or dimension items
+  const normLabel = label ? label.toLowerCase().trim() : ''
+  const isDiameterOrConnection = /diâmetro|diametro|diámetro|conexão|conexao|conexión|conexion|nenndurchmesser|nennweite|durchmesser|prozessanschluss|anschluss|diameter|size|connection|rating|medida|tamanho|polegada|inch/i.test(normLabel)
+  const containsInchQuote = str.includes('"')
+
+  if (isDiameterOrConnection || containsInchQuote || str.includes('|')) {
+    const ensureInchQuote = (token: string): string => {
+      let t = token.trim().replace(/"{2,}/g, '"')
+      if (!t) return token
+      if (t.endsWith('"')) return t
+
+      // Match numbers, fractions or mixed fractions e.g. 1/2, 3/4, 1.1/2, 1.1/4, 2.1/2, 1, 2, 3
+      if (/(?:^|\s|\(|\b)(\d+(?:[\.\-\s]\d+)?(?:\/\d+)?|\d+\/\d+)$/.test(t)) {
+        if (!/(?:mm|cm|m|°c|c|bar|psi|pn\d+|dn\d+)$/i.test(t)) {
+          return t + '"'
         }
       }
+      return t
     }
+
+    if (str.includes('|')) {
+      const parts = str.split('|')
+      const hasAnyQuote = isDiameterOrConnection || parts.some(p => p.includes('"'))
+      if (hasAnyQuote) {
+        str = parts.map(p => ensureInchQuote(p)).join(' | ')
+      }
+    } else if (str.includes('~')) {
+      const parts = str.split('~')
+      const hasAnyQuote = isDiameterOrConnection || parts.some(p => p.includes('"'))
+      if (hasAnyQuote) {
+        str = parts.map(p => ensureInchQuote(p)).join(' ~ ')
+      }
+    } else if (isDiameterOrConnection || containsInchQuote) {
+      str = ensureInchQuote(str)
+    }
+
+    // Fix parenthesis missing internal quote e.g. (3/8" ~ 2) -> (3/8" ~ 2")
+    str = str.replace(/(\d+(?:[\.\-\s]\d+)?(?:\/\d+)?)\)/g, '$1")')
   }
 
   str = str.replace(/[ \t]{2,}/g, ' ')
   return str
 }
 
-export function sanitizePdfText(text: string | null | undefined): string {
+export function sanitizePdfText(text: string | null | undefined, label?: string): string {
   if (!text) return ''
-  let str = String(text)
-  str = str.replace(/&deg;/gi, '°')
-           .replace(/&ordm;/gi, '°')
-           .replace(/&plusmn;/gi, '±')
-           .replace(/&nbsp;/gi, ' ')
-  str = str.replace(/\u00a0/g, ' ')
-  str = str.replace(/[\u1D52\u1D48\u00BA\u02DAº]/g, '°')
-  str = str.replace(/(\d+)\s*C\b/g, '$1 °C')
-  str = str.replace(/\s*°\s*C/g, ' °C')
-  return str
+  return sanitizeSpecValue(text, label)
 }
 
 export function getFontStyle(bold: boolean | undefined, italic: boolean | undefined): string {
@@ -308,3 +317,33 @@ export function setDrawRgb(pdf: any, hex: string) {
   const [r, g, b] = hexToRgb(hex)
   pdf.setDrawColor(r, g, b)
 }
+
+export function isSpecLabelHidden(label: string | null | undefined): boolean {
+  if (!label) return true
+  const norm = label
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .trim()
+
+  const hiddenExact = [
+    'idioma', 'lang', 'language', 'category_display',
+    'industria', 'industry', 'branche', 'sektor', 'sector',
+    'secteur', 'segmento', 'segment', 'setor', 'setores'
+  ]
+
+  if (hiddenExact.includes(norm)) return true
+
+  if (
+    norm.startsWith('industri') ||
+    norm.startsWith('branche') ||
+    norm.startsWith('segment') ||
+    norm.startsWith('sektor') ||
+    norm.startsWith('setor')
+  ) {
+    return true
+  }
+
+  return false
+}
+

@@ -52,8 +52,38 @@
           <div v-if="coverCategorySelection === 'specific'" class="pl-6 pt-1">
             <select v-model="specificCoverCategory" class="w-full border border-gray-300 p-2 text-xs rounded bg-white text-slate-700 uppercase">
               <option value="" disabled>Selecione uma categoria...</option>
-              <option v-for="cat in listableCategories" :key="cat" :value="cat">{{ cat }}</option>
+              <option v-for="cat in listableCategories" :key="cat" :value="cat">{{ formatCategoryOptionLabel(cat) }}</option>
             </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Opção: Produtos Incluídos no PDF (Filtro de Categoria) -->
+      <div class="border-t border-gray-200 pt-4 mb-5">
+        <h4 class="text-xs font-bold text-slate-800 mb-2 uppercase tracking-wider flex items-center gap-2">
+          <span class="material-symbols-outlined text-sm text-blue-600">filter_alt</span>
+          Produtos Incluídos no PDF
+        </h4>
+        <p class="text-[10px] text-gray-500 mb-3">
+          Escolha se deseja incluir todos os produtos ou imprimir apenas os equipamentos de uma categoria específica.
+        </p>
+        <div class="space-y-3">
+          <label class="flex items-center gap-3 p-3 border border-gray-200 rounded cursor-pointer hover:bg-gray-50 transition-colors">
+            <input type="radio" v-model="productFilterMode" value="all" class="text-blue-650" />
+            <span class="text-xs font-bold text-slate-800 uppercase">Todos os Produtos</span>
+          </label>
+
+          <div class="border border-gray-200 rounded p-3 space-y-2">
+            <label class="flex items-center gap-3 cursor-pointer">
+              <input type="radio" v-model="productFilterMode" value="category" class="text-blue-650" />
+              <span class="text-xs font-bold text-slate-800 uppercase">Imprimir por Categoria Específica</span>
+            </label>
+            <div v-if="productFilterMode === 'category'" class="pl-6 pt-1">
+              <select v-model="filterCategory" class="w-full border border-gray-300 p-2 text-xs rounded bg-white text-slate-700 uppercase">
+                <option value="" disabled>Selecione a categoria dos produtos...</option>
+                <option v-for="cat in listableCategories" :key="cat" :value="cat">{{ formatCategoryOptionLabel(cat) }}</option>
+              </select>
+            </div>
           </div>
         </div>
       </div>
@@ -257,27 +287,76 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import useTranslations from '../composables/useTranslations'
 
-const { currentLang } = useTranslations()
+const { currentLang, translateCategory } = useTranslations()
 
 const props = defineProps<{
   open: boolean
   hasGeralCover: boolean
   listableCategories: string[]
+  categoryProductCounts?: Record<string, number>
 }>()
+
+const getCategoryCount = (cat: string) => {
+  if (!props.categoryProductCounts) return 0
+  const key = (cat || '').toUpperCase().trim()
+  return props.categoryProductCounts[key] || 0
+}
+
+const formatCategoryOptionLabel = (cat: string) => {
+  const name = translateCategory(cat)
+  const count = getCategoryCount(cat)
+  let unit = 'produtos'
+  if (currentLang.value === 'en') {
+    unit = count === 1 ? 'product' : 'products'
+  } else if (currentLang.value === 'de') {
+    unit = count === 1 ? 'Produkt' : 'Produkte'
+  } else {
+    unit = count === 1 ? 'produto' : 'produtos'
+  }
+  return `${name} (${count} ${unit})`
+}
 
 const emit = defineEmits<{
   (e: 'close'): void
-  (e: 'confirm', payload: { selection: 'dynamic' | 'GERAL' | 'specific', specificCategory: string, pdfType: 'web' | 'print' | 'qrcode', bookletMode: boolean }): void
+  (e: 'confirm', payload: {
+    selection: 'dynamic' | 'GERAL' | 'specific',
+    specificCategory: string,
+    productFilterMode: 'all' | 'category',
+    filterCategory: string,
+    pdfType: 'web' | 'print' | 'qrcode',
+    bookletMode: boolean
+  }): void
   (e: 'create-quick-category', payload: { name: string, color: string, imageName: string, imageBlob: string | null }): void
 }>()
 
 const coverCategorySelection = ref<'dynamic' | 'GERAL' | 'specific'>('dynamic')
 const specificCoverCategory = ref('')
+const productFilterMode = ref<'all' | 'category'>('all')
+const filterCategory = ref('')
 const pdfType = ref<'web' | 'print' | 'qrcode'>('web')
 const bookletMode = ref(false)
+
+watch(coverCategorySelection, (newVal) => {
+  if (newVal === 'specific' && !specificCoverCategory.value && props.listableCategories && props.listableCategories.length > 0) {
+    specificCoverCategory.value = props.listableCategories[0]
+  }
+})
+
+watch(productFilterMode, (newVal) => {
+  if (newVal === 'category' && !filterCategory.value && props.listableCategories && props.listableCategories.length > 0) {
+    filterCategory.value = props.listableCategories[0]
+  }
+})
+
+watch(() => props.open, (isOpen) => {
+  if (isOpen && props.listableCategories && props.listableCategories.length > 0) {
+    if (!specificCoverCategory.value) specificCoverCategory.value = props.listableCategories[0]
+    if (!filterCategory.value) filterCategory.value = props.listableCategories[0]
+  }
+})
 
 // Quick Create State
 const showQuickCreate = ref(false)
@@ -340,6 +419,8 @@ const submitConfirm = () => {
   emit('confirm', {
     selection: coverCategorySelection.value,
     specificCategory: specificCoverCategory.value,
+    productFilterMode: productFilterMode.value,
+    filterCategory: filterCategory.value,
     pdfType: pdfType.value,
     bookletMode: bookletMode.value
   })

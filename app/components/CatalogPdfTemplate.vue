@@ -18,6 +18,7 @@ import type { Product } from '~/components/ProductCard.vue'
 import { hexToBase64 } from '../utils/image'
 import { preloadAllImages } from '../utils/pdfImageLoader'
 import { buildCatalogPdf } from '../utils/pdfBuilder'
+import useTranslations from '../composables/useTranslations'
 
 const QUALITEC_LOGO_URL = 'https://lh3.googleusercontent.com/aida-public/AB6AXuCJOpxk8IRBgRW2bvQlS_z4LoXARfSvqvz2saPXY9SVEh_22Bcd1VS5ijTW9c3L5WiWT0idDIuscN94pofAxJzmGnXWNILAeSKTQdpe0NSl8pmXlo5Mo2KzPIESuDMk-6ap5WOs_icm6enTpaiHanmAbwntVxfvVTPLdAKIwMg7L88cyvuALuJQqv2-2ntPUxn3BgVkSCLfjyupjGSuOW5zhpBXbfo-ac3ZkUg-WHHUrhMMhz1XIsk_yPD5jMMWbkCwWOJV1BBvHWM'
 
@@ -43,6 +44,7 @@ const categoryIconUrl = ref<string | null>(null)
 // ===== Composables =====
 const { getCategoryColor, getCategoryCover, fetchAssets, categoryAssets } = useCategoryColors()
 const { getPdfSettings, fetchPdfSettings } = usePdfSettings()
+const { currentLang } = useTranslations()
 
 // ===== Computed: slot helper =====
 const getSlots = (product: any) => {
@@ -138,10 +140,16 @@ const catalogCategory = computed(() => {
 const catalogBgClass = computed(() => {
   const dynamicColor = getCategoryColor(catalogCategory.value)
   if (dynamicColor) return dynamicColor
-  if (catalogCategory.value === 'INCÊNDIO') return '#C0504D'
-  if (catalogCategory.value === 'GERAL' || catalogCategory.value === 'VÁLVULAS') return '#376092'
-  if (!props.products || props.products.length === 0) return '#2563eb'
-  return props.products[0].bgClass || '#376092'
+  const catUpper = (catalogCategory.value || '').toUpperCase().trim()
+  if (catUpper === 'INCÊNDIO' || catUpper === 'INCENDIO') return '#C0504D'
+  if (catUpper === 'GERAL' || catUpper === 'VÁLVULAS' || catUpper === 'VALVULAS') return '#376092'
+  
+  if (props.products && props.products.length > 0) {
+    const matchingProd = props.products.find(p => p.category && p.category.toUpperCase().trim() === catUpper)
+    if (matchingProd && matchingProd.bgClass) return matchingProd.bgClass
+  }
+
+  return '#376092'
 })
 
 // ===== Helpers =====
@@ -215,8 +223,10 @@ const getCoverImageSrc = (): string | null => {
 }
 
 const fetchCoverImage = async (category: string) => {
-  const asset = getCategoryCover(category) || getCategoryCover('Geral')
-  if (asset) {
+  const catUpper = (category || 'GERAL').toUpperCase().trim()
+  const asset = getCategoryCover(catUpper)
+  
+  if (asset && (asset.cover_image_url || asset.cover_image_blob)) {
     coverImageUrl.value = asset.cover_image_url || null
     coverImageBlob.value = asset.cover_image_blob || null
     categoryIconUrl.value = asset.icon_url || null
@@ -225,18 +235,31 @@ const fetchCoverImage = async (category: string) => {
       const { data } = await supabase
         .from('category_assets')
         .select('cover_image_url, cover_image_blob, icon_url')
-        .eq('category', category)
-        .single()
-      if (data) {
-        coverImageUrl.value = data.cover_image_url
-        coverImageBlob.value = data.cover_image_blob
+        .ilike('category', catUpper)
+        .limit(1)
+        .maybeSingle()
+      if (data && (data.cover_image_url || data.cover_image_blob)) {
+        coverImageUrl.value = data.cover_image_url || null
+        coverImageBlob.value = data.cover_image_blob || null
         categoryIconUrl.value = data.icon_url || null
       } else {
-        const fallback = await supabase.from('category_assets').select('cover_image_url, cover_image_blob, icon_url').eq('category', 'Geral').single()
-        if (fallback.data) {
-          coverImageUrl.value = fallback.data.cover_image_url
-          coverImageBlob.value = fallback.data.cover_image_blob
+        const fallback = await supabase
+          .from('category_assets')
+          .select('cover_image_url, cover_image_blob, icon_url')
+          .ilike('category', 'GERAL')
+          .limit(1)
+          .maybeSingle()
+        if (fallback?.data) {
+          coverImageUrl.value = fallback.data.cover_image_url || null
+          coverImageBlob.value = fallback.data.cover_image_blob || null
           categoryIconUrl.value = fallback.data.icon_url || null
+        } else {
+          const geralAsset = getCategoryCover('GERAL')
+          if (geralAsset) {
+            coverImageUrl.value = geralAsset.cover_image_url || null
+            coverImageBlob.value = geralAsset.cover_image_blob || null
+            categoryIconUrl.value = geralAsset.icon_url || null
+          }
         }
       }
     } catch (e) {
@@ -294,7 +317,8 @@ watch(() => props.isGenerating, async (newVal) => {
         getBgColor,
         getSlots,
         pdfType: props.pdfType || 'web',
-        bookletMode: props.bookletMode || false
+        bookletMode: props.bookletMode || false,
+        lang: currentLang.value
       })
 
       // 4. Save locally

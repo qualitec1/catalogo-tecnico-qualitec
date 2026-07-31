@@ -20,16 +20,55 @@ export const segmentList: SegmentItem[] = [
 ]
 
 export const categoryDict: Record<string, { en: string; de: string }> = {
+  'GERAL': { en: 'GENERAL', de: 'ALLGEMEIN' },
+  'CATÁLOGO': { en: 'CATALOG', de: 'KATALOG' },
   'VÁLVULAS': { en: 'VALVES', de: 'VENTILE' },
   'TRANSMISSORES': { en: 'TRANSMITTERS', de: 'SENDER' },
   'MEDIDORES': { en: 'METERS', de: 'MESSGERÄTE' },
   'SISTEMAS': { en: 'SYSTEMS', de: 'SYSTEME' },
   'EQUIPAMENTOS': { en: 'EQUIPMENT', de: 'GERÄTE' },
   'VÁLVULAS 3 VIAS': { en: '3-WAY VALVES', de: '3-WEGE-VENTILE' },
+  '3-WAY VALVES': { en: '3-WAY VALVES', de: '3-WEGE-VENTILE' },
+  '3-WEGE-VENTILE': { en: '3-WAY VALVES', de: '3-WEGE-VENTILE' },
   'VÁLVULAS GLOBO': { en: 'GLOBE VALVES', de: 'GLOBE-VENTILE' },
+  'GLOBE VALVES': { en: 'GLOBE VALVES', de: 'GLOBE-VENTILE' },
   'VÁLVULAS DE SEGURANÇA': { en: 'SAFETY VALVES', de: 'SICHERHEITSVENTILE' },
+  'SAFETY VALVES': { en: 'SAFETY VALVES', de: 'SICHERHEITSVENTILE' },
   'VÁLVULAS CRIOGÊNICAS': { en: 'CRYOGENIC VALVES', de: 'KRYO-VENTILE' },
-  'TRANSMISSORES DE PRESSÃO': { en: 'PRESSURE TRANSMITTERS', de: 'DRUCKMESSUMFORMER' }
+  'VÁLVULAS CRIOGENICAS': { en: 'CRYOGENIC VALVES', de: 'KRYO-VENTILE' },
+  'CRIOGENIA': { en: 'CRYOGENIC VALVES', de: 'KRYO-VENTILE' },
+  'CRYOGENIC VALVES': { en: 'CRYOGENIC VALVES', de: 'KRYO-VENTILE' },
+  'KRYO-VENTILE': { en: 'CRYOGENIC VALVES', de: 'KRYO-VENTILE' },
+  'TRANSMISSORES DE PRESSÃO': { en: 'PRESSURE TRANSMITTERS', de: 'DRUCKMESSUMFORMER' },
+  'PRESSURE TRANSMITTERS': { en: 'PRESSURE TRANSMITTERS', de: 'DRUCKMESSUMFORMER' }
+}
+
+export function translateCategoryName(catName: string, lang: string): string {
+  if (!catName) return ''
+  if (lang === 'pt') return catName
+  
+  const norm = catName
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toUpperCase()
+    .trim()
+
+  for (const [key, trans] of Object.entries(categoryDict)) {
+    const normKey = key.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase().trim()
+    if (norm === normKey) {
+      return trans[lang as 'en' | 'de'] || catName
+    }
+  }
+
+  // Keyword fallbacks
+  if (norm.includes('CRIOG')) return lang === 'en' ? 'CRYOGENIC VALVES' : 'KRYO-VENTILE'
+  if (norm.includes('3 VIAS') || norm.includes('3-WAY')) return lang === 'en' ? '3-WAY VALVES' : '3-WEGE-VENTILE'
+  if (norm.includes('GLOBO')) return lang === 'en' ? 'GLOBE VALVES' : 'GLOBE-VENTILE'
+  if (norm.includes('SEGURANCA')) return lang === 'en' ? 'SAFETY VALVES' : 'SICHERHEITSVENTILE'
+  if (norm.includes('PRESSAO')) return lang === 'en' ? 'PRESSURE TRANSMITTERS' : 'DRUCKMESSUMFORMER'
+  if (norm === 'GERAL') return lang === 'en' ? 'GENERAL' : 'ALLGEMEIN'
+
+  return catName
 }
 
 export const translations = {
@@ -83,14 +122,7 @@ export default function useTranslations() {
   })
 
   const translateCategory = (catName: string): string => {
-    if (!catName) return ''
-    if (currentLang.value === 'pt') return catName
-    const upper = catName.toUpperCase().trim()
-    const found = categoryDict[upper]
-    if (found && found[currentLang.value]) {
-      return found[currentLang.value]
-    }
-    return catName
+    return translateCategoryName(catName, currentLang.value)
   }
 
   const setLanguage = (lang: LanguageCode) => {

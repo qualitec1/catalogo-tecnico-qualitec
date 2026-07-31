@@ -91,7 +91,7 @@ import { ref, computed } from 'vue'
 import useCategoryColors from '~/composables/useCategoryColors'
 import useSiteSettings from '~/composables/useSiteSettings'
 import useTranslations from '~/composables/useTranslations'
-import { sanitizeSpecValue } from '~/utils/pdfDocUtils'
+import { sanitizeSpecValue, isSpecLabelHidden } from '~/utils/pdfDocUtils'
 
 export interface Spec {
   label: string;
@@ -165,10 +165,9 @@ const formatSpecLabelForSite = (label: string | null | undefined): string => {
 
 const visibleSpecs = computed(() => {
   if (!props.product?.specs) return []
-  const hiddenLabels = ['idioma', 'lang', 'language', 'category_display']
   return props.product.specs.filter(s => {
     if (!s || !s.label) return false
-    return !hiddenLabels.includes(s.label.toLowerCase().trim())
+    return !isSpecLabelHidden(s.label)
   })
 })
 

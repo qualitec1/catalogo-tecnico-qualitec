@@ -42,7 +42,28 @@ export function useCatalog() {
   })
 
   const listableCategories = computed(() => {
-    return Object.keys(categoryAssets.value).filter(k => k !== 'GERAL').sort()
+    const cats = new Set<string>()
+    Object.keys(categoryAssets.value).forEach(k => {
+      if (k !== 'GERAL') cats.add(k.toUpperCase().trim())
+    })
+    products.value.forEach(p => {
+      if (p.category && p.category.toUpperCase().trim() !== 'GERAL') {
+        cats.add(p.category.toUpperCase().trim())
+      }
+    })
+    const geralSettings = getPdfSettings('GERAL')
+    const savedCategoryOrder: string[] = geralSettings?.layout_settings?.category_order || []
+
+    return Array.from(cats).sort((a, b) => {
+      if (savedCategoryOrder && savedCategoryOrder.length > 0) {
+        const idxA = savedCategoryOrder.indexOf(a)
+        const idxB = savedCategoryOrder.indexOf(b)
+        if (idxA !== -1 && idxB !== -1) return idxA - idxB
+        if (idxA !== -1) return -1
+        if (idxB !== -1) return 1
+      }
+      return a.localeCompare(b)
+    })
   })
 
   const loadProducts = async () => {
@@ -97,15 +118,8 @@ export function useCatalog() {
   // Selected products
   const selectedProducts = ref<Set<number>>(new Set())
   const selectedProductObjects = computed(() => {
-    return filteredProducts.value.filter(p => selectedProducts.value.has(p.id))
+    return (filteredProducts.value || []).filter(p => selectedProducts.value.has(p.id))
   })
-
-  // Pre-select all products once loaded
-  watch(products, (newProducts) => {
-    if (newProducts && selectedProducts.value.size === 0) {
-      newProducts.forEach(p => selectedProducts.value.add(p.id))
-    }
-  }, { immediate: true })
 
   // Search, Categories, Sectors & Language
   const searchQuery = ref('')
@@ -195,11 +209,11 @@ export function useCatalog() {
       if (selectedSegment.value.trim() !== '') {
         const sectorSynonymsMap: Record<string, string[]> = {
           'criogenia': ['criogenia', 'cryogenics', 'kryotechnik'],
-          'oleo e gas': ['oleo e gas', 'oleo & gas', 'oil & gas', 'oil and gas', 'ol & gas', 'ol und gas'],
+          'oleo e gas': ['oleo e gas', 'oleo & gas', 'oil & gas', 'oil and gas', 'ol & gas', 'ol und gas', 'petroleo y gas', 'petroleo & gas'],
           'gases tecnicos': ['gases tecnicos', 'technical gases', 'technische gase'],
           'energia': ['energia', 'energy', 'energie'],
-          'acucar e alcool': ['acucar e alcool', 'acucar & alcool', 'sugar & ethanol', 'sugar and ethanol', 'sugar & alcohol', 'sugar and alcohol', 'zucker & alkohol', 'zucker und alkohol'],
-          'alimenticia': ['alimenticia', 'food industry', 'food', 'lebensmittel']
+          'acucar e alcool': ['acucar e alcool', 'acucar & alcool', 'sugar & ethanol', 'sugar and ethanol', 'sugar & alcohol', 'sugar and alcohol', 'zucker & alkohol', 'zucker und alkohol', 'azucar y alcohol', 'azucar & alcohol'],
+          'alimenticia': ['alimenticia', 'food industry', 'food', 'lebensmittel', 'alimentaria', 'alimentos']
         }
 
         const normKey = normalizeText(selectedSegment.value)
@@ -250,6 +264,15 @@ export function useCatalog() {
     })
   })
 
+  // Pre-select all filtered products whenever filteredProducts updates
+  watch(filteredProducts, (newProds) => {
+    if (newProds && newProds.length > 0) {
+      const newSet = new Set<number>()
+      newProds.forEach(p => newSet.add(p.id))
+      selectedProducts.value = newSet
+    }
+  }, { immediate: true })
+
   const paginatedProducts = computed(() => {
     const start = (activePage.value - 1) * 30
     return filteredProducts.value.slice(start, start + 30)
@@ -257,6 +280,17 @@ export function useCatalog() {
 
   const totalPages = computed(() => {
     return Math.max(1, Math.ceil(filteredProducts.value.length / 30))
+  })
+
+  const categoryProductCounts = computed(() => {
+    const counts: Record<string, number> = {}
+    ;(filteredProducts.value || []).forEach(p => {
+      if (p.category) {
+        const catKey = p.category.toUpperCase().trim()
+        counts[catKey] = (counts[catKey] || 0) + 1
+      }
+    })
+    return counts
   })
 
   watch([searchQuery, selectedCategory, selectedSegment, currentLang], () => {
@@ -298,12 +332,27 @@ export function useCatalog() {
     showPrintModal.value = false
   }
 
-  const confirmAndDownload = (payload?: { selection: 'dynamic' | 'GERAL' | 'specific', specificCategory: string, pdfType: 'web' | 'print' | 'qrcode', bookletMode: boolean }) => {
+  const confirmAndDownload = (payload?: {
+    selection: 'dynamic' | 'GERAL' | 'specific',
+    specificCategory: string,
+    productFilterMode?: 'all' | 'category',
+    filterCategory?: string,
+    pdfType: 'web' | 'print' | 'qrcode',
+    bookletMode: boolean
+  }) => {
     if (payload) {
       coverCategorySelection.value = payload.selection
       specificCoverCategory.value = payload.specificCategory
       pdfTypeSelection.value = payload.pdfType
       bookletModeSelection.value = payload.bookletMode
+
+      if (payload.productFilterMode === 'category' && payload.filterCategory) {
+        const catUpper = payload.filterCategory.toUpperCase().trim()
+        const matchingProds = filteredProducts.value.filter(p => p.category && p.category.toUpperCase().trim() === catUpper)
+        selectedProducts.value = new Set(matchingProds.map(p => p.id))
+      } else if (payload.productFilterMode === 'all') {
+        selectedProducts.value = new Set(filteredProducts.value.map(p => p.id))
+      }
     }
     let targetCat = 'GERAL'
     if (coverCategorySelection.value === 'specific') {
@@ -319,18 +368,21 @@ export function useCatalog() {
       targetCat = 'GERAL'
     }
 
-    const catUpper = targetCat.toUpperCase().trim()
-    const asset = categoryAssets.value[catUpper]
+    // Only use pre-rendered static PDF link when mode is dynamic (auto) and entire category is selected
+    if (coverCategorySelection.value === 'dynamic') {
+      const catUpper = targetCat.toUpperCase().trim()
+      const asset = categoryAssets.value[catUpper]
 
-    if (asset && asset.pdfUrl) {
-      const productsInCat = products.value.filter(p => p.category.toUpperCase().trim() === catUpper)
-      const selectedInCat = selectedProductObjects.value.filter(p => p.category.toUpperCase().trim() === catUpper)
-      const isFullCategoryDownload = catUpper === 'GERAL' || selectedInCat.length >= productsInCat.length
-      
-      if (isFullCategoryDownload) {
-        window.open(asset.pdfUrl, '_blank')
-        showPrintModal.value = false
-        return
+      if (asset && asset.pdfUrl) {
+        const productsInCat = products.value.filter(p => p.category.toUpperCase().trim() === catUpper)
+        const selectedInCat = selectedProductObjects.value.filter(p => p.category.toUpperCase().trim() === catUpper)
+        const isFullCategoryDownload = catUpper === 'GERAL' || selectedInCat.length >= productsInCat.length
+        
+        if (isFullCategoryDownload) {
+          window.open(asset.pdfUrl, '_blank')
+          showPrintModal.value = false
+          return
+        }
       }
     }
 
@@ -421,6 +473,7 @@ export function useCatalog() {
     selectedCoverCategoryOverride,
     hasGeralCover,
     listableCategories,
+    categoryProductCounts,
     selectedProducts,
     selectedProductObjects,
     searchQuery,

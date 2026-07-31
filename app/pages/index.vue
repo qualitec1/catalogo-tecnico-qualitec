@@ -227,6 +227,17 @@
       </div>
     </div>
 
+    <!-- Catalog Print / Config Modal -->
+    <CatalogPrintModal
+      :open="showPrintModal"
+      :has-geral-cover="hasGeralCover"
+      :listable-categories="listableCategories"
+      :category-product-counts="categoryProductCounts"
+      @close="closePrintModal"
+      @confirm="confirmAndDownload"
+      @create-quick-category="handleQuickCreateCategory"
+    />
+
     <!-- Hidden PDF template generation -->
     <CatalogPdfTemplate 
       :is-generating="isGeneratingPdf" 
@@ -264,6 +275,7 @@ const {
   selectedCoverCategoryOverride,
   hasGeralCover,
   listableCategories,
+  categoryProductCounts,
   selectedProducts,
   selectedProductObjects,
   searchQuery,

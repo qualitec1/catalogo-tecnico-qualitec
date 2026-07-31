@@ -65,7 +65,7 @@
 
         <!-- Pagination -->
         <div class="flex justify-between items-center mt-6 text-xs text-gray-500 font-medium">
-          <span>Mostrando {{ startIndex + 1 }} a {{ endIndex }} de {{ filteredProducts.length }} itens</span>
+          <span>Mostrando {{ startIndex + 1 }} a {{ endIndex }} de {{ (filteredProducts || []).length }} itens</span>
           <div class="flex space-x-1">
             <button @click="currentPage--" :disabled="currentPage === 1" class="px-2.5 py-1.5 border border-gray-200 hover:bg-gray-50 rounded disabled:opacity-30">
               Anterior

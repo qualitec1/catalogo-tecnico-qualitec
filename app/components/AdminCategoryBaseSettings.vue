@@ -24,6 +24,50 @@
       </div>
     </div>
 
+    <!-- Multi-language Cover Titles (PDF) -->
+    <div class="space-y-2 pt-2 border-t border-gray-200">
+      <label class="block text-[10px] text-gray-500 font-bold uppercase tracking-wider flex items-center gap-1">
+        <span class="material-symbols-outlined text-xs text-blue-600">translate</span>
+        Nome da Capa por Idioma (PDF)
+      </label>
+      <p class="text-[9px] text-gray-400 leading-tight">Personalize o título da capa em cada idioma (se vazio, usará a tradução automática).</p>
+      
+      <div class="space-y-2">
+        <div class="flex items-center gap-2">
+          <span class="text-xs shrink-0 w-12 font-bold text-gray-600">🇧🇷 PT</span>
+          <input 
+            v-model="category.coverTitlePt" 
+            type="text" 
+            @input="category.hasChanges = true" 
+            placeholder="Ex: VÁLVULAS CRIOGÊNICAS" 
+            class="flex-1 border border-gray-300 rounded p-1.5 text-xs focus:ring-1 focus:ring-blue-600 focus:outline-none bg-white text-slate-800 uppercase"
+          />
+        </div>
+
+        <div class="flex items-center gap-2">
+          <span class="text-xs shrink-0 w-12 font-bold text-gray-600">🇬🇧 EN</span>
+          <input 
+            v-model="category.coverTitleEn" 
+            type="text" 
+            @input="category.hasChanges = true" 
+            placeholder="Ex: CRYOGENIC VALVES" 
+            class="flex-1 border border-gray-300 rounded p-1.5 text-xs focus:ring-1 focus:ring-blue-600 focus:outline-none bg-white text-slate-800 uppercase"
+          />
+        </div>
+
+        <div class="flex items-center gap-2">
+          <span class="text-xs shrink-0 w-12 font-bold text-gray-600">🇩🇪 DE</span>
+          <input 
+            v-model="category.coverTitleDe" 
+            type="text" 
+            @input="category.hasChanges = true" 
+            placeholder="Ex: KRYO-VENTILE" 
+            class="flex-1 border border-gray-300 rounded p-1.5 text-xs focus:ring-1 focus:ring-blue-600 focus:outline-none bg-white text-slate-800 uppercase"
+          />
+        </div>
+      </div>
+    </div>
+
     <!-- Category Icon (PDF Header) -->
     <div class="space-y-2">
       <label class="block text-[10px] text-gray-500 font-bold uppercase tracking-wider">Ícone do Cabeçalho (PDF)</label>

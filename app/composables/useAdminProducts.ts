@@ -279,10 +279,11 @@ export function useAdminProducts(triggerToast: (msg: string, type?: 'success' | 
       const invalidCategories: { line: number, category: string }[] = []
       
       const cleanHeaders = headers.map(h => {
-        return h.trim()
-          .replace(/^\uFEFF/, '')
-          .replace(/^["']|["']$/g, '')
-          .toLowerCase()
+        let label = h.trim().replace(/^\uFEFF/, '')
+        if ((label.startsWith('"') && label.endsWith('"')) || (label.startsWith("'") && label.endsWith("'"))) {
+          label = label.slice(1, -1).trim()
+        }
+        return label.toLowerCase()
       })
 
       for (let i = 1; i < allRows.length; i++) {
@@ -292,7 +293,12 @@ export function useAdminProducts(triggerToast: (msg: string, type?: 'success' | 
         const row: Record<string, string> = {}
         cleanHeaders.forEach((cleanH, idx) => {
           let val = values[idx] !== undefined ? values[idx] : ''
-          val = val.trim().replace(/^["']|["']$/g, '')
+          val = val.trim()
+          // Only strip surrounding quotes if the cell is completely wrapped in a single pair of quotes
+          if ((val.startsWith('"') && val.endsWith('"') && (val.match(/"/g) || []).length === 2) ||
+              (val.startsWith("'") && val.endsWith("'") && (val.match(/'/g) || []).length === 2)) {
+            val = val.slice(1, -1).trim()
+          }
           row[cleanH] = val
         })
         
@@ -304,9 +310,11 @@ export function useAdminProducts(triggerToast: (msg: string, type?: 'success' | 
           row['specs'].split(';').filter(Boolean).forEach(s => {
             const parts = s.split(':')
             if (parts[0]) {
+              const specLabel = parts[0].trim()
+              const rawVal = parts[1] ? parts[1].trim() : ''
               specs.push({
-                label: parts[0].trim(),
-                value: parts[1] ? parts[1].trim() : ''
+                label: specLabel,
+                value: sanitizeSpecValue(rawVal, specLabel)
               })
             }
           })
@@ -315,9 +323,13 @@ export function useAdminProducts(triggerToast: (msg: string, type?: 'success' | 
         headers.forEach((originalH, idx) => {
           const cleanH = cleanHeaders[idx]
           if (!coreColumns.includes(cleanH) && row[cleanH]) {
+            let origLabel = originalH.trim()
+            if ((origLabel.startsWith('"') && origLabel.endsWith('"')) || (origLabel.startsWith("'") && origLabel.endsWith("'"))) {
+              origLabel = origLabel.slice(1, -1).trim()
+            }
             specs.push({
-              label: originalH.trim().replace(/^["']|["']$/g, ''),
-              value: row[cleanH]
+              label: origLabel,
+              value: sanitizeSpecValue(row[cleanH], origLabel)
             })
           }
         })

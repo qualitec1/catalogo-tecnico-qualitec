@@ -8,10 +8,11 @@ import {
   getFontStyle, 
   drawTextUnderline, 
   truncateText,
-  sanitizePdfText
+  sanitizePdfText,
+  isSpecLabelHidden
 } from './pdfDocUtils'
 import { addImageSafe } from './pdfImageLoader'
-import useTranslations, { categoryDict } from '../composables/useTranslations'
+import useTranslations, { categoryDict, translateCategoryName } from '../composables/useTranslations'
 
 export function getCoverTexts(categoryName: string, settings: any, lang: string = 'pt') {
   let rawSub = settings.cover_subtitle_text || settings.coverSubtitleText
@@ -22,27 +23,22 @@ export function getCoverTexts(categoryName: string, settings: any, lang: string 
     else subText = 'CATÁLOGO DE PRODUTOS'
   }
 
-  let title = categoryName === 'VÁLVULAS'
-    ? 'VÁLVULAS DE SEGURANÇA E ALÍVIO'
-    : (categoryName || 'GERAL').toUpperCase()
+  const langKey = (lang || 'pt').toLowerCase()
+  const layout = settings?.layout_settings || {}
+  const customLangTitle = settings ? (
+    layout[`cover_title_${langKey}`] ||
+    layout[`coverTitle${langKey.toUpperCase()}`] ||
+    settings[`cover_title_${langKey}`] || 
+    settings[`coverTitle${langKey.toUpperCase()}`]
+  ) : null
+  let title = customLangTitle ? String(customLangTitle).trim().toUpperCase() : ''
 
-  if (lang !== 'pt') {
-    const normUpper = title.trim().toUpperCase()
-    if (categoryDict[normUpper] && categoryDict[normUpper][lang as 'en' | 'de']) {
-      title = categoryDict[normUpper][lang as 'en' | 'de']
-    } else if (normUpper === 'GERAL') {
-      title = lang === 'en' ? 'GENERAL' : 'ALLGEMEIN'
-    } else if (normUpper === 'VÁLVULAS 3 VIAS') {
-      title = lang === 'en' ? '3-WAY VALVES' : '3-WEGE-VENTILE'
-    } else if (normUpper === 'VÁLVULAS CRIOGÊNICAS') {
-      title = lang === 'en' ? 'CRYOGENIC VALVES' : 'KRYO-VENTILE'
-    } else if (normUpper === 'VÁLVULAS DE SEGURANÇA') {
-      title = lang === 'en' ? 'SAFETY VALVES' : 'SICHERHEITSVENTILE'
-    } else if (normUpper === 'VÁLVULAS GLOBO') {
-      title = lang === 'en' ? 'GLOBE VALVES' : 'GLOBE-VENTILE'
-    } else if (normUpper === 'TRANSMISSORES DE PRESSÃO') {
-      title = lang === 'en' ? 'PRESSURE TRANSMITTERS' : 'DRUCKMESSUMFORMER'
-    }
+  if (!title) {
+    let baseTitle = categoryName === 'VÁLVULAS'
+      ? 'VÁLVULAS DE SEGURANÇA E ALÍVIO'
+      : (categoryName || 'GERAL').toUpperCase()
+
+    title = translateCategoryName(baseTitle, lang)
   }
 
   return { subText, title }
@@ -622,10 +618,9 @@ export function drawSpecsTable(
   imageCache: Map<string, CachedImage> | null = null,
   hasExImage: boolean = false
 ): number {
-  const hiddenLabels = ['idioma', 'lang', 'language', 'category_display']
   const cleanSpecs = (specs || []).filter(s => {
     if (!s || !s.label) return false
-    return !hiddenLabels.includes(s.label.toLowerCase().trim())
+    return !isSpecLabelHidden(s.label)
   })
   if (cleanSpecs.length === 0) return y
 
@@ -678,7 +673,7 @@ export function drawSpecsTable(
     const currentSpecsValW = hasExLogo ? (valueW - exW - 1) : (valueW - 2)
 
     const labelText = sanitizePdfText(spec.label)
-    const valueText = sanitizePdfText(spec.value)
+    const valueText = sanitizePdfText(spec.value, spec.label)
 
     const labelLines = pdf.splitTextToSize(labelText, labelW - 2) as string[]
     const valueLines = pdf.splitTextToSize(valueText, currentSpecsValW) as string[]

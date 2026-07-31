@@ -178,6 +178,7 @@
       :open="showAdminPrintModal"
       :hasGeralCover="adminHasGeralCover"
       :listableCategories="adminListableCategories"
+      :categoryProductCounts="adminCategoryProductCounts"
       @close="closeAdminPrintModal"
       @confirm="confirmAndDownloadAdminCatalog"
     />
@@ -209,6 +210,7 @@ const {
   showPrintModal: showAdminPrintModal,
   hasGeralCover: adminHasGeralCover,
   listableCategories: adminListableCategories,
+  categoryProductCounts: adminCategoryProductCounts,
   selectedProductObjects: adminCatalogSelectedProductObjects,
   selectAll: adminCatalogSelectAll,
   isGeneratingPdf: isAdminGeneratingCatalogPdf,
@@ -217,7 +219,7 @@ const {
   downloadCatalog: triggerAdminCatalogDownload,
   closePrintModal: closeAdminPrintModal,
   confirmAndDownload: confirmAndDownloadAdminCatalog,
-  effectiveCoverCategory: adminEffectiveCoverCategory
+  selectedCoverCategoryOverride: adminEffectiveCoverCategory
 } = useCatalog()
 
 const openAdminDownloadModal = async () => {
