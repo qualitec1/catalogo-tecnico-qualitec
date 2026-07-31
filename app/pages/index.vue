@@ -213,54 +213,46 @@
       </section>
 
       <!-- Busca Rápida e Links Diretos -->
-      <section class="bg-[#e5e5e5] py-12 px-4 md:px-10 border-b border-gray-300/40">
-        <div class="max-w-[1280px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 items-start">
+      <section class="bg-[#e9e9e9] py-12 md:py-16 px-4 md:px-10">
+        <div class="max-w-[1100px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 items-start">
           <!-- Left Column: Search -->
-          <div class="flex flex-col gap-4">
-            <h2 class="font-['Rubik',sans-serif] text-2xl md:text-3xl text-[#424751] font-medium">Como podemos te ajudar?</h2>
-            <p class="text-[#424751] text-base">Utilize a busca rápida e encontre sua necessidade</p>
-            <form @submit.prevent="handleSearch" class="relative max-w-md">
-              <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">search</span>
+          <div class="flex flex-col gap-2">
+            <h2 class="text-2xl md:text-3xl text-[#333333] font-normal tracking-tight">Como podemos te ajudar?</h2>
+            <p class="text-[#666666] text-sm md:text-base font-normal mb-3">Utilize a busca rápida e encontre sua necessidade</p>
+            <form @submit.prevent="handleSearch" class="relative w-full max-w-md">
+              <span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-blue-600 text-lg">search</span>
               <input 
                 v-model="searchInput"
-                class="w-full pl-10 pr-12 py-3 rounded border border-[#c2c6d3] focus:ring-2 focus:ring-[#004A96] focus:border-transparent bg-white text-base text-[#1c1b1b] outline-none" 
-                placeholder="Buscar equipamentos, válvulas, manômetros..." 
+                class="w-full pl-10 pr-4 py-2.5 rounded-md border border-blue-400/80 focus:border-blue-600 bg-white text-sm text-gray-800 placeholder-gray-400 outline-none shadow-2xs transition-all" 
+                :placeholder="t.searchPlaceholder || 'Search...'" 
                 type="text"
               />
-              <button 
-                type="submit" 
-                class="absolute right-2 top-1/2 -translate-y-1/2 bg-[#004A96] text-white p-1.5 rounded hover:bg-[#00346c] transition-colors"
-                title="Buscar"
-              >
-                <span class="material-symbols-outlined text-sm">arrow_forward</span>
-              </button>
             </form>
           </div>
 
           <!-- Right Column: Quick Links -->
-          <div class="flex flex-col gap-3">
-            <span class="text-xs font-bold text-[#424751] uppercase tracking-wider">Buscas mais utilizadas</span>
-            <div class="flex flex-col gap-2.5">
-              <NuxtLink to="/catalogo?cat=V%C3%81LVULAS%20DE%20SEGURAN%C3%87A" class="text-[#004A96] hover:text-[#00346c] font-semibold text-base transition-colors flex items-center gap-1.5">
-                <span class="material-symbols-outlined text-sm">chevron_right</span>
-                Válvulas de Segurança
-              </NuxtLink>
-              <NuxtLink to="/catalogo?q=HEROSE" class="text-[#004A96] hover:text-[#00346c] font-semibold text-base transition-colors flex items-center gap-1.5">
-                <span class="material-symbols-outlined text-sm">chevron_right</span>
-                Reparos HEROSE
-              </NuxtLink>
-              <NuxtLink to="/catalogo?cat=TRANSMISSORES" class="text-[#004A96] hover:text-[#00346c] font-semibold text-base transition-colors flex items-center gap-1.5">
-                <span class="material-symbols-outlined text-sm">chevron_right</span>
-                Transmissores de Pressão
-              </NuxtLink>
-              <a href="https://wa.me/551139087100" target="_blank" class="text-[#004A96] hover:text-[#00346c] font-semibold text-base transition-colors flex items-center gap-1.5">
-                <span class="material-symbols-outlined text-sm">chevron_right</span>
+          <div class="flex flex-col gap-2.5">
+            <span class="text-xs font-semibold text-[#666666] tracking-tight mb-1">Buscas mais utilizadas</span>
+            <div class="flex flex-col gap-2">
+              <a href="#contato" class="text-[#444444] hover:text-blue-700 font-normal text-base md:text-[17px] transition-colors w-fit">
                 Contato de vendas / suporte
               </a>
+              <NuxtLink to="/catalogo?cat=V%C3%81LVULAS%20DE%20SEGURAN%C3%87A" class="text-[#444444] hover:text-blue-700 font-normal text-base md:text-[17px] transition-colors w-fit">
+                Válvulas de Segurança
+              </NuxtLink>
+              <NuxtLink to="/catalogo?q=HEROSE" class="text-[#444444] hover:text-blue-700 font-normal text-base md:text-[17px] transition-colors w-fit">
+                Reparos HEROSE
+              </NuxtLink>
+              <NuxtLink to="/catalogo?cat=TRANSMISSORES" class="text-[#444444] hover:text-blue-700 font-normal text-base md:text-[17px] transition-colors w-fit">
+                Transmissores de Pressão
+              </NuxtLink>
             </div>
           </div>
         </div>
       </section>
+
+      <!-- Faixa fina branca -->
+      <div class="bg-white h-3 w-full border-b border-gray-200"></div>
 
       <!-- Principais Segmentos -->
       <section id="segmentos" class="py-16 md:py-20 px-4 md:px-10 max-w-[1280px] mx-auto bg-white">
