@@ -74,6 +74,7 @@ export async function buildCatalogPdf(opts: any): Promise<any> {
     compress: true,
     putOnlyUsedFonts: true,
   })
+  ;(pdf as any).lang = opts.lang || 'pt'
 
   // Register custom fonts dynamically based on what is actually used
   if (typeof window !== 'undefined') {

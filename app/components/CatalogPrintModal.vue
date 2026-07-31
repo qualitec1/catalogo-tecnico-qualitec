@@ -191,18 +191,6 @@
             </div>
           </label>
           
-          <label class="flex items-start gap-3 p-3 border border-gray-200 rounded cursor-pointer hover:bg-gray-50 transition-colors">
-            <input type="radio" v-model="pdfType" value="print" class="mt-0.5 text-blue-650" />
-            <div>
-              <span class="text-xs font-bold text-slate-800 uppercase block flex items-center gap-1.5">
-                <span class="material-symbols-outlined text-sm text-gray-600">print</span>
-                PDF para IMPRESSÃO
-              </span>
-              <span class="text-[10px] text-gray-500 block mt-0.5">
-                Sem links nos cards. Layout limpo e otimizado para impressão física.
-              </span>
-            </div>
-          </label>
 
           <label class="flex items-start gap-3 p-3 border border-gray-200 rounded cursor-pointer hover:bg-gray-50 transition-colors">
             <input type="radio" v-model="pdfType" value="qrcode" class="mt-0.5 text-blue-650" />

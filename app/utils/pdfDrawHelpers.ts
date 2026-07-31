@@ -89,7 +89,8 @@ export function drawDatasheetLink(pdf: any, product: any, x: number, y: number, 
   pdf.setFontSize(6.5 * scale)
   pdf.setTextColor(156, 163, 175) // Cinza claro #9CA3AF (gray-400)
 
-  const linkText = 'Especificações Técnicas'
+  const lang = (product?.lang || pdf?.lang || 'pt').toLowerCase()
+  const linkText = lang === 'en' ? 'Specification Sheet' : (lang === 'es' ? 'Ficha Técnica' : 'Especificações Técnicas')
   const textWidth = pdf.getTextWidth(linkText)
   
   const iconW = 2.2 * scale
