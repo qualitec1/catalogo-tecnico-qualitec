@@ -71,13 +71,20 @@
 
     <main class="flex-grow">
       <!-- Hero Section -->
-      <section class="relative w-full h-[520px] md:h-[600px] flex items-center justify-center overflow-hidden">
-        <!-- Video Background -->
-        <template v-if="siteSettings.hero_bg_type === 'video' && siteSettings.hero_bg_video_url">
+      <section class="relative w-full h-[520px] md:h-[600px] flex items-center justify-center overflow-hidden bg-slate-900">
+        <!-- Fallback Background Image (Always present behind video for instant load) -->
+        <img 
+          alt="Painel de instrumentos industriais" 
+          class="absolute inset-0 w-full h-full object-cover z-0" 
+          :src="siteSettings.hero_bg_image_url || 'https://lh3.googleusercontent.com/aida/AP1WRLuQGJlvhXgSbL5PCfgd-rVegzYgpPNJgtHn0Ea6Nm0tVayzLhjzQkKmbYMugrdMebtxFro3tlHv1N8ozueW3IWAmerLpn5BMh0-V4suiSBYyv-_1zhWqzLrg3b4d-rpkTVAeU22eoHKYZCmNp_AZySP90gelzHtlnS-8x3nRmtLSJEw4C0yhBjOP0LTv8cqJJere8bX1erK4A1HpU_AQV5WthPlinuCGSknmAf4oBmhbRpEqOyxTA2YAMo'"
+        />
+
+        <!-- Video Background Overlay -->
+        <template v-if="isVideoActive && parsedVideo.url">
           <!-- YouTube or Vimeo Iframe Embed -->
           <div 
             v-if="parsedVideo.type === 'youtube' || parsedVideo.type === 'vimeo'" 
-            class="absolute inset-0 w-full h-full overflow-hidden pointer-events-none z-0"
+            class="absolute inset-0 w-full h-full overflow-hidden pointer-events-none z-10"
           >
             <iframe 
               class="w-[160%] h-[160%] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 object-cover pointer-events-none scale-125 border-0"
@@ -86,30 +93,25 @@
             ></iframe>
           </div>
 
-          <!-- Direct HTML5 MP4 / WebM Video -->
+          <!-- Direct HTML5 MP4 / WebM / Wix Video -->
           <video 
             v-else
             ref="heroVideoRef"
-            class="absolute inset-0 w-full h-full object-cover z-0"
+            class="absolute inset-0 w-full h-full object-cover z-10 min-w-full min-h-full"
             autoplay
             loop
             muted
             :muted="true"
             playsinline
             webkit-playsinline
+            preload="auto"
             @loadedmetadata="playVideo"
+            @loadeddata="playVideo"
             @canplay="playVideo"
+            @canplaythrough="playVideo"
             :src="parsedVideo.url"
           ></video>
         </template>
-
-        <!-- Image Background -->
-        <img 
-          v-else
-          alt="Painel de instrumentos industriais mostrando precisão e controle em ambiente técnico." 
-          class="absolute inset-0 w-full h-full object-cover z-0" 
-          :src="siteSettings.hero_bg_image_url || 'https://lh3.googleusercontent.com/aida/AP1WRLuQGJlvhXgSbL5PCfgd-rVegzYgpPNJgtHn0Ea6Nm0tVayzLhjzQkKmbYMugrdMebtxFro3tlHv1N8ozueW3IWAmerLpn5BMh0-V4suiSBYyv-_1zhWqzLrg3b4d-rpkTVAeU22eoHKYZCmNp_AZySP90gelzHtlnS-8x3nRmtLSJEw4C0yhBjOP0LTv8cqJJere8bX1erK4A1HpU_AQV5WthPlinuCGSknmAf4oBmhbRpEqOyxTA2YAMo'"
-        />
 
         <!-- Preset Mode Container -->
         <div 
@@ -133,15 +135,18 @@
         <!-- Custom Free Positioning Container -->
         <div 
           v-else
-          class="absolute z-20 max-w-[90vw] md:max-w-xl px-4 transition-all duration-150 pointer-events-auto"
+          class="absolute z-20 max-w-[90vw] md:max-w-xl transition-all duration-150 pointer-events-auto"
+          :class="siteSettings.hero_card_extend_bottom ? 'bottom-0 flex flex-col justify-center' : ''"
           :style="{
-            left: (siteSettings.hero_card_offset_x ?? 10) + '%',
-            top: (siteSettings.hero_card_offset_y ?? 55) + '%',
+            left: (siteSettings.hero_card_offset_x ?? 18) + '%',
+            top: (siteSettings.hero_card_offset_y ?? 45) + '%',
+            bottom: siteSettings.hero_card_extend_bottom ? '0px' : 'auto'
           }"
         >
           <div 
-            class="backdrop-blur-xs p-6 md:p-10 rounded shadow-lg transition-all duration-300"
-            :style="{ backgroundColor: siteSettings.hero_card_bg_color || '#74b934' }"
+            class="backdrop-blur-sm p-6 md:p-10 shadow-lg transition-all duration-300 flex items-center"
+            :class="siteSettings.hero_card_extend_bottom ? 'h-full rounded-t-md rounded-b-none' : 'rounded-md'"
+            :style="getCardBgStyle(siteSettings.hero_card_bg_color, siteSettings.hero_card_opacity)"
           >
             <h1 
               class="font-['Rubik',sans-serif] text-xl md:text-3xl font-medium leading-tight whitespace-pre-line"
@@ -403,25 +408,66 @@ import { ref, computed, onMounted, watch, nextTick } from 'vue'
 const { siteSettings, fetchSiteSettings } = useSiteSettings()
 const heroVideoRef = ref<HTMLVideoElement | null>(null)
 
+const isVideoActive = computed(() => {
+  const url = (siteSettings.value.hero_bg_video_url || '').trim()
+  if (!url) return false
+  return siteSettings.value.hero_bg_type === 'video' && url.length > 0
+})
+
+function getCardBgStyle(hex: string, opacityPercent: number) {
+  const alpha = ((opacityPercent ?? 85) / 100)
+  let color = hex || '#74b934'
+  let c = color.replace('#', '')
+  if (c.length === 3) c = c.split('').map(x => x + x).join('')
+  const num = parseInt(c, 16)
+  if (isNaN(num)) return { backgroundColor: `rgba(116, 185, 52, ${alpha})` }
+  const r = (num >> 16) & 255
+  const g = (num >> 8) & 255
+  const b = num & 255
+  return { backgroundColor: `rgba(${r}, ${g}, ${b}, ${alpha})` }
+}
+
 const playVideo = () => {
   if (heroVideoRef.value) {
     heroVideoRef.value.muted = true
-    heroVideoRef.value.play().catch(err => {
-      console.warn('[HeroVideo] Autoplay error:', err)
-    })
+    heroVideoRef.value.defaultMuted = true
+    const p = heroVideoRef.value.play()
+    if (p !== undefined) {
+      p.catch(err => {
+        console.warn('[HeroVideo] Autoplay attempt warning:', err)
+        const retry = () => {
+          if (heroVideoRef.value) {
+            heroVideoRef.value.play().catch(() => {})
+          }
+          window.removeEventListener('click', retry)
+          window.removeEventListener('scroll', retry)
+          window.removeEventListener('touchstart', retry)
+        }
+        window.addEventListener('click', retry, { once: true })
+        window.addEventListener('scroll', retry, { once: true })
+        window.addEventListener('touchstart', retry, { once: true })
+      })
+    }
   }
 }
 
-onMounted(() => {
-  fetchSiteSettings()
-  playVideo()
-})
-
-watch(() => siteSettings.value.hero_bg_video_url, () => {
+onMounted(async () => {
+  await fetchSiteSettings()
   nextTick(() => {
     playVideo()
   })
 })
+
+watch(() => [siteSettings.value.hero_bg_video_url, siteSettings.value.hero_bg_type], () => {
+  nextTick(() => {
+    if (heroVideoRef.value) {
+      heroVideoRef.value.muted = true
+      heroVideoRef.value.defaultMuted = true
+      heroVideoRef.value.load()
+      playVideo()
+    }
+  })
+}, { immediate: true, deep: true })
 
 const parsedVideo = computed(() => {
   const url = (siteSettings.value.hero_bg_video_url || '').trim()

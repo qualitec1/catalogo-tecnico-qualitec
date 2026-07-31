@@ -36,6 +36,9 @@ export default defineNuxtConfig({
     }
   },
   vite: {
+    optimizeDeps: {
+      include: ['jspdf', 'qrcode']
+    },
     server: {
       watch: {
         ignored: ['**/node_modules/**', '**/.git/**', '**/.nuxt/**', '**/.output/**', '**/.gemini/**']

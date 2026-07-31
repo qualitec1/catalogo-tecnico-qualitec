@@ -203,6 +203,34 @@
               </div>
             </div>
 
+            <!-- Opacidade do Card e Extensão Vertical -->
+            <div class="grid grid-cols-2 gap-4 border-t border-slate-200 pt-3">
+              <div class="space-y-1">
+                <div class="flex justify-between items-center text-[10px] text-gray-600 font-bold uppercase">
+                  <span>Transparência (Opacidade): {{ settings.hero_card_opacity }}%</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <input 
+                    type="range" 
+                    min="10" 
+                    max="100" 
+                    step="5" 
+                    v-model.number="settings.hero_card_opacity" 
+                    class="flex-1 accent-blue-600 cursor-pointer" 
+                  />
+                  <span class="text-xs font-mono font-bold text-slate-700 w-8 text-right">{{ settings.hero_card_opacity }}%</span>
+                </div>
+              </div>
+
+              <div class="space-y-1.5">
+                <label class="block text-[10px] text-gray-600 font-bold uppercase tracking-wider">Altura do Card</label>
+                <label class="flex items-center gap-2 cursor-pointer text-xs font-semibold text-slate-700 mt-1">
+                  <input type="checkbox" v-model="settings.hero_card_extend_bottom" class="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500" />
+                  <span>Estender até a base do Banner</span>
+                </label>
+              </div>
+            </div>
+
             <!-- Cores do Card -->
             <div class="grid grid-cols-2 gap-4">
               <div class="space-y-1.5">
@@ -235,18 +263,24 @@
               @mousedown="onCardMouseDown"
               class="relative w-full h-80 rounded-lg overflow-hidden border border-gray-300 bg-slate-900 shadow-inner select-none cursor-crosshair flex"
             >
-              <!-- Background Video -->
+              <!-- Background Image Layer (Always behind video for instant load) -->
+              <img 
+                class="absolute inset-0 w-full h-full object-cover z-0 pointer-events-none" 
+                :src="settings.hero_bg_image_url || 'https://lh3.googleusercontent.com/aida/AP1WRLuQGJlvhXgSbL5PCfgd-rVegzYgpPNJgtHn0Ea6Nm0tVayzLhjzQkKmbYMugrdMebtxFro3tlHv1N8ozueW3IWAmerLpn5BMh0-V4suiSBYyv-_1zhWqzLrg3b4d-rpkTVAeU22eoHKYZCmNp_AZySP90gelzHtlnS-8x3nRmtLSJEw4C0yhBjOP0LTv8cqJJere8bX1erK4A1HpU_AQV5WthPlinuCGSknmAf4oBmhbRpEqOyxTA2YAMo'"
+              />
+
+              <!-- Background Video Layer -->
               <template v-if="settings.hero_bg_type === 'video' && settings.hero_bg_video_url">
                 <iframe 
                   v-if="parsedVideo.type === 'youtube' || parsedVideo.type === 'vimeo'"
-                  class="w-[160%] h-[160%] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 object-cover pointer-events-none scale-125 border-0 z-0"
+                  class="w-[160%] h-[160%] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 object-cover pointer-events-none scale-125 border-0 z-10"
                   :src="parsedVideo.url"
                   allow="autoplay; fullscreen"
                 ></iframe>
                 <video 
                   v-else
                   ref="adminPreviewVideoRef"
-                  class="absolute inset-0 w-full h-full object-cover z-0 pointer-events-none"
+                  class="absolute inset-0 w-full h-full object-cover z-10 pointer-events-none"
                   autoplay
                   loop
                   muted
@@ -256,21 +290,17 @@
                   :src="parsedVideo.url"
                 ></video>
               </template>
-              <!-- Background Image -->
-              <img 
-                v-else
-                class="absolute inset-0 w-full h-full object-cover z-0 pointer-events-none" 
-                :src="settings.hero_bg_image_url || 'https://lh3.googleusercontent.com/aida/AP1WRLuQGJlvhXgSbL5PCfgd-rVegzYgpPNJgtHn0Ea6Nm0tVayzLhjzQkKmbYMugrdMebtxFro3tlHv1N8ozueW3IWAmerLpn5BMh0-V4suiSBYyv-_1zhWqzLrg3b4d-rpkTVAeU22eoHKYZCmNp_AZySP90gelzHtlnS-8x3nRmtLSJEw4C0yhBjOP0LTv8cqJJere8bX1erK4A1HpU_AQV5WthPlinuCGSknmAf4oBmhbRpEqOyxTA2YAMo'"
-              />
 
               <!-- Preview Card (Mode: Custom vs Preset) -->
               <div 
                 v-if="settings.hero_card_position_mode === 'custom'"
-                class="absolute z-10 p-3 max-w-[220px] rounded shadow-xl transition-all duration-75 cursor-grab active:cursor-grabbing backdrop-blur-xs ring-2 ring-blue-500/50 hover:ring-blue-500"
+                class="absolute z-20 p-3 max-w-[220px] shadow-xl transition-all duration-75 cursor-grab active:cursor-grabbing backdrop-blur-sm ring-2 ring-blue-500/50 hover:ring-blue-500 flex flex-col justify-between"
+                :class="settings.hero_card_extend_bottom ? 'bottom-0 rounded-t-md rounded-b-none' : 'rounded-md'"
                 :style="{
                   left: settings.hero_card_offset_x + '%',
                   top: settings.hero_card_offset_y + '%',
-                  backgroundColor: settings.hero_card_bg_color || '#74b934'
+                  bottom: settings.hero_card_extend_bottom ? '0px' : 'auto',
+                  ...getCardBgStyle(settings.hero_card_bg_color, settings.hero_card_opacity)
                 }"
               >
                 <div class="text-[9px] text-white/80 font-mono mb-1 flex items-center justify-between pointer-events-none">
@@ -536,6 +566,19 @@ const defaultSettings: SiteSettings = {
 }
 
 const settings = reactive<SiteSettings>({ ...defaultSettings })
+
+function getCardBgStyle(hex: string, opacityPercent: number) {
+  const alpha = ((opacityPercent ?? 85) / 100)
+  let color = hex || '#74b934'
+  let c = color.replace('#', '')
+  if (c.length === 3) c = c.split('').map(x => x + x).join('')
+  const num = parseInt(c, 16)
+  if (isNaN(num)) return { backgroundColor: `rgba(116, 185, 52, ${alpha})` }
+  const r = (num >> 16) & 255
+  const g = (num >> 8) & 255
+  const b = num & 255
+  return { backgroundColor: `rgba(${r}, ${g}, ${b}, ${alpha})` }
+}
 
 const parsedVideo = computed(() => {
   const url = (settings.hero_bg_video_url || '').trim()

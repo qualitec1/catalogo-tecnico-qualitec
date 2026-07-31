@@ -36,6 +36,8 @@ export interface SiteVisualSettings {
   hero_card_position_mode: 'custom' | 'preset'
   hero_card_offset_x: number
   hero_card_offset_y: number
+  hero_card_opacity: number
+  hero_card_extend_bottom: boolean
 }
 
 const defaults: SiteVisualSettings = {
@@ -68,8 +70,10 @@ const defaults: SiteVisualSettings = {
   hero_card_position: 'left',
   hero_card_vertical_align: 'center',
   hero_card_position_mode: 'custom',
-  hero_card_offset_x: 10,
-  hero_card_offset_y: 55,
+  hero_card_offset_x: 18,
+  hero_card_offset_y: 45,
+  hero_card_opacity: 85,
+  hero_card_extend_bottom: true,
 }
 
 export default function useSiteSettings() {

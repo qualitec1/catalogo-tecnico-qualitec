@@ -5,6 +5,7 @@
 import { drawCoverPage, drawCoverPageLandscape, drawPageHeader, drawPageFooter } from './pdfDrawHelpers'
 import { drawLayout1, drawLayout3, drawLayout6 } from './pdfLayoutDrawers'
 import { getFontName } from './pdfDocUtils'
+import { safeImport } from './safeImport'
 
 // Margin and dimension constants
 const MARGIN_X = 13
@@ -50,7 +51,7 @@ async function registerFont(pdf: any, name: string, file: string, fontName: stri
 }
 
 export async function buildCatalogPdf(opts: any): Promise<any> {
-  const { jsPDF } = await import('jspdf')
+  const { jsPDF } = await safeImport(() => import('jspdf'))
 
   const bookletMode = opts.bookletMode || false
   
