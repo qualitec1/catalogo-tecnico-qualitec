@@ -166,7 +166,7 @@ export function useCatalog() {
   const getProductLanguage = (product: any): string => {
     const langSpec = (product.specs || []).find((s: any) => {
       const lbl = normalizeText(s.label)
-      return lbl === 'idioma' || lbl === 'lang' || lbl === 'language'
+      return lbl.includes('idioma') || lbl.includes('lang') || lbl.includes('language') || lbl.includes('sprache')
     })
     if (langSpec && langSpec.value) {
       const normVal = normalizeText(langSpec.value)
@@ -175,31 +175,40 @@ export function useCatalog() {
       if (normVal === 'pt' || normVal.includes('portugues') || normVal.includes('brazil') || normVal.includes('br')) return 'pt'
     }
 
-    // Fallback: detect keywords in specs, title, or category
+    // Fallback: detect German or English keywords in title, category, or specs
     const specText = (product.specs || []).map((s: any) => (s.label || '') + ' ' + (s.value || '')).join(' ')
     const fullText = (product.title + ' ' + (product.category || '') + ' ' + specText).toLowerCase()
-    if (fullText.includes('ventil') || fullText.includes('deutsch') || fullText.includes('sicherheits') || fullText.includes('nennweite') || fullText.includes('druckklasse')) return 'de'
-    if (fullText.includes('valve') || fullText.includes('english') || fullText.includes('safety') || fullText.includes('transmitter')) return 'en'
+    
+    // German language indicators
+    if (
+      fullText.includes('kryo-ventil') || fullText.includes('kryo ventil') || fullText.includes('sicherheitsventil') ||
+      fullText.includes('3-wege-ventil') || fullText.includes('globe-ventil') || fullText.includes('druckmessumformer') ||
+      fullText.includes('druckumformer') || fullText.includes('deutsch') || fullText.includes('nennweite') || fullText.includes('druckstufe')
+    ) {
+      return 'de'
+    }
+    
+    // English language indicators
+    if (
+      fullText.includes('cryogenic valve') || fullText.includes('safety valve') || fullText.includes('globe valve') ||
+      fullText.includes('3-way valve') || fullText.includes('pressure transmitter') || fullText.includes('english')
+    ) {
+      return 'en'
+    }
+    
     return 'pt'
   }
 
-  const filteredProducts = computed(() => {
-    const hasExplicitLang = products.value.some(p => {
-      return (p.specs || []).some(s => {
-        const lbl = normalizeText(s.label)
-        return (lbl === 'idioma' || lbl === 'lang' || lbl === 'language') && s.value
-      })
-    })
-
+  const languageFilteredProducts = computed(() => {
+    const targetLang = currentLang.value || 'pt'
     return products.value.filter(product => {
-      // 0. Language Filter (if multi-language products are present)
-      if (hasExplicitLang) {
-        const pLang = getProductLanguage(product)
-        if (pLang !== currentLang.value) {
-          return false
-        }
-      }
+      const pLang = getProductLanguage(product)
+      return pLang === targetLang
+    })
+  })
 
+  const filteredProducts = computed(() => {
+    return languageFilteredProducts.value.filter(product => {
       // 1. Category Filter
       if (selectedCategory.value !== 'TODAS' && product.category !== selectedCategory.value) {
         return false
@@ -493,6 +502,7 @@ export function useCatalog() {
     currentLang,
     activePage,
     availableCategories,
+    languageFilteredProducts,
     filteredProducts,
     paginatedProducts,
     totalPages,

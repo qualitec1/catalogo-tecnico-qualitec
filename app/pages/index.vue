@@ -1,417 +1,369 @@
 <template>
-  <div class="bg-gray-50 text-gray-900 min-h-screen flex flex-col w-[1280px] max-w-none mx-auto shadow-sm">
+  <div class="bg-[#fdf8f8] text-[#1c1b1b] font-['Work_Sans',sans-serif] antialiased selection:bg-[#004A96] selection:text-white min-h-screen flex flex-col">
     <!-- Header -->
-    <header class="w-full top-0 sticky z-50 shadow-sm select-none">
-      <!-- Top Row (White Background) -->
-      <div class="bg-white border-b border-gray-100">
-        <div class="flex justify-between items-center h-16 px-8 max-w-7xl mx-auto">
-          <!-- Logo -->
-          <div class="relative h-16 w-96 flex items-center">
-            <img 
-              alt="Qualitec Industrial" 
-              class="absolute h-36 w-auto object-contain -translate-y-1/2 top-1/2 pointer-events-none"
-              style="left: 160px;" 
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuCJOpxk8IRBgRW2bvQlS_z4LoXARfSvqvz2saPXY9SVEh_22Bcd1VS5ijTW9c3L5WiWT0idDIuscN94pofAxJzmGnXWNILAeSKTQdpe0NSl8pmXlo5Mo2KzPIESuDMk-6ap5WOs_icm6enTpaiHanmAbwntVxfvVTPLdAKIwMg7L88cyvuALuJQqv2-2ntPUxn3BgVkSCLfjyupjGSuOW5zhpBXbfo-ac3ZkUg-WHHUrhMMhz1XIsk_yPD5jMMWbkCwWOJV1BBvHWM"
-            >
-          </div>
-          <!-- Top Navigation & Language Flags -->
-          <nav class="flex items-center space-x-8" style="margin-right: 60px;">
-            <a href="#" class="text-sm font-normal text-gray-600 hover:text-gray-900 transition-colors">{{ t.home }}</a>
-            <a href="#" class="text-sm font-normal text-gray-600 hover:text-gray-900 transition-colors">{{ t.about }}</a>
-            <a href="#" class="text-sm font-normal text-gray-600 hover:text-gray-900 transition-colors">{{ t.contact }}</a>
+    <header class="bg-white border-b border-[#c2c6d3] sticky top-0 z-50 transition-all duration-300 shadow-xs">
+      <div class="flex flex-col md:flex-row justify-between items-center w-full px-4 md:px-10 max-w-[1280px] mx-auto py-4 gap-4">
+        <!-- Brand Logo -->
+        <NuxtLink to="/" class="flex items-center gap-2">
+          <img 
+            alt="Qualitec Logo" 
+            class="h-12 object-contain" 
+            src="https://lh3.googleusercontent.com/aida/AP1WRLvb_lGcigKW6su6LN_Xd0Bf0AXsewLIulAi0GxcP_qLjBKDQwKkr4TLJgHAmnOXZ_CnTBIs1fPQUk9wsPoaEnw1KIo3G_pm2AD72CQGZpdCmL0me0d5Nw3sO0Jq1oNeH0TPtE84vraycYx20zMTmWG9t98pFKFcZH8ovF5vpsN6YK6J2ZqjcN6pDWW8byB81uqO2z6Crk115D73Mm9qXI78ObCCnUJ9BmIfEJoVkKB3TB8-KPNPPQ8kG9Y"
+          />
+        </NuxtLink>
 
-            <!-- Flags Selector -->
-            <div class="flex items-center gap-2 border-l border-gray-200 pl-6 ml-2">
-              <button 
-                @click="currentLang = 'pt'" 
-                class="p-1 rounded-md transition-all border cursor-pointer flex items-center justify-center"
-                :class="currentLang === 'pt' ? 'bg-blue-50 border-blue-500 shadow-xs ring-2 ring-blue-500/20 scale-105' : 'border-transparent opacity-60 hover:opacity-100 bg-transparent'"
-                title="Português (Brasil)"
-              >
-                <!-- SVG Flag Brazil -->
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-4 rounded-xs shadow-2xs object-cover" viewBox="0 0 720 504">
-                  <rect width="720" height="504" fill="#009c3b"/>
-                  <polygon points="360,42 678,252 360,462 42,252" fill="#ffdf00"/>
-                  <circle cx="360" cy="252" r="126" fill="#002776"/>
-                  <path d="M 235,260 A 136,136 0 0,1 485,244" fill="none" stroke="#ffffff" stroke-width="12"/>
-                </svg>
-              </button>
+        <!-- Desktop Navigation -->
+        <nav class="hidden md:flex gap-8 items-center font-['Work_Sans',sans-serif]">
+          <NuxtLink 
+            to="/" 
+            class="text-sm font-semibold text-[#004A96] border-b-2 border-[#004A96] pb-1 hover:bg-[#f7f3f2] transition-colors duration-200"
+          >
+            Início
+          </NuxtLink>
+          <NuxtLink 
+            to="/catalogo" 
+            class="text-sm font-semibold text-[#424751] hover:text-[#004A96] hover:bg-[#f7f3f2] px-2 py-1 rounded transition-colors duration-200"
+          >
+            Catálogo / Produtos
+          </NuxtLink>
+          <a 
+            href="#segmentos" 
+            class="text-sm font-semibold text-[#424751] hover:text-[#004A96] hover:bg-[#f7f3f2] px-2 py-1 rounded transition-colors duration-200"
+          >
+            Segmentos
+          </a>
+          <a 
+            href="#novidades" 
+            class="text-sm font-semibold text-[#424751] hover:text-[#004A96] hover:bg-[#f7f3f2] px-2 py-1 rounded transition-colors duration-200"
+          >
+            Novidades
+          </a>
+          <a 
+            href="#sobre" 
+            class="text-sm font-semibold text-[#424751] hover:text-[#004A96] hover:bg-[#f7f3f2] px-2 py-1 rounded transition-colors duration-200"
+          >
+            Sobre
+          </a>
+          <a 
+            href="#contato" 
+            class="text-sm font-semibold text-[#424751] hover:text-[#004A96] hover:bg-[#f7f3f2] px-2 py-1 rounded transition-colors duration-200"
+          >
+            Contato
+          </a>
+        </nav>
 
-              <button 
-                @click="currentLang = 'en'" 
-                class="p-1 rounded-md transition-all border cursor-pointer flex items-center justify-center"
-                :class="currentLang === 'en' ? 'bg-blue-50 border-blue-500 shadow-xs ring-2 ring-blue-500/20 scale-105' : 'border-transparent opacity-60 hover:opacity-100 bg-transparent'"
-                title="English (United Kingdom)"
-              >
-                <!-- SVG Flag UK / England -->
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-4 rounded-xs shadow-2xs object-cover" viewBox="0 0 60 30">
-                  <clipPath id="uk-clip"><path d="M0,0 v30 h60 v-30 z"/></clipPath>
-                  <clipPath id="uk-diag"><path d="M30,15 h30 v15 z M30,15 h-30 v-15 z M30,15 h30 v-15 z M30,15 h-30 v15 z"/></clipPath>
-                  <g clip-path="url(#uk-clip)">
-                    <path d="M0,0 v30 h60 v-30 z" fill="#012169"/>
-                    <path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/>
-                    <path d="M0,0 L60,30 M60,0 L0,30" clip-path="url(#uk-diag)" stroke="#C8102E" stroke-width="4"/>
-                    <path d="M30,0 v30 M0,15 h60" stroke="#fff" stroke-width="10"/>
-                    <path d="M30,0 v30 M0,15 h60" stroke="#C8102E" stroke-width="6"/>
-                  </g>
-                </svg>
-              </button>
-
-              <button 
-                @click="currentLang = 'de'" 
-                class="p-1 rounded-md transition-all border cursor-pointer flex items-center justify-center"
-                :class="currentLang === 'de' ? 'bg-blue-50 border-blue-500 shadow-xs ring-2 ring-blue-500/20 scale-105' : 'border-transparent opacity-60 hover:opacity-100 bg-transparent'"
-                title="Deutsch (Deutschland)"
-              >
-                <!-- SVG Flag Germany -->
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-4 rounded-xs shadow-2xs object-cover" viewBox="0 0 5 3">
-                  <rect width="5" height="3" fill="#000000"/>
-                  <rect width="5" height="2" y="1" fill="#DD0000"/>
-                  <rect width="5" height="1" y="2" fill="#FFCC00"/>
-                </svg>
-              </button>
-            </div>
-          </nav>
-        </div>
+        <!-- Mobile Menu Toggle Button -->
+        <button @click="mobileMenuOpen = !mobileMenuOpen" class="md:hidden text-[#004A96] p-2">
+          <span class="material-symbols-outlined text-2xl">{{ mobileMenuOpen ? 'close' : 'menu' }}</span>
+        </button>
       </div>
 
-      <!-- Bottom Row (Light Gray Background) -->
-      <div class="bg-gray-100 border-b border-gray-200">
-        <div class="max-w-7xl mx-auto px-8 py-4 flex justify-center items-center">
-          <nav class="flex flex-wrap justify-center items-center gap-x-20 gap-y-2">
-            <button 
-              v-for="segment in translatedSegments"
-              :key="segment.key"
-              @click="toggleSegmentFilter(segment.key)"
-              class="text-sm font-medium transition-colors border-0 bg-transparent cursor-pointer p-0"
-              :class="selectedSegment === segment.key 
-                ? 'text-blue-700 font-bold underline underline-offset-4 decoration-2' 
-                : 'text-gray-600 hover:text-gray-900'"
-            >
-              {{ segment.label }}
-            </button>
-          </nav>
-        </div>
+      <!-- Mobile Navigation Drawer -->
+      <div v-if="mobileMenuOpen" class="md:hidden bg-white border-t border-gray-100 px-6 py-4 flex flex-col gap-3 font-['Work_Sans',sans-serif]">
+        <NuxtLink to="/" class="text-sm font-bold text-[#004A96]">Início</NuxtLink>
+        <NuxtLink to="/catalogo" class="text-sm font-semibold text-[#424751]">Catálogo / Produtos</NuxtLink>
+        <a href="#segmentos" @click="mobileMenuOpen = false" class="text-sm font-semibold text-[#424751]">Segmentos</a>
+        <a href="#novidades" @click="mobileMenuOpen = false" class="text-sm font-semibold text-[#424751]">Novidades</a>
+        <a href="#sobre" @click="mobileMenuOpen = false" class="text-sm font-semibold text-[#424751]">Sobre</a>
+        <a href="#contato" @click="mobileMenuOpen = false" class="text-sm font-semibold text-[#424751]">Contato</a>
       </div>
-
-      <!-- Thin White Bar -->
-      <div class="bg-white h-3 w-full border-b border-gray-200"></div>
     </header>
 
-    <!-- Main Content -->
-    <main class="max-w-7xl mx-auto px-8 py-6 flex-grow w-full">
-      <!-- Toolbar Component -->
-      <CatalogSearchToolbar 
-        v-model:searchQuery="searchQuery"
-        v-model:selectedCategory="selectedCategory"
-        :products="products"
-        :category-button-groups="categoryButtonGroups"
-        :show-category-buttons="showCategoryButtons"
-      />
-
-      <!-- Product Grid -->
-      <div v-if="paginatedProducts.length > 0" class="grid grid-cols-4 gap-5">
-        <div v-for="product in paginatedProducts" :key="product.id">
-          <ProductCard 
-            :product="product" 
-            @openImage="openImageModal"
-          />
+    <main class="flex-grow">
+      <!-- Hero Section -->
+      <section class="relative w-full h-[520px] md:h-[600px] flex items-center justify-center overflow-hidden">
+        <img 
+          alt="Painel de instrumentos industriais mostrando precisão e controle em ambiente técnico." 
+          class="absolute inset-0 w-full h-full object-cover z-0" 
+          src="https://lh3.googleusercontent.com/aida/AP1WRLuQGJlvhXgSbL5PCfgd-rVegzYgpPNJgtHn0Ea6Nm0tVayzLhjzQkKmbYMugrdMebtxFro3tlHv1N8ozueW3IWAmerLpn5BMh0-V4suiSBYyv-_1zhWqzLrg3b4d-rpkTVAeU22eoHKYZCmNp_AZySP90gelzHtlnS-8x3nRmtLSJEw4C0yhBjOP0LTv8cqJJere8bX1erK4A1HpU_AQV5WthPlinuCGSknmAf4oBmhbRpEqOyxTA2YAMo"
+        />
+        <div class="relative z-20 w-full h-full px-4 md:px-10 max-w-[1280px] mx-auto flex items-end pb-12">
+          <div class="bg-[#65AC1E]/85 backdrop-blur-sm p-8 md:p-12 max-w-xl rounded shadow-lg">
+            <h1 class="font-['Rubik',sans-serif] text-2xl md:text-4xl text-white font-medium leading-tight">
+              “ O seu desafio diário, nós resolvemos todos os dias com segurança e confiabilidade “
+            </h1>
+          </div>
         </div>
-      </div>
+      </section>
 
-      <!-- Empty State -->
-      <div v-else class="text-center py-20 border border-dashed border-gray-300 bg-white">
-        <span class="material-symbols-outlined text-5xl text-gray-400 mb-4">search_off</span>
-        <h3 class="text-xl font-semibold text-gray-800 mb-2">Nenhum equipamento encontrado</h3>
-        <p class="text-sm text-gray-500">Tente ajustar seus termos de busca ou filtros de categoria.</p>
-      </div>
+      <!-- Busca Rápida e Links Diretos -->
+      <section class="bg-[#e5e5e5] py-12 px-4 md:px-10 border-b border-gray-300/40">
+        <div class="max-w-[1280px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 items-start">
+          <!-- Left Column: Search -->
+          <div class="flex flex-col gap-4">
+            <h2 class="font-['Rubik',sans-serif] text-2xl md:text-3xl text-[#424751] font-medium">Como podemos te ajudar?</h2>
+            <p class="text-[#424751] text-base">Utilize a busca rápida e encontre sua necessidade</p>
+            <form @submit.prevent="handleSearch" class="relative max-w-md">
+              <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">search</span>
+              <input 
+                v-model="searchInput"
+                class="w-full pl-10 pr-12 py-3 rounded border border-[#c2c6d3] focus:ring-2 focus:ring-[#004A96] focus:border-transparent bg-white text-base text-[#1c1b1b] outline-none" 
+                placeholder="Buscar equipamentos, válvulas, manômetros..." 
+                type="text"
+              />
+              <button 
+                type="submit" 
+                class="absolute right-2 top-1/2 -translate-y-1/2 bg-[#004A96] text-white p-1.5 rounded hover:bg-[#00346c] transition-colors"
+                title="Buscar"
+              >
+                <span class="material-symbols-outlined text-sm">arrow_forward</span>
+              </button>
+            </form>
+          </div>
 
-      <!-- Pagination -->
-      <div v-if="totalPages > 1" class="mt-16 flex justify-center items-center gap-2">
-        <button 
-          @click="activePage = Math.max(1, activePage - 1)" 
-          :disabled="activePage === 1"
-          class="w-10 h-10 border border-gray-300 flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors bg-white cursor-pointer disabled:opacity-40 disabled:pointer-events-none"
-        >
-          <span class="material-symbols-outlined">chevron_left</span>
-        </button>
-        <button 
-          v-for="page in totalPages" 
-          :key="page"
-          @click="activePage = page"
-          class="w-10 h-10 border font-medium text-sm transition-colors cursor-pointer"
-          :class="activePage === page ? 'border-blue-600 bg-blue-600 text-white' : 'border-gray-300 text-gray-600 hover:bg-gray-50'"
-        >
-          {{ page }}
-        </button>
-        <button 
-          @click="activePage = Math.min(totalPages, activePage + 1)" 
-          :disabled="activePage === totalPages"
-          class="w-10 h-10 border border-gray-300 flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors bg-white cursor-pointer disabled:opacity-40 disabled:pointer-events-none"
-        >
-          <span class="material-symbols-outlined">chevron_right</span>
-        </button>
-      </div>
+          <!-- Right Column: Quick Links -->
+          <div class="flex flex-col gap-3">
+            <span class="text-xs font-bold text-[#424751] uppercase tracking-wider">Buscas mais utilizadas</span>
+            <div class="flex flex-col gap-2.5">
+              <NuxtLink to="/catalogo?cat=V%C3%81LVULAS%20DE%20SEGURAN%C3%87A" class="text-[#004A96] hover:text-[#00346c] font-semibold text-base transition-colors flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-sm">chevron_right</span>
+                Válvulas de Segurança
+              </NuxtLink>
+              <NuxtLink to="/catalogo?q=HEROSE" class="text-[#004A96] hover:text-[#00346c] font-semibold text-base transition-colors flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-sm">chevron_right</span>
+                Reparos HEROSE
+              </NuxtLink>
+              <NuxtLink to="/catalogo?cat=TRANSMISSORES" class="text-[#004A96] hover:text-[#00346c] font-semibold text-base transition-colors flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-sm">chevron_right</span>
+                Transmissores de Pressão
+              </NuxtLink>
+              <a href="https://wa.me/551139087100" target="_blank" class="text-[#004A96] hover:text-[#00346c] font-semibold text-base transition-colors flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-sm">chevron_right</span>
+                Contato de vendas / suporte
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Principais Segmentos -->
+      <section id="segmentos" class="py-16 md:py-20 px-4 md:px-10 max-w-[1280px] mx-auto bg-white">
+        <div class="text-center mb-12">
+          <h2 class="font-['Rubik',sans-serif] text-2xl md:text-3xl text-[#424751] font-medium mb-3">Principais segmentos</h2>
+          <p class="text-gray-500 text-sm max-w-xl mx-auto">Atendemos setores industriais exigentes com soluções certificadas de altíssima confiabilidade.</p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+          <!-- Criogenia & Gases industriais -->
+          <NuxtLink to="/catalogo?segment=CRIOGENIA" class="group flex flex-col border border-gray-100 rounded overflow-hidden shadow-xs hover:shadow-md transition-all">
+            <div class="h-48 overflow-hidden bg-gray-100">
+              <img 
+                alt="Criogenia & Gases industriais" 
+                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" 
+                src="https://lh3.googleusercontent.com/aida/AP1WRLsDWV00WRL33tuhAG3BPA8GTPcBz-pfzYJ5QGz2_CFnkvCSprf16WTZORxqYJd3VFMaSLF81Wdm-S9-UEVYwRS6IZjDh4VV8WwGm6i7fTQgU4oSmP9IGxRBZnXvSg-lgNzx7dHLh96NV6al1sI8sdEOoVx6IZCUOcKyTMikgpuW736a8c-W4OfY41ayLpgc1yRxJm4ux29KF3X6Vl4DjzUrBJhQVrk6zwaVUJrs9k2kRxWzoaJlEeyRARs"
+              />
+            </div>
+            <div class="bg-[#f1edec] p-4 text-center group-hover:bg-[#004A96] group-hover:text-white transition-colors">
+              <h3 class="font-semibold text-[#424751] group-hover:text-white">Criogênia & Gases industriais</h3>
+            </div>
+          </NuxtLink>
+
+          <!-- Óleo & Gás -->
+          <NuxtLink to="/catalogo?segment=OLEO_GAS" class="group flex flex-col border border-gray-100 rounded overflow-hidden shadow-xs hover:shadow-md transition-all">
+            <div class="h-48 overflow-hidden bg-gray-100">
+              <img 
+                alt="Óleo & Gás" 
+                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" 
+                src="https://lh3.googleusercontent.com/aida/AP1WRLtMAi3za4oatqWzMuvla-WvZQlt9FguAx22h8nx9U6lR8p142s5QcL4EPPE0ligkQbqZ0q-ZYW-hqDRV2uJVGv0NMmhiEuyzJbKk7sUfZpHHA4_sz8P-TyC7QparCuJFeAeovwFTiSEpumRpFGJg-y1rdhCKN1ensV_n46sSPNrBJMqn7MqzXsxs1FqEOTTk7iB0mQ42_IaiLxVLi8QHfDnmf1qJl39Y9bqn9spftMGhs_woAvKg85Vgk0"
+              />
+            </div>
+            <div class="bg-[#f1edec] p-4 text-center group-hover:bg-[#004A96] group-hover:text-white transition-colors">
+              <h3 class="font-semibold text-[#424751] group-hover:text-white">Óleo & Gás</h3>
+            </div>
+          </NuxtLink>
+
+          <!-- Açúcar e Álcool -->
+          <NuxtLink to="/catalogo?segment=SUCROALCOOLEIRO" class="group flex flex-col border border-gray-100 rounded overflow-hidden shadow-xs hover:shadow-md transition-all">
+            <div class="h-48 overflow-hidden bg-gray-100">
+              <img 
+                alt="Açúcar e Álcool" 
+                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" 
+                src="https://lh3.googleusercontent.com/aida/AP1WRLtx-24uZLAzxnTShKPl8Wv12JS85bEMJBe8sqHO25f6hSfCDYWD7dOd3t0TS1qSXQfoEmpRejEnBgmszPULohKQhnktzaTJxNZlqCZtWMl_i2qHHdWBFpI5OD1WyuR3zn6bDrno3XOkEm5_52rNlHCVRUzbbVXx-6T9Fq-atHYsA-bfuEzXbOwh0ibv0HAdlvONto1p0-R41aQY_ZMMGGD6KANY4mawEiSd7OT1CHuJeCgTozkzRuxGGg"
+              />
+            </div>
+            <div class="bg-[#f1edec] p-4 text-center group-hover:bg-[#004A96] group-hover:text-white transition-colors">
+              <h3 class="font-semibold text-[#424751] group-hover:text-white">Açúcar e álcool</h3>
+            </div>
+          </NuxtLink>
+        </div>
+      </section>
+
+      <!-- Novidades / Produtos em Destaque -->
+      <section id="novidades" class="py-16 md:py-20 px-4 md:px-10 max-w-[1280px] mx-auto bg-[#f7f3f2] border-y border-[#c2c6d3]/30">
+        <div class="flex justify-between items-center mb-12">
+          <h2 class="font-['Rubik',sans-serif] text-2xl md:text-3xl text-[#424751] font-medium">Novidades</h2>
+          <NuxtLink to="/catalogo" class="text-sm font-bold text-[#004A96] hover:underline flex items-center gap-1">
+            Ver catálogo completo
+            <span class="material-symbols-outlined text-sm">arrow_forward</span>
+          </NuxtLink>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+          <!-- Produto 1 -->
+          <NuxtLink to="/catalogo" class="flex flex-col group bg-white rounded overflow-hidden border border-gray-200/60 p-4 hover:shadow-md transition-all">
+            <div class="w-full bg-[#e5e5e5] h-48 flex items-center justify-center p-4 rounded">
+              <img 
+                alt="Novo Catálogo Técnico" 
+                class="object-contain max-h-full mix-blend-multiply group-hover:scale-105 transition-transform duration-200" 
+                src="https://lh3.googleusercontent.com/aida/AP1WRLuQGJlvhXgSbL5PCfgd-rVegzYgpPNJgtHn0Ea6Nm0tVayzLhjzQkKmbYMugrdMebtxFro3tlHv1N8ozueW3IWAmerLpn5BMh0-V4suiSBYyv-_1zhWqzLrg3b4d-rpkTVAeU22eoHKYZCmNp_AZySP90gelzHtlnS-8x3nRmtLSJEw4C0yhBjOP0LTv8cqJJere8bX1erK4A1HpU_AQV5WthPlinuCGSknmAf4oBmhbRpEqOyxTA2YAMo"
+              />
+            </div>
+            <h3 class="font-medium text-[#2F2E2E] mt-4 text-center group-hover:text-[#004A96] transition-colors">Novo Catálogo Técnico 2025</h3>
+          </NuxtLink>
+
+          <!-- Produto 2 -->
+          <NuxtLink to="/catalogo" class="flex flex-col group bg-white rounded overflow-hidden border border-gray-200/60 p-4 hover:shadow-md transition-all">
+            <div class="w-full bg-[#e5e5e5] h-48 flex items-center justify-center p-4 rounded">
+              <img 
+                alt="Transmissor de nível flangeado" 
+                class="object-contain max-h-full mix-blend-multiply group-hover:scale-105 transition-transform duration-200" 
+                src="https://lh3.googleusercontent.com/aida/AP1WRLuG8sZS2kOzj2vWiRJKUV2sBhsBQRWjVrjvR4wnSCqsuaozGrwLnu6MrCdeDc6xKeiRnf6slFTLtforvCKE7HTmjBOJeaU_T8oysOKzPgniF9frKcP6lAwR0QKqFO4ZO6opkVFeH45aEY72r6WhAnegRADQXfnRkibd80aizun5t04sqBpqCts1rDtBiRSA3QJDdstMlsoDw3n9s5ZbF_-xMhue9TPDh7AXsaZgogGTYlpRNluclB6ax78"
+              />
+            </div>
+            <h3 class="font-medium text-[#2F2E2E] mt-4 text-center group-hover:text-[#004A96] transition-colors">Transmissor de nível flangeado</h3>
+          </NuxtLink>
+
+          <!-- Produto 3 -->
+          <NuxtLink to="/catalogo" class="flex flex-col group bg-white rounded overflow-hidden border border-gray-200/60 p-4 hover:shadow-md transition-all">
+            <div class="w-full bg-[#e5e5e5] h-48 flex items-center justify-center p-4 rounded">
+              <img 
+                alt="Regulador Pressão CO2" 
+                class="object-contain max-h-full mix-blend-multiply group-hover:scale-105 transition-transform duration-200" 
+                src="https://lh3.googleusercontent.com/aida/AP1WRLv-GfRr-b2d9wobOGuNB9O-zkRJwTQEiHQAwyyzinqVG7T8NlRQuSfpMp5ZxkXK8OD5YQ4cZqUih3JQb1iSfTVvz2mH5t5WOfwH3Nq0nTyubrNNXy2c2wnpJkkDT59Se2En1-vv580MTcE7qKQcapGD5Mwi4hxg8HM7uxxJS2hgp5rgDJRlQ5Q7-QQb4OsKI3kX9bTKAVQ_PzXV_bfUz5gn_TCDlVhk1qhr5_Xbr2maKQ_X-URbXHbcuQ"
+              />
+            </div>
+            <h3 class="font-medium text-[#2F2E2E] mt-4 text-center group-hover:text-[#004A96] transition-colors">Regulador Pressão CO2</h3>
+          </NuxtLink>
+        </div>
+      </section>
+
+      <!-- Sobre e Newsletter -->
+      <section id="sobre" class="py-16 md:py-20 bg-white px-4 md:px-10">
+        <div class="max-w-[1280px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center mb-16">
+          <div>
+            <h2 class="font-['Rubik',sans-serif] text-2xl md:text-3xl text-[#424751] font-medium mb-4">Sobre a Qualitec</h2>
+            <p class="text-[#424751] text-base leading-relaxed mb-4">
+              Há anos no mercado de instrumentação e controle industrial, a Qualitec oferece soluções completas e homologadas para os setores mais exigentes do mercado.
+            </p>
+            <p class="text-[#424751] text-base leading-relaxed">
+              Somos representantes exclusivos no Brasil das renomadas marcas globais <strong>HEROSE GmbH</strong>, <strong>Generant Inc</strong> e <strong>DataOnline LLC</strong>.
+            </p>
+          </div>
+          <div class="bg-[#f7f3f2] p-8 rounded border border-gray-200 flex flex-col gap-4">
+            <h3 class="font-['Rubik',sans-serif] text-xl text-[#004A96] font-medium">Excelência e Representação Exclusiva</h3>
+            <ul class="space-y-2 text-[#424751] text-sm">
+              <li class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-[#65AC1E]">check_circle</span>
+                Válvulas criogênicas e de segurança HEROSE
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-[#65AC1E]">check_circle</span>
+                Reguladores e válvulas industriais Generant
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-[#65AC1E]">check_circle</span>
+                Sistemas de telemetria e monitoramento DataOnline
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Newsletter -->
+        <div class="max-w-[1280px] mx-auto pt-10 border-t border-gray-200">
+          <h2 class="font-['Rubik',sans-serif] text-xl md:text-2xl text-[#424751] font-medium mb-6">Cadastre-se para receber nossa newsletter.</h2>
+          <form @submit.prevent="handleNewsletterSubmit" class="flex flex-col md:flex-row max-w-4xl gap-4">
+            <div class="flex-1 flex flex-col">
+              <label class="text-xs font-semibold text-[#424751] mb-1">Digite seu email aqui *</label>
+              <input 
+                v-model="newsletterEmail"
+                class="w-full border border-[#c2c6d3] p-3 focus:ring-2 focus:ring-[#004A96] focus:outline-none rounded bg-white text-base" 
+                required 
+                placeholder="seuemail@empresa.com.br"
+                type="email"
+              />
+            </div>
+            <button 
+              class="bg-[#004A96] text-white px-10 py-3 font-medium rounded hover:bg-[#00346c] transition-colors mt-auto cursor-pointer" 
+              type="submit"
+            >
+              {{ newsletterSubmitted ? 'Cadastrado!' : 'Inscrever' }}
+            </button>
+          </form>
+        </div>
+      </section>
     </main>
 
     <!-- Footer -->
-    <footer class="bg-[#f5f5f5] text-[#555555] w-full mt-20 border-t border-gray-200/50">
-      <div class="max-w-7xl mx-auto py-14 flex flex-col md:flex-row justify-between gap-8 text-[13px] leading-relaxed" style="padding-left: 192px; padding-right: 210px;">
-        <!-- Left Column: Address and Info -->
-        <div class="flex flex-col space-y-1 text-[#666666]">
-          <p class="text-[#333333] mb-1">Qualitec C S I M Ltda</p>
+    <footer id="contato" class="bg-[#f7f3f2] py-16 px-4 md:px-10 relative border-t border-[#c2c6d3]">
+      <div class="max-w-[1280px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-20">
+        <!-- Left Column -->
+        <div class="flex flex-col gap-2 text-[#424751]">
+          <p class="font-bold text-[#1c1b1b]">Qualitec C S I M Ltda</p>
           <p>Rua Fazenda Monte Alegre, 367</p>
           <p>05160-060 - São Paulo - SP</p>
           <p>Tel: +55 11 3908 7100</p>
-          <p>
-            <a href="mailto:vendas@qualitecinstrumentos.com.br" class="hover:text-gray-900 transition-colors">vendas@qualitecinstrumentos.com.br</a>
-          </p>
-          <p class="pt-6 text-[#777777]">Todos os direitos reservados - 2024</p>
+          <p class="font-semibold text-[#004A96]">vendas@qualitecinstrumentos.com.br</p>
+          <p class="mt-4 text-xs text-gray-500">Todos os direitos reservados - 2024</p>
         </div>
 
-        <!-- Right Column: Exclusivity info -->
-        <div class="flex flex-col space-y-1 text-[#666666] md:pr-12">
-          <p class="text-[#333333] mb-1">Representante Exclusivo</p>
+        <!-- Right Column -->
+        <div class="flex flex-col gap-2 text-[#424751] md:text-right">
+          <p class="font-bold text-[#1c1b1b]">Representante Exclusivo</p>
           <p>HEROSE GmbH</p>
           <p>Generant Inc</p>
           <p>DataOnline LLC</p>
         </div>
       </div>
-    </footer>
 
-
-
-    <!-- Image Modal -->
-    <div 
-      v-if="modalImageSrc" 
-      class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-slate-900/90 backdrop-blur-sm p-4 md:p-8 select-none"
-      @click="closeImageModal"
-    >
-      <div class="relative bg-white rounded-xl shadow-2xl flex flex-col max-w-4xl w-full max-h-[85vh] overflow-hidden border border-gray-100" @click.stop>
-        <header class="flex flex-wrap items-center justify-between px-4 py-3 border-b border-gray-100 bg-gray-50/90 gap-2">
-          <div class="flex items-center gap-3">
-            <span v-if="modalProduct?.nameCode" class="px-2 py-0.5 text-xs font-semibold text-white rounded bg-[#376092]">{{ modalProduct.nameCode }}</span>
-            <h3 v-if="modalProduct?.title" class="text-sm font-bold text-gray-800 truncate max-w-[250px] sm:max-w-[400px]">{{ modalProduct.title }}</h3>
-          </div>
-          <div class="flex items-center gap-1 sm:gap-2 ml-auto">
-            <button @click="handleZoomOut" class="p-1.5 rounded-lg hover:bg-gray-200 text-gray-600 transition-colors disabled:opacity-40 border-0 bg-transparent cursor-pointer" :disabled="zoomScale <= 0.5">
-              <span class="material-symbols-outlined text-xl">zoom_out</span>
-            </button>
-            <span class="text-xs font-semibold text-gray-500 min-w-[3.5rem] text-center">{{ Math.round(zoomScale * 100) }}%</span>
-            <button @click="handleZoomIn" class="p-1.5 rounded-lg hover:bg-gray-200 text-gray-600 transition-colors disabled:opacity-40 border-0 bg-transparent cursor-pointer" :disabled="zoomScale >= 4">
-              <span class="material-symbols-outlined text-xl">zoom_in</span>
-            </button>
-            <button @click="resetZoom" class="p-1.5 rounded-lg hover:bg-gray-200 text-gray-600 transition-colors border-0 bg-transparent cursor-pointer">
-              <span class="material-symbols-outlined text-xl">restart_alt</span>
-            </button>
-            <div class="h-6 w-px bg-gray-200 mx-1"></div>
-            <button @click="closeImageModal" class="p-1.5 rounded-lg hover:bg-red-50 hover:text-red-600 text-gray-500 transition-colors border-0 bg-transparent cursor-pointer">
-              <span class="material-symbols-outlined text-xl">close</span>
-            </button>
-          </div>
-        </header>
-
-        <div 
-          class="relative flex-grow overflow-hidden flex items-center justify-center bg-gray-100/50 p-6 min-h-[300px] sm:min-h-[450px]"
-          :class="zoomScale > 1 ? 'cursor-grab active:cursor-grabbing' : 'cursor-default'"
-          @mousedown="onMouseDown" @mousemove="onMouseMove" @mouseup="onMouseUp" @mouseleave="onMouseUp"
-          @touchstart="onTouchStart" @touchmove="onTouchMove" @touchend="onTouchEnd" @touchcancel="onTouchEnd" @wheel.prevent="onWheel"
+      <!-- Floating Support Button -->
+      <div class="fixed bottom-6 right-6 z-50">
+        <a 
+          href="https://wa.me/551139087100" 
+          target="_blank"
+          class="bg-[#004A96] hover:bg-[#00346c] text-white px-5 py-3 rounded-full flex items-center gap-2.5 shadow-xl transition-all hover:scale-105 cursor-pointer no-underline"
         >
-          <img 
-            :src="modalImageSrc" 
-            alt="Ampliada"
-            class="max-w-full max-h-[70vh] object-contain transition-transform duration-75 select-none pointer-events-none"
-            :style="{ transform: `scale(${zoomScale}) translate(${panOffset.x / zoomScale}px, ${panOffset.y / zoomScale}px)` }"
-          />
-        </div>
+          <span class="material-symbols-outlined text-2xl">chat_bubble</span>
+          <span class="font-medium text-sm">Como posso lhe ajudar?</span>
+        </a>
       </div>
-    </div>
-
-    <!-- Catalog Print / Config Modal -->
-    <CatalogPrintModal
-      :open="showPrintModal"
-      :has-geral-cover="hasGeralCover"
-      :listable-categories="listableCategories"
-      :category-product-counts="categoryProductCounts"
-      @close="closePrintModal"
-      @confirm="confirmAndDownload"
-      @create-quick-category="handleQuickCreateCategory"
-    />
-
-    <!-- Hidden PDF template generation -->
-    <CatalogPdfTemplate 
-      :is-generating="isGeneratingPdf" 
-      :products="selectedProductObjects"
-      :cover-category="selectedCoverCategoryOverride"
-      :pdf-type="pdfTypeSelection"
-      :booklet-mode="bookletModeSelection"
-      @complete="isGeneratingPdf = false"
-    />
+    </footer>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from 'vue'
-import { useCatalog } from '../composables/useCatalog'
-import useCategoryColors from '../composables/useCategoryColors'
-import usePdfSettings from '../composables/usePdfSettings'
-import useSiteSettings from '../composables/useSiteSettings'
-import useTranslations from '../composables/useTranslations'
+import { ref } from 'vue'
 
-const supabase = useSupabaseClient()
-const { getCategoryColor } = useCategoryColors()
-const { getPdfSettings } = usePdfSettings()
-const { fetchSiteSettings } = useSiteSettings()
-const { t, translatedSegments } = useTranslations()
-
-// Configure viewport to render desktop 1280px layout auto-fitted on mobile with pinch-zoom support
 useHead({
+  title: 'Qualitec Instrumentos Industriais | Início',
   meta: [
-    { name: 'viewport', content: 'width=1280, initial-scale=0.35, minimum-scale=0.1, maximum-scale=5.0, user-scalable=yes' }
+    { name: 'description', content: 'Soluções em instrumentação industrial, válvulas de segurança criogênicas HEROSE e reguladores Generant.' }
+  ],
+  link: [
+    { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700&family=Work+Sans:wght@400;600&display=swap' },
+    { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1' }
   ]
 })
 
-const {
-  products,
-  loading,
-  loadProducts,
-  fetchAssets,
-  showPrintModal,
-  coverCategorySelection,
-  specificCoverCategory,
-  selectedCoverCategoryOverride,
-  hasGeralCover,
-  listableCategories,
-  categoryProductCounts,
-  selectedProducts,
-  selectedProductObjects,
-  searchQuery,
-  selectedCategory,
-  selectedSegment,
-  currentLang,
-  activePage,
-  availableCategories,
-  filteredProducts,
-  paginatedProducts,
-  totalPages,
-  toggleProduct,
-  selectAll,
-  clearSelection,
-  isGeneratingPdf,
-  pdfTypeSelection,
-  bookletModeSelection,
-  downloadCatalog,
-  closePrintModal,
-  confirmAndDownload,
-  modalImageSrc,
-  modalProduct,
-  zoomScale,
-  panOffset,
-  handleZoomIn,
-  handleZoomOut,
-  resetZoom,
-  onMouseDown,
-  onMouseMove,
-  onMouseUp,
-  onTouchStart,
-  onTouchMove,
-  onTouchEnd,
-  onWheel,
-  openImageModal,
-  closeImageModal
-} = useCatalog()
+const searchInput = ref('')
+const mobileMenuOpen = ref(false)
+const newsletterEmail = ref('')
+const newsletterSubmitted = ref(false)
 
-const toggleSegmentFilter = (segment: string) => {
-  if (selectedSegment.value === segment) {
-    selectedSegment.value = ''
+const handleSearch = () => {
+  if (searchInput.value.trim()) {
+    navigateTo(`/catalogo?q=${encodeURIComponent(searchInput.value.trim())}`)
   } else {
-    selectedSegment.value = segment
+    navigateTo('/catalogo')
   }
 }
 
-const showCategoryButtons = computed(() => {
-  const geralSettings = getPdfSettings('GERAL')
-  return geralSettings?.layout_settings?.show_category_buttons !== false
-})
-
-interface ButtonGroup {
-  name: string
-  categories: string[]
-}
-
-const categoryButtonGroups = computed<ButtonGroup[]>(() => {
-  const geralSettings = getPdfSettings('GERAL')
-  const groups: ButtonGroup[] = geralSettings?.layout_settings?.category_button_groups || []
-  // Only return groups that have at least one category with products
-  return groups.filter(g => g.categories && g.categories.length > 0)
-})
-
-const handleQuickCreateCategory = async ({ name, color, imageName, imageBlob }: any) => {
-  try {
-    const payload = {
-      category: name,
-      cover_image_url: imageName || '/placeholder.png',
-      cover_image_blob: imageBlob,
-      color_hex: color
-    }
-    const { error } = await supabase.from('category_assets').insert([payload])
-    if (error) throw error
-
-    const { data: templateSettings } = await supabase
-      .from('pdf_settings')
-      .select('*')
-      .or('category.ilike.%VÁLVULAS DE SEGURANÇA%,category.ilike.%GERAL%')
-      .order('id', { ascending: true })
-      .limit(1)
-
-    let settingsPayload: Record<string, any> = {}
-    if (templateSettings && templateSettings.length > 0) {
-      const source = templateSettings[0]
-      const { id, created_at, ...copiedSettings } = source
-      settingsPayload = {
-        ...copiedSettings,
-        category: name,
-        layout_settings: JSON.parse(JSON.stringify(source.layout_settings || {}))
-      }
-    } else {
-      settingsPayload = {
-        category: name,
-        title_font_size: '28px',
-        title_position_y: '-9px'
-      }
-    }
-
-    await supabase.from('pdf_settings').insert([settingsPayload])
-
-    await fetchAssets()
-    coverCategorySelection.value = 'specific'
-    specificCoverCategory.value = name
-    alert(`Capa da categoria "${name}" criada com sucesso!`)
-  } catch (err: any) {
-    console.error(err)
-    alert(`Erro ao criar capa: ${err.message}`)
+const handleNewsletterSubmit = () => {
+  if (newsletterEmail.value.trim()) {
+    newsletterSubmitted.value = true
+    setTimeout(() => {
+      newsletterEmail.value = ''
+      newsletterSubmitted.value = false
+    }, 3000)
   }
 }
-
-const handleGlobalKeydown = (e: KeyboardEvent) => {
-  if (e.key === 'Escape') closeImageModal()
-}
-
-watch(modalImageSrc, (newVal) => {
-  if (newVal) {
-    window.addEventListener('keydown', handleGlobalKeydown)
-    document.body.style.overflow = 'hidden'
-  } else {
-    window.removeEventListener('keydown', handleGlobalKeydown)
-    document.body.style.overflow = ''
-  }
-})
-
-onMounted(async () => {
-  await Promise.all([
-    fetchAssets(),
-    loadProducts(),
-    fetchSiteSettings()
-  ])
-})
 </script>
