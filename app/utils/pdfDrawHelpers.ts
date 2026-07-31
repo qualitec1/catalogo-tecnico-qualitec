@@ -492,7 +492,7 @@ export function drawPageHeader(
     } else if (catUpper === 'GERAL') {
       catUpper = lang === 'en' ? 'GENERAL' : 'ALLGEMEIN'
     } else if (catUpper === 'VÁLVULAS 3 VIAS') {
-      catUpper = lang === 'en' ? '3-WAY VALVES' : '3-WEGE-VENTILE'
+      catUpper = lang === 'en' ? 'DIVERTER VALVES' : '3-WEGE-VENTILE'
     } else if (catUpper === 'VÁLVULAS CRIOGÊNICAS') {
       catUpper = lang === 'en' ? 'CRYOGENIC VALVES' : 'KRYO-VENTILE'
     } else if (catUpper === 'VÁLVULAS DE SEGURANÇA') {

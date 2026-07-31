@@ -27,8 +27,8 @@ export const categoryDict: Record<string, { en: string; es: string }> = {
   'MEDIDORES': { en: 'METERS', es: 'MEDIDORES' },
   'SISTEMAS': { en: 'SYSTEMS', es: 'SISTEMAS' },
   'EQUIPAMENTOS': { en: 'EQUIPMENT', es: 'EQUIPOS' },
-  'VÁLVULAS 3 VIAS': { en: '3-WAY VALVES', es: 'VÁLVULAS 3 VÍAS' },
-  '3-WAY VALVES': { en: '3-WAY VALVES', es: 'VÁLVULAS 3 VÍAS' },
+  'VÁLVULAS 3 VIAS': { en: 'DIVERTER VALVES', es: 'VÁLVULAS 3 VÍAS' },
+  '3-WAY VALVES': { en: 'DIVERTER VALVES', es: 'VÁLVULAS 3 VÍAS' },
   'VÁLVULAS GLOBO': { en: 'GLOBE VALVES', es: 'VÁLVULAS GLOBO' },
   'GLOBE VALVES': { en: 'GLOBE VALVES', es: 'VÁLVULAS GLOBO' },
   'VÁLVULAS DE SEGURANÇA': { en: 'SAFETY VALVES', es: 'VÁLVULAS DE SEGURIDAD' },
@@ -59,7 +59,7 @@ export function translateCategoryName(catName: string, lang: string): string {
   }
 
   if (norm.includes('CRIOG')) return lang === 'en' ? 'CRYOGENIC VALVES' : 'VÁLVULAS CRIOGÉNICAS'
-  if (norm.includes('3 VIAS') || norm.includes('3-WAY')) return lang === 'en' ? '3-WAY VALVES' : 'VÁLVULAS 3 VÍAS'
+  if (norm.includes('3 VIAS') || norm.includes('3-WAY') || norm.includes('DIVERTER')) return lang === 'en' ? 'DIVERTER VALVES' : 'VÁLVULAS 3 VÍAS'
   if (norm.includes('GLOBO')) return lang === 'en' ? 'GLOBE VALVES' : 'VÁLVULAS GLOBO'
   if (norm.includes('SEGURANCA')) return lang === 'en' ? 'SAFETY VALVES' : 'VÁLVULAS DE SEGURIDAD'
   if (norm.includes('PRESSAO')) return lang === 'en' ? 'PRESSURE TRANSMITTERS' : 'TRANSMISORES DE PRESIÓN'
