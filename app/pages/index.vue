@@ -1,14 +1,5 @@
 <template>
-  <div 
-    class="bg-gray-50 text-gray-900 min-h-screen flex flex-col overflow-x-auto touch-pan-x touch-pan-y"
-    @touchstart="handleTouchStart"
-    @touchmove="handleTouchMove"
-    @touchend="handleTouchEnd"
-  >
-    <div 
-      class="w-[1280px] mx-auto transition-transform duration-100 ease-out origin-top-left flex flex-col min-h-screen"
-      :style="{ transform: `scale(${mobileZoom})`, width: '1280px' }"
-    >
+  <div class="bg-gray-50 text-gray-900 min-h-screen flex flex-col w-[1280px] max-w-none mx-auto shadow-sm">
     <!-- Header -->
     <header class="w-full top-0 sticky z-50 shadow-sm select-none">
       <!-- Top Row (White Background) -->
@@ -256,34 +247,6 @@
       :booklet-mode="bookletModeSelection"
       @complete="isGeneratingPdf = false"
     />
-    </div>
-
-    <!-- Floating Mobile Zoom Control Widget -->
-    <div class="fixed bottom-6 right-6 z-40 flex items-center bg-slate-900/90 text-white rounded-full shadow-2xl p-1.5 backdrop-blur border border-slate-700/50 select-none">
-      <button 
-        @click="zoomOutMobile" 
-        class="w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-800 transition-colors text-white border-0 bg-transparent cursor-pointer"
-        title="Reduzir Zoom"
-      >
-        <span class="material-symbols-outlined text-lg">zoom_out</span>
-      </button>
-
-      <button 
-        @click="resetZoomMobile" 
-        class="px-2.5 py-1 text-xs font-mono font-bold text-blue-400 hover:text-white transition-colors border-0 bg-transparent cursor-pointer"
-        title="Resetar Zoom (100%)"
-      >
-        {{ Math.round(mobileZoom * 100) }}%
-      </button>
-
-      <button 
-        @click="zoomInMobile" 
-        class="w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-800 transition-colors text-white border-0 bg-transparent cursor-pointer"
-        title="Aumentar Zoom"
-      >
-        <span class="material-symbols-outlined text-lg">zoom_in</span>
-      </button>
-    </div>
   </div>
 </template>
 
@@ -301,51 +264,12 @@ const { getPdfSettings } = usePdfSettings()
 const { fetchSiteSettings } = useSiteSettings()
 const { t, translatedSegments } = useTranslations()
 
-// Mobile Page Zoom State & Touch Pinch Gestures
-const mobileZoom = ref(1.0)
-let touchStartDist = 0
-let initialZoom = 1.0
-
-const zoomInMobile = () => {
-  mobileZoom.value = Math.min(2.5, Number((mobileZoom.value + 0.15).toFixed(2)))
-}
-
-const zoomOutMobile = () => {
-  mobileZoom.value = Math.max(0.6, Number((mobileZoom.value - 0.15).toFixed(2)))
-}
-
-const resetZoomMobile = () => {
-  updateMobileAutoZoom()
-}
-
-const getTouchDistance = (e: TouchEvent) => {
-  if (e.touches.length < 2) return 0
-  const dx = e.touches[0].clientX - e.touches[1].clientX
-  const dy = e.touches[0].clientY - e.touches[1].clientY
-  return Math.hypot(dx, dy)
-}
-
-const handleTouchStart = (e: TouchEvent) => {
-  if (e.touches.length === 2) {
-    touchStartDist = getTouchDistance(e)
-    initialZoom = mobileZoom.value
-  }
-}
-
-const handleTouchMove = (e: TouchEvent) => {
-  if (e.touches.length === 2 && touchStartDist > 0) {
-    const currentDist = getTouchDistance(e)
-    const factor = currentDist / touchStartDist
-    const newScale = Math.min(Math.max(0.6, initialZoom * factor), 2.5)
-    mobileZoom.value = Number(newScale.toFixed(2))
-  }
-}
-
-const handleTouchEnd = (e: TouchEvent) => {
-  if (e.touches.length < 2) {
-    touchStartDist = 0
-  }
-}
+// Configure viewport to render desktop 1280px layout auto-fitted on mobile with pinch-zoom support
+useHead({
+  meta: [
+    { name: 'viewport', content: 'width=1280, initial-scale=0.35, minimum-scale=0.1, maximum-scale=5.0, user-scalable=yes' }
+  ]
+})
 
 const {
   products,
@@ -483,23 +407,7 @@ watch(modalImageSrc, (newVal) => {
   }
 })
 
-const updateMobileAutoZoom = () => {
-  if (typeof window !== 'undefined') {
-    const screenWidth = window.innerWidth
-    if (screenWidth < 1280) {
-      const calculated = Number((screenWidth / 1280).toFixed(3))
-      mobileZoom.value = Math.max(0.2, Math.min(1.0, calculated))
-    } else {
-      mobileZoom.value = 1.0
-    }
-  }
-}
-
 onMounted(async () => {
-  updateMobileAutoZoom()
-  if (typeof window !== 'undefined') {
-    window.addEventListener('resize', updateMobileAutoZoom)
-  }
   await Promise.all([
     fetchAssets(),
     loadProducts(),
