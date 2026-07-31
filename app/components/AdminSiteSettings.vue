@@ -1,13 +1,13 @@
 <template>
-  <div class="space-y-6 bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+  <div class="space-y-8 bg-white p-6 rounded-lg shadow-sm border border-gray-200">
     <!-- Header -->
     <div class="border-b border-gray-200 pb-4">
       <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
         <span class="material-symbols-outlined text-blue-600">palette</span>
-        Personalização Visual do Site
+        Personalização Visual do Site & Banner Principal
       </h2>
       <p class="text-xs text-gray-500 mt-1">
-        Customize cores, fontes e estilos dos elementos exibidos no catálogo público.
+        Customize a imagem/vídeo de fundo do banner principal, frase de destaque, posição do card e estilos do catálogo público.
       </p>
     </div>
 
@@ -18,11 +18,181 @@
     </div>
 
     <template v-else>
-      <!-- ===== SEÇÃO: Botão "VER DOCUMENTAÇÃO" ===== -->
-      <div class="space-y-4">
+      <!-- ===== SEÇÃO: BANNER PRINCIPAL (HERO SECTION) ===== -->
+      <div class="space-y-6 bg-slate-50 p-5 rounded-lg border border-slate-200">
+        <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+          <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wide flex items-center gap-2">
+            <span class="material-symbols-outlined text-blue-600">featured_video</span>
+            Banner Principal da Home (Hero)
+          </h3>
+          <span class="text-[10px] bg-blue-100 text-blue-700 font-bold px-2 py-0.5 rounded uppercase">Edição de Imagem, Vídeo e Card</span>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- Coluna da Esquerda: Formulário de Configuração -->
+          <div class="space-y-5">
+            <!-- Tipo de Fundo -->
+            <div class="space-y-2">
+              <label class="block text-[10px] text-gray-600 font-bold uppercase tracking-wider">Tipo de Fundo</label>
+              <div class="flex items-center gap-4">
+                <label class="flex items-center gap-2 cursor-pointer text-xs font-semibold text-slate-700">
+                  <input type="radio" v-model="settings.hero_bg_type" value="image" class="text-blue-600 focus:ring-blue-500" />
+                  <span class="flex items-center gap-1"><span class="material-symbols-outlined text-base">image</span> Foto / Imagem</span>
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer text-xs font-semibold text-slate-700">
+                  <input type="radio" v-model="settings.hero_bg_type" value="video" class="text-blue-600 focus:ring-blue-500" />
+                  <span class="flex items-center gap-1"><span class="material-symbols-outlined text-base">movie</span> Vídeo (MP4/WebM)</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- URL de Imagem / Upload -->
+            <div v-if="settings.hero_bg_type === 'image'" class="space-y-2">
+              <label class="block text-[10px] text-gray-600 font-bold uppercase tracking-wider">Imagem de Fundo (URL ou Upload)</label>
+              <div class="flex items-center gap-2">
+                <input 
+                  v-model="settings.hero_bg_image_url" 
+                  type="text" 
+                  placeholder="https://exemplo.com/imagem-fundo.jpg" 
+                  class="flex-1 border border-gray-300 px-3 py-2 text-xs rounded bg-white text-slate-800 focus:ring-1 focus:ring-blue-600 focus:outline-none"
+                />
+                <button 
+                  @click="triggerBgUpload" 
+                  :disabled="uploadingBg"
+                  class="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white px-3 py-2 rounded text-xs font-bold uppercase transition-colors flex items-center gap-1 border-0 cursor-pointer shrink-0"
+                >
+                  <span class="material-symbols-outlined text-sm">{{ uploadingBg ? 'sync' : 'upload' }}</span>
+                  {{ uploadingBg ? 'Enviando...' : 'Upload' }}
+                </button>
+              </div>
+              <input ref="bgFileInput" type="file" accept="image/*,video/*" class="hidden" @change="handleBgUpload" />
+            </div>
+
+            <!-- URL de Vídeo / Upload -->
+            <div v-else class="space-y-2">
+              <label class="block text-[10px] text-gray-600 font-bold uppercase tracking-wider">Vídeo de Fundo (URL MP4 ou Upload)</label>
+              <div class="flex items-center gap-2">
+                <input 
+                  v-model="settings.hero_bg_video_url" 
+                  type="text" 
+                  placeholder="https://exemplo.com/video-fundo.mp4" 
+                  class="flex-1 border border-gray-300 px-3 py-2 text-xs rounded bg-white text-slate-800 focus:ring-1 focus:ring-blue-600 focus:outline-none"
+                />
+                <button 
+                  @click="triggerBgUpload" 
+                  :disabled="uploadingBg"
+                  class="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white px-3 py-2 rounded text-xs font-bold uppercase transition-colors flex items-center gap-1 border-0 cursor-pointer shrink-0"
+                >
+                  <span class="material-symbols-outlined text-sm">{{ uploadingBg ? 'sync' : 'upload' }}</span>
+                  {{ uploadingBg ? 'Enviando...' : 'Upload' }}
+                </button>
+              </div>
+              <input ref="bgFileInput" type="file" accept="video/*,image/*" class="hidden" @change="handleBgUpload" />
+            </div>
+
+            <!-- Frase do Card Verde -->
+            <div class="space-y-1.5">
+              <label class="block text-[10px] text-gray-600 font-bold uppercase tracking-wider">Frase / Texto do Card Destaque</label>
+              <textarea 
+                v-model="settings.hero_card_text" 
+                rows="3"
+                placeholder="“ O seu desafio diário, nós resolvemos todos os dias com segurança e confiabilidade “"
+                class="w-full border border-gray-300 p-2.5 text-xs rounded bg-white text-slate-800 focus:ring-1 focus:ring-blue-600 focus:outline-none"
+              ></textarea>
+            </div>
+
+            <!-- Posição Horizontal e Vertical do Card -->
+            <div class="grid grid-cols-2 gap-4">
+              <div class="space-y-1.5">
+                <label class="block text-[10px] text-gray-600 font-bold uppercase tracking-wider">Alinhamento Horizontal</label>
+                <select v-model="settings.hero_card_position" class="w-full border border-gray-300 px-3 py-2 text-xs rounded bg-white text-slate-800 focus:ring-1 focus:ring-blue-600 focus:outline-none cursor-pointer">
+                  <option value="left">Esquerda</option>
+                  <option value="center">Centro</option>
+                  <option value="right">Direita</option>
+                </select>
+              </div>
+
+              <div class="space-y-1.5">
+                <label class="block text-[10px] text-gray-600 font-bold uppercase tracking-wider">Alinhamento Vertical</label>
+                <select v-model="settings.hero_card_vertical_align" class="w-full border border-gray-300 px-3 py-2 text-xs rounded bg-white text-slate-800 focus:ring-1 focus:ring-blue-600 focus:outline-none cursor-pointer">
+                  <option value="top">Topo</option>
+                  <option value="center">Centro</option>
+                  <option value="bottom">Base (Abaixo)</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Cores do Card -->
+            <div class="grid grid-cols-2 gap-4">
+              <div class="space-y-1.5">
+                <label class="block text-[10px] text-gray-600 font-bold uppercase tracking-wider">Cor de Fundo do Card</label>
+                <div class="flex items-center gap-2">
+                  <input v-model="settings.hero_card_bg_color" type="color" class="w-8 h-8 p-0 border-0 bg-transparent cursor-pointer rounded" />
+                  <input v-model="settings.hero_card_bg_color" type="text" class="border border-gray-300 px-3 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-blue-600 w-full text-center bg-white font-mono rounded" />
+                </div>
+              </div>
+
+              <div class="space-y-1.5">
+                <label class="block text-[10px] text-gray-600 font-bold uppercase tracking-wider">Cor do Texto</label>
+                <div class="flex items-center gap-2">
+                  <input v-model="settings.hero_card_text_color" type="color" class="w-8 h-8 p-0 border-0 bg-transparent cursor-pointer rounded" />
+                  <input v-model="settings.hero_card_text_color" type="text" class="border border-gray-300 px-3 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-blue-600 w-full text-center bg-white font-mono rounded" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Coluna da Direita: Preview ao Vivo do Banner -->
+          <div class="space-y-2">
+            <label class="block text-[10px] text-gray-600 font-bold uppercase tracking-wider flex items-center justify-between">
+              <span>Preview em Tempo Real</span>
+              <span class="text-gray-400 font-normal">Ao vivo</span>
+            </label>
+            <div class="relative w-full h-72 rounded-lg overflow-hidden border border-gray-300 bg-slate-900 shadow-inner flex">
+              <!-- Background Video -->
+              <video 
+                v-if="settings.hero_bg_type === 'video' && settings.hero_bg_video_url"
+                class="absolute inset-0 w-full h-full object-cover z-0"
+                autoplay
+                loop
+                muted
+                playsinline
+                :src="settings.hero_bg_video_url"
+              ></video>
+              <!-- Background Image -->
+              <img 
+                v-else
+                class="absolute inset-0 w-full h-full object-cover z-0" 
+                :src="settings.hero_bg_image_url || 'https://lh3.googleusercontent.com/aida/AP1WRLuQGJlvhXgSbL5PCfgd-rVegzYgpPNJgtHn0Ea6Nm0tVayzLhjzQkKmbYMugrdMebtxFro3tlHv1N8ozueW3IWAmerLpn5BMh0-V4suiSBYyv-_1zhWqzLrg3b4d-rpkTVAeU22eoHKYZCmNp_AZySP90gelzHtlnS-8x3nRmtLSJEw4C0yhBjOP0LTv8cqJJere8bX1erK4A1HpU_AQV5WthPlinuCGSknmAf4oBmhbRpEqOyxTA2YAMo'"
+              />
+
+              <!-- Container position preview -->
+              <div 
+                class="relative z-10 w-full h-full p-4 flex transition-all duration-300"
+                :class="[previewHorizontalClass, previewVerticalClass]"
+              >
+                <div 
+                  class="p-4 max-w-xs rounded shadow-md transition-all duration-300 backdrop-blur-xs"
+                  :style="{ backgroundColor: settings.hero_card_bg_color || '#74b934' }"
+                >
+                  <p 
+                    class="font-medium text-xs leading-snug whitespace-pre-line"
+                    :style="{ color: settings.hero_card_text_color || '#ffffff' }"
+                  >
+                    {{ settings.hero_card_text || '“ O seu desafio diário, nós resolvemos todos os dias com segurança e confiabilidade “' }}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== SEÇÃO: BOTÃO "VER DOCUMENTAÇÃO" ===== -->
+      <div class="space-y-4 pt-4 border-t border-gray-200">
         <h3 class="text-sm font-bold text-slate-700 uppercase tracking-wide flex items-center gap-2 border-b border-gray-100 pb-2">
           <span class="material-symbols-outlined text-gray-500">smart_button</span>
-          Botão "Ver Documentação"
+          Botão "Ver Documentação" (Ficha Técnica)
         </h3>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -93,108 +263,29 @@
               >AA</button>
             </div>
           </div>
-
-          <!-- Borda Arredondada -->
-          <div class="space-y-1.5">
-            <label class="block text-[10px] text-gray-500 font-bold uppercase tracking-wider">Borda Arredondada</label>
-            <select v-model="settings.btn_doc_border_radius" class="border border-gray-300 px-3 py-1.5 text-xs w-full focus:outline-none focus:ring-1 focus:ring-blue-600 bg-white rounded cursor-pointer">
-              <option value="0px">Sem arredondamento</option>
-              <option value="4px">Sutil (4px)</option>
-              <option value="8px">Médio (8px)</option>
-              <option value="12px">Grande (12px)</option>
-              <option value="9999px">Pílula</option>
-            </select>
-          </div>
-
-          <!-- Texto do Botão -->
-          <div class="space-y-1.5">
-            <label class="block text-[10px] text-gray-500 font-bold uppercase tracking-wider">Texto do Botão</label>
-            <input v-model="settings.btn_doc_text" type="text" class="border border-gray-300 px-3 py-1.5 text-xs w-full focus:outline-none focus:ring-1 focus:ring-blue-600 bg-white rounded" />
-          </div>
-        </div>
-
-        <!-- Preview do Botão -->
-        <div class="mt-4 p-4 bg-slate-50 rounded-lg border border-slate-200">
-          <p class="text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-3">Pré-visualização</p>
-          <div class="flex items-center gap-4">
-            <a
-              href="#"
-              @click.prevent
-              class="px-4 py-2 flex items-center justify-center gap-1.5 no-underline transition-colors"
-              :style="btnDocPreviewStyle"
-              @mouseenter="btnDocHover = true"
-              @mouseleave="btnDocHover = false"
-            >
-              <span class="material-symbols-outlined text-sm">description</span>
-              {{ settings.btn_doc_text || 'VER DOCUMENTAÇÃO' }}
-            </a>
-          </div>
         </div>
       </div>
 
-      <!-- ===== SEÇÃO: Tag da Categoria ===== -->
-      <div class="space-y-4 pt-4 border-t border-gray-100">
-        <h3 class="text-sm font-bold text-slate-700 uppercase tracking-wide flex items-center gap-2 border-b border-gray-100 pb-2">
-          <span class="material-symbols-outlined text-gray-500">label</span>
-          Tag da Categoria (no Card)
-        </h3>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <!-- Tamanho da Fonte -->
-          <div class="space-y-1.5">
-            <label class="block text-[10px] text-gray-500 font-bold uppercase tracking-wider">Tamanho da Fonte</label>
-            <select v-model="settings.card_tag_font_size" class="border border-gray-300 px-3 py-1.5 text-xs w-full focus:outline-none focus:ring-1 focus:ring-blue-600 bg-white rounded cursor-pointer">
-              <option v-for="size in fontSizeOptions" :key="size" :value="size">{{ size }}</option>
-            </select>
-          </div>
-
-          <!-- Fonte -->
-          <div class="space-y-1.5">
-            <label class="block text-[10px] text-gray-500 font-bold uppercase tracking-wider">Fonte</label>
-            <select v-model="settings.card_tag_font_family" class="border border-gray-300 px-3 py-1.5 text-xs w-full focus:outline-none focus:ring-1 focus:ring-blue-600 bg-white rounded cursor-pointer">
-              <option v-for="font in fontOptions" :key="font" :value="font" :style="{ fontFamily: font }">{{ font }}</option>
-            </select>
-          </div>
-
-          <!-- Estilo -->
-          <div class="space-y-1.5">
-            <label class="block text-[10px] text-gray-500 font-bold uppercase tracking-wider">Estilo</label>
-            <div class="flex items-center gap-2">
-              <button 
-                @click="settings.card_tag_bold = !settings.card_tag_bold"
-                :class="settings.card_tag_bold ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600'"
-                class="w-8 h-8 rounded border-0 cursor-pointer font-bold text-sm transition-colors flex items-center justify-center"
-              >B</button>
-              <button 
-                @click="settings.card_tag_italic = !settings.card_tag_italic"
-                :class="settings.card_tag_italic ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600'"
-                class="w-8 h-8 rounded border-0 cursor-pointer italic text-sm transition-colors flex items-center justify-center"
-              >I</button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ===== SEÇÃO: Tabela de Especificações ===== -->
-      <div class="space-y-4 pt-4 border-t border-gray-100">
+      <!-- ===== SEÇÃO: ESPECIFICAÇÕES DOS CARDS ===== -->
+      <div class="space-y-4 pt-4 border-t border-gray-200">
         <h3 class="text-sm font-bold text-slate-700 uppercase tracking-wide flex items-center gap-2 border-b border-gray-100 pb-2">
           <span class="material-symbols-outlined text-gray-500">table_rows</span>
-          Tabela de Especificações (no Card)
+          Tabela de Especificações dos Cards
         </h3>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <!-- Cor de Fundo -->
+          <!-- Cor de Fundo da Tabela -->
           <div class="space-y-1.5">
-            <label class="block text-[10px] text-gray-500 font-bold uppercase tracking-wider">Cor de Fundo da Tabela</label>
+            <label class="block text-[10px] text-gray-500 font-bold uppercase tracking-wider">Cor de Fundo das Linhas Par</label>
             <div class="flex items-center gap-2">
               <input v-model="settings.card_specs_bg_color" type="color" class="w-8 h-8 p-0 border-0 bg-transparent cursor-pointer rounded" />
               <input v-model="settings.card_specs_bg_color" type="text" class="border border-gray-300 px-3 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-blue-600 w-28 text-center bg-white font-mono rounded" />
             </div>
           </div>
 
-          <!-- Cor do Label -->
+          <!-- Cor do Rótulo -->
           <div class="space-y-1.5">
-            <label class="block text-[10px] text-gray-500 font-bold uppercase tracking-wider">Cor do Rótulo</label>
+            <label class="block text-[10px] text-gray-500 font-bold uppercase tracking-wider">Cor do Rótulo (Campo)</label>
             <div class="flex items-center gap-2">
               <input v-model="settings.card_specs_label_color" type="color" class="w-8 h-8 p-0 border-0 bg-transparent cursor-pointer rounded" />
               <input v-model="settings.card_specs_label_color" type="text" class="border border-gray-300 px-3 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-blue-600 w-28 text-center bg-white font-mono rounded" />
@@ -208,30 +299,6 @@
               <input v-model="settings.card_specs_value_color" type="color" class="w-8 h-8 p-0 border-0 bg-transparent cursor-pointer rounded" />
               <input v-model="settings.card_specs_value_color" type="text" class="border border-gray-300 px-3 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-blue-600 w-28 text-center bg-white font-mono rounded" />
             </div>
-          </div>
-
-          <!-- Fonte da Tabela -->
-          <div class="space-y-1.5">
-            <label class="block text-[10px] text-gray-500 font-bold uppercase tracking-wider">Fonte da Tabela</label>
-            <select v-model="settings.card_specs_font_family" class="border border-gray-300 px-3 py-1.5 text-xs w-full focus:outline-none focus:ring-1 focus:ring-blue-600 bg-white rounded cursor-pointer">
-              <option v-for="font in fontOptions" :key="font" :value="font" :style="{ fontFamily: font }">{{ font }}</option>
-            </select>
-          </div>
-
-          <!-- Tamanho fonte Label -->
-          <div class="space-y-1.5">
-            <label class="block text-[10px] text-gray-500 font-bold uppercase tracking-wider">Tamanho Fonte Rótulo</label>
-            <select v-model="settings.card_specs_label_font_size" class="border border-gray-300 px-3 py-1.5 text-xs w-full focus:outline-none focus:ring-1 focus:ring-blue-600 bg-white rounded cursor-pointer">
-              <option v-for="size in fontSizeOptions" :key="size" :value="size">{{ size }}</option>
-            </select>
-          </div>
-
-          <!-- Tamanho fonte Valor -->
-          <div class="space-y-1.5">
-            <label class="block text-[10px] text-gray-500 font-bold uppercase tracking-wider">Tamanho Fonte Valor</label>
-            <select v-model="settings.card_specs_value_font_size" class="border border-gray-300 px-3 py-1.5 text-xs w-full focus:outline-none focus:ring-1 focus:ring-blue-600 bg-white rounded cursor-pointer">
-              <option v-for="size in fontSizeOptions" :key="size" :value="size">{{ size }}</option>
-            </select>
           </div>
         </div>
       </div>
@@ -262,7 +329,8 @@ const supabase = useSupabaseClient()
 
 const loading = ref(true)
 const saving = ref(false)
-const btnDocHover = ref(false)
+const uploadingBg = ref(false)
+const bgFileInput = ref<HTMLInputElement | null>(null)
 
 const fontOptions = [
   'Inter', 'Roboto', 'Arial', 'Verdana', 'Helvetica', 'Georgia', 'Tahoma',
@@ -297,6 +365,15 @@ interface SiteSettings {
   card_specs_font_family: string
   card_specs_label_font_size: string
   card_specs_value_font_size: string
+  // Banner Principal (Hero)
+  hero_bg_type: 'image' | 'video'
+  hero_bg_image_url: string
+  hero_bg_video_url: string
+  hero_card_text: string
+  hero_card_bg_color: string
+  hero_card_text_color: string
+  hero_card_position: 'left' | 'center' | 'right'
+  hero_card_vertical_align: 'top' | 'center' | 'bottom'
 }
 
 const defaultSettings: SiteSettings = {
@@ -320,21 +397,72 @@ const defaultSettings: SiteSettings = {
   card_specs_font_family: 'system-ui',
   card_specs_label_font_size: '11px',
   card_specs_value_font_size: '12px',
+  hero_bg_type: 'image',
+  hero_bg_image_url: 'https://lh3.googleusercontent.com/aida/AP1WRLuQGJlvhXgSbL5PCfgd-rVegzYgpPNJgtHn0Ea6Nm0tVayzLhjzQkKmbYMugrdMebtxFro3tlHv1N8ozueW3IWAmerLpn5BMh0-V4suiSBYyv-_1zhWqzLrg3b4d-rpkTVAeU22eoHKYZCmNp_AZySP90gelzHtlnS-8x3nRmtLSJEw4C0yhBjOP0LTv8cqJJere8bX1erK4A1HpU_AQV5WthPlinuCGSknmAf4oBmhbRpEqOyxTA2YAMo',
+  hero_bg_video_url: '',
+  hero_card_text: '“ O seu desafio diário, nós resolvemos todos os dias com segurança e confiabilidade “',
+  hero_card_bg_color: '#74b934',
+  hero_card_text_color: '#ffffff',
+  hero_card_position: 'left',
+  hero_card_vertical_align: 'center',
 }
 
 const settings = reactive<SiteSettings>({ ...defaultSettings })
 
-const btnDocPreviewStyle = computed(() => ({
-  backgroundColor: btnDocHover.value ? settings.btn_doc_hover_color : settings.btn_doc_bg_color,
-  color: settings.btn_doc_text_color,
-  fontFamily: settings.btn_doc_font_family,
-  fontSize: settings.btn_doc_font_size,
-  fontWeight: settings.btn_doc_bold ? 'bold' : 'normal',
-  fontStyle: settings.btn_doc_italic ? 'italic' : 'normal',
-  textTransform: settings.btn_doc_uppercase ? 'uppercase' as const : 'none' as const,
-  borderRadius: settings.btn_doc_border_radius,
-  letterSpacing: '0.05em',
-}))
+const previewHorizontalClass = computed(() => {
+  const pos = settings.hero_card_position || 'left'
+  if (pos === 'center') return 'justify-center'
+  if (pos === 'right') return 'justify-end'
+  return 'justify-start'
+})
+
+const previewVerticalClass = computed(() => {
+  const align = settings.hero_card_vertical_align || 'center'
+  if (align === 'top') return 'items-start'
+  if (align === 'bottom') return 'items-end'
+  return 'items-center'
+})
+
+const triggerBgUpload = () => {
+  bgFileInput.value?.click()
+}
+
+const handleBgUpload = async (e: Event) => {
+  const target = e.target as HTMLInputElement
+  const file = target.files?.[0]
+  if (!file) return
+
+  uploadingBg.value = true
+  try {
+    const formData = new FormData()
+    formData.append('file', file)
+
+    const res = await fetch('/api/upload-r2', {
+      method: 'POST',
+      body: formData
+    })
+    const data = await res.json()
+
+    if (data.url) {
+      if (file.type.startsWith('video/')) {
+        settings.hero_bg_type = 'video'
+        settings.hero_bg_video_url = data.url
+      } else {
+        settings.hero_bg_type = 'image'
+        settings.hero_bg_image_url = data.url
+      }
+      props.triggerToast?.('Arquivo enviado com sucesso!', 'success')
+    } else {
+      throw new Error(data.error || 'Erro ao enviar arquivo')
+    }
+  } catch (err: any) {
+    console.error('Erro no upload de mídia:', err)
+    props.triggerToast?.(`Erro no upload: ${err.message || err}`, 'error')
+  } finally {
+    uploadingBg.value = false
+    if (target) target.value = ''
+  }
+}
 
 const loadSettings = async () => {
   loading.value = true
@@ -383,7 +511,7 @@ const saveSettings = async () => {
         .insert([{ category: 'GERAL', layout_settings: currentLayout }])
     }
 
-    props.triggerToast?.('Configurações visuais do site salvas com sucesso!', 'success')
+    props.triggerToast?.('Configurações visuais e do Banner principal salvas com sucesso!', 'success')
   } catch (err: any) {
     console.error('[AdminSiteSettings] Error saving settings:', err)
     props.triggerToast?.(`Erro ao salvar configurações: ${err.message || err}`, 'error')

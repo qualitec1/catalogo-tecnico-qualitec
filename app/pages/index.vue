@@ -72,15 +72,36 @@
     <main class="flex-grow">
       <!-- Hero Section -->
       <section class="relative w-full h-[520px] md:h-[600px] flex items-center justify-center overflow-hidden">
+        <!-- Video Background -->
+        <video 
+          v-if="siteSettings.hero_bg_type === 'video' && siteSettings.hero_bg_video_url"
+          class="absolute inset-0 w-full h-full object-cover z-0"
+          autoplay
+          loop
+          muted
+          playsinline
+          :src="siteSettings.hero_bg_video_url"
+        ></video>
+        <!-- Image Background -->
         <img 
+          v-else
           alt="Painel de instrumentos industriais mostrando precisão e controle em ambiente técnico." 
           class="absolute inset-0 w-full h-full object-cover z-0" 
-          src="https://lh3.googleusercontent.com/aida/AP1WRLuQGJlvhXgSbL5PCfgd-rVegzYgpPNJgtHn0Ea6Nm0tVayzLhjzQkKmbYMugrdMebtxFro3tlHv1N8ozueW3IWAmerLpn5BMh0-V4suiSBYyv-_1zhWqzLrg3b4d-rpkTVAeU22eoHKYZCmNp_AZySP90gelzHtlnS-8x3nRmtLSJEw4C0yhBjOP0LTv8cqJJere8bX1erK4A1HpU_AQV5WthPlinuCGSknmAf4oBmhbRpEqOyxTA2YAMo"
+          :src="siteSettings.hero_bg_image_url || 'https://lh3.googleusercontent.com/aida/AP1WRLuQGJlvhXgSbL5PCfgd-rVegzYgpPNJgtHn0Ea6Nm0tVayzLhjzQkKmbYMugrdMebtxFro3tlHv1N8ozueW3IWAmerLpn5BMh0-V4suiSBYyv-_1zhWqzLrg3b4d-rpkTVAeU22eoHKYZCmNp_AZySP90gelzHtlnS-8x3nRmtLSJEw4C0yhBjOP0LTv8cqJJere8bX1erK4A1HpU_AQV5WthPlinuCGSknmAf4oBmhbRpEqOyxTA2YAMo'"
         />
-        <div class="relative z-20 w-full h-full px-4 md:px-10 max-w-[1280px] mx-auto flex items-end pb-12">
-          <div class="bg-[#65AC1E]/85 backdrop-blur-sm p-8 md:p-12 max-w-xl rounded shadow-lg">
-            <h1 class="font-['Rubik',sans-serif] text-2xl md:text-4xl text-white font-medium leading-tight">
-              “ O seu desafio diário, nós resolvemos todos os dias com segurança e confiabilidade “
+        <div 
+          class="relative z-20 w-full h-full px-4 md:px-10 max-w-[1280px] mx-auto flex transition-all duration-300"
+          :class="[heroHorizontalClass, heroVerticalClass]"
+        >
+          <div 
+            class="backdrop-blur-xs p-8 md:p-12 max-w-xl rounded shadow-lg transition-all duration-300"
+            :style="{ backgroundColor: siteSettings.hero_card_bg_color || '#74b934' }"
+          >
+            <h1 
+              class="font-['Rubik',sans-serif] text-2xl md:text-4xl font-medium leading-tight whitespace-pre-line"
+              :style="{ color: siteSettings.hero_card_text_color || '#ffffff' }"
+            >
+              {{ siteSettings.hero_card_text || '“ O seu desafio diário, nós resolvemos todos os dias com segurança e confiabilidade “' }}
             </h1>
           </div>
         </div>
@@ -331,7 +352,27 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+
+const { siteSettings, fetchSiteSettings } = useSiteSettings()
+
+onMounted(() => {
+  fetchSiteSettings()
+})
+
+const heroHorizontalClass = computed(() => {
+  const pos = siteSettings.value.hero_card_position || 'left'
+  if (pos === 'center') return 'justify-center'
+  if (pos === 'right') return 'justify-end'
+  return 'justify-start'
+})
+
+const heroVerticalClass = computed(() => {
+  const align = siteSettings.value.hero_card_vertical_align || 'center'
+  if (align === 'top') return 'items-start pt-12'
+  if (align === 'bottom') return 'items-end pb-12'
+  return 'items-center'
+})
 
 useHead({
   title: 'Qualitec Instrumentos Industriais | Início',

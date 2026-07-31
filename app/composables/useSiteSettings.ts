@@ -24,6 +24,15 @@ export interface SiteVisualSettings {
   card_specs_font_family: string
   card_specs_label_font_size: string
   card_specs_value_font_size: string
+  // Banner Principal (Hero Section)
+  hero_bg_type: 'image' | 'video'
+  hero_bg_image_url: string
+  hero_bg_video_url: string
+  hero_card_text: string
+  hero_card_bg_color: string
+  hero_card_text_color: string
+  hero_card_position: 'left' | 'center' | 'right'
+  hero_card_vertical_align: 'top' | 'center' | 'bottom'
 }
 
 const defaults: SiteVisualSettings = {
@@ -47,6 +56,14 @@ const defaults: SiteVisualSettings = {
   card_specs_font_family: 'system-ui',
   card_specs_label_font_size: '11px',
   card_specs_value_font_size: '12px',
+  hero_bg_type: 'image',
+  hero_bg_image_url: 'https://lh3.googleusercontent.com/aida/AP1WRLuQGJlvhXgSbL5PCfgd-rVegzYgpPNJgtHn0Ea6Nm0tVayzLhjzQkKmbYMugrdMebtxFro3tlHv1N8ozueW3IWAmerLpn5BMh0-V4suiSBYyv-_1zhWqzLrg3b4d-rpkTVAeU22eoHKYZCmNp_AZySP90gelzHtlnS-8x3nRmtLSJEw4C0yhBjOP0LTv8cqJJere8bX1erK4A1HpU_AQV5WthPlinuCGSknmAf4oBmhbRpEqOyxTA2YAMo',
+  hero_bg_video_url: '',
+  hero_card_text: '“ O seu desafio diário, nós resolvemos todos os dias com segurança e confiabilidade “',
+  hero_card_bg_color: '#74b934',
+  hero_card_text_color: '#ffffff',
+  hero_card_position: 'left',
+  hero_card_vertical_align: 'center',
 }
 
 export default function useSiteSettings() {
