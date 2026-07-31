@@ -18,6 +18,182 @@
     </div>
 
     <template v-else>
+      <!-- ===== SEÇÃO: LOGOTIPO DO HEADER ===== -->
+      <div class="space-y-6 bg-slate-50 p-5 rounded-lg border border-slate-200">
+        <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+          <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wide flex items-center gap-2">
+            <span class="material-symbols-outlined text-blue-600">aspect_ratio</span>
+            Logotipo do Cabeçalho (Header)
+          </h3>
+          <span class="text-[10px] bg-blue-100 text-blue-700 font-bold px-2 py-0.5 rounded uppercase">Tamanho & Imagem da Logo</span>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- Coluna da Esquerda: Controles da Logo -->
+          <div class="space-y-5">
+            <!-- Imagem / URL da Logo -->
+            <div class="space-y-2">
+              <label class="block text-[10px] text-gray-600 font-bold uppercase tracking-wider">Imagem do Logotipo (URL ou Upload)</label>
+              <div class="flex items-center gap-2">
+                <input 
+                  v-model="settings.header_logo_url" 
+                  type="text" 
+                  placeholder="https://exemplo.com/logo-qualitec.png" 
+                  class="flex-1 border border-gray-300 px-3 py-2 text-xs rounded bg-white text-slate-800 focus:ring-1 focus:ring-blue-600 focus:outline-none"
+                />
+                <button 
+                  @click="triggerLogoUpload" 
+                  :disabled="uploadingLogo"
+                  class="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white px-3 py-2 rounded text-xs font-bold uppercase transition-colors flex items-center gap-1 border-0 cursor-pointer shrink-0"
+                >
+                  <span class="material-symbols-outlined text-sm">{{ uploadingLogo ? 'sync' : 'upload' }}</span>
+                  {{ uploadingLogo ? 'Enviando...' : 'Upload' }}
+                </button>
+              </div>
+              <input ref="logoFileInput" type="file" accept="image/*" class="hidden" @change="handleLogoUpload" />
+            </div>
+
+            <!-- Tamanho / Altura da Logo (pixels) -->
+            <div class="space-y-3 bg-white p-3.5 rounded border border-gray-200">
+              <div class="flex justify-between items-center text-[10px] text-gray-600 font-bold uppercase">
+                <span>Altura da Logo: {{ settings.header_logo_height || 48 }}px</span>
+                <span class="text-gray-400 font-normal">Aumentar ou Diminuir</span>
+              </div>
+              
+              <div class="flex items-center gap-3">
+                <input 
+                  type="range" 
+                  min="20" 
+                  max="120" 
+                  step="2" 
+                  v-model.number="settings.header_logo_height" 
+                  class="flex-1 accent-blue-600 cursor-pointer" 
+                />
+                <div class="flex items-center gap-1">
+                  <input 
+                    type="number" 
+                    min="15" 
+                    max="150" 
+                    v-model.number="settings.header_logo_height" 
+                    class="w-16 border border-gray-300 p-1 text-xs text-center rounded bg-white font-mono" 
+                  />
+                  <span class="text-xs text-gray-500 font-medium">px</span>
+                </div>
+              </div>
+
+              <!-- Atalhos Rápidos de Tamanho -->
+              <div class="pt-2 border-t border-gray-100 flex flex-wrap gap-1.5">
+                <button @click="settings.header_logo_height = 36" class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-[10px] font-bold rounded cursor-pointer transition-colors">Pequeno (36px)</button>
+                <button @click="settings.header_logo_height = 48" class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-[10px] font-bold rounded cursor-pointer transition-colors">Padrão (48px)</button>
+                <button @click="settings.header_logo_height = 60" class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-[10px] font-bold rounded cursor-pointer transition-colors">Médio (60px)</button>
+                <button @click="settings.header_logo_height = 75" class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-[10px] font-bold rounded cursor-pointer transition-colors">Grande (75px)</button>
+                <button @click="settings.header_logo_height = 90" class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-[10px] font-bold rounded cursor-pointer transition-colors">Gigante (90px)</button>
+              </div>
+            </div>
+
+            <!-- Deslocamento Livre de Posição (X e Y) -->
+            <div class="space-y-3 bg-white p-3.5 rounded border border-gray-200">
+              <div class="flex justify-between items-center text-[10px] text-gray-600 font-bold uppercase">
+                <span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm text-blue-600">open_with</span> Deslocamento Livre da Logo (X / Y)</span>
+                <button 
+                  type="button"
+                  @click="settings.header_logo_offset_x = 0; settings.header_logo_offset_y = 0" 
+                  class="text-[9px] text-blue-600 font-bold hover:underline bg-transparent border-0 cursor-pointer"
+                >
+                  Zerar Posição (0, 0)
+                </button>
+              </div>
+
+              <!-- Slider Horizontal X -->
+              <div class="space-y-1">
+                <div class="flex justify-between items-center text-[10px] text-gray-500 font-semibold">
+                  <span>Horizontal (X): {{ settings.header_logo_offset_x || 0 }}px</span>
+                  <span>Esquerda ◄ ► Direita</span>
+                </div>
+                <div class="flex items-center gap-3">
+                  <input 
+                    type="range" 
+                    min="-150" 
+                    max="150" 
+                    step="1" 
+                    v-model.number="settings.header_logo_offset_x" 
+                    class="flex-1 accent-blue-600 cursor-pointer" 
+                  />
+                  <div class="flex items-center gap-1">
+                    <input 
+                      type="number" 
+                      min="-250" 
+                      max="250" 
+                      v-model.number="settings.header_logo_offset_x" 
+                      class="w-16 border border-gray-300 p-1 text-xs text-center rounded bg-white font-mono" 
+                    />
+                    <span class="text-xs text-gray-500 font-medium">px</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Slider Vertical Y -->
+              <div class="space-y-1">
+                <div class="flex justify-between items-center text-[10px] text-gray-500 font-semibold">
+                  <span>Vertical (Y): {{ settings.header_logo_offset_y || 0 }}px</span>
+                  <span>Subir ▲ ▼ Descer</span>
+                </div>
+                <div class="flex items-center gap-3">
+                  <input 
+                    type="range" 
+                    min="-60" 
+                    max="60" 
+                    step="1" 
+                    v-model.number="settings.header_logo_offset_y" 
+                    class="flex-1 accent-blue-600 cursor-pointer" 
+                  />
+                  <div class="flex items-center gap-1">
+                    <input 
+                      type="number" 
+                      min="-100" 
+                      max="100" 
+                      v-model.number="settings.header_logo_offset_y" 
+                      class="w-16 border border-gray-300 p-1 text-xs text-center rounded bg-white font-mono" 
+                    />
+                    <span class="text-xs text-gray-500 font-medium">px</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Coluna da Direita: Preview Interativo do Cabeçalho -->
+          <div class="space-y-2">
+            <label class="block text-[10px] text-gray-600 font-bold uppercase tracking-wider flex items-center justify-between">
+              <span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm text-blue-600">visibility</span> Pré-visualização (Header Fixo: 64px)</span>
+              <span class="text-blue-700 font-bold">Height: {{ settings.header_logo_height || 48 }}px | X: {{ settings.header_logo_offset_x || 0 }}px | Y: {{ settings.header_logo_offset_y || 0 }}px</span>
+            </label>
+
+            <!-- Box de Preview com Altura Fixa -->
+            <div class="w-full bg-white border border-gray-300 rounded-lg px-4 shadow-sm flex items-center justify-between overflow-hidden h-16 min-h-[64px] max-h-[64px] relative">
+              <div class="flex items-center h-full relative">
+                <img 
+                  :src="settings.header_logo_url || 'https://lh3.googleusercontent.com/aida/AP1WRLvb_lGcigKW6su6LN_Xd0Bf0AXsewLIulAi0GxcP_qLjBKDQwKkr4TLJgHAmnOXZ_CnTBIs1fPQUk9wsPoaEnw1KIo3G_pm2AD72CQGZpdCmL0me0d5Nw3sO0Jq1oNeH0TPtE84vraycYx20zMTmWG9t98pFKFcZH8ovF5vpsN6YK6J2ZqjcN6pDWW8byB81uqO2z6Crk115D73Mm9qXI78ObCCnUJ9BmIfEJoVkKB3TB8-KPNPPQ8kG9Y'" 
+                  alt="Qualitec Logo" 
+                  class="object-contain transition-transform duration-75"
+                  :style="{ 
+                    height: `${settings.header_logo_height || 48}px`,
+                    transform: `translate(${settings.header_logo_offset_x || 0}px, ${settings.header_logo_offset_y || 0}px)`
+                  }"
+                />
+              </div>
+              <div class="hidden sm:flex items-center gap-4 text-xs font-semibold text-gray-600">
+                <span class="text-blue-700 border-b-2 border-blue-700 pb-0.5 font-bold">Início</span>
+                <span>Catálogo</span>
+                <span>Segmentos</span>
+                <span>Novidades</span>
+                <span>Contato</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- ===== SEÇÃO: BANNER PRINCIPAL (HERO SECTION) ===== -->
       <div class="space-y-6 bg-slate-50 p-5 rounded-lg border border-slate-200">
         <div class="flex items-center justify-between border-b border-slate-200 pb-3">
@@ -476,11 +652,14 @@ const props = defineProps<{
 }>()
 
 const supabase = useSupabaseClient()
+const { fetchSiteSettings } = useSiteSettings()
 
 const loading = ref(true)
 const saving = ref(false)
 const uploadingBg = ref(false)
 const bgFileInput = ref<HTMLInputElement | null>(null)
+const uploadingLogo = ref(false)
+const logoFileInput = ref<HTMLInputElement | null>(null)
 const previewContainerRef = ref<HTMLElement | null>(null)
 const isDraggingCard = ref(false)
 
@@ -494,6 +673,11 @@ const fontSizeOptions = [
 ]
 
 interface SiteSettings {
+  // Logotipo do Cabeçalho
+  header_logo_url: string
+  header_logo_height: number
+  header_logo_offset_x: number
+  header_logo_offset_y: number
   // Botão "Ver Documentação"
   btn_doc_bg_color: string
   btn_doc_hover_color: string
@@ -529,9 +713,15 @@ interface SiteSettings {
   hero_card_position_mode: 'custom' | 'preset'
   hero_card_offset_x: number
   hero_card_offset_y: number
+  hero_card_opacity: number
+  hero_card_extend_bottom: boolean
 }
 
 const defaultSettings: SiteSettings = {
+  header_logo_url: 'https://lh3.googleusercontent.com/aida/AP1WRLvb_lGcigKW6su6LN_Xd0Bf0AXsewLIulAi0GxcP_qLjBKDQwKkr4TLJgHAmnOXZ_CnTBIs1fPQUk9wsPoaEnw1KIo3G_pm2AD72CQGZpdCmL0me0d5Nw3sO0Jq1oNeH0TPtE84vraycYx20zMTmWG9t98pFKFcZH8ovF5vpsN6YK6J2ZqjcN6pDWW8byB81uqO2z6Crk115D73Mm9qXI78ObCCnUJ9BmIfEJoVkKB3TB8-KPNPPQ8kG9Y',
+  header_logo_height: 48,
+  header_logo_offset_x: 0,
+  header_logo_offset_y: 0,
   btn_doc_bg_color: '#376092',
   btn_doc_hover_color: '#2b4c74',
   btn_doc_text_color: '#ffffff',
@@ -563,6 +753,8 @@ const defaultSettings: SiteSettings = {
   hero_card_position_mode: 'custom',
   hero_card_offset_x: 10,
   hero_card_offset_y: 55,
+  hero_card_opacity: 85,
+  hero_card_extend_bottom: true,
 }
 
 const settings = reactive<SiteSettings>({ ...defaultSettings })
@@ -714,6 +906,41 @@ const handleBgUpload = async (e: Event) => {
   }
 }
 
+const triggerLogoUpload = () => {
+  logoFileInput.value?.click()
+}
+
+const handleLogoUpload = async (e: Event) => {
+  const target = e.target as HTMLInputElement
+  const file = target.files?.[0]
+  if (!file) return
+
+  uploadingLogo.value = true
+  try {
+    const formData = new FormData()
+    formData.append('file', file)
+
+    const res = await fetch('/api/upload-r2', {
+      method: 'POST',
+      body: formData
+    })
+    const data = await res.json()
+
+    if (data.url) {
+      settings.header_logo_url = data.url
+      props.triggerToast?.('Logotipo enviado com sucesso!', 'success')
+    } else {
+      throw new Error(data.error || 'Erro ao enviar logotipo')
+    }
+  } catch (err: any) {
+    console.error('Erro no upload de logotipo:', err)
+    props.triggerToast?.(`Erro no upload: ${err.message || err}`, 'error')
+  } finally {
+    uploadingLogo.value = false
+    if (target) target.value = ''
+  }
+}
+
 const loadSettings = async () => {
   loading.value = true
   try {
@@ -761,7 +988,9 @@ const saveSettings = async () => {
         .insert([{ category: 'GERAL', layout_settings: currentLayout }])
     }
 
-    props.triggerToast?.('Configurações visuais e do Banner principal salvas com sucesso!', 'success')
+    await fetchSiteSettings(true)
+
+    props.triggerToast?.('Configurações visuais e do Logotipo salvas com sucesso!', 'success')
   } catch (err: any) {
     console.error('[AdminSiteSettings] Error saving settings:', err)
     props.triggerToast?.(`Erro ao salvar configurações: ${err.message || err}`, 'error')

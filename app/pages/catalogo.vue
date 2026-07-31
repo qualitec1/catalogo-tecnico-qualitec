@@ -6,12 +6,16 @@
       <div class="bg-white border-b border-gray-100">
         <div class="flex justify-between items-center h-16 px-8 max-w-[2560px] w-full mx-auto">
           <!-- Logo -->
-          <div class="h-16 flex items-center">
-            <NuxtLink to="/" class="flex items-center">
+          <div class="flex items-center h-full overflow-visible">
+            <NuxtLink to="/" class="flex items-center h-full overflow-visible">
               <img 
                 alt="Qualitec Industrial" 
-                class="h-12 w-auto object-contain cursor-pointer" 
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCJOpxk8IRBgRW2bvQlS_z4LoXARfSvqvz2saPXY9SVEh_22Bcd1VS5ijTW9c3L5WiWT0idDIuscN94pofAxJzmGnXWNILAeSKTQdpe0NSl8pmXlo5Mo2KzPIESuDMk-6ap5WOs_icm6enTpaiHanmAbwntVxfvVTPLdAKIwMg7L88cyvuALuJQqv2-2ntPUxn3BgVkSCLfjyupjGSuOW5zhpBXbfo-ac3ZkUg-WHHUrhMMhz1XIsk_yPD5jMMWbkCwWOJV1BBvHWM"
+                class="w-auto object-contain cursor-pointer pointer-events-none transition-transform duration-150 select-none" 
+                :src="siteSettings.header_logo_url || 'https://lh3.googleusercontent.com/aida/AP1WRLvb_lGcigKW6su6LN_Xd0Bf0AXsewLIulAi0GxcP_qLjBKDQwKkr4TLJgHAmnOXZ_CnTBIs1fPQUk9wsPoaEnw1KIo3G_pm2AD72CQGZpdCmL0me0d5Nw3sO0Jq1oNeH0TPtE84vraycYx20zMTmWG9t98pFKFcZH8ovF5vpsN6YK6J2ZqjcN6pDWW8byB81uqO2z6Crk115D73Mm9qXI78ObCCnUJ9BmIfEJoVkKB3TB8-KPNPPQ8kG9Y'"
+                :style="{
+                  height: `${siteSettings.header_logo_height || 48}px`,
+                  transform: `translate(${siteSettings.header_logo_offset_x || 0}px, ${siteSettings.header_logo_offset_y || 0}px)`
+                }"
               >
             </NuxtLink>
           </div>
@@ -254,13 +258,14 @@ import { useCatalog } from '../composables/useCatalog'
 import useCategoryColors from '../composables/useCategoryColors'
 import usePdfSettings from '../composables/usePdfSettings'
 import useSiteSettings from '../composables/useSiteSettings'
-import useTranslations from '../composables/useTranslations'
+import useTranslations, { useTranslationsAdmin } from '../composables/useTranslations'
 
 const supabase = useSupabaseClient()
 const { getCategoryColor } = useCategoryColors()
 const { getPdfSettings } = usePdfSettings()
-const { fetchSiteSettings } = useSiteSettings()
+const { siteSettings, fetchSiteSettings } = useSiteSettings()
 const { t, translatedSegments } = useTranslations()
+const { fetchTranslationsFromDB } = useTranslationsAdmin()
 
 // Configure viewport to render desktop 1280px layout auto-fitted on mobile with pinch-zoom support
 useHead({
@@ -413,7 +418,8 @@ onMounted(async () => {
   await Promise.all([
     fetchAssets(),
     loadProducts(),
-    fetchSiteSettings()
+    fetchSiteSettings(),
+    fetchTranslationsFromDB(),
   ])
   if (route.query.q) {
     searchQuery.value = String(route.query.q)

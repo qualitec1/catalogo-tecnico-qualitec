@@ -38,6 +38,11 @@ export interface SiteVisualSettings {
   hero_card_offset_y: number
   hero_card_opacity: number
   hero_card_extend_bottom: boolean
+  // Logotipo do Cabeçalho (Header Logo)
+  header_logo_url: string
+  header_logo_height: number
+  header_logo_offset_x: number
+  header_logo_offset_y: number
 }
 
 const defaults: SiteVisualSettings = {
@@ -74,6 +79,10 @@ const defaults: SiteVisualSettings = {
   hero_card_offset_y: 45,
   hero_card_opacity: 85,
   hero_card_extend_bottom: true,
+  header_logo_url: 'https://lh3.googleusercontent.com/aida/AP1WRLvb_lGcigKW6su6LN_Xd0Bf0AXsewLIulAi0GxcP_qLjBKDQwKkr4TLJgHAmnOXZ_CnTBIs1fPQUk9wsPoaEnw1KIo3G_pm2AD72CQGZpdCmL0me0d5Nw3sO0Jq1oNeH0TPtE84vraycYx20zMTmWG9t98pFKFcZH8ovF5vpsN6YK6J2ZqjcN6pDWW8byB81uqO2z6Crk115D73Mm9qXI78ObCCnUJ9BmIfEJoVkKB3TB8-KPNPPQ8kG9Y',
+  header_logo_height: 48,
+  header_logo_offset_x: 0,
+  header_logo_offset_y: 0,
 }
 
 export default function useSiteSettings() {
@@ -81,8 +90,8 @@ export default function useSiteSettings() {
   const loaded = useState<boolean>('site-visual-settings-loaded', () => false)
   const supabase = useSupabaseClient()
 
-  const fetchSiteSettings = async () => {
-    if (loaded.value) return
+  const fetchSiteSettings = async (force = false) => {
+    if (loaded.value && !force) return
     try {
       const { data } = await supabase
         .from('pdf_settings')

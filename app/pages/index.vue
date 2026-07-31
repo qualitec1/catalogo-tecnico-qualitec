@@ -1,71 +1,69 @@
 <template>
   <div class="bg-[#fdf8f8] text-[#1c1b1b] font-['Work_Sans',sans-serif] antialiased selection:bg-[#004A96] selection:text-white min-h-screen flex flex-col">
     <!-- Header -->
-    <header class="bg-white border-b border-[#c2c6d3] sticky top-0 z-50 transition-all duration-300 shadow-xs">
-      <div class="flex flex-col md:flex-row justify-between items-center w-full px-4 md:px-10 max-w-[1280px] mx-auto py-4 gap-4">
-        <!-- Brand Logo -->
-        <NuxtLink to="/" class="flex items-center gap-2">
-          <img 
-            alt="Qualitec Logo" 
-            class="h-12 object-contain" 
-            src="https://lh3.googleusercontent.com/aida/AP1WRLvb_lGcigKW6su6LN_Xd0Bf0AXsewLIulAi0GxcP_qLjBKDQwKkr4TLJgHAmnOXZ_CnTBIs1fPQUk9wsPoaEnw1KIo3G_pm2AD72CQGZpdCmL0me0d5Nw3sO0Jq1oNeH0TPtE84vraycYx20zMTmWG9t98pFKFcZH8ovF5vpsN6YK6J2ZqjcN6pDWW8byB81uqO2z6Crk115D73Mm9qXI78ObCCnUJ9BmIfEJoVkKB3TB8-KPNPPQ8kG9Y"
-          />
-        </NuxtLink>
+    <header class="w-full top-0 sticky z-50 shadow-sm select-none">
+      <!-- Linha superior: Logo + Nav -->
+      <div class="bg-white border-b border-gray-100">
+        <div class="flex justify-between items-center h-16 px-4 md:px-10 max-w-[1280px] mx-auto">
+          <!-- Logo -->
+          <div class="flex items-center h-full overflow-visible">
+            <NuxtLink to="/" class="flex items-center h-full overflow-visible">
+              <img
+                alt="Qualitec Logo"
+                class="w-auto object-contain pointer-events-none transition-transform duration-150 select-none"
+                :src="siteSettings.header_logo_url || 'https://lh3.googleusercontent.com/aida/AP1WRLvb_lGcigKW6su6LN_Xd0Bf0AXsewLIulAi0GxcP_qLjBKDQwKkr4TLJgHAmnOXZ_CnTBIs1fPQUk9wsPoaEnw1KIo3G_pm2AD72CQGZpdCmL0me0d5Nw3sO0Jq1oNeH0TPtE84vraycYx20zMTmWG9t98pFKFcZH8ovF5vpsN6YK6J2ZqjcN6pDWW8byB81uqO2z6Crk115D73Mm9qXI78ObCCnUJ9BmIfEJoVkKB3TB8-KPNPPQ8kG9Y'"
+                :style="{
+                  height: `${siteSettings.header_logo_height || 48}px`,
+                  transform: `translate(${siteSettings.header_logo_offset_x || 0}px, ${siteSettings.header_logo_offset_y || 0}px)`
+                }"
+              />
+            </NuxtLink>
+          </div>
 
-        <!-- Desktop Navigation -->
-        <nav class="hidden md:flex gap-8 items-center font-['Work_Sans',sans-serif]">
-          <NuxtLink 
-            to="/" 
-            class="text-sm font-semibold text-[#004A96] border-b-2 border-[#004A96] pb-1 hover:bg-[#f7f3f2] transition-colors duration-200"
-          >
-            Início
-          </NuxtLink>
-          <NuxtLink 
-            to="/catalogo" 
-            class="text-sm font-semibold text-[#424751] hover:text-[#004A96] hover:bg-[#f7f3f2] px-2 py-1 rounded transition-colors duration-200"
-          >
-            Catálogo / Produtos
-          </NuxtLink>
-          <a 
-            href="#segmentos" 
-            class="text-sm font-semibold text-[#424751] hover:text-[#004A96] hover:bg-[#f7f3f2] px-2 py-1 rounded transition-colors duration-200"
-          >
-            Segmentos
-          </a>
-          <a 
-            href="#novidades" 
-            class="text-sm font-semibold text-[#424751] hover:text-[#004A96] hover:bg-[#f7f3f2] px-2 py-1 rounded transition-colors duration-200"
-          >
-            Novidades
-          </a>
-          <a 
-            href="#sobre" 
-            class="text-sm font-semibold text-[#424751] hover:text-[#004A96] hover:bg-[#f7f3f2] px-2 py-1 rounded transition-colors duration-200"
-          >
-            Sobre
-          </a>
-          <a 
-            href="#contato" 
-            class="text-sm font-semibold text-[#424751] hover:text-[#004A96] hover:bg-[#f7f3f2] px-2 py-1 rounded transition-colors duration-200"
-          >
-            Contato
-          </a>
-        </nav>
+          <!-- Nav links -->
+          <nav class="hidden md:flex items-center gap-12">
+            <NuxtLink to="/" class="text-sm text-gray-600 hover:text-gray-900 transition-colors font-bold text-blue-700">{{ t.home }}</NuxtLink>
+            <NuxtLink to="/#sobre" class="text-sm text-gray-600 hover:text-gray-900 transition-colors">{{ t.about }}</NuxtLink>
+            <a href="#contato" class="text-sm text-gray-600 hover:text-gray-900 transition-colors">{{ t.contact }}</a>
+          </nav>
 
-        <!-- Mobile Menu Toggle Button -->
-        <button @click="mobileMenuOpen = !mobileMenuOpen" class="md:hidden text-[#004A96] p-2">
-          <span class="material-symbols-outlined text-2xl">{{ mobileMenuOpen ? 'close' : 'menu' }}</span>
-        </button>
+          <!-- Mobile toggle -->
+          <button @click="mobileMenuOpen = !mobileMenuOpen" class="md:hidden text-gray-700 p-2">
+            <span class="material-symbols-outlined text-2xl">{{ mobileMenuOpen ? 'close' : 'menu' }}</span>
+          </button>
+        </div>
       </div>
 
-      <!-- Mobile Navigation Drawer -->
-      <div v-if="mobileMenuOpen" class="md:hidden bg-white border-t border-gray-100 px-6 py-4 flex flex-col gap-3 font-['Work_Sans',sans-serif]">
-        <NuxtLink to="/" class="text-sm font-bold text-[#004A96]">Início</NuxtLink>
-        <NuxtLink to="/catalogo" class="text-sm font-semibold text-[#424751]">Catálogo / Produtos</NuxtLink>
-        <a href="#segmentos" @click="mobileMenuOpen = false" class="text-sm font-semibold text-[#424751]">Segmentos</a>
-        <a href="#novidades" @click="mobileMenuOpen = false" class="text-sm font-semibold text-[#424751]">Novidades</a>
-        <a href="#sobre" @click="mobileMenuOpen = false" class="text-sm font-semibold text-[#424751]">Sobre</a>
-        <a href="#contato" @click="mobileMenuOpen = false" class="text-sm font-semibold text-[#424751]">Contato</a>
+      <!-- Linha inferior: segmentos (igual ao catálogo) -->
+      <div class="bg-gray-100 border-b border-gray-200">
+        <div class="max-w-[1280px] w-full mx-auto px-4 md:px-10 py-4 flex justify-center items-center">
+          <nav class="flex flex-wrap justify-center items-center gap-x-16 gap-y-2">
+            <NuxtLink
+              v-for="seg in translatedSegments"
+              :key="seg.key"
+              :to="`/catalogo?segment=${encodeURIComponent(seg.key)}`"
+              class="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
+            >{{ seg.label }}</NuxtLink>
+          </nav>
+        </div>
+      </div>
+
+      <!-- Barra branca fina -->
+      <div class="bg-white h-3 w-full border-b border-gray-200"></div>
+
+      <!-- Mobile drawer -->
+      <div v-if="mobileMenuOpen" class="bg-white border-t border-gray-100 px-6 py-4 flex flex-col gap-3">
+        <NuxtLink to="/" class="text-sm font-bold text-blue-700" @click="mobileMenuOpen = false">{{ t.home }}</NuxtLink>
+        <NuxtLink to="/#sobre" class="text-sm font-semibold text-gray-600" @click="mobileMenuOpen = false">{{ t.about }}</NuxtLink>
+        <a href="#contato" @click="mobileMenuOpen = false" class="text-sm font-semibold text-gray-600">{{ t.contact }}</a>
+        <hr class="border-gray-200 my-1">
+        <NuxtLink
+          v-for="seg in translatedSegments"
+          :key="seg.key"
+          :to="`/catalogo?segmento=${encodeURIComponent(seg.key)}`"
+          class="text-sm font-semibold text-gray-500"
+          @click="mobileMenuOpen = false"
+        >{{ seg.label }}</NuxtLink>
       </div>
     </header>
 
@@ -405,8 +403,12 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch, nextTick } from 'vue'
+import useTranslations from '../composables/useTranslations'
+import { useTranslationsAdmin } from '../composables/useTranslations'
 
 const { siteSettings, fetchSiteSettings } = useSiteSettings()
+const { t, currentLang, translatedSegments } = useTranslations()
+const { fetchTranslationsFromDB } = useTranslationsAdmin()
 const heroVideoRef = ref<HTMLVideoElement | null>(null)
 
 const isVideoActive = computed(() => {
@@ -459,7 +461,10 @@ const playVideo = () => {
 }
 
 onMounted(async () => {
-  await fetchSiteSettings()
+  await Promise.all([
+    fetchSiteSettings(),
+    fetchTranslationsFromDB(),
+  ])
   nextTick(() => {
     playVideo()
   })

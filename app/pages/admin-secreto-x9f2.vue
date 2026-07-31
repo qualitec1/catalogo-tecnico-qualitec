@@ -76,6 +76,10 @@
           <span class="material-symbols-outlined text-base">palette</span>
           Personalizar Site
         </button>
+        <button @click="currentTab = 'traducoes'" :class="currentTab === 'traducoes' ? 'bg-blue-700 text-white font-bold' : 'text-slate-600 hover:bg-slate-100 font-semibold'" class="px-6 py-2.5 text-xs uppercase tracking-wider rounded transition-colors border-0 cursor-pointer flex items-center gap-1">
+          <span class="material-symbols-outlined text-base">translate</span>
+          Traduções
+        </button>
       </div>
 
       <!-- Tab: Products -->
@@ -135,6 +139,13 @@
       <!-- Tab: Site Customization -->
       <div v-show="currentTab === 'site'">
         <AdminSiteSettings 
+          :trigger-toast="triggerToast"
+        />
+      </div>
+
+      <!-- Tab: Traduções -->
+      <div v-show="currentTab === 'traducoes'">
+        <AdminTranslations
           :trigger-toast="triggerToast"
         />
       </div>
