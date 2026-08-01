@@ -306,53 +306,56 @@
         </div>
       </section>
 
-      <!-- Novidades / Produtos em Destaque (Estilo Foto 1) -->
-      <section id="novidades" class="py-14 md:py-16 px-4 md:px-10 bg-[#f4f4f4]">
+      <!-- Novidades / Produtos em Destaque (Estilo Foto 2) -->
+      <section id="novidades" class="py-14 md:py-16 px-4 md:px-10 bg-white">
         <div class="max-w-[1100px] mx-auto">
-          <h2 class="text-2xl md:text-3xl text-[#4a4a4a] font-normal mb-8">{{ mergedTranslations['home.news_title'] || 'Novidades' }}</h2>
+          <h2 class="text-2xl md:text-3xl text-[#555555] font-normal mb-8">{{ mergedTranslations['home.news_title'] || 'Novidades' }}</h2>
 
           <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-            <!-- Produto 1 -->
-            <NuxtLink to="/catalogo" class="flex flex-col group cursor-pointer no-underline">
-              <div class="w-full bg-[#dddddd] h-48 md:h-52 flex items-center justify-center p-4">
-                <img 
-                  alt="Novo Catálogo" 
-                  class="object-contain max-h-full transition-transform duration-200 group-hover:scale-105" 
-                  src="https://lh3.googleusercontent.com/aida/AP1WRLuQGJlvhXgSbL5PCfgd-rVegzYgpPNJgtHn0Ea6Nm0tVayzLhjzQkKmbYMugrdMebtxFro3tlHv1N8ozueW3IWAmerLpn5BMh0-V4suiSBYyv-_1zhWqzLrg3b4d-rpkTVAeU22eoHKYZCmNp_AZySP90gelzHtlnS-8x3nRmtLSJEw4C0yhBjOP0LTv8cqJJere8bX1erK4A1HpU_AQV5WthPlinuCGSknmAf4oBmhbRpEqOyxTA2YAMo"
-                />
-              </div>
-              <h3 class="text-center text-[#554d3e] text-sm md:text-base font-normal mt-3 leading-snug group-hover:text-blue-700 transition-colors">
-                {{ mergedTranslations['home.news_item1_title'] || 'Novo Catálogo' }}
-              </h3>
-            </NuxtLink>
+            <template v-for="card in newsCards" :key="card.id">
+              <!-- PDF cards open in new tab, others use NuxtLink -->
+              <a
+                v-if="card.link_type === 'pdf'"
+                :href="getCardHref(card)"
+                target="_blank"
+                rel="noopener"
+                class="flex flex-col group cursor-pointer no-underline"
+              >
+                <div class="w-full bg-[#e0e0e0] h-48 md:h-52 flex items-center justify-center p-4">
+                  <img
+                    :alt="getCardTitle(card)"
+                    class="object-contain max-h-full transition-transform duration-200 group-hover:scale-105"
+                    :src="card.image_url"
+                  />
+                </div>
+                <h3 class="text-center text-[#665c48] text-sm md:text-base font-normal mt-3 leading-snug group-hover:text-[#665c48] transition-colors">
+                  <span class="news-card-title">{{ getCardTitle(card) }}</span>
+                </h3>
+                <p v-if="card.show_link_button && getCardLinkLabel(card)" class="text-center text-xs text-[#004A96] mt-1.5 underline">
+                  {{ getCardLinkLabel(card) }} →
+                </p>
+              </a>
 
-            <!-- Produto 2 -->
-            <NuxtLink to="/catalogo" class="flex flex-col group cursor-pointer no-underline">
-              <div class="w-full bg-[#dddddd] h-48 md:h-52 flex items-center justify-center p-4">
-                <img 
-                  alt="Transmissor de nível flangeado" 
-                  class="object-contain max-h-full transition-transform duration-200 group-hover:scale-105" 
-                  src="https://lh3.googleusercontent.com/aida/AP1WRLuG8sZS2kOzj2vWiRJKUV2sBhsBQRWjVrjvR4wnSCqsuaozGrwLnu6MrCdeDc6xKeiRnf6slFTLtforvCKE7HTmjBOJeaU_T8oysOKzPgniF9frKcP6lAwR0QKqFO4ZO6opkVFeH45aEY72r6WhAnegRADQXfnRkibd80aizun5t04sqBpqCts1rDtBiRSA3QJDdstMlsoDw3n9s5ZbF_-xMhue9TPDh7AXsaZgogGTYlpRNluclB6ax78"
-                />
-              </div>
-              <h3 class="text-center text-[#554d3e] text-sm md:text-base font-normal mt-3 leading-snug group-hover:text-blue-700 transition-colors">
-                {{ mergedTranslations['home.news_item2_title'] || 'Transmissor de nível flangeado' }}
-              </h3>
-            </NuxtLink>
-
-            <!-- Produto 3 -->
-            <NuxtLink to="/catalogo" class="flex flex-col group cursor-pointer no-underline">
-              <div class="w-full bg-[#dddddd] h-48 md:h-52 flex items-center justify-center p-4">
-                <img 
-                  alt="Regulador Pressão CO2" 
-                  class="object-contain max-h-full transition-transform duration-200 group-hover:scale-105" 
-                  src="https://lh3.googleusercontent.com/aida/AP1WRLv-GfRr-b2d9wobOGuNB9O-zkRJwTQEiHQAwyyzinqVG7T8NlRQuSfpMp5ZxkXK8OD5YQ4cZqUih3JQb1iSfTVvz2mH5t5WOfwH3Nq0nTyubrNNXy2c2wnpJkkDT59Se2En1-vv580MTcE7qKQcapGD5Mwi4hxg8HM7uxxJS2hgp5rgDJRlQ5Q7-QQb4OsKI3kX9bTKAVQ_PzXV_bfUz5gn_TCDlVhk1qhr5_Xbr2maKQ_X-URbXHbcuQ"
-                />
-              </div>
-              <h3 class="text-center text-[#554d3e] text-sm md:text-base font-normal mt-3 leading-snug group-hover:text-blue-700 transition-colors">
-                {{ mergedTranslations['home.news_item3_title'] || 'Regulador Pressão CO2' }}
-              </h3>
-            </NuxtLink>
+              <NuxtLink
+                v-else
+                :to="getCardHref(card)"
+                class="flex flex-col group cursor-pointer no-underline"
+              >
+                <div class="w-full bg-[#e0e0e0] h-48 md:h-52 flex items-center justify-center p-4">
+                  <img
+                    :alt="getCardTitle(card)"
+                    class="object-contain max-h-full transition-transform duration-200 group-hover:scale-105"
+                    :src="card.image_url"
+                  />
+                </div>
+                <h3 class="text-center text-[#665c48] text-sm md:text-base font-normal mt-3 leading-snug group-hover:text-[#665c48] transition-colors">
+                  <span class="news-card-title">{{ getCardTitle(card) }}</span>
+                </h3>
+                <p v-if="card.show_link_button && getCardLinkLabel(card)" class="text-center text-xs text-[#004A96] mt-1.5 underline">
+                  {{ getCardLinkLabel(card) }} →
+                </p>
+              </NuxtLink>
+            </template>
           </div>
         </div>
       </section>
@@ -463,6 +466,70 @@ const { siteSettings, fetchSiteSettings } = useSiteSettings()
 const { t, currentLang, translatedSegments, mergedTranslations } = useTranslations()
 const { fetchTranslationsFromDB } = useTranslationsAdmin()
 const heroVideoRef = ref<HTMLVideoElement | null>(null)
+const supabase = useSupabaseClient()
+
+interface NewsCard {
+  id: number
+  title_pt: string
+  title_en: string
+  title_es: string
+  image_url: string
+  link_type: string
+  link_value: string
+  link_label_pt: string
+  link_label_en: string
+  link_label_es: string
+  show_link_button: boolean
+}
+
+const defaultImages = [
+  'https://lh3.googleusercontent.com/aida/AP1WRLuQGJlvhXgSbL5PCfgd-rVegzYgpPNJgtHn0Ea6Nm0tVayzLhjzQkKmbYMugrdMebtxFro3tlHv1N8ozueW3IWAmerLpn5BMh0-V4suiSBYyv-_1zhWqzLrg3b4d-rpkTVAeU22eoHKYZCmNp_AZySP90gelzHtlnS-8x3nRmtLSJEw4C0yhBjOP0LTv8cqJJere8bX1erK4A1HpU_AQV5WthPlinuCGSknmAf4oBmhbRpEqOyxTA2YAMo',
+  'https://lh3.googleusercontent.com/aida/AP1WRLuG8sZS2kOzj2vWiRJKUV2sBhsBQRWjVrjvR4wnSCqsuaozGrwLnu6MrCdeDc6xKeiRnf6slFTLtforvCKE7HTmjBOJeaU_T8oysOKzPgniF9frKcP6lAwR0QKqFO4ZO6opkVFeH45aEY72r6WhAnegRADQXfnRkibd80aizun5t04sqBpqCts1rDtBiRSA3QJDdstMlsoDw3n9s5ZbF_-xMhue9TPDh7AXsaZgogGTYlpRNluclB6ax78',
+  'https://lh3.googleusercontent.com/aida/AP1WRLv-GfRr-b2d9wobOGuNB9O-zkRJwTQEiHQAwyyzinqVG7T8NlRQuSfpMp5ZxkXK8OD5YQ4cZqUih3JQb1iSfTVvz2mH5t5WOfwH3Nq0nTyubrNNXy2c2wnpJkkDT59Se2En1-vv580MTcE7qKQcapGD5Mwi4hxg8HM7uxxJS2hgp5rgDJRlQ5Q7-QQb4OsKI3kX9bTKAVQ_PzXV_bfUz5gn_TCDlVhk1qhr5_Xbr2maKQ_X-URbXHbcuQ'
+]
+
+const newsCards = ref<NewsCard[]>([
+  { id: 1, title_pt: 'Novo Catálogo', title_en: 'New Catalog', title_es: 'Nuevo Catálogo', image_url: defaultImages[0], link_type: 'page', link_value: '/catalogo', link_label_pt: '', link_label_en: '', link_label_es: '', show_link_button: false },
+  { id: 2, title_pt: 'Transmissor de nível flangeado', title_en: 'Flanged level transmitter', title_es: 'Transmisor de nivel bridado', image_url: defaultImages[1], link_type: 'category', link_value: 'Criogenia', link_label_pt: '', link_label_en: '', link_label_es: '', show_link_button: false },
+  { id: 3, title_pt: 'Regulador Pressão CO2', title_en: 'CO2 Pressure Regulator', title_es: 'Regulador de Presión CO2', image_url: defaultImages[2], link_type: 'category', link_value: 'Gases Técnicos', link_label_pt: '', link_label_en: '', link_label_es: '', show_link_button: false },
+])
+
+const fetchNewsCards = async () => {
+  try {
+    const { data } = await (supabase as any).from('home_news_cards').select('*').order('id', { ascending: true })
+    if (data && data.length > 0) {
+      newsCards.value = newsCards.value.map((card, i) => {
+        const dbCard = data.find((d: any) => d.id === card.id)
+        if (!dbCard) return card
+        return {
+          ...card,
+          ...dbCard,
+          image_url: dbCard.image_url || defaultImages[i] || ''
+        }
+      })
+    }
+  } catch {}
+}
+
+const getCardTitle = (card: NewsCard) => {
+  const lang = currentLang.value
+  if (lang === 'en') return card.title_en || card.title_pt
+  if (lang === 'es') return card.title_es || card.title_pt
+  return card.title_pt
+}
+
+const getCardLinkLabel = (card: NewsCard) => {
+  const lang = currentLang.value
+  if (lang === 'en') return card.link_label_en || card.link_label_pt
+  if (lang === 'es') return card.link_label_es || card.link_label_pt
+  return card.link_label_pt
+}
+
+const getCardHref = (card: NewsCard) => {
+  if (card.link_type === 'category') return `/catalogo?segment=${encodeURIComponent(card.link_value)}`
+  if (card.link_type === 'pdf') return card.link_value
+  return card.link_value || '/catalogo'
+}
 
 const isVideoActive = computed(() => {
   const url = (siteSettings.value.hero_bg_video_url || '').trim()
@@ -619,4 +686,36 @@ const handleNewsletterSubmit = () => {
     }, 3000)
   }
 }
+
+onMounted(async () => {
+  await Promise.all([
+    fetchSiteSettings(),
+    fetchTranslationsFromDB(),
+    fetchNewsCards()
+  ])
+})
 </script>
+
+<style scoped>
+/* Animated underline for Novidades card titles */
+.news-card-title {
+  position: relative;
+  display: inline-block;
+  padding-bottom: 2px;
+}
+
+.news-card-title::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background-color: #665c48;
+  transition: width 0.3s ease;
+}
+
+.group:hover .news-card-title::after {
+  width: 100%;
+}
+</style>
