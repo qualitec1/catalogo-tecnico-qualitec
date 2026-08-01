@@ -217,8 +217,8 @@
         <div class="max-w-[1100px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 items-start">
           <!-- Left Column: Search -->
           <div class="flex flex-col gap-2">
-            <h2 class="text-2xl md:text-3xl text-[#333333] font-normal tracking-tight">Como podemos te ajudar?</h2>
-            <p class="text-[#666666] text-sm md:text-base font-normal mb-3">Utilize a busca rápida e encontre sua necessidade</p>
+            <h2 class="text-2xl md:text-3xl text-[#333333] font-normal tracking-tight">{{ mergedTranslations['home.search_title'] || 'Como podemos te ajudar?' }}</h2>
+            <p class="text-[#666666] text-sm md:text-base font-normal mb-3">{{ mergedTranslations['home.search_subtitle'] || 'Utilize a busca rápida e encontre sua necessidade' }}</p>
             <form @submit.prevent="handleSearch" class="relative w-full max-w-md">
               <span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-blue-600 text-lg">search</span>
               <input 
@@ -232,19 +232,19 @@
 
           <!-- Right Column: Quick Links -->
           <div class="flex flex-col gap-2.5">
-            <span class="text-xs font-semibold text-[#666666] tracking-tight mb-1">Buscas mais utilizadas</span>
+            <span class="text-xs font-semibold text-[#666666] tracking-tight mb-1">{{ mergedTranslations['home.search_quick_title'] || 'Buscas mais utilizadas' }}</span>
             <div class="flex flex-col gap-2">
               <a href="#contato" class="text-[#444444] hover:text-blue-700 font-normal text-base md:text-[17px] transition-colors w-fit">
-                Contato de vendas / suporte
+                {{ mergedTranslations['home.search_quick_1'] || 'Contato de vendas / suporte' }}
               </a>
               <NuxtLink to="/catalogo?cat=V%C3%81LVULAS%20DE%20SEGURAN%C3%87A" class="text-[#444444] hover:text-blue-700 font-normal text-base md:text-[17px] transition-colors w-fit">
-                Válvulas de Segurança
+                {{ mergedTranslations['home.search_quick_2'] || 'Válvulas de Segurança' }}
               </NuxtLink>
               <NuxtLink to="/catalogo?q=HEROSE" class="text-[#444444] hover:text-blue-700 font-normal text-base md:text-[17px] transition-colors w-fit">
-                Reparos HEROSE
+                {{ mergedTranslations['home.search_quick_3'] || 'Reparos HEROSE' }}
               </NuxtLink>
               <NuxtLink to="/catalogo?cat=TRANSMISSORES" class="text-[#444444] hover:text-blue-700 font-normal text-base md:text-[17px] transition-colors w-fit">
-                Transmissores de Pressão
+                {{ mergedTranslations['home.search_quick_4'] || 'Transmissores de Pressão' }}
               </NuxtLink>
             </div>
           </div>
@@ -306,58 +306,60 @@
         </div>
       </section>
 
-      <!-- Novidades / Produtos em Destaque -->
-      <section id="novidades" class="py-16 md:py-20 px-4 md:px-10 max-w-[1280px] mx-auto bg-[#f7f3f2] border-y border-[#c2c6d3]/30">
-        <div class="flex justify-between items-center mb-12">
-          <h2 class="font-['Rubik',sans-serif] text-2xl md:text-3xl text-[#424751] font-medium">Novidades</h2>
-          <NuxtLink to="/catalogo" class="text-sm font-bold text-[#004A96] hover:underline flex items-center gap-1">
-            Ver catálogo completo
-            <span class="material-symbols-outlined text-sm">arrow_forward</span>
-          </NuxtLink>
-        </div>
+      <!-- Novidades / Produtos em Destaque (Estilo Foto 1) -->
+      <section id="novidades" class="py-14 md:py-16 px-4 md:px-10 bg-[#f4f4f4]">
+        <div class="max-w-[1100px] mx-auto">
+          <h2 class="text-2xl md:text-3xl text-[#4a4a4a] font-normal mb-8">{{ mergedTranslations['home.news_title'] || 'Novidades' }}</h2>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-          <!-- Produto 1 -->
-          <NuxtLink to="/catalogo" class="flex flex-col group bg-white rounded overflow-hidden border border-gray-200/60 p-4 hover:shadow-md transition-all">
-            <div class="w-full bg-[#e5e5e5] h-48 flex items-center justify-center p-4 rounded">
-              <img 
-                alt="Novo Catálogo Técnico" 
-                class="object-contain max-h-full mix-blend-multiply group-hover:scale-105 transition-transform duration-200" 
-                src="https://lh3.googleusercontent.com/aida/AP1WRLuQGJlvhXgSbL5PCfgd-rVegzYgpPNJgtHn0Ea6Nm0tVayzLhjzQkKmbYMugrdMebtxFro3tlHv1N8ozueW3IWAmerLpn5BMh0-V4suiSBYyv-_1zhWqzLrg3b4d-rpkTVAeU22eoHKYZCmNp_AZySP90gelzHtlnS-8x3nRmtLSJEw4C0yhBjOP0LTv8cqJJere8bX1erK4A1HpU_AQV5WthPlinuCGSknmAf4oBmhbRpEqOyxTA2YAMo"
-              />
-            </div>
-            <h3 class="font-medium text-[#2F2E2E] mt-4 text-center group-hover:text-[#004A96] transition-colors">Novo Catálogo Técnico 2025</h3>
-          </NuxtLink>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+            <!-- Produto 1 -->
+            <NuxtLink to="/catalogo" class="flex flex-col group cursor-pointer no-underline">
+              <div class="w-full bg-[#dddddd] h-48 md:h-52 flex items-center justify-center p-4">
+                <img 
+                  alt="Novo Catálogo" 
+                  class="object-contain max-h-full transition-transform duration-200 group-hover:scale-105" 
+                  src="https://lh3.googleusercontent.com/aida/AP1WRLuQGJlvhXgSbL5PCfgd-rVegzYgpPNJgtHn0Ea6Nm0tVayzLhjzQkKmbYMugrdMebtxFro3tlHv1N8ozueW3IWAmerLpn5BMh0-V4suiSBYyv-_1zhWqzLrg3b4d-rpkTVAeU22eoHKYZCmNp_AZySP90gelzHtlnS-8x3nRmtLSJEw4C0yhBjOP0LTv8cqJJere8bX1erK4A1HpU_AQV5WthPlinuCGSknmAf4oBmhbRpEqOyxTA2YAMo"
+                />
+              </div>
+              <h3 class="text-center text-[#554d3e] text-sm md:text-base font-normal mt-3 leading-snug group-hover:text-blue-700 transition-colors">
+                {{ mergedTranslations['home.news_item1_title'] || 'Novo Catálogo' }}
+              </h3>
+            </NuxtLink>
 
-          <!-- Produto 2 -->
-          <NuxtLink to="/catalogo" class="flex flex-col group bg-white rounded overflow-hidden border border-gray-200/60 p-4 hover:shadow-md transition-all">
-            <div class="w-full bg-[#e5e5e5] h-48 flex items-center justify-center p-4 rounded">
-              <img 
-                alt="Transmissor de nível flangeado" 
-                class="object-contain max-h-full mix-blend-multiply group-hover:scale-105 transition-transform duration-200" 
-                src="https://lh3.googleusercontent.com/aida/AP1WRLuG8sZS2kOzj2vWiRJKUV2sBhsBQRWjVrjvR4wnSCqsuaozGrwLnu6MrCdeDc6xKeiRnf6slFTLtforvCKE7HTmjBOJeaU_T8oysOKzPgniF9frKcP6lAwR0QKqFO4ZO6opkVFeH45aEY72r6WhAnegRADQXfnRkibd80aizun5t04sqBpqCts1rDtBiRSA3QJDdstMlsoDw3n9s5ZbF_-xMhue9TPDh7AXsaZgogGTYlpRNluclB6ax78"
-              />
-            </div>
-            <h3 class="font-medium text-[#2F2E2E] mt-4 text-center group-hover:text-[#004A96] transition-colors">Transmissor de nível flangeado</h3>
-          </NuxtLink>
+            <!-- Produto 2 -->
+            <NuxtLink to="/catalogo" class="flex flex-col group cursor-pointer no-underline">
+              <div class="w-full bg-[#dddddd] h-48 md:h-52 flex items-center justify-center p-4">
+                <img 
+                  alt="Transmissor de nível flangeado" 
+                  class="object-contain max-h-full transition-transform duration-200 group-hover:scale-105" 
+                  src="https://lh3.googleusercontent.com/aida/AP1WRLuG8sZS2kOzj2vWiRJKUV2sBhsBQRWjVrjvR4wnSCqsuaozGrwLnu6MrCdeDc6xKeiRnf6slFTLtforvCKE7HTmjBOJeaU_T8oysOKzPgniF9frKcP6lAwR0QKqFO4ZO6opkVFeH45aEY72r6WhAnegRADQXfnRkibd80aizun5t04sqBpqCts1rDtBiRSA3QJDdstMlsoDw3n9s5ZbF_-xMhue9TPDh7AXsaZgogGTYlpRNluclB6ax78"
+                />
+              </div>
+              <h3 class="text-center text-[#554d3e] text-sm md:text-base font-normal mt-3 leading-snug group-hover:text-blue-700 transition-colors">
+                {{ mergedTranslations['home.news_item2_title'] || 'Transmissor de nível flangeado' }}
+              </h3>
+            </NuxtLink>
 
-          <!-- Produto 3 -->
-          <NuxtLink to="/catalogo" class="flex flex-col group bg-white rounded overflow-hidden border border-gray-200/60 p-4 hover:shadow-md transition-all">
-            <div class="w-full bg-[#e5e5e5] h-48 flex items-center justify-center p-4 rounded">
-              <img 
-                alt="Regulador Pressão CO2" 
-                class="object-contain max-h-full mix-blend-multiply group-hover:scale-105 transition-transform duration-200" 
-                src="https://lh3.googleusercontent.com/aida/AP1WRLv-GfRr-b2d9wobOGuNB9O-zkRJwTQEiHQAwyyzinqVG7T8NlRQuSfpMp5ZxkXK8OD5YQ4cZqUih3JQb1iSfTVvz2mH5t5WOfwH3Nq0nTyubrNNXy2c2wnpJkkDT59Se2En1-vv580MTcE7qKQcapGD5Mwi4hxg8HM7uxxJS2hgp5rgDJRlQ5Q7-QQb4OsKI3kX9bTKAVQ_PzXV_bfUz5gn_TCDlVhk1qhr5_Xbr2maKQ_X-URbXHbcuQ"
-              />
-            </div>
-            <h3 class="font-medium text-[#2F2E2E] mt-4 text-center group-hover:text-[#004A96] transition-colors">Regulador Pressão CO2</h3>
-          </NuxtLink>
+            <!-- Produto 3 -->
+            <NuxtLink to="/catalogo" class="flex flex-col group cursor-pointer no-underline">
+              <div class="w-full bg-[#dddddd] h-48 md:h-52 flex items-center justify-center p-4">
+                <img 
+                  alt="Regulador Pressão CO2" 
+                  class="object-contain max-h-full transition-transform duration-200 group-hover:scale-105" 
+                  src="https://lh3.googleusercontent.com/aida/AP1WRLv-GfRr-b2d9wobOGuNB9O-zkRJwTQEiHQAwyyzinqVG7T8NlRQuSfpMp5ZxkXK8OD5YQ4cZqUih3JQb1iSfTVvz2mH5t5WOfwH3Nq0nTyubrNNXy2c2wnpJkkDT59Se2En1-vv580MTcE7qKQcapGD5Mwi4hxg8HM7uxxJS2hgp5rgDJRlQ5Q7-QQb4OsKI3kX9bTKAVQ_PzXV_bfUz5gn_TCDlVhk1qhr5_Xbr2maKQ_X-URbXHbcuQ"
+                />
+              </div>
+              <h3 class="text-center text-[#554d3e] text-sm md:text-base font-normal mt-3 leading-snug group-hover:text-blue-700 transition-colors">
+                {{ mergedTranslations['home.news_item3_title'] || 'Regulador Pressão CO2' }}
+              </h3>
+            </NuxtLink>
+          </div>
         </div>
       </section>
 
-      <!-- Sobre e Newsletter -->
+      <!-- Sobre a Qualitec -->
       <section id="sobre" class="py-16 md:py-20 bg-white px-4 md:px-10">
-        <div class="max-w-[1280px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center mb-16">
+        <div class="max-w-[1100px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center mb-16">
           <div>
             <h2 class="font-['Rubik',sans-serif] text-2xl md:text-3xl text-[#424751] font-medium mb-4">Sobre a Qualitec</h2>
             <p class="text-[#424751] text-base leading-relaxed mb-4">
@@ -386,26 +388,30 @@
           </div>
         </div>
 
-        <!-- Newsletter -->
-        <div class="max-w-[1280px] mx-auto pt-10 border-t border-gray-200">
-          <h2 class="font-['Rubik',sans-serif] text-xl md:text-2xl text-[#424751] font-medium mb-6">Cadastre-se para receber nossa newsletter.</h2>
-          <form @submit.prevent="handleNewsletterSubmit" class="flex flex-col md:flex-row max-w-4xl gap-4">
-            <div class="flex-1 flex flex-col">
-              <label class="text-xs font-semibold text-[#424751] mb-1">Digite seu email aqui *</label>
+        <!-- Newsletter (Estilo Foto 1) -->
+        <div class="max-w-[1100px] mx-auto pt-10 border-t border-gray-200">
+          <h2 class="text-base md:text-lg text-[#555555] font-normal mb-4">
+            {{ mergedTranslations['home.newsletter_title'] || 'Cadastre-se para receber nossa newsletter.' }}
+          </h2>
+          <form @submit.prevent="handleNewsletterSubmit" class="flex flex-col">
+            <label class="text-xs text-gray-500 mb-1.5 block">
+              {{ mergedTranslations['home.newsletter_label'] || 'Digite seu email aqui *' }}
+            </label>
+            <div class="flex flex-col sm:flex-row max-w-xl">
               <input 
                 v-model="newsletterEmail"
-                class="w-full border border-[#c2c6d3] p-3 focus:ring-2 focus:ring-[#004A96] focus:outline-none rounded bg-white text-base" 
+                class="w-full sm:w-[380px] px-3 py-2 border border-gray-400 bg-white text-sm text-gray-800 focus:outline-none placeholder-gray-400" 
                 required 
                 placeholder="seuemail@empresa.com.br"
                 type="email"
               />
+              <button 
+                class="bg-[#0052a5] hover:bg-[#003d7c] text-white px-8 py-2 text-sm font-normal transition-colors border-0 shrink-0 cursor-pointer mt-2 sm:mt-0" 
+                type="submit"
+              >
+                {{ newsletterSubmitted ? 'Cadastrado!' : (mergedTranslations['home.newsletter_button'] || 'Inscrever') }}
+              </button>
             </div>
-            <button 
-              class="bg-[#004A96] text-white px-10 py-3 font-medium rounded hover:bg-[#00346c] transition-colors mt-auto cursor-pointer" 
-              type="submit"
-            >
-              {{ newsletterSubmitted ? 'Cadastrado!' : 'Inscrever' }}
-            </button>
           </form>
         </div>
       </section>
@@ -454,7 +460,7 @@ import useTranslations from '../composables/useTranslations'
 import { useTranslationsAdmin } from '../composables/useTranslations'
 
 const { siteSettings, fetchSiteSettings } = useSiteSettings()
-const { t, currentLang, translatedSegments } = useTranslations()
+const { t, currentLang, translatedSegments, mergedTranslations } = useTranslations()
 const { fetchTranslationsFromDB } = useTranslationsAdmin()
 const heroVideoRef = ref<HTMLVideoElement | null>(null)
 

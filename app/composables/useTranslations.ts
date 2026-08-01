@@ -75,6 +75,10 @@ export type TranslationKey =
   | 'catalog.search_placeholder' | 'catalog.view_docs' | 'catalog.no_docs' | 'catalog.model' | 'catalog.no_products' | 'catalog.all_categories'
   | 'footer.rights' | 'footer.contact_btn' | 'footer.exclusive_rep' | 'footer.view_catalog'
   | 'home.hero_text' | 'home.hero_cta'
+  | 'home.search_title' | 'home.search_subtitle' | 'home.search_quick_title'
+  | 'home.search_quick_1' | 'home.search_quick_2' | 'home.search_quick_3' | 'home.search_quick_4'
+  | 'home.news_title' | 'home.news_item1_title' | 'home.news_item2_title' | 'home.news_item3_title'
+  | 'home.newsletter_title' | 'home.newsletter_label' | 'home.newsletter_button'
 
 export type TranslationsMap = Record<TranslationKey, string>
 
@@ -102,6 +106,20 @@ export const defaultTranslations: Record<LanguageCode, TranslationsMap> = {
     'footer.view_catalog': 'Ver Catálogo',
     'home.hero_text': 'Soluções em instrumentação industrial',
     'home.hero_cta': 'Ver Catálogo Completo',
+    'home.search_title': 'Como podemos te ajudar?',
+    'home.search_subtitle': 'Utilize a busca rápida e encontre sua necessidade',
+    'home.search_quick_title': 'Buscas mais utilizadas',
+    'home.search_quick_1': 'Contato de vendas / suporte',
+    'home.search_quick_2': 'Válvulas de Segurança',
+    'home.search_quick_3': 'Reparos HEROSE',
+    'home.search_quick_4': 'Transmissores de Pressão',
+    'home.news_title': 'Novidades',
+    'home.news_item1_title': 'Novo Catálogo',
+    'home.news_item2_title': 'Transmissor de nível flangeado',
+    'home.news_item3_title': 'Regulador Pressão CO2',
+    'home.newsletter_title': 'Cadastre-se para receber nossa newsletter.',
+    'home.newsletter_label': 'Digite seu email aqui *',
+    'home.newsletter_button': 'Inscrever',
   },
   en: {
     'nav.home': 'Home',
@@ -126,6 +144,20 @@ export const defaultTranslations: Record<LanguageCode, TranslationsMap> = {
     'footer.view_catalog': 'View Catalog',
     'home.hero_text': 'Industrial instrumentation solutions',
     'home.hero_cta': 'Browse Full Catalog',
+    'home.search_title': 'How can we help you?',
+    'home.search_subtitle': 'Use quick search to find what you need',
+    'home.search_quick_title': 'Most popular searches',
+    'home.search_quick_1': 'Sales & support contact',
+    'home.search_quick_2': 'Safety Valves',
+    'home.search_quick_3': 'HEROSE Spare Parts',
+    'home.search_quick_4': 'Pressure Transmitters',
+    'home.news_title': "What's New",
+    'home.news_item1_title': 'New Catalog',
+    'home.news_item2_title': 'Flanged level transmitter',
+    'home.news_item3_title': 'CO2 Pressure Regulator',
+    'home.newsletter_title': 'Subscribe to receive our newsletter.',
+    'home.newsletter_label': 'Enter your email here *',
+    'home.newsletter_button': 'Subscribe',
   },
   es: {
     'nav.home': 'Inicio',
@@ -150,6 +182,20 @@ export const defaultTranslations: Record<LanguageCode, TranslationsMap> = {
     'footer.view_catalog': 'Ver Catálogo',
     'home.hero_text': 'Soluciones en instrumentación industrial',
     'home.hero_cta': 'Ver Catálogo Completo',
+    'home.search_title': '¿Cómo podemos ayudarle?',
+    'home.search_subtitle': 'Utilice la búsqueda rápida para encontrar su necesidad',
+    'home.search_quick_title': 'Búsquedas más frecuentes',
+    'home.search_quick_1': 'Contacto de ventas / soporte',
+    'home.search_quick_2': 'Válvulas de Seguridad',
+    'home.search_quick_3': 'Repuestos HEROSE',
+    'home.search_quick_4': 'Transmisores de Presión',
+    'home.news_title': 'Novedades',
+    'home.news_item1_title': 'Nuevo Catálogo',
+    'home.news_item2_title': 'Transmisor de nivel bridado',
+    'home.news_item3_title': 'Regulador de Presión CO2',
+    'home.newsletter_title': 'Regístrese para recibir nuestro boletín.',
+    'home.newsletter_label': 'Ingrese su correo electrónico aquí *',
+    'home.newsletter_button': 'Suscribirse',
   },
 }
 
