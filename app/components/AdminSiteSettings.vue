@@ -18,6 +18,128 @@
     </div>
 
     <template v-else>
+      <!-- ===== SEÇÃO: CARDS DOS PRINCIPAIS SEGMENTOS ===== -->
+      <div class="space-y-6 bg-slate-50 p-5 rounded-lg border border-slate-200">
+        <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+          <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wide flex items-center gap-2">
+            <span class="material-symbols-outlined text-blue-600">view_carousel</span>
+            Imagens dos Cards de Principais Segmentos (Home)
+          </h3>
+          <span class="text-[10px] bg-blue-100 text-blue-700 font-bold px-2 py-0.5 rounded uppercase">Página Inicial</span>
+        </div>
+
+        <p class="text-xs text-slate-600">
+          Configure as imagens exibidas nos 3 cards da seção "Principais segmentos" na página inicial.
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+          <!-- Card 1: Criogênia & Gases industriais -->
+          <div class="bg-white p-4 rounded-lg border border-gray-200 space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-800">Criogênia &amp; Gases</span>
+              <span class="text-[10px] bg-emerald-100 text-emerald-700 font-bold px-1.5 py-0.5 rounded">Card 1</span>
+            </div>
+            
+            <div class="space-y-2">
+              <label class="block text-[10px] text-gray-500 font-bold uppercase">URL da Imagem</label>
+              <div class="flex gap-2">
+                <input
+                  v-model="settings.segment_img_criogenia"
+                  type="text"
+                  placeholder="https://..."
+                  class="flex-1 border border-gray-300 px-3 py-1.5 text-xs rounded bg-white text-slate-800 focus:ring-1 focus:ring-blue-600 focus:outline-none"
+                />
+                <button
+                  @click="triggerSegmentUpload('criogenia')"
+                  :disabled="uploadingSegment === 'criogenia'"
+                  class="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white px-3 py-1.5 rounded text-xs font-bold uppercase transition-colors flex items-center gap-1 border-0 cursor-pointer shrink-0"
+                >
+                  <span class="material-symbols-outlined text-sm">{{ uploadingSegment === 'criogenia' ? 'sync' : 'upload' }}</span>
+                  Upload
+                </button>
+                <input :ref="(el) => { segmentFileInputs['criogenia'] = el as HTMLInputElement }" type="file" accept="image/*" class="hidden" @change="handleSegmentUpload('criogenia', $event)" />
+              </div>
+            </div>
+
+            <!-- Preview -->
+            <div class="w-full h-28 bg-slate-100 rounded border border-gray-200 overflow-hidden flex items-center justify-center">
+              <img v-if="settings.segment_img_criogenia" :src="settings.segment_img_criogenia" class="w-full h-full object-cover" />
+              <span v-else class="text-xs text-gray-400">Sem imagem</span>
+            </div>
+          </div>
+
+          <!-- Card 2: Óleo & Gás -->
+          <div class="bg-white p-4 rounded-lg border border-gray-200 space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-800">Óleo &amp; Gás</span>
+              <span class="text-[10px] bg-emerald-100 text-emerald-700 font-bold px-1.5 py-0.5 rounded">Card 2</span>
+            </div>
+
+            <div class="space-y-2">
+              <label class="block text-[10px] text-gray-500 font-bold uppercase">URL da Imagem</label>
+              <div class="flex gap-2">
+                <input
+                  v-model="settings.segment_img_oleo_gas"
+                  type="text"
+                  placeholder="https://..."
+                  class="flex-1 border border-gray-300 px-3 py-1.5 text-xs rounded bg-white text-slate-800 focus:ring-1 focus:ring-blue-600 focus:outline-none"
+                />
+                <button
+                  @click="triggerSegmentUpload('oleo_gas')"
+                  :disabled="uploadingSegment === 'oleo_gas'"
+                  class="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white px-3 py-1.5 rounded text-xs font-bold uppercase transition-colors flex items-center gap-1 border-0 cursor-pointer shrink-0"
+                >
+                  <span class="material-symbols-outlined text-sm">{{ uploadingSegment === 'oleo_gas' ? 'sync' : 'upload' }}</span>
+                  Upload
+                </button>
+                <input :ref="(el) => { segmentFileInputs['oleo_gas'] = el as HTMLInputElement }" type="file" accept="image/*" class="hidden" @change="handleSegmentUpload('oleo_gas', $event)" />
+              </div>
+            </div>
+
+            <!-- Preview -->
+            <div class="w-full h-28 bg-slate-100 rounded border border-gray-200 overflow-hidden flex items-center justify-center">
+              <img v-if="settings.segment_img_oleo_gas" :src="settings.segment_img_oleo_gas" class="w-full h-full object-cover" />
+              <span v-else class="text-xs text-gray-400">Sem imagem</span>
+            </div>
+          </div>
+
+          <!-- Card 3: Açúcar e Álcool -->
+          <div class="bg-white p-4 rounded-lg border border-gray-200 space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-800">Açúcar &amp; Álcool</span>
+              <span class="text-[10px] bg-emerald-100 text-emerald-700 font-bold px-1.5 py-0.5 rounded">Card 3</span>
+            </div>
+
+            <div class="space-y-2">
+              <label class="block text-[10px] text-gray-500 font-bold uppercase">URL da Imagem</label>
+              <div class="flex gap-2">
+                <input
+                  v-model="settings.segment_img_sucroalcooleiro"
+                  type="text"
+                  placeholder="https://..."
+                  class="flex-1 border border-gray-300 px-3 py-1.5 text-xs rounded bg-white text-slate-800 focus:ring-1 focus:ring-blue-600 focus:outline-none"
+                />
+                <button
+                  @click="triggerSegmentUpload('sucroalcooleiro')"
+                  :disabled="uploadingSegment === 'sucroalcooleiro'"
+                  class="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white px-3 py-1.5 rounded text-xs font-bold uppercase transition-colors flex items-center gap-1 border-0 cursor-pointer shrink-0"
+                >
+                  <span class="material-symbols-outlined text-sm">{{ uploadingSegment === 'sucroalcooleiro' ? 'sync' : 'upload' }}</span>
+                  Upload
+                </button>
+                <input :ref="(el) => { segmentFileInputs['sucroalcooleiro'] = el as HTMLInputElement }" type="file" accept="image/*" class="hidden" @change="handleSegmentUpload('sucroalcooleiro', $event)" />
+              </div>
+            </div>
+
+            <!-- Preview -->
+            <div class="w-full h-28 bg-slate-100 rounded border border-gray-200 overflow-hidden flex items-center justify-center">
+              <img v-if="settings.segment_img_sucroalcooleiro" :src="settings.segment_img_sucroalcooleiro" class="w-full h-full object-cover" />
+              <span v-else class="text-xs text-gray-400">Sem imagem</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- ===== SEÇÃO: LOGOTIPO DO HEADER ===== -->
       <div class="space-y-6 bg-slate-50 p-5 rounded-lg border border-slate-200">
         <div class="flex items-center justify-between border-b border-slate-200 pb-3">
@@ -715,6 +837,10 @@ interface SiteSettings {
   hero_card_offset_y: number
   hero_card_opacity: number
   hero_card_extend_bottom: boolean
+  // Segment Cards (Home)
+  segment_img_criogenia: string
+  segment_img_oleo_gas: string
+  segment_img_sucroalcooleiro: string
 }
 
 const defaultSettings: SiteSettings = {
@@ -755,9 +881,52 @@ const defaultSettings: SiteSettings = {
   hero_card_offset_y: 55,
   hero_card_opacity: 85,
   hero_card_extend_bottom: true,
+  segment_img_criogenia: 'https://lh3.googleusercontent.com/aida/AP1WRLsDWV00WRL33tuhAG3BPA8GTPcBz-pfzYJ5QGz2_CFnkvCSprf16WTZORxqYJd3VFMaSLF81Wdm-S9-UEVYwRS6IZjDh4VV8WwGm6i7fTQgU4oSmP9IGxRBZnXvSg-lgNzx7dHLh96NV6al1sI8sdEOoVx6IZCUOcKyTMikgpuW736a8c-W4OfY41ayLpgc1yRxJm4ux29KF3X6Vl4DjzUrBJhQVrk6zwaVUJrs9k2kRxWzoaJlEeyRARs',
+  segment_img_oleo_gas: 'https://lh3.googleusercontent.com/aida/AP1WRLtMAi3za4oatqWzMuvla-WvZQlt9FguAx22h8nx9U6lR8p142s5QcL4EPPE0ligkQbqZ0q-ZYW-hqDRV2uJVGv0NMmhiEuyzJbKk7sUfZpHHA4_sz8P-TyC7QparCuJFeAeovwFTiSEpumRpFGJg-y1rdhCKN1ensV_n46sSPNrBJMqn7MqzXsxs1FqEOTTk7iB0mQ42_IaiLxVLi8QHfDnmf1qJl39Y9bqn9spftMGhs_woAvKg85Vgk0',
+  segment_img_sucroalcooleiro: 'https://lh3.googleusercontent.com/aida/AP1WRLtx-24uZLAzxnTShKPl8Wv12JS85bEMJBe8sqHO25f6hSfCDYWD7dOd3t0TS1qSXQfoEmpRejEnBgmszPULohKQhnktzaTJxNZlqCZtWMl_i2qHHdWBFpI5OD1WyuR3zn6bDrno3XOkEm5_52rNlHCVRUzbbVXx-6T9Fq-atHYsA-bfuEzXbOwh0ibv0HAdlvONto1p0-R41aQY_ZMMGGD6KANY4mawEiSd7OT1CHuJeCgTozkzRuxGGg',
 }
 
 const settings = reactive<SiteSettings>({ ...defaultSettings })
+const uploadingSegment = ref<string | null>(null)
+const segmentFileInputs = ref<{ [key: string]: HTMLInputElement | null }>({})
+
+const triggerSegmentUpload = (key: string) => {
+  segmentFileInputs.value[key]?.click()
+}
+
+const handleSegmentUpload = async (key: 'criogenia' | 'oleo_gas' | 'sucroalcooleiro', e: Event) => {
+  const target = e.target as HTMLInputElement
+  const file = target.files?.[0]
+  if (!file) return
+
+  uploadingSegment.value = key
+  try {
+    const formData = new FormData()
+    formData.append('file', file)
+
+    const res = await fetch('/api/upload-r2', {
+      method: 'POST',
+      body: formData
+    })
+    const data = await res.json()
+
+    if (data.url) {
+      if (key === 'criogenia') settings.segment_img_criogenia = data.url
+      else if (key === 'oleo_gas') settings.segment_img_oleo_gas = data.url
+      else if (key === 'sucroalcooleiro') settings.segment_img_sucroalcooleiro = data.url
+
+      props.triggerToast?.('Imagem do segmento enviada com sucesso!', 'success')
+    } else {
+      throw new Error(data.error || 'Erro ao enviar imagem')
+    }
+  } catch (err: any) {
+    console.error('Erro no upload de imagem do segmento:', err)
+    props.triggerToast?.(`Erro no upload: ${err.message || err}`, 'error')
+  } finally {
+    uploadingSegment.value = null
+    if (target) target.value = ''
+  }
+}
 
 function getCardBgStyle(hex: string, opacityPercent: number) {
   const alpha = ((opacityPercent ?? 85) / 100)

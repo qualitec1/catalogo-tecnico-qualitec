@@ -255,163 +255,126 @@
       <div class="bg-white h-3 w-full border-b border-gray-200"></div>
 
       <!-- Principais Segmentos -->
-      <section id="segmentos" class="py-16 md:py-20 px-4 md:px-10 max-w-[1280px] mx-auto bg-white">
-        <div class="text-center mb-12">
-          <h2 class="font-['Rubik',sans-serif] text-2xl md:text-3xl text-[#424751] font-medium mb-3">Principais segmentos</h2>
-          <p class="text-gray-500 text-sm max-w-xl mx-auto">Atendemos setores industriais exigentes com soluções certificadas de altíssima confiabilidade.</p>
-        </div>
-        
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-          <!-- Criogenia & Gases industriais -->
-          <NuxtLink to="/catalogo?segment=CRIOGENIA" class="group flex flex-col border border-gray-100 rounded overflow-hidden shadow-xs hover:shadow-md transition-all">
-            <div class="h-48 overflow-hidden bg-gray-100">
-              <img 
-                alt="Criogenia & Gases industriais" 
-                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" 
-                src="https://lh3.googleusercontent.com/aida/AP1WRLsDWV00WRL33tuhAG3BPA8GTPcBz-pfzYJ5QGz2_CFnkvCSprf16WTZORxqYJd3VFMaSLF81Wdm-S9-UEVYwRS6IZjDh4VV8WwGm6i7fTQgU4oSmP9IGxRBZnXvSg-lgNzx7dHLh96NV6al1sI8sdEOoVx6IZCUOcKyTMikgpuW736a8c-W4OfY41ayLpgc1yRxJm4ux29KF3X6Vl4DjzUrBJhQVrk6zwaVUJrs9k2kRxWzoaJlEeyRARs"
-              />
-            </div>
-            <div class="bg-[#f1edec] p-4 text-center group-hover:bg-[#004A96] group-hover:text-white transition-colors">
-              <h3 class="font-semibold text-[#424751] group-hover:text-white">Criogênia & Gases industriais</h3>
-            </div>
-          </NuxtLink>
+      <section id="segmentos" style="background:#fff;padding:20px 0 24px;">
+        <div style="max-width:832px;margin:0 auto;padding:0 16px;">
+          <h2 style="font-size:24px;color:#555555;font-weight:400;margin:0 0 10px 0;">Principais segmentos</h2>
+          <div style="display:flex;gap:13px;">
 
-          <!-- Óleo & Gás -->
-          <NuxtLink to="/catalogo?segment=OLEO_GAS" class="group flex flex-col border border-gray-100 rounded overflow-hidden shadow-xs hover:shadow-md transition-all">
-            <div class="h-48 overflow-hidden bg-gray-100">
-              <img 
-                alt="Óleo & Gás" 
-                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" 
-                src="https://lh3.googleusercontent.com/aida/AP1WRLtMAi3za4oatqWzMuvla-WvZQlt9FguAx22h8nx9U6lR8p142s5QcL4EPPE0ligkQbqZ0q-ZYW-hqDRV2uJVGv0NMmhiEuyzJbKk7sUfZpHHA4_sz8P-TyC7QparCuJFeAeovwFTiSEpumRpFGJg-y1rdhCKN1ensV_n46sSPNrBJMqn7MqzXsxs1FqEOTTk7iB0mQ42_IaiLxVLi8QHfDnmf1qJl39Y9bqn9spftMGhs_woAvKg85Vgk0"
-              />
-            </div>
-            <div class="bg-[#f1edec] p-4 text-center group-hover:bg-[#004A96] group-hover:text-white transition-colors">
-              <h3 class="font-semibold text-[#424751] group-hover:text-white">Óleo & Gás</h3>
-            </div>
-          </NuxtLink>
+            <!-- Criogenia & Gases industriais -->
+            <a href="/catalogo?segment=CRIOGENIA" style="flex:1;min-width:0;text-decoration:none;display:flex;flex-direction:column;" class="seg-card">
+              <div style="width:100%;height:110px;overflow:hidden;background:#d0d0d0;">
+                <img
+                  alt="Criogenia & Gases industriais"
+                  style="width:100%;height:100%;object-fit:cover;display:block;"
+                  :src="formatNewsImageUrl(siteSettings.segment_img_criogenia)"
+                  @error="handleImgError"
+                />
+              </div>
+              <div style="height:55px;background:#e8e3e2;display:flex;align-items:center;justify-content:center;padding:0 8px;" class="seg-label">
+                <span style="font-size:13px;color:#444;font-weight:400;text-align:center;">Criogênia &amp; Gases industriais</span>
+              </div>
+            </a>
 
-          <!-- Açúcar e Álcool -->
-          <NuxtLink to="/catalogo?segment=SUCROALCOOLEIRO" class="group flex flex-col border border-gray-100 rounded overflow-hidden shadow-xs hover:shadow-md transition-all">
-            <div class="h-48 overflow-hidden bg-gray-100">
-              <img 
-                alt="Açúcar e Álcool" 
-                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" 
-                src="https://lh3.googleusercontent.com/aida/AP1WRLtx-24uZLAzxnTShKPl8Wv12JS85bEMJBe8sqHO25f6hSfCDYWD7dOd3t0TS1qSXQfoEmpRejEnBgmszPULohKQhnktzaTJxNZlqCZtWMl_i2qHHdWBFpI5OD1WyuR3zn6bDrno3XOkEm5_52rNlHCVRUzbbVXx-6T9Fq-atHYsA-bfuEzXbOwh0ibv0HAdlvONto1p0-R41aQY_ZMMGGD6KANY4mawEiSd7OT1CHuJeCgTozkzRuxGGg"
-              />
-            </div>
-            <div class="bg-[#f1edec] p-4 text-center group-hover:bg-[#004A96] group-hover:text-white transition-colors">
-              <h3 class="font-semibold text-[#424751] group-hover:text-white">Açúcar e álcool</h3>
-            </div>
-          </NuxtLink>
+            <!-- Óleo & Gás -->
+            <a href="/catalogo?segment=OLEO_GAS" style="flex:1;min-width:0;text-decoration:none;display:flex;flex-direction:column;" class="seg-card">
+              <div style="width:100%;height:110px;overflow:hidden;background:#d0d0d0;">
+                <img
+                  alt="Óleo & Gás"
+                  style="width:100%;height:100%;object-fit:cover;display:block;"
+                  :src="formatNewsImageUrl(siteSettings.segment_img_oleo_gas)"
+                  @error="handleImgError"
+                />
+              </div>
+              <div style="height:55px;background:#e8e3e2;display:flex;align-items:center;justify-content:center;padding:0 8px;" class="seg-label">
+                <span style="font-size:13px;color:#444;font-weight:400;text-align:center;">Óleo &amp; Gás</span>
+              </div>
+            </a>
+
+            <!-- Açúcar e Álcool -->
+            <a href="/catalogo?segment=SUCROALCOOLEIRO" style="flex:1;min-width:0;text-decoration:none;display:flex;flex-direction:column;" class="seg-card">
+              <div style="width:100%;height:110px;overflow:hidden;background:#d0d0d0;">
+                <img
+                  alt="Açúcar e Álcool"
+                  style="width:100%;height:100%;object-fit:cover;display:block;"
+                  :src="formatNewsImageUrl(siteSettings.segment_img_sucroalcooleiro)"
+                  @error="handleImgError"
+                />
+              </div>
+              <div style="height:55px;background:#e8e3e2;display:flex;align-items:center;justify-content:center;padding:0 8px;" class="seg-label">
+                <span style="font-size:13px;color:#444;font-weight:400;text-align:center;">Açúcar e álcool</span>
+              </div>
+            </a>
+
+          </div>
         </div>
       </section>
 
       <!-- Novidades / Produtos em Destaque -->
-      <section id="novidades" class="py-14 md:py-16 px-4 md:px-10 bg-white">
-        <div class="max-w-[1100px] mx-auto">
-          <h2 class="text-2xl md:text-3xl text-[#555555] font-normal mb-8">{{ mergedTranslations['home.news_title'] || 'Novidades' }}</h2>
+      <section id="novidades" style="background:#f0f0f0;padding:36px 0 44px;">
+        <div style="max-width:832px;margin:0 auto;padding:0 16px;">
+          <h2 style="font-size:24px;color:#555555;font-weight:400;margin:0 0 16px 0;">{{ mergedTranslations['home.news_title'] || 'Novidades' }}</h2>
 
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+          <div style="display:flex;gap:13px;">
             <template v-for="card in newsCards" :key="card.id">
-              <!-- PDF cards open in new tab, others use NuxtLink -->
               <a
                 v-if="card.link_type === 'pdf'"
                 :href="getCardHref(card)"
                 target="_blank"
                 rel="noopener"
-                class="flex flex-col group cursor-pointer no-underline"
+                style="flex:1;min-width:0;height:165px;position:relative;overflow:hidden;background:#d9d9d9;display:block;text-decoration:none;cursor:pointer;"
+                class="news-card-link novidade-card"
               >
-                <div class="w-full bg-[#d9d9d9] h-48 md:h-52 flex items-center justify-center p-4 overflow-hidden">
-                  <img
-                    :alt="getCardTitle(card)"
-                    class="object-contain max-h-full max-w-full transition-transform duration-200 group-hover:scale-105"
-                    :src="formatNewsImageUrl(card.image_url)"
-                    @error="handleImgError"
-                  />
+                <img
+                  :alt="getCardTitle(card)"
+                  style="width:100%;height:100%;object-fit:cover;object-position:center;display:block;"
+                  :src="formatNewsImageUrl(card.image_url)"
+                  @error="handleImgError"
+                />
+                <div class="news-card-caption novidade-card__legenda">
+                  <span>{{ getCardTitle(card) }}</span>
                 </div>
-                <h3 class="text-center text-[#555555] text-sm md:text-base font-normal mt-3 leading-snug group-hover:text-[#004A96] transition-colors">
-                  <span class="news-card-title">{{ getCardTitle(card) }}</span>
-                </h3>
-                <p v-if="card.show_link_button && getCardLinkLabel(card)" class="text-center text-xs text-[#004A96] mt-1.5 underline">
-                  {{ getCardLinkLabel(card) }} →
-                </p>
               </a>
 
-              <NuxtLink
+              <a
                 v-else
-                :to="getCardHref(card)"
-                class="flex flex-col group cursor-pointer no-underline"
+                :href="getCardHref(card)"
+                style="flex:1;min-width:0;height:165px;position:relative;overflow:hidden;background:#d9d9d9;display:block;text-decoration:none;cursor:pointer;"
+                class="news-card-link novidade-card"
               >
-                <div class="w-full bg-[#d9d9d9] h-48 md:h-52 flex items-center justify-center p-4 overflow-hidden">
-                  <img
-                    :alt="getCardTitle(card)"
-                    class="object-contain max-h-full max-w-full transition-transform duration-200 group-hover:scale-105"
-                    :src="formatNewsImageUrl(card.image_url)"
-                    @error="handleImgError"
-                  />
+                <img
+                  :alt="getCardTitle(card)"
+                  style="width:100%;height:100%;object-fit:cover;object-position:center;display:block;"
+                  :src="formatNewsImageUrl(card.image_url)"
+                  @error="handleImgError"
+                />
+                <div class="news-card-caption novidade-card__legenda">
+                  <span>{{ getCardTitle(card) }}</span>
                 </div>
-                <h3 class="text-center text-[#555555] text-sm md:text-base font-normal mt-3 leading-snug group-hover:text-[#004A96] transition-colors">
-                  <span class="news-card-title">{{ getCardTitle(card) }}</span>
-                </h3>
-                <p v-if="card.show_link_button && getCardLinkLabel(card)" class="text-center text-xs text-[#004A96] mt-1.5 underline">
-                  {{ getCardLinkLabel(card) }} →
-                </p>
-              </NuxtLink>
+              </a>
             </template>
           </div>
         </div>
       </section>
 
-      <!-- Sobre a Qualitec -->
-      <section id="sobre" class="py-16 md:py-20 bg-white px-4 md:px-10">
-        <div class="max-w-[1100px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center mb-16">
-          <div>
-            <h2 class="font-['Rubik',sans-serif] text-2xl md:text-3xl text-[#424751] font-medium mb-4">Sobre a Qualitec</h2>
-            <p class="text-[#424751] text-base leading-relaxed mb-4">
-              Há anos no mercado de instrumentação e controle industrial, a Qualitec oferece soluções completas e homologadas para os setores mais exigentes do mercado.
-            </p>
-            <p class="text-[#424751] text-base leading-relaxed">
-              Somos representantes exclusivos no Brasil das renomadas marcas globais <strong>HEROSE GmbH</strong>, <strong>Generant Inc</strong> e <strong>DataOnline LLC</strong>.
-            </p>
-          </div>
-          <div class="bg-[#f7f3f2] p-8 rounded border border-gray-200 flex flex-col gap-4">
-            <h3 class="font-['Rubik',sans-serif] text-xl text-[#004A96] font-medium">Excelência e Representação Exclusiva</h3>
-            <ul class="space-y-2 text-[#424751] text-sm">
-              <li class="flex items-center gap-2">
-                <span class="material-symbols-outlined text-[#65AC1E]">check_circle</span>
-                Válvulas criogênicas e de segurança HEROSE
-              </li>
-              <li class="flex items-center gap-2">
-                <span class="material-symbols-outlined text-[#65AC1E]">check_circle</span>
-                Reguladores e válvulas industriais Generant
-              </li>
-              <li class="flex items-center gap-2">
-                <span class="material-symbols-outlined text-[#65AC1E]">check_circle</span>
-                Sistemas de telemetria e monitoramento DataOnline
-              </li>
-            </ul>
-          </div>
-        </div>
-
-        <!-- Newsletter (Estilo Foto 1) -->
-        <div class="max-w-[1100px] mx-auto pt-10 border-t border-gray-200">
-          <h2 class="text-base md:text-lg text-[#555555] font-normal mb-4">
+      <!-- Newsletter -->
+      <section style="background:#ffffff;padding:30px 0 40px;">
+        <div style="max-width:832px;margin:0 auto;padding:0 16px;">
+          <h2 style="font-size:15px;color:#333;font-weight:400;margin:0 0 4px 0;">
             {{ mergedTranslations['home.newsletter_title'] || 'Cadastre-se para receber nossa newsletter.' }}
           </h2>
-          <form @submit.prevent="handleNewsletterSubmit" class="flex flex-col">
-            <label class="text-xs text-gray-500 mb-1.5 block">
+          <form @submit.prevent="handleNewsletterSubmit" style="margin-top:10px;">
+            <label style="font-size:12px;color:#888;display:block;margin-bottom:5px;">
               {{ mergedTranslations['home.newsletter_label'] || 'Digite seu email aqui *' }}
             </label>
-            <div class="flex flex-col sm:flex-row max-w-xl">
-              <input 
+            <div style="display:flex;width:100%;">
+              <input
                 v-model="newsletterEmail"
-                class="w-full sm:w-[380px] px-3 py-2 border border-gray-400 bg-white text-sm text-gray-800 focus:outline-none placeholder-gray-400" 
-                required 
-                placeholder="seuemail@empresa.com.br"
+                style="flex:1;height:36px;padding:0 10px;border:1px solid #999;border-right:none;background:white;font-size:14px;color:#333;outline:none;box-sizing:border-box;"
+                required
                 type="email"
               />
-              <button 
-                class="bg-[#0052a5] hover:bg-[#003d7c] text-white px-8 py-2 text-sm font-normal transition-colors border-0 shrink-0 cursor-pointer mt-2 sm:mt-0" 
+              <button
+                style="width:207px;height:36px;background:#0052a5;color:white;font-size:14px;font-weight:400;border:0;cursor:pointer;white-space:nowrap;flex-shrink:0;box-sizing:border-box;"
                 type="submit"
               >
                 {{ newsletterSubmitted ? 'Cadastrado!' : (mergedTranslations['home.newsletter_button'] || 'Inscrever') }}
@@ -420,27 +383,30 @@
           </form>
         </div>
       </section>
+
+      <!-- Sobre a Qualitec (hidden on home, kept as anchor target) -->
+      <div id="sobre" style="display:none;"></div>
     </main>
 
     <!-- Footer -->
-    <footer id="contato" class="bg-[#f7f3f2] py-16 px-4 md:px-10 relative border-t border-[#c2c6d3]">
-      <div class="max-w-[1280px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-20">
+    <footer id="contato" style="background:#eeebe9;border-top:1px solid #c2c6d3;padding:28px 0 28px;">
+      <div style="max-width:832px;margin:0 auto;padding:0 16px;display:flex;justify-content:space-between;align-items:flex-start;">
         <!-- Left Column -->
-        <div class="flex flex-col gap-2 text-[#424751]">
-          <p class="font-bold text-[#1c1b1b]">Qualitec C S I M Ltda</p>
-          <p>Rua Fazenda Monte Alegre, 367</p>
-          <p>05160-060 - São Paulo - SP</p>
-          <p>Tel: +55 11 3908 7100</p>
-          <p class="font-semibold text-[#004A96]">vendas@qualitecinstrumentos.com.br</p>
-          <p class="mt-4 text-xs text-gray-500">Todos os direitos reservados - 2024</p>
+        <div style="display:flex;flex-direction:column;gap:3px;color:#424751;font-size:12px;line-height:1.5;">
+          <p style="font-weight:700;color:#1c1b1b;margin:0;">Qualitec C S I M Ltda</p>
+          <p style="margin:0;">Rua Fazenda Monte Alegre, 367</p>
+          <p style="margin:0;">05160-060 - São Paulo - SP</p>
+          <p style="margin:0;">Tel: +55 11 3908 7100</p>
+          <p style="margin:0;color:#004A96;font-weight:600;">vendas@qualitecinstrumentos.com.br</p>
+          <p style="margin:16px 0 0;font-size:11px;color:#888;">Todos os direitos reservados - 2024</p>
         </div>
 
         <!-- Right Column -->
-        <div class="flex flex-col gap-2 text-[#424751] md:text-right">
-          <p class="font-bold text-[#1c1b1b]">Representante Exclusivo</p>
-          <p>HEROSE GmbH</p>
-          <p>Generant Inc</p>
-          <p>DataOnline LLC</p>
+        <div style="display:flex;flex-direction:column;gap:3px;color:#424751;font-size:12px;line-height:1.5;text-align:right;">
+          <p style="font-weight:700;color:#1c1b1b;margin:0;">Representante Exclusivo</p>
+          <p style="margin:0;">HEROSE GmbH</p>
+          <p style="margin:0;">Generant Inc</p>
+          <p style="margin:0;">DataOnline LLC</p>
         </div>
       </div>
 
@@ -712,25 +678,56 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-/* Animated underline for Novidades card titles */
-.news-card-title {
+/* Segment cards hover effect */
+.seg-card:hover .seg-label {
+  background-color: #004A96;
+}
+.seg-card:hover .seg-label span {
+  color: #ffffff;
+}
+
+/* Novidades cards */
+.novidade-card {
   position: relative;
-  display: inline-block;
-  padding-bottom: 2px;
+  overflow: hidden;
 }
 
-.news-card-title::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 0;
-  height: 1px;
-  background-color: #665c48;
-  transition: width 0.3s ease;
-}
-
-.group:hover .news-card-title::after {
+.novidade-card img {
+  display: block;
   width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.novidade-card__legenda {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(1px);
+  text-align: center;
+  padding: 0 8px;
+  box-sizing: border-box;
+  transition: background-color 0.2s ease;
+}
+
+.novidade-card__legenda span {
+  color: #333333;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.2;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  transition: color 0.2s ease;
+}
+
+.news-card-link:hover .novidade-card__legenda span {
+  color: #004A96;
 }
 </style>

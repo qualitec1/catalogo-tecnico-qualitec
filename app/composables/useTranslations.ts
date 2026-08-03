@@ -308,6 +308,7 @@ export default function useTranslations() {
     const lang = currentLang.value
     return {
       home: m['nav.home'] || translations[lang]?.home,
+      catalog: m['nav.catalog'] || (lang === 'en' ? 'Catalog' : 'Catálogo'),
       about: m['nav.about'] || translations[lang]?.about,
       contact: m['nav.contact'] || translations[lang]?.contact,
       searchPlaceholder: m['catalog.search_placeholder'] || translations[lang]?.searchPlaceholder,

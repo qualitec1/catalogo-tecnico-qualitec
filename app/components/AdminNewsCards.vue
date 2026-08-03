@@ -34,8 +34,8 @@
         </button>
       </div>
 
-      <!-- Card Editor -->
-      <div v-for="n in 3" :key="n" v-show="activeCard === n" class="space-y-6">
+      <!-- Card Editor — single block, uses activeCard directly to avoid any v-for scope ambiguity -->
+      <div class="space-y-6">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
           <!-- Left: Image & Title -->
@@ -44,31 +44,37 @@
             <div class="space-y-3 bg-slate-50 p-4 rounded-lg border border-slate-200">
               <h3 class="text-xs font-bold text-slate-700 uppercase tracking-wide flex items-center gap-1.5">
                 <span class="material-symbols-outlined text-sm">image</span>
-                Imagem do Card
+                Imagem do Card {{ activeCard }}
               </h3>
               <div class="flex gap-2">
                 <input
-                  v-model="cards[n-1].image_url"
+                  v-model="cards[activeCard - 1].image_url"
                   type="text"
                   placeholder="https://... ou upload abaixo"
                   class="flex-1 border border-gray-300 px-3 py-2 text-xs rounded bg-white text-slate-800 focus:ring-1 focus:ring-emerald-500 focus:outline-none"
                 />
                 <button
-                  @click="triggerImageUpload(n)"
-                  :disabled="uploadingImage === n"
+                  @click="triggerImageUpload(activeCard)"
+                  :disabled="uploadingImage === activeCard"
                   class="bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white px-3 py-2 rounded text-xs font-bold uppercase transition-colors flex items-center gap-1 border-0 cursor-pointer shrink-0"
                 >
-                  <span class="material-symbols-outlined text-sm">{{ uploadingImage === n ? 'sync' : 'upload' }}</span>
-                  {{ uploadingImage === n ? '...' : 'Upload' }}
+                  <span class="material-symbols-outlined text-sm">{{ uploadingImage === activeCard ? 'sync' : 'upload' }}</span>
+                  {{ uploadingImage === activeCard ? '...' : 'Upload' }}
                 </button>
-                <input :ref="(el) => { imageFileInputs[n-1] = el as HTMLInputElement }" type="file" accept="image/*" class="hidden" @change="handleImageUpload($event, n)" />
+                <input
+                  :ref="(el) => { imageFileInputs[activeCard - 1] = el as HTMLInputElement }"
+                  type="file"
+                  accept="image/*"
+                  class="hidden"
+                  @change="handleImageUpload($event, activeCard)"
+                />
               </div>
 
               <!-- Preview -->
-              <div v-if="cards[n-1].image_url" class="w-full h-36 bg-[#e0e0e0] flex items-center justify-center overflow-hidden rounded border border-gray-200">
+              <div v-if="cards[activeCard - 1].image_url" class="w-full h-36 bg-[#e0e0e0] flex items-center justify-center overflow-hidden rounded border border-gray-200">
                 <img
-                  :src="cards[n-1].image_url"
-                  :alt="`Card ${n}`"
+                  :src="cards[activeCard - 1].image_url"
+                  :alt="`Card ${activeCard}`"
                   class="max-h-full max-w-full object-contain"
                   @error="handleImgError($event)"
                 />
@@ -85,20 +91,20 @@
             <div class="space-y-3 bg-slate-50 p-4 rounded-lg border border-slate-200">
               <h3 class="text-xs font-bold text-slate-700 uppercase tracking-wide flex items-center gap-1.5">
                 <span class="material-symbols-outlined text-sm">title</span>
-                Título do Card
+                Título do Card {{ activeCard }}
               </h3>
               <div class="space-y-2">
                 <div class="flex items-center gap-2">
                   <span class="text-base shrink-0">🇧🇷</span>
-                  <input v-model="cards[n-1].title_pt" type="text" placeholder="Título em Português" class="flex-1 border border-gray-300 px-3 py-1.5 text-xs rounded bg-white focus:ring-1 focus:ring-emerald-500 focus:outline-none" />
+                  <input v-model="cards[activeCard - 1].title_pt" type="text" placeholder="Título em Português" class="flex-1 border border-gray-300 px-3 py-1.5 text-xs rounded bg-white focus:ring-1 focus:ring-emerald-500 focus:outline-none" />
                 </div>
                 <div class="flex items-center gap-2">
                   <span class="text-base shrink-0">🇬🇧</span>
-                  <input v-model="cards[n-1].title_en" type="text" placeholder="Title in English" class="flex-1 border border-gray-300 px-3 py-1.5 text-xs rounded bg-white focus:ring-1 focus:ring-emerald-500 focus:outline-none" />
+                  <input v-model="cards[activeCard - 1].title_en" type="text" placeholder="Title in English" class="flex-1 border border-gray-300 px-3 py-1.5 text-xs rounded bg-white focus:ring-1 focus:ring-emerald-500 focus:outline-none" />
                 </div>
                 <div class="flex items-center gap-2">
                   <span class="text-base shrink-0">🇪🇸</span>
-                  <input v-model="cards[n-1].title_es" type="text" placeholder="Título en Español" class="flex-1 border border-gray-300 px-3 py-1.5 text-xs rounded bg-white focus:ring-1 focus:ring-emerald-500 focus:outline-none" />
+                  <input v-model="cards[activeCard - 1].title_es" type="text" placeholder="Título en Español" class="flex-1 border border-gray-300 px-3 py-1.5 text-xs rounded bg-white focus:ring-1 focus:ring-emerald-500 focus:outline-none" />
                 </div>
               </div>
             </div>
@@ -116,7 +122,7 @@
               <div class="space-y-1">
                 <label class="text-[10px] text-gray-500 font-bold uppercase">Tipo de link</label>
                 <select
-                  v-model="cards[n-1].link_type"
+                  v-model="cards[activeCard - 1].link_type"
                   class="w-full border border-gray-300 px-3 py-2 text-xs rounded bg-white text-slate-800 focus:ring-1 focus:ring-emerald-500 focus:outline-none"
                 >
                   <option value="category">📂 Categoria de Produto</option>
@@ -127,46 +133,52 @@
               </div>
 
               <!-- Category selector -->
-              <div v-if="cards[n-1].link_type === 'category'" class="space-y-1">
+              <div v-if="cards[activeCard - 1].link_type === 'category'" class="space-y-1">
                 <label class="text-[10px] text-gray-500 font-bold uppercase">Categoria</label>
                 <select
-                  v-model="cards[n-1].link_value"
+                  v-model="cards[activeCard - 1].link_value"
                   class="w-full border border-gray-300 px-3 py-2 text-xs rounded bg-white text-slate-800 focus:ring-1 focus:ring-emerald-500 focus:outline-none"
                 >
                   <option value="">-- Selecione uma categoria --</option>
                   <option v-for="cat in availableCategories" :key="cat" :value="cat">{{ cat }}</option>
                 </select>
-                <p class="text-[10px] text-gray-400 mt-1">→ Leva para <code class="bg-gray-100 px-1">/catalogo?segment={{ cards[n-1].link_value || '...' }}</code></p>
+                <p class="text-[10px] text-gray-400 mt-1">→ Leva para <code class="bg-gray-100 px-1">/catalogo?segment={{ cards[activeCard - 1].link_value || '...' }}</code></p>
               </div>
 
               <!-- PDF URL -->
-              <div v-else-if="cards[n-1].link_type === 'pdf'" class="space-y-1">
+              <div v-else-if="cards[activeCard - 1].link_type === 'pdf'" class="space-y-1">
                 <label class="text-[10px] text-gray-500 font-bold uppercase">URL do PDF</label>
                 <div class="flex gap-2">
                   <input
-                    v-model="cards[n-1].link_value"
+                    v-model="cards[activeCard - 1].link_value"
                     type="text"
                     placeholder="https://... URL do PDF"
                     class="flex-1 border border-gray-300 px-3 py-2 text-xs rounded bg-white focus:ring-1 focus:ring-emerald-500 focus:outline-none"
                   />
                   <button
-                    @click="triggerPdfUpload(n)"
-                    :disabled="uploadingPdf === n"
+                    @click="triggerPdfUpload(activeCard)"
+                    :disabled="uploadingPdf === activeCard"
                     class="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white px-3 py-2 rounded text-xs font-bold uppercase transition-colors flex items-center gap-1 border-0 cursor-pointer shrink-0"
                   >
-                    <span class="material-symbols-outlined text-sm">{{ uploadingPdf === n ? 'sync' : 'upload' }}</span>
-                    {{ uploadingPdf === n ? '...' : 'PDF' }}
+                    <span class="material-symbols-outlined text-sm">{{ uploadingPdf === activeCard ? 'sync' : 'upload' }}</span>
+                    {{ uploadingPdf === activeCard ? '...' : 'PDF' }}
                   </button>
-                  <input :ref="(el) => { pdfFileInputs[n-1] = el as HTMLInputElement }" type="file" accept="application/pdf" class="hidden" @change="handlePdfUpload($event, n)" />
+                  <input
+                    :ref="(el) => { pdfFileInputs[activeCard - 1] = el as HTMLInputElement }"
+                    type="file"
+                    accept="application/pdf"
+                    class="hidden"
+                    @change="handlePdfUpload($event, activeCard)"
+                  />
                 </div>
                 <p class="text-[10px] text-gray-400 mt-1">→ Abre o PDF em nova aba ao clicar no card.</p>
               </div>
 
               <!-- Internal Page -->
-              <div v-else-if="cards[n-1].link_type === 'page'" class="space-y-1">
+              <div v-else-if="cards[activeCard - 1].link_type === 'page'" class="space-y-1">
                 <label class="text-[10px] text-gray-500 font-bold uppercase">Página</label>
                 <select
-                  v-model="cards[n-1].link_value"
+                  v-model="cards[activeCard - 1].link_value"
                   class="w-full border border-gray-300 px-3 py-2 text-xs rounded bg-white text-slate-800 focus:ring-1 focus:ring-emerald-500 focus:outline-none"
                 >
                   <option value="/">Home (Início)</option>
@@ -174,14 +186,14 @@
                   <option value="/nossa-empresa">Nossa Empresa</option>
                   <option value="/contato">Contato</option>
                 </select>
-                <p class="text-[10px] text-gray-400 mt-1">→ Navega para <code class="bg-gray-100 px-1">{{ cards[n-1].link_value }}</code></p>
+                <p class="text-[10px] text-gray-400 mt-1">→ Navega para <code class="bg-gray-100 px-1">{{ cards[activeCard - 1].link_value }}</code></p>
               </div>
 
               <!-- Custom URL -->
-              <div v-else-if="cards[n-1].link_type === 'url'" class="space-y-1">
+              <div v-else-if="cards[activeCard - 1].link_type === 'url'" class="space-y-1">
                 <label class="text-[10px] text-gray-500 font-bold uppercase">URL Personalizada</label>
                 <input
-                  v-model="cards[n-1].link_value"
+                  v-model="cards[activeCard - 1].link_value"
                   type="text"
                   placeholder="https://..."
                   class="w-full border border-gray-300 px-3 py-2 text-xs rounded bg-white focus:ring-1 focus:ring-emerald-500 focus:outline-none"
@@ -199,27 +211,27 @@
                 <label class="flex items-center gap-2 cursor-pointer select-none">
                   <span class="text-[10px] text-gray-500 font-semibold">Exibir</span>
                   <div class="relative">
-                    <input type="checkbox" v-model="cards[n-1].show_link_button" class="sr-only" />
-                    <div class="w-9 h-5 rounded-full transition-colors" :class="cards[n-1].show_link_button ? 'bg-emerald-500' : 'bg-gray-300'"></div>
-                    <div class="absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform" :class="cards[n-1].show_link_button ? 'translate-x-4' : 'translate-x-0'"></div>
+                    <input type="checkbox" v-model="cards[activeCard - 1].show_link_button" class="sr-only" />
+                    <div class="w-9 h-5 rounded-full transition-colors" :class="cards[activeCard - 1].show_link_button ? 'bg-emerald-500' : 'bg-gray-300'"></div>
+                    <div class="absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform" :class="cards[activeCard - 1].show_link_button ? 'translate-x-4' : 'translate-x-0'"></div>
                   </div>
                 </label>
               </div>
               <p class="text-[10px] text-gray-400">Ex: "Veja nossos produtos →" aparece abaixo do título do card.</p>
 
-              <template v-if="cards[n-1].show_link_button">
+              <template v-if="cards[activeCard - 1].show_link_button">
                 <div class="space-y-2 pt-1">
                   <div class="flex items-center gap-2">
                     <span class="text-base shrink-0">🇧🇷</span>
-                    <input v-model="cards[n-1].link_label_pt" type="text" placeholder="Veja nossos produtos" class="flex-1 border border-gray-300 px-3 py-1.5 text-xs rounded bg-white focus:ring-1 focus:ring-emerald-500 focus:outline-none" />
+                    <input v-model="cards[activeCard - 1].link_label_pt" type="text" placeholder="Veja nossos produtos" class="flex-1 border border-gray-300 px-3 py-1.5 text-xs rounded bg-white focus:ring-1 focus:ring-emerald-500 focus:outline-none" />
                   </div>
                   <div class="flex items-center gap-2">
                     <span class="text-base shrink-0">🇬🇧</span>
-                    <input v-model="cards[n-1].link_label_en" type="text" placeholder="See our products" class="flex-1 border border-gray-300 px-3 py-1.5 text-xs rounded bg-white focus:ring-1 focus:ring-emerald-500 focus:outline-none" />
+                    <input v-model="cards[activeCard - 1].link_label_en" type="text" placeholder="See our products" class="flex-1 border border-gray-300 px-3 py-1.5 text-xs rounded bg-white focus:ring-1 focus:ring-emerald-500 focus:outline-none" />
                   </div>
                   <div class="flex items-center gap-2">
                     <span class="text-base shrink-0">🇪🇸</span>
-                    <input v-model="cards[n-1].link_label_es" type="text" placeholder="Ver nuestros productos" class="flex-1 border border-gray-300 px-3 py-1.5 text-xs rounded bg-white focus:ring-1 focus:ring-emerald-500 focus:outline-none" />
+                    <input v-model="cards[activeCard - 1].link_label_es" type="text" placeholder="Ver nuestros productos" class="flex-1 border border-gray-300 px-3 py-1.5 text-xs rounded bg-white focus:ring-1 focus:ring-emerald-500 focus:outline-none" />
                   </div>
                 </div>
 
@@ -228,7 +240,7 @@
                   <p class="text-[10px] text-gray-400 mb-2 uppercase font-bold">Prévia</p>
                   <div class="flex items-center justify-center">
                     <span class="text-sm text-[#665c48] border-b border-[#665c48] pb-0.5 cursor-pointer">
-                      {{ cards[n-1].link_label_pt || 'Veja nossos produtos' }} →
+                      {{ cards[activeCard - 1].link_label_pt || 'Veja nossos produtos' }} →
                     </span>
                   </div>
                 </div>
@@ -240,12 +252,12 @@
         <!-- Save Button -->
         <div class="flex justify-end pt-2 border-t border-gray-100">
           <button
-            @click="saveCard(n)"
+            @click="saveCard(activeCard)"
             :disabled="saving"
             class="bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white px-6 py-2.5 rounded text-xs font-bold uppercase tracking-wider transition-colors flex items-center gap-2 border-0 cursor-pointer shadow-sm"
           >
             <span class="material-symbols-outlined text-base">{{ saving ? 'sync' : 'save' }}</span>
-            {{ saving ? 'Salvando...' : `Salvar Card ${n}` }}
+            {{ saving ? 'Salvando...' : `Salvar Card ${activeCard}` }}
           </button>
         </div>
       </div>
