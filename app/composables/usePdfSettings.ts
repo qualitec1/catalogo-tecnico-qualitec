@@ -103,11 +103,11 @@ export default function usePdfSettings() {
               cover_subtitle_underline: !!item.cover_subtitle_underline,
               cover_subtitle_color: item.cover_subtitle_color || '#ffffff',
               cover_subtitle_offset_x: item.cover_subtitle_offset_x || '0px',
-              cover_subtitle_offset_y: item.cover_subtitle_offset_y || '0px',
               logo_width: item.logo_width || '380px',
               logo_height: item.logo_height || '200px',
               logo_position_x: item.logo_position_x || '-60px',
               logo_position_y: item.logo_position_y || '-30px',
+              intro_image_url: item.intro_image_url || (item.layout_settings && (item.layout_settings.intro_image_url || item.layout_settings.introImageUrl)) || null,
             }
             console.log(`[usePdfSettings] Loaded settings for category '${catKey}':`, JSON.stringify({
               logo_width: mapping[catKey].logo_width,

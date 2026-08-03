@@ -252,16 +252,38 @@ export async function buildCatalogPdf(opts: any): Promise<any> {
     drawCoverPage(pdf, opts)
   }
 
-  // 2. Draw product pages
+  // 2. Draw product pages & intro covers
+  const renderedCategoryIntros = new Set<string>()
+
+  const checkAndDrawCategoryIntro = (categoryName: string) => {
+    const catUpper = (categoryName || opts.categoryName || '').toUpperCase().trim()
+    if (renderedCategoryIntros.has(catUpper)) return
+    renderedCategoryIntros.add(catUpper)
+
+    if (opts.imageCache) {
+      const introImg = opts.imageCache.get(`category_intro_${catUpper}`) || opts.imageCache.get('category_intro_GERAL')
+      console.log(`[pdfBuilder] checkAndDrawCategoryIntro('${catUpper}') => found introImg:`, !!introImg, 'imageCache keys:', Array.from(opts.imageCache.keys()).filter(k => k.startsWith('category_intro_')))
+      if (introImg) {
+        pdf.addPage('a4', bookletMode ? 'landscape' : 'portrait')
+        pdf.addImage(introImg.dataUrl, introImg.format || 'JPEG', 0, 0, physicalPageW, physicalPageH)
+      }
+    }
+  }
+
   if (bookletMode) {
     // Booklet mode: 2 A4 portrait pages side-by-side on A4 landscape
     const scale = 0.707
     
     for (let pi = 0; pi < opts.pages.length; pi += 2) {
+      const leftPage = opts.pages[pi]
+      if (leftPage && leftPage.length > 0) {
+        const leftCategory = leftPage[0]?.category || opts.categoryName
+        checkAndDrawCategoryIntro(leftCategory)
+      }
+
       pdf.addPage('a4', 'landscape')
 
       // Draw left page (pages[pi])
-      const leftPage = opts.pages[pi]
       if (leftPage && leftPage.length > 0) {
         const leftSettings = opts.getPageSettings(leftPage)
         const leftCategory = leftPage[0]?.category || opts.categoryName
@@ -328,10 +350,12 @@ export async function buildCatalogPdf(opts: any): Promise<any> {
       const page = opts.pages[pi]
       if (page.length === 0) continue
 
+      const category = page[0]?.category || opts.categoryName
+      checkAndDrawCategoryIntro(category)
+
       pdf.addPage('a4', 'portrait')
 
       const settings = opts.getPageSettings(page)
-      const category = page[0]?.category || opts.categoryName
       const color = opts.getBgColor(page[0]?.bgClass, category)
 
       const headerEndY = drawPageHeader(pdf, category, color, MARGIN_TOP + 4, logicalPageW, settings, opts.imageCache, 0, 1, pi + 1)

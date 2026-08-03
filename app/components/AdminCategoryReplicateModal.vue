@@ -250,8 +250,9 @@ const replicationGroups = [
     ]
   },
   {
-    name: 'Capa do PDF',
+    name: 'Capa & Contracapa do PDF',
     fields: [
+      { key: 'introImageUrl', label: 'Contracapa / Página de Apresentação (PDF)' },
       { key: 'coverTitleFontFamily', label: 'Fonte do Título da Capa' },
       { key: 'coverTitleFontSize', label: 'Tamanho Fonte Título Capa' },
       { key: 'coverTitleBold', label: 'Negrito no Título da Capa' },

@@ -142,6 +142,54 @@
       </div>
     </div>
 
+    <!-- Category Intro Cover / Contracapa (PDF) -->
+    <div class="space-y-2 pt-2 border-t border-gray-200">
+      <label class="block text-[10px] text-gray-500 font-bold uppercase tracking-wider flex items-center justify-between">
+        <span class="flex items-center gap-1">
+          <span class="material-symbols-outlined text-xs text-blue-600">auto_stories</span>
+          Contracapa / Apresentação (PDF)
+        </span>
+      </label>
+      <p class="text-[9px] text-gray-400 leading-tight">Página (imagem) inserida entre a capa principal e a 1ª página de produtos.</p>
+
+      <!-- Upload Box -->
+      <div @click="triggerIntroImageUpload" class="border-2 border-dashed border-gray-300 p-3 flex flex-col items-center justify-center cursor-pointer hover:bg-gray-50 transition-colors rounded h-24 relative bg-white" title="Clique para fazer upload da contracapa/apresentação">
+        <input type="file" ref="introFileInput" class="hidden" accept="image/*" @change="handleIntroImageChange" :disabled="uploadingIntro" />
+        <div v-if="uploadingIntro" class="flex flex-col items-center">
+          <span class="material-symbols-outlined animate-spin text-blue-600 mb-1">sync</span>
+          <span class="text-[10px] text-gray-400 font-bold uppercase">Enviando...</span>
+        </div>
+        <template v-else>
+          <img v-if="category.introImageUrl" :src="category.introImageUrl" class="max-h-14 max-w-full object-contain" @error="handleImageError" />
+          <span v-else class="material-symbols-outlined text-gray-400 text-2xl mb-1">auto_stories</span>
+          <span class="text-[10px] text-gray-500 font-semibold uppercase mt-1">{{ category.introImageUrl ? 'Trocar Contracapa' : 'Upload JPG/PNG' }}</span>
+        </template>
+      </div>
+
+      <!-- Link Input & Remove Button -->
+      <div class="space-y-1">
+        <label class="block text-[9px] text-gray-400 font-bold uppercase tracking-wider">Ou link da contracapa (URL)</label>
+        <div class="flex items-center gap-2">
+          <input 
+            v-model="category.introImageUrl" 
+            type="text" 
+            @input="category.hasChanges = true" 
+            placeholder="https://exemplo.com/contracapa.jpg" 
+            class="flex-1 border border-gray-300 rounded p-1.5 text-xs focus:ring-1 focus:ring-blue-600 focus:outline-none bg-white text-slate-800" 
+          />
+          <button 
+            v-if="category.introImageUrl" 
+            type="button" 
+            @click="category.introImageUrl = null; category.hasChanges = true" 
+            class="text-red-500 hover:text-red-700 text-xs font-semibold shrink-0" 
+            title="Remover Contracapa"
+          >
+            Remover
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- Static PDF Settings -->
     <div class="space-y-2 pt-2 border-t border-gray-200">
       <label class="block text-[10px] text-gray-500 font-bold uppercase tracking-wider">Catálogo PDF Pronto (Download Direto)</label>
@@ -237,9 +285,11 @@ const { getCoverImage, handleImageError } = useAdminCategorySettings()
 const fileInput = ref<HTMLInputElement | null>(null)
 const pdfFileInput = ref<HTMLInputElement | null>(null)
 const iconFileInput = ref<HTMLInputElement | null>(null)
+const introFileInput = ref<HTMLInputElement | null>(null)
 const uploadingImage = ref(false)
 const uploadingPdf = ref(false)
 const uploadingIcon = ref(false)
+const uploadingIntro = ref(false)
 
 const handleReplicateClick = () => {
   console.log('🔵 [AdminCategoryBaseSettings] REPLICAR LAYOUT PDF button clicked!', {
@@ -255,6 +305,42 @@ const triggerImageUpload = () => {
 
 const triggerIconUpload = () => {
   iconFileInput.value?.click()
+}
+
+const triggerIntroImageUpload = () => {
+  introFileInput.value?.click()
+}
+
+const handleIntroImageChange = async (event: Event) => {
+  const target = event.target as HTMLInputElement
+  const file = target.files?.[0]
+  if (!file) return
+
+  uploadingIntro.value = true
+  try {
+    const formData = new FormData()
+    formData.append('file', file)
+
+    const response = await fetch('/api/upload-r2', {
+      method: 'POST',
+      body: formData,
+    })
+
+    if (!response.ok) {
+      const errorData = await response.json()
+      throw new Error(errorData.statusMessage || 'Erro ao fazer upload da contracapa')
+    }
+
+    const data = await response.json()
+    props.category.introImageUrl = data.url
+    props.category.hasChanges = true
+  } catch (error: any) {
+    console.error('Error uploading category intro cover to R2:', error)
+    alert(`Erro no upload da contracapa: ${error.message || error}`)
+  } finally {
+    uploadingIntro.value = false
+    target.value = ''
+  }
 }
 
 const handleIconChange = async (event: Event) => {

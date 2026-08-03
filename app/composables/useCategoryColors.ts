@@ -8,6 +8,7 @@ export interface CategoryAsset {
   color_hex?: string | null
   pdfUrl?: string | null
   icon_url?: string | null
+  intro_image_url?: string | null
   badge_text?: string | null
   badge_icon_url?: string | null
 }
@@ -19,11 +20,15 @@ export default function useCategoryColors() {
   const fetchAssets = async () => {
     try {
       const { data } = await supabase.from('category_assets').select('*')
+      const { data: pdfSettingsData } = await supabase.from('pdf_settings').select('*')
       if (data) {
         const mapping: Record<string, CategoryAsset> = {}
         for (const item of data) {
           if (item.category) {
-            mapping[item.category.toUpperCase().trim()] = {
+            const catUpper = item.category.toUpperCase().trim()
+            const settings = pdfSettingsData?.find((s: any) => s.category?.toUpperCase().trim() === catUpper) || {}
+            const introFromSettings = settings.intro_image_url || (settings.layout_settings && (settings.layout_settings.intro_image_url || settings.layout_settings.introImageUrl)) || null
+            mapping[catUpper] = {
               id: item.id,
               category: item.category,
               cover_image_url: item.cover_image_url,
@@ -31,6 +36,7 @@ export default function useCategoryColors() {
               color_hex: item.color_hex,
               pdfUrl: item.pdf_url,
               icon_url: item.icon_url,
+              intro_image_url: item.intro_image_url || introFromSettings || null,
               badge_text: item.badge_text || null,
               badge_icon_url: item.badge_icon_url || null
             }

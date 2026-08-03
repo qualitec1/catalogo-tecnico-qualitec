@@ -167,6 +167,7 @@ export function useAdminCategories(triggerToast: (msg: string, type?: 'success' 
             colorHex: item.color_hex || '#376092',
             pdfUrl: item.pdf_url,
             iconUrl: item.icon_url || null,
+            introImageUrl: item.intro_image_url || settings.intro_image_url || (settings.layout_settings && settings.layout_settings.intro_image_url) || null,
             badgeText: item.badge_text || null,
             badgeIconUrl: item.badge_icon_url || null,
             
@@ -317,20 +318,29 @@ export function useAdminCategories(triggerToast: (msg: string, type?: 'success' 
         dbBlob = '\\x' + hex
       }
 
-      const assetPayload = {
+      const assetPayload: Record<string, any> = {
         category: newCat,
         cover_image_url: catAsset.coverImageUrl,
         cover_image_blob: dbBlob,
         color_hex: catAsset.colorHex,
         pdf_url: catAsset.pdfUrl,
         icon_url: catAsset.iconUrl || null,
+        intro_image_url: catAsset.introImageUrl || null,
         badge_text: catAsset.badgeText || null,
         badge_icon_url: catAsset.badgeIconUrl || null
       }
-      const { error: assetError } = await supabase
+      let assetError = (await supabase
         .from('category_assets')
         .update(assetPayload)
-        .eq('id', catAsset.id)
+        .eq('id', catAsset.id)).error
+
+      if (assetError && assetError.message && assetError.message.includes('intro_image_url')) {
+        delete assetPayload.intro_image_url
+        assetError = (await supabase
+          .from('category_assets')
+          .update(assetPayload)
+          .eq('id', catAsset.id)).error
+      }
         
       if (assetError) throw assetError
 
@@ -415,6 +425,7 @@ export function useAdminCategories(triggerToast: (msg: string, type?: 'success' 
         specs_bg_color: catAsset.specsBgColor,
         layout_settings: {
           ...(catAsset.layout_settings || {}),
+          intro_image_url: catAsset.introImageUrl || null,
           cover_title_pt: catAsset.coverTitlePt || null,
           cover_title_en: catAsset.coverTitleEn || null,
           cover_title_es: catAsset.coverTitleEs || catAsset.coverTitleDe || null,
@@ -767,7 +778,8 @@ export function useAdminCategories(triggerToast: (msg: string, type?: 'success' 
         specsOffsetY: 'specs_offset_y',
         specsWidth: 'specs_width',
         specsHeight: 'specs_height',
-        blockGap: 'block_gap'
+        blockGap: 'block_gap',
+        introImageUrl: 'intro_image_url'
       }
 
       const fieldsToCopy = fields && Array.isArray(fields) ? fields : [...Object.keys(fieldToDbCol), 'badgeText', 'badgeIconUrl']
@@ -834,12 +846,28 @@ export function useAdminCategories(triggerToast: (msg: string, type?: 'success' 
           catAssetPayload['badge_icon_url'] = sourceData['badgeIconUrl']
           hasCatAssetChanges = true
         }
+        if (fieldsToCopy.includes('introImageUrl') && (sourceData['introImageUrl'] !== undefined || source.introImageUrl !== undefined)) {
+          catAssetPayload['intro_image_url'] = sourceData['introImageUrl'] !== undefined ? sourceData['introImageUrl'] : source.introImageUrl
+          hasCatAssetChanges = true
+        }
 
         if (hasCatAssetChanges) {
-          const { error: assetError } = await supabase
+          let assetError = (await supabase
             .from('category_assets')
             .update(catAssetPayload)
-            .eq('id', targetCat.id)
+            .eq('id', targetCat.id)).error
+
+          if (assetError && assetError.message && assetError.message.includes('intro_image_url')) {
+            delete catAssetPayload.intro_image_url
+            if (Object.keys(catAssetPayload).length > 0) {
+              assetError = (await supabase
+                .from('category_assets')
+                .update(catAssetPayload)
+                .eq('id', targetCat.id)).error
+            } else {
+              assetError = null
+            }
+          }
           if (assetError) throw assetError
         }
 

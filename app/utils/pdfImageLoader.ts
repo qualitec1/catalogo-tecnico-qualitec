@@ -114,7 +114,7 @@ export async function preloadAllImages(
     }
   }
 
-  // Category-specific icons (preloaded for all unique categories in products)
+  // Category-specific icons & intro cover images (preloaded for all unique categories in products + GERAL)
   if (categoryAssets) {
     const uniqueCats = new Set<string>()
     for (const p of products) {
@@ -122,12 +122,33 @@ export async function preloadAllImages(
         uniqueCats.add(p.category.toUpperCase().trim())
       }
     }
+    uniqueCats.add('GERAL')
+
     for (const cat of uniqueCats) {
       const asset = categoryAssets[cat]
       if (asset) {
         const cIcon = asset.icon_url || asset.iconUrl
         if (cIcon && (cIcon.startsWith('http://') || cIcon.startsWith('https://'))) {
           tasks.push({ key: `category_icon_${cat}`, url: `/api/proxy-image?url=${encodeURIComponent(cIcon)}`, fallbackUrl: cIcon })
+        }
+
+        const cIntro = asset.intro_image_url || (asset as any).introImageUrl || (asset as any).contracapa_url || (asset as any).contracapaUrl
+        if (cIntro && typeof cIntro === 'string' && cIntro.trim()) {
+          const trimmedIntro = cIntro.trim()
+          if (trimmedIntro.startsWith('data:')) {
+            const img = new Image()
+            img.src = trimmedIntro
+            await new Promise<void>(r => { img.onload = () => r(); img.onerror = () => r() })
+            cache.set(`category_intro_${cat}`, {
+              dataUrl: trimmedIntro,
+              width: img.naturalWidth || 2100,
+              height: img.naturalHeight || 2970,
+              format: detectFormat(trimmedIntro),
+            })
+          } else {
+            const proxyUrl = (trimmedIntro.startsWith('/api/') || trimmedIntro.startsWith('/')) ? trimmedIntro : `/api/proxy-image?url=${encodeURIComponent(trimmedIntro)}`
+            tasks.push({ key: `category_intro_${cat}`, url: proxyUrl, fallbackUrl: trimmedIntro })
+          }
         }
       }
     }
@@ -260,7 +281,7 @@ export async function preloadAllImages(
   await Promise.allSettled(
     tasks.map(async (t) => {
       if (!t.url) return
-      const isDocPage = t.key === '__logo__' || t.key === '__cover__' || t.key === '__last_page__' || t.key.startsWith('category_icon_')
+      const isDocPage = t.key === '__logo__' || t.key === '__cover__' || t.key === '__last_page__' || t.key.startsWith('category_icon_') || t.key.startsWith('category_intro_')
       let img = await loadSingleImage(t.url, isDocPage, t.fallbackUrl)
       if (!img && t.fallbackUrl && t.fallbackUrl !== t.url) {
         img = await loadSingleImage(t.fallbackUrl, isDocPage)
