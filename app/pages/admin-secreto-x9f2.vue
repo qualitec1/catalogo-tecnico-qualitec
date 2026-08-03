@@ -99,6 +99,7 @@
           @delete-multiple="deleteMultipleProducts"
           @delete-all="deleteAllProducts"
           @csv-upload="handleCsvUpload"
+          @uppercase-all="convertTitlesAndCategoriesToUppercase"
           @scroll-to-form="scrollToForm"
         />
 
@@ -300,7 +301,8 @@ const {
   deleteProduct,
   deleteMultipleProducts,
   deleteAllProducts,
-  handleCsvUpload
+  handleCsvUpload,
+  convertTitlesAndCategoriesToUppercase
 } = useAdminProducts(triggerToast)
 
 // Watch tab switch to fetch categories

@@ -10,6 +10,10 @@
             <span class="material-symbols-outlined text-sm mr-1">upload_file</span>
             {{ importing ? 'Importando...' : 'Importar CSV' }}
           </button>
+          <button @click="$emit('uppercase-all')" :disabled="products.length === 0" class="flex items-center px-3 py-1.5 border border-slate-300 text-slate-700 hover:bg-slate-100 font-semibold text-xs rounded transition-colors disabled:opacity-50" title="Converter Títulos e Categorias de todos os equipamentos para LETRAS MAIÚSCULAS">
+            <span class="material-symbols-outlined text-sm mr-1">text_fields</span>
+            Maiúsculas (A-Z)
+          </button>
           <button 
             v-if="selectedIds.length > 0"
             @click="confirmDeleteSelected" 
@@ -136,6 +140,7 @@ const emit = defineEmits<{
   (e: 'delete-multiple', ids: number[]): void
   (e: 'delete-all'): void
   (e: 'csv-upload', file: File): void
+  (e: 'uppercase-all'): void
 }>()
 
 const selectedIds = ref<number[]>([])

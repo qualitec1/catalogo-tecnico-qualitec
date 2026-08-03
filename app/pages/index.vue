@@ -178,10 +178,13 @@
             :style="{ backgroundColor: siteSettings.hero_card_bg_color || '#74b934' }"
           >
             <h1 
-              class="font-['Rubik',sans-serif] text-2xl md:text-4xl font-medium leading-tight whitespace-pre-line"
-              :style="{ color: siteSettings.hero_card_text_color || '#ffffff' }"
+              class="font-['Rubik',sans-serif] text-2xl md:text-4xl font-medium leading-tight whitespace-pre-line transition-transform duration-150"
+              :style="{ 
+                color: siteSettings.hero_card_text_color || '#ffffff',
+                transform: `translateY(${siteSettings.hero_card_text_offset_y || 0}px)`
+              }"
             >
-              {{ siteSettings.hero_card_text || '“ O seu desafio diário, nós resolvemos todos os dias com segurança e confiabilidade “' }}
+              {{ activeHeroCardText }}
             </h1>
           </div>
         </div>
@@ -203,14 +206,20 @@
             :style="getCardBgStyle(siteSettings.hero_card_bg_color, siteSettings.hero_card_opacity)"
           >
             <h1 
-              class="font-['Rubik',sans-serif] text-xl md:text-3xl font-medium leading-tight whitespace-pre-line"
-              :style="{ color: siteSettings.hero_card_text_color || '#ffffff' }"
+              class="font-['Rubik',sans-serif] text-xl md:text-3xl font-medium leading-tight whitespace-pre-line transition-transform duration-150"
+              :style="{ 
+                color: siteSettings.hero_card_text_color || '#ffffff',
+                transform: `translateY(${siteSettings.hero_card_text_offset_y || 0}px)`
+              }"
             >
-              {{ siteSettings.hero_card_text || '“ O seu desafio diário, nós resolvemos todos os dias com segurança e confiabilidade “' }}
+              {{ activeHeroCardText }}
             </h1>
           </div>
         </div>
       </section>
+
+      <!-- Faixa fina branca -->
+      <div class="bg-white h-3 w-full"></div>
 
       <!-- Busca Rápida e Links Diretos -->
       <section class="bg-[#e9e9e9] py-12 md:py-16 px-4 md:px-10">
@@ -234,9 +243,9 @@
           <div class="flex flex-col gap-2.5">
             <span class="text-xs font-semibold text-[#666666] tracking-tight mb-1">{{ mergedTranslations['home.search_quick_title'] || 'Buscas mais utilizadas' }}</span>
             <div class="flex flex-col gap-2">
-              <a href="#contato" class="text-[#444444] hover:text-blue-700 font-normal text-base md:text-[17px] transition-colors w-fit">
+              <button type="button" @click="openContactModal()" class="text-[#444444] hover:text-blue-700 font-normal text-base md:text-[17px] transition-colors w-fit border-0 bg-transparent cursor-pointer p-0 text-left">
                 {{ mergedTranslations['home.search_quick_1'] || 'Contato de vendas / suporte' }}
-              </a>
+              </button>
               <NuxtLink to="/catalogo?cat=V%C3%81LVULAS%20DE%20SEGURAN%C3%87A" class="text-[#444444] hover:text-blue-700 font-normal text-base md:text-[17px] transition-colors w-fit">
                 {{ mergedTranslations['home.search_quick_2'] || 'Válvulas de Segurança' }}
               </NuxtLink>
@@ -252,7 +261,7 @@
       </section>
 
       <!-- Faixa fina branca -->
-      <div class="bg-white h-3 w-full border-b border-gray-200"></div>
+      <div class="bg-white h-3 w-full"></div>
 
       <!-- Principais Segmentos -->
       <section
@@ -454,14 +463,19 @@
                 style="flex:1;height:36px;padding:0 10px;border:1px solid #999;border-right:none;background:white;font-size:14px;color:#333;outline:none;box-sizing:border-box;"
                 required
                 type="email"
+                :disabled="sendingNewsletter"
               />
               <button
                 style="width:207px;height:36px;background:#0052a5;color:white;font-size:14px;font-weight:400;border:0;cursor:pointer;white-space:nowrap;flex-shrink:0;box-sizing:border-box;"
                 type="submit"
+                :disabled="sendingNewsletter"
               >
-                {{ newsletterSubmitted ? 'Cadastrado!' : (mergedTranslations['home.newsletter_button'] || 'Inscrever') }}
+                {{ sendingNewsletter ? 'Enviando...' : (newsletterSubmitted ? 'Cadastrado!' : (mergedTranslations['home.newsletter_button'] || 'Inscrever')) }}
               </button>
             </div>
+            <p v-if="newsletterFeedback" :style="{ color: newsletterFeedback.type === 'success' ? '#10b981' : '#ef4444' }" style="font-size:12px;margin:8px 0 0;font-weight:500;">
+              {{ newsletterFeedback.message }}
+            </p>
           </form>
         </div>
       </section>
@@ -471,39 +485,14 @@
     </main>
 
     <!-- Footer -->
-    <footer id="contato" style="background:#eeebe9;border-top:1px solid #c2c6d3;padding:28px 0 28px;">
-      <div style="max-width:832px;margin:0 auto;padding:0 16px;display:flex;justify-content:space-between;align-items:flex-start;">
-        <!-- Left Column -->
-        <div style="display:flex;flex-direction:column;gap:3px;color:#424751;font-size:12px;line-height:1.5;">
-          <p style="font-weight:700;color:#1c1b1b;margin:0;">Qualitec C S I M Ltda</p>
-          <p style="margin:0;">Rua Fazenda Monte Alegre, 367</p>
-          <p style="margin:0;">05160-060 - São Paulo - SP</p>
-          <p style="margin:0;">Tel: +55 11 3908 7100</p>
-          <p style="margin:0;color:#004A96;font-weight:600;">vendas@qualitecinstrumentos.com.br</p>
-          <p style="margin:16px 0 0;font-size:11px;color:#888;">Todos os direitos reservados - 2024</p>
-        </div>
+    <AppFooter />
 
-        <!-- Right Column -->
-        <div style="display:flex;flex-direction:column;gap:3px;color:#424751;font-size:12px;line-height:1.5;text-align:right;">
-          <p style="font-weight:700;color:#1c1b1b;margin:0;">Representante Exclusivo</p>
-          <p style="margin:0;">HEROSE GmbH</p>
-          <p style="margin:0;">Generant Inc</p>
-          <p style="margin:0;">DataOnline LLC</p>
-        </div>
-      </div>
-
-      <!-- Floating Support Button -->
-      <div class="fixed bottom-6 right-6 z-50">
-        <a 
-          href="https://wa.me/551139087100" 
-          target="_blank"
-          class="bg-[#004A96] hover:bg-[#00346c] text-white px-5 py-3 rounded-full flex items-center gap-2.5 shadow-xl transition-all hover:scale-105 cursor-pointer no-underline"
-        >
-          <span class="material-symbols-outlined text-2xl">chat_bubble</span>
-          <span class="font-medium text-sm">Como posso lhe ajudar?</span>
-        </a>
-      </div>
-    </footer>
+    <!-- Modal de Contato / Orçamento por E-mail -->
+    <ContactModal 
+      :open="showContactModal" 
+      :product-name="contactProductName" 
+      @close="showContactModal = false" 
+    />
   </div>
 </template>
 
@@ -517,6 +506,17 @@ const { t, currentLang, translatedSegments, mergedTranslations } = useTranslatio
 const { fetchTranslationsFromDB } = useTranslationsAdmin()
 const heroVideoRef = ref<HTMLVideoElement | null>(null)
 const supabase = useSupabaseClient()
+
+const activeHeroCardText = computed(() => {
+  const lang = currentLang.value
+  if (lang === 'en') {
+    return siteSettings.value.hero_card_text_en || siteSettings.value.hero_card_text_pt || siteSettings.value.hero_card_text || '“ Your daily challenge, we solve every day with safety and reliability “'
+  }
+  if (lang === 'es') {
+    return siteSettings.value.hero_card_text_es || siteSettings.value.hero_card_text_pt || siteSettings.value.hero_card_text || '“ Su desafío diario, lo resolvemos todos los días con seguridad y confiabilidad “'
+  }
+  return siteSettings.value.hero_card_text_pt || siteSettings.value.hero_card_text || '“ O seu desafio diário, nós resolvemos todos os dias com segurança e confiabilidade “'
+})
 
 interface NewsCard {
   id: number
@@ -746,6 +746,16 @@ const searchInput = ref('')
 const mobileMenuOpen = ref(false)
 const newsletterEmail = ref('')
 const newsletterSubmitted = ref(false)
+const sendingNewsletter = ref(false)
+const newsletterFeedback = ref<{ message: string; type: 'success' | 'error' } | null>(null)
+
+const showContactModal = ref(false)
+const contactProductName = ref('')
+
+const openContactModal = (prodName = '') => {
+  contactProductName.value = prodName
+  showContactModal.value = true
+}
 
 const handleSearch = () => {
   if (searchInput.value.trim()) {
@@ -755,13 +765,42 @@ const handleSearch = () => {
   }
 }
 
-const handleNewsletterSubmit = () => {
-  if (newsletterEmail.value.trim()) {
-    newsletterSubmitted.value = true
-    setTimeout(() => {
+const handleNewsletterSubmit = async () => {
+  const emailVal = newsletterEmail.value.trim()
+  if (!emailVal) return
+
+  sendingNewsletter.value = true
+  newsletterFeedback.value = null
+
+  try {
+    const res = await $fetch('/api/send-email', {
+      method: 'POST',
+      body: {
+        type: 'newsletter',
+        email: emailVal
+      }
+    }) as any
+
+    if (res?.success) {
+      newsletterSubmitted.value = true
+      newsletterFeedback.value = {
+        message: 'Inscrição realizada com sucesso! Verifique sua caixa de entrada.',
+        type: 'success'
+      }
       newsletterEmail.value = ''
-      newsletterSubmitted.value = false
-    }, 3000)
+      setTimeout(() => {
+        newsletterSubmitted.value = false
+        newsletterFeedback.value = null
+      }, 5000)
+    }
+  } catch (err: any) {
+    console.error('Erro ao enviar newsletter:', err)
+    newsletterFeedback.value = {
+      message: err.data?.message || err.message || 'Erro ao realizar inscrição. Tente novamente.',
+      type: 'error'
+    }
+  } finally {
+    sendingNewsletter.value = false
   }
 }
 

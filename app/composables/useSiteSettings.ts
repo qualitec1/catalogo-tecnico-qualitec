@@ -29,6 +29,10 @@ export interface SiteVisualSettings {
   hero_bg_image_url: string
   hero_bg_video_url: string
   hero_card_text: string
+  hero_card_text_pt: string
+  hero_card_text_en: string
+  hero_card_text_es: string
+  hero_card_text_offset_y: number
   hero_card_bg_color: string
   hero_card_text_color: string
   hero_card_position: 'left' | 'center' | 'right'
@@ -73,6 +77,100 @@ export interface SiteVisualSettings {
   news_caption_opacity: number
   news_caption_height: number
   news_caption_color: string
+  // Rodapé (Footer)
+  footer_bg: string
+  footer_ptop: number
+  footer_pbot: number
+  footer_border_top_color: string
+  // 11 Frases do Rodapé
+  footer_p1_text: string
+  footer_p1_font: string
+  footer_p1_size: number
+  footer_p1_color: string
+  footer_p1_offset_x: number
+  footer_p1_offset_y: number
+  footer_p1_bold: boolean
+  footer_p1_italic: boolean
+  footer_p2_text: string
+  footer_p2_font: string
+  footer_p2_size: number
+  footer_p2_color: string
+  footer_p2_offset_x: number
+  footer_p2_offset_y: number
+  footer_p2_bold: boolean
+  footer_p2_italic: boolean
+  footer_p3_text: string
+  footer_p3_font: string
+  footer_p3_size: number
+  footer_p3_color: string
+  footer_p3_offset_x: number
+  footer_p3_offset_y: number
+  footer_p3_bold: boolean
+  footer_p3_italic: boolean
+  footer_p4_text: string
+  footer_p4_font: string
+  footer_p4_size: number
+  footer_p4_color: string
+  footer_p4_offset_x: number
+  footer_p4_offset_y: number
+  footer_p4_bold: boolean
+  footer_p4_italic: boolean
+  footer_p5_text: string
+  footer_p5_font: string
+  footer_p5_size: number
+  footer_p5_color: string
+  footer_p5_offset_x: number
+  footer_p5_offset_y: number
+  footer_p5_bold: boolean
+  footer_p5_italic: boolean
+  footer_p6_text: string
+  footer_p6_font: string
+  footer_p6_size: number
+  footer_p6_color: string
+  footer_p6_offset_x: number
+  footer_p6_offset_y: number
+  footer_p6_bold: boolean
+  footer_p6_italic: boolean
+  footer_p7_text: string
+  footer_p7_font: string
+  footer_p7_size: number
+  footer_p7_color: string
+  footer_p7_offset_x: number
+  footer_p7_offset_y: number
+  footer_p7_bold: boolean
+  footer_p7_italic: boolean
+  footer_p8_text: string
+  footer_p8_font: string
+  footer_p8_size: number
+  footer_p8_color: string
+  footer_p8_offset_x: number
+  footer_p8_offset_y: number
+  footer_p8_bold: boolean
+  footer_p8_italic: boolean
+  footer_p9_text: string
+  footer_p9_font: string
+  footer_p9_size: number
+  footer_p9_color: string
+  footer_p9_offset_x: number
+  footer_p9_offset_y: number
+  footer_p9_bold: boolean
+  footer_p9_italic: boolean
+  footer_p10_text: string
+  footer_p10_font: string
+  footer_p10_size: number
+  footer_p10_color: string
+  footer_p10_offset_x: number
+  footer_p10_offset_y: number
+  footer_p10_bold: boolean
+  footer_p10_italic: boolean
+  footer_p11_text: string
+  footer_p11_font: string
+  footer_p11_size: number
+  footer_p11_color: string
+  footer_p11_offset_x: number
+  footer_p11_offset_y: number
+  footer_p11_bold: boolean
+  footer_p11_italic: boolean
 }
 
 const defaults: SiteVisualSettings = {
@@ -100,6 +198,10 @@ const defaults: SiteVisualSettings = {
   hero_bg_image_url: 'https://lh3.googleusercontent.com/aida/AP1WRLuQGJlvhXgSbL5PCfgd-rVegzYgpPNJgtHn0Ea6Nm0tVayzLhjzQkKmbYMugrdMebtxFro3tlHv1N8ozueW3IWAmerLpn5BMh0-V4suiSBYyv-_1zhWqzLrg3b4d-rpkTVAeU22eoHKYZCmNp_AZySP90gelzHtlnS-8x3nRmtLSJEw4C0yhBjOP0LTv8cqJJere8bX1erK4A1HpU_AQV5WthPlinuCGSknmAf4oBmhbRpEqOyxTA2YAMo',
   hero_bg_video_url: '',
   hero_card_text: '“ O seu desafio diário, nós resolvemos todos os dias com segurança e confiabilidade “',
+  hero_card_text_pt: '“ O seu desafio diário, nós resolvemos todos os dias com segurança e confiabilidade “',
+  hero_card_text_en: '“ Your daily challenge, we solve every day with safety and reliability “',
+  hero_card_text_es: '“ Su desafío diario, lo resolvemos todos los días con seguridad y confiabilidad “',
+  hero_card_text_offset_y: 0,
   hero_card_bg_color: '#74b934',
   hero_card_text_color: '#ffffff',
   hero_card_position: 'left',
@@ -139,6 +241,98 @@ const defaults: SiteVisualSettings = {
   news_caption_opacity: 82,
   news_caption_height: 48,
   news_caption_color: '#333333',
+  footer_bg: '#eeebe9',
+  footer_ptop: 28,
+  footer_pbot: 28,
+  footer_border_top_color: '#c2c6d3',
+  footer_p1_text: 'Qualitec C S I M Ltda',
+  footer_p1_font: 'system-ui',
+  footer_p1_size: 12,
+  footer_p1_color: '#1c1b1b',
+  footer_p1_offset_x: 0,
+  footer_p1_offset_y: 0,
+  footer_p1_bold: true,
+  footer_p1_italic: false,
+  footer_p2_text: 'Rua Fazenda Monte Alegre, 367',
+  footer_p2_font: 'system-ui',
+  footer_p2_size: 12,
+  footer_p2_color: '#424751',
+  footer_p2_offset_x: 0,
+  footer_p2_offset_y: 0,
+  footer_p2_bold: false,
+  footer_p2_italic: false,
+  footer_p3_text: '05160-060 - São Paulo - SP',
+  footer_p3_font: 'system-ui',
+  footer_p3_size: 12,
+  footer_p3_color: '#424751',
+  footer_p3_offset_x: 0,
+  footer_p3_offset_y: 0,
+  footer_p3_bold: false,
+  footer_p3_italic: false,
+  footer_p4_text: 'Tel: +55 11 3908 7100',
+  footer_p4_font: 'system-ui',
+  footer_p4_size: 12,
+  footer_p4_color: '#424751',
+  footer_p4_offset_x: 0,
+  footer_p4_offset_y: 0,
+  footer_p4_bold: false,
+  footer_p4_italic: false,
+  footer_p5_text: 'vendas@qualitecinstrumentos.com.br',
+  footer_p5_font: 'system-ui',
+  footer_p5_size: 12,
+  footer_p5_color: '#004A96',
+  footer_p5_offset_x: 0,
+  footer_p5_offset_y: 0,
+  footer_p5_bold: true,
+  footer_p5_italic: false,
+  footer_p6_text: 'Todos os direitos reservados - 2024',
+  footer_p6_font: 'system-ui',
+  footer_p6_size: 11,
+  footer_p6_color: '#888888',
+  footer_p6_offset_x: 0,
+  footer_p6_offset_y: 0,
+  footer_p6_bold: false,
+  footer_p6_italic: false,
+  footer_p7_text: 'Representante Exclusivo',
+  footer_p7_font: 'system-ui',
+  footer_p7_size: 12,
+  footer_p7_color: '#1c1b1b',
+  footer_p7_offset_x: 0,
+  footer_p7_offset_y: 0,
+  footer_p7_bold: true,
+  footer_p7_italic: false,
+  footer_p8_text: 'HEROSE GmbH',
+  footer_p8_font: 'system-ui',
+  footer_p8_size: 12,
+  footer_p8_color: '#424751',
+  footer_p8_offset_x: 0,
+  footer_p8_offset_y: 0,
+  footer_p8_bold: false,
+  footer_p8_italic: false,
+  footer_p9_text: 'Generant Inc',
+  footer_p9_font: 'system-ui',
+  footer_p9_size: 12,
+  footer_p9_color: '#424751',
+  footer_p9_offset_x: 0,
+  footer_p9_offset_y: 0,
+  footer_p9_bold: false,
+  footer_p9_italic: false,
+  footer_p10_text: 'DataOnline LLC',
+  footer_p10_font: 'system-ui',
+  footer_p10_size: 12,
+  footer_p10_color: '#424751',
+  footer_p10_offset_x: 0,
+  footer_p10_offset_y: 0,
+  footer_p10_bold: false,
+  footer_p10_italic: false,
+  footer_p11_text: 'Como posso lhe ajudar?',
+  footer_p11_font: 'system-ui',
+  footer_p11_size: 14,
+  footer_p11_color: '#ffffff',
+  footer_p11_offset_x: 0,
+  footer_p11_offset_y: 0,
+  footer_p11_bold: true,
+  footer_p11_italic: false,
 }
 
 export default function useSiteSettings() {

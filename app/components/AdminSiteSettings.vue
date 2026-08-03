@@ -579,10 +579,102 @@
               </div>
             </div>
 
-            <!-- Texto do Card Verde -->
-            <div class="space-y-1.5">
-              <label class="block text-[10px] text-gray-600 font-bold uppercase tracking-wider">Frase do Card de Destaque</label>
-              <textarea v-model="settings.hero_card_text" rows="2" class="w-full border border-gray-300 p-2 text-xs rounded bg-white text-slate-800 focus:ring-1 focus:ring-blue-600 focus:outline-none font-sans"></textarea>
+            <!-- Frases do Card por Idioma -->
+            <div class="space-y-2 border-t border-slate-200 pt-3">
+              <div class="flex items-center justify-between">
+                <label class="block text-[10px] text-gray-600 font-bold uppercase tracking-wider">
+                  Frase do Card de Destaque (por Idioma)
+                </label>
+                <!-- Selector de Abas de Idioma -->
+                <div class="flex items-center gap-1 bg-slate-100 p-0.5 rounded border border-slate-200">
+                  <button 
+                    type="button" 
+                    @click="heroTextTab = 'pt'" 
+                    :class="heroTextTab === 'pt' ? 'bg-blue-600 text-white font-bold' : 'text-slate-600 hover:text-slate-900'"
+                    class="px-2 py-0.5 text-[10px] rounded transition-colors cursor-pointer border-0"
+                  >
+                    🇧🇷 PT
+                  </button>
+                  <button 
+                    type="button" 
+                    @click="heroTextTab = 'en'" 
+                    :class="heroTextTab === 'en' ? 'bg-blue-600 text-white font-bold' : 'text-slate-600 hover:text-slate-900'"
+                    class="px-2 py-0.5 text-[10px] rounded transition-colors cursor-pointer border-0"
+                  >
+                    🇺🇸 EN
+                  </button>
+                  <button 
+                    type="button" 
+                    @click="heroTextTab = 'es'" 
+                    :class="heroTextTab === 'es' ? 'bg-blue-600 text-white font-bold' : 'text-slate-600 hover:text-slate-900'"
+                    class="px-2 py-0.5 text-[10px] rounded transition-colors cursor-pointer border-0"
+                  >
+                    🇪🇸 ES
+                  </button>
+                </div>
+              </div>
+
+              <!-- Campo PT -->
+              <div v-show="heroTextTab === 'pt'" class="space-y-1">
+                <textarea 
+                  v-model="settings.hero_card_text_pt" 
+                  @input="settings.hero_card_text = settings.hero_card_text_pt"
+                  rows="2" 
+                  placeholder="“ O seu desafio diário, nós resolvemos todos os dias... ”"
+                  class="w-full border border-gray-300 p-2 text-xs rounded bg-white text-slate-800 focus:ring-1 focus:ring-blue-600 focus:outline-none font-sans"
+                ></textarea>
+                <span class="text-[10px] text-slate-500">Frase exibida quando o idioma do site for <b>Português</b>.</span>
+              </div>
+
+              <!-- Campo EN -->
+              <div v-show="heroTextTab === 'en'" class="space-y-1">
+                <textarea 
+                  v-model="settings.hero_card_text_en" 
+                  rows="2" 
+                  placeholder="“ Your daily challenge, we solve every day... ”"
+                  class="w-full border border-gray-300 p-2 text-xs rounded bg-white text-slate-800 focus:ring-1 focus:ring-blue-600 focus:outline-none font-sans"
+                ></textarea>
+                <span class="text-[10px] text-slate-500">Frase exibida quando o idioma do site for <b>English</b>.</span>
+              </div>
+
+              <!-- Campo ES -->
+              <div v-show="heroTextTab === 'es'" class="space-y-1">
+                <textarea 
+                  v-model="settings.hero_card_text_es" 
+                  rows="2" 
+                  placeholder="“ Su desafío diario, lo resolvemos todos los días... ”"
+                  class="w-full border border-gray-300 p-2 text-xs rounded bg-white text-slate-800 focus:ring-1 focus:ring-blue-600 focus:outline-none font-sans"
+                ></textarea>
+                <span class="text-[10px] text-slate-500">Frase exibida quando o idioma do site for <b>Español</b>.</span>
+              </div>
+            </div>
+
+            <!-- Slider Posição Vertical APENAS da Descrição (Texto) -->
+            <div class="space-y-1.5 bg-blue-50/70 p-3 rounded border border-blue-200">
+              <div class="flex justify-between items-center text-[10px] text-blue-900 font-bold uppercase">
+                <span>Posição Vertical APENAS da Descrição: {{ settings.hero_card_text_offset_y || 0 }}px</span>
+                <span class="text-blue-600 font-normal">Subir (-) / Descer (+)</span>
+              </div>
+              <div class="flex items-center gap-3">
+                <input 
+                  type="range" 
+                  min="-100" 
+                  max="100" 
+                  step="1" 
+                  v-model.number="settings.hero_card_text_offset_y" 
+                  class="flex-1 accent-blue-600 cursor-pointer" 
+                />
+                <input 
+                  type="number" 
+                  min="-100" 
+                  max="100" 
+                  v-model.number="settings.hero_card_text_offset_y" 
+                  class="w-16 border border-gray-300 p-1 text-xs text-center rounded bg-white font-mono" 
+                />
+              </div>
+              <p class="text-[10px] text-blue-700 font-medium leading-tight">
+                💡 Move <b>apenas a frase descritiva</b> dentro do card, sem alterar a posição do card verde sobre o vídeo.
+              </p>
             </div>
 
             <!-- Modo de Posicionamento -->
@@ -658,7 +750,14 @@
           <div class="space-y-3">
             <label class="block text-[10px] text-gray-600 font-bold uppercase tracking-wider flex items-center justify-between">
               <span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm text-blue-600">touch_app</span> Pré-visualização Interativa (Arraste o Card)</span>
-              <span class="text-blue-700 font-bold">X: {{ settings.hero_card_offset_x || 0 }}% | Y: {{ settings.hero_card_offset_y || 0 }}%</span>
+              <div class="flex items-center gap-2">
+                <div class="flex gap-0.5 text-[9px]">
+                  <button type="button" @click="previewLang = 'pt'" :class="previewLang === 'pt' ? 'bg-blue-600 text-white font-bold' : 'bg-slate-200 text-slate-700'" class="px-1.5 py-0.5 rounded cursor-pointer border-0">PT</button>
+                  <button type="button" @click="previewLang = 'en'" :class="previewLang === 'en' ? 'bg-blue-600 text-white font-bold' : 'bg-slate-200 text-slate-700'" class="px-1.5 py-0.5 rounded cursor-pointer border-0">EN</button>
+                  <button type="button" @click="previewLang = 'es'" :class="previewLang === 'es' ? 'bg-blue-600 text-white font-bold' : 'bg-slate-200 text-slate-700'" class="px-1.5 py-0.5 rounded cursor-pointer border-0">ES</button>
+                </div>
+                <span class="text-blue-700 font-bold">X: {{ settings.hero_card_offset_x || 0 }}% | Y: {{ settings.hero_card_offset_y || 0 }}%</span>
+              </div>
             </label>
 
             <div 
@@ -695,8 +794,11 @@
                   color: settings.hero_card_text_color || '#ffffff'
                 }"
               >
-                <p class="text-[10px] font-semibold leading-snug drop-shadow-sm">
-                  {{ settings.hero_card_text || '“ O seu desafio diário, nós resolvemos todos os dias com segurança e confiabilidade “' }}
+                <p 
+                  class="text-[10px] font-semibold leading-snug drop-shadow-sm transition-transform duration-75"
+                  :style="{ transform: `translateY(${settings.hero_card_text_offset_y || 0}px)` }"
+                >
+                  {{ heroPreviewText }}
                 </p>
               </div>
             </div>
@@ -704,6 +806,224 @@
             <p class="text-[10px] text-gray-400 font-mono text-center">
               Clique e arraste sobre o banner para ajustar a posição (X, Y) em tempo real.
             </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== SEÇÃO 5: PERSONALIZAÇÃO DO RODAPÉ (FOOTER) & 11 FRASES ===== -->
+      <div class="space-y-6 bg-slate-50 p-5 rounded-lg border border-slate-200">
+        <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+          <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wide flex items-center gap-2">
+            <span class="material-symbols-outlined text-blue-600">bottom_panel_open</span>
+            Personalização Visual do Rodapé (Footer) &amp; 11 Frases
+          </h3>
+          <div class="flex items-center gap-2">
+            <button @click="resetBlock('footer')" class="px-2.5 py-1 bg-amber-50 hover:bg-amber-100 border border-amber-300 text-amber-700 text-[10px] font-bold rounded transition-colors cursor-pointer flex items-center gap-1">
+              <span class="material-symbols-outlined text-xs">restart_alt</span>
+              Restaurar Padrões do Rodapé
+            </button>
+            <span class="text-[10px] bg-blue-100 text-blue-700 font-bold px-2 py-0.5 rounded uppercase">Rodapé Completo</span>
+          </div>
+        </div>
+
+        <!-- Controles Gerais do Rodapé -->
+        <div class="bg-white p-4 rounded-lg border border-gray-200 space-y-4">
+          <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider border-b border-gray-100 pb-2">
+            1. Dimensões &amp; Cores Gerais do Container do Rodapé
+          </h4>
+
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <!-- Cor de Fundo -->
+            <div class="space-y-1.5">
+              <label class="block text-[10px] text-gray-500 font-bold uppercase">Cor de Fundo do Rodapé</label>
+              <div class="flex items-center gap-2">
+                <input v-model="settings.footer_bg" type="color" class="w-7 h-7 p-0 border-0 bg-transparent cursor-pointer shrink-0 rounded-full" />
+                <input v-model="settings.footer_bg" type="text" placeholder="#eeebe9" class="flex-1 border border-gray-300 px-2 py-1 text-xs rounded bg-white text-center font-mono uppercase focus:ring-1 focus:ring-blue-600 focus:outline-none" />
+              </div>
+            </div>
+
+            <!-- Cor da Linha/Borda Superior -->
+            <div class="space-y-1.5">
+              <label class="block text-[10px] text-gray-500 font-bold uppercase">Cor da Borda Superior</label>
+              <div class="flex items-center gap-2">
+                <input v-model="settings.footer_border_top_color" type="color" class="w-7 h-7 p-0 border-0 bg-transparent cursor-pointer shrink-0 rounded-full" />
+                <input v-model="settings.footer_border_top_color" type="text" placeholder="#c2c6d3" class="flex-1 border border-gray-300 px-2 py-1 text-xs rounded bg-white text-center font-mono uppercase focus:ring-1 focus:ring-blue-600 focus:outline-none" />
+              </div>
+            </div>
+
+            <!-- Espaçamento Superior (Padding Top) -->
+            <div class="space-y-1">
+              <div class="flex justify-between text-[10px] text-gray-600 font-semibold">
+                <span>Espaçamento Superior (Padding Top)</span>
+                <span class="font-mono text-blue-600 font-bold">{{ settings.footer_ptop ?? 28 }}px</span>
+              </div>
+              <input v-model.number="settings.footer_ptop" type="range" min="0" max="150" step="2" class="w-full accent-blue-600 cursor-pointer" />
+            </div>
+
+            <!-- Espaçamento Inferior (Padding Bottom) -->
+            <div class="space-y-1">
+              <div class="flex justify-between text-[10px] text-gray-600 font-semibold">
+                <span>Espaçamento Inferior (Padding Bottom)</span>
+                <span class="font-mono text-blue-600 font-bold">{{ settings.footer_pbot ?? 28 }}px</span>
+              </div>
+              <input v-model.number="settings.footer_pbot" type="range" min="0" max="150" step="2" class="w-full accent-blue-600 cursor-pointer" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Personalização Individual das 11 Frases -->
+        <div class="bg-white p-4 rounded-lg border border-gray-200 space-y-4">
+          <div class="flex items-center justify-between border-b border-gray-100 pb-2">
+            <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider">
+              2. Personalização das 11 Frases do Rodapé (Texto, Fonte, Cor, Posição X / Y)
+            </h4>
+            <span class="text-[10px] text-gray-400 font-mono">11 Frases Mapeadas</span>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div 
+              v-for="i in 11" 
+              :key="i" 
+              class="p-4 rounded-lg border border-slate-200 bg-slate-50 space-y-3 shadow-2xs hover:border-blue-300 transition-colors"
+            >
+              <!-- Cabecalho do Card da Frase -->
+              <div class="flex items-center justify-between border-b border-slate-200 pb-2">
+                <span class="text-xs font-bold text-blue-700 flex items-center gap-1.5">
+                  <span class="material-symbols-outlined text-sm">short_text</span>
+                  {{ phraseLabels?.[i] || ('Frase #' + i) }}
+                </span>
+                <span class="text-[9px] bg-slate-200 text-slate-700 font-bold font-mono px-1.5 py-0.5 rounded">
+                  Frase #{{ i }}
+                </span>
+              </div>
+
+              <!-- Campo Texto -->
+              <div class="space-y-1">
+                <label class="block text-[10px] text-gray-600 font-bold uppercase">Texto da Frase</label>
+                <input 
+                  type="text" 
+                  v-model="(settings as any)['footer_p' + i + '_text']" 
+                  class="w-full border border-gray-300 px-2.5 py-1.5 text-xs rounded bg-white font-sans text-slate-800 focus:ring-1 focus:ring-blue-600 focus:outline-none"
+                />
+              </div>
+
+              <!-- Fonte, Estilo e Cor -->
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 items-end">
+                <!-- Fonte -->
+                <div class="space-y-1">
+                  <label class="block text-[10px] text-gray-600 font-bold uppercase">Tipo de Fonte</label>
+                  <select 
+                    v-model="(settings as any)['footer_p' + i + '_font']" 
+                    class="w-full border border-gray-300 px-2 py-1.5 text-xs rounded bg-white text-slate-800 focus:ring-1 focus:ring-blue-600 focus:outline-none"
+                  >
+                    <option v-for="font in fontOptions" :key="font" :value="font">{{ font }}</option>
+                  </select>
+                </div>
+
+                <!-- Negrito & Itálico Toggles -->
+                <div class="space-y-1">
+                  <label class="block text-[10px] text-gray-600 font-bold uppercase">Estilo do Texto</label>
+                  <div class="flex items-center gap-1 h-[32px]">
+                    <button 
+                      type="button" 
+                      @click="(settings as any)['footer_p' + i + '_bold'] = !(settings as any)['footer_p' + i + '_bold']" 
+                      :class="(settings as any)['footer_p' + i + '_bold'] ? 'bg-slate-900 text-white font-bold border-slate-900 shadow-xs' : 'bg-white text-slate-600 hover:bg-slate-100 border-gray-300'"
+                      class="flex-1 h-full rounded text-xs transition-colors border flex items-center justify-center cursor-pointer font-extrabold"
+                      title="Ativar / Desativar Negrito (Bold)"
+                    >
+                      B
+                    </button>
+                    <button 
+                      type="button" 
+                      @click="(settings as any)['footer_p' + i + '_italic'] = !(settings as any)['footer_p' + i + '_italic']" 
+                      :class="(settings as any)['footer_p' + i + '_italic'] ? 'bg-slate-900 text-white font-bold italic border-slate-900 shadow-xs' : 'bg-white text-slate-600 hover:bg-slate-100 border-gray-300'"
+                      class="flex-1 h-full rounded text-xs transition-colors border flex items-center justify-center cursor-pointer italic font-serif"
+                      title="Ativar / Desativar Itálico (Italic)"
+                    >
+                      I
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Cor da Fonte -->
+                <div class="space-y-1">
+                  <label class="block text-[10px] text-gray-600 font-bold uppercase">Cor do Texto</label>
+                  <div class="flex items-center gap-1.5">
+                    <input 
+                      type="color" 
+                      v-model="(settings as any)['footer_p' + i + '_color']" 
+                      class="w-7 h-7 p-0 border-0 bg-transparent cursor-pointer shrink-0 rounded-full" 
+                    />
+                    <input 
+                      type="text" 
+                      v-model="(settings as any)['footer_p' + i + '_color']" 
+                      class="w-full border border-gray-300 px-1 py-1.5 text-[11px] rounded bg-white text-center font-mono uppercase focus:ring-1 focus:ring-blue-600 focus:outline-none" 
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <!-- Tamanho da Fonte (px) -->
+              <div class="space-y-1">
+                <div class="flex justify-between items-center text-[10px] text-gray-600 font-semibold">
+                  <span>Tamanho da Fonte</span>
+                  <span class="font-mono text-blue-600 font-bold">{{ (settings as any)['footer_p' + i + '_size'] }}px</span>
+                </div>
+                <div class="flex items-center gap-3">
+                  <input 
+                    type="range" 
+                    min="8" 
+                    max="40" 
+                    step="1" 
+                    v-model.number="(settings as any)['footer_p' + i + '_size']" 
+                    class="flex-1 accent-blue-600 cursor-pointer" 
+                  />
+                  <input 
+                    type="number" 
+                    min="8" 
+                    max="40" 
+                    v-model.number="(settings as any)['footer_p' + i + '_size']" 
+                    class="w-14 border border-gray-300 p-1 text-xs text-center rounded bg-white font-mono" 
+                  />
+                </div>
+              </div>
+
+              <!-- Deslocamento Horizontal X e Vertical Y -->
+              <div class="grid grid-cols-2 gap-3 pt-1 border-t border-slate-200">
+                <!-- Deslocamento X -->
+                <div class="space-y-1">
+                  <div class="flex justify-between items-center text-[9px] text-gray-600 font-semibold uppercase">
+                    <span>Posição Horiz. (X)</span>
+                    <span class="font-mono text-blue-600 font-bold">{{ (settings as any)['footer_p' + i + '_offset_x'] || 0 }}px</span>
+                  </div>
+                  <input 
+                    type="range" 
+                    min="-200" 
+                    max="200" 
+                    step="1" 
+                    v-model.number="(settings as any)['footer_p' + i + '_offset_x']" 
+                    class="w-full accent-blue-600 cursor-pointer" 
+                  />
+                </div>
+
+                <!-- Deslocamento Y -->
+                <div class="space-y-1">
+                  <div class="flex justify-between items-center text-[9px] text-gray-600 font-semibold uppercase">
+                    <span>Posição Vert. (Y)</span>
+                    <span class="font-mono text-blue-600 font-bold">{{ (settings as any)['footer_p' + i + '_offset_y'] || 0 }}px</span>
+                  </div>
+                  <input 
+                    type="range" 
+                    min="-100" 
+                    max="100" 
+                    step="1" 
+                    v-model.number="(settings as any)['footer_p' + i + '_offset_y']" 
+                    class="w-full accent-blue-600 cursor-pointer" 
+                  />
+                </div>
+              </div>
+
+            </div>
           </div>
         </div>
       </div>
@@ -756,6 +1076,20 @@ const fontSizeOptions = [
   '8px', '9px', '10px', '11px', '12px', '13px', '14px', '16px', '18px', '20px'
 ]
 
+const phraseLabels: Record<number, string> = {
+  1: 'Frase 1: Razão Social / Nome da Empresa',
+  2: 'Frase 2: Endereço Linha 1',
+  3: 'Frase 3: Endereço Linha 2',
+  4: 'Frase 4: Telefone de Contato',
+  5: 'Frase 5: E-mail de Vendas',
+  6: 'Frase 6: Direitos Reservados / Copyright',
+  7: 'Frase 7: Título Coluna Direita (Representantes)',
+  8: 'Frase 8: Parceiro / Marca 1 (HEROSE)',
+  9: 'Frase 9: Parceiro / Marca 2 (Generant)',
+  10: 'Frase 10: Parceiro / Marca 3 (DataOnline)',
+  11: 'Frase 11: Texto do Botão de Suporte (Flutuante)'
+}
+
 interface SiteSettings {
   // Logotipo do Cabeçalho
   header_logo_url: string
@@ -790,6 +1124,10 @@ interface SiteSettings {
   hero_bg_image_url: string
   hero_bg_video_url: string
   hero_card_text: string
+  hero_card_text_pt: string
+  hero_card_text_en: string
+  hero_card_text_es: string
+  hero_card_text_offset_y: number
   hero_card_bg_color: string
   hero_card_text_color: string
   hero_card_position: 'left' | 'center' | 'right'
@@ -829,6 +1167,98 @@ interface SiteSettings {
   news_caption_opacity: number
   news_caption_height: number
   news_caption_color: string
+  footer_bg: string
+  footer_ptop: number
+  footer_pbot: number
+  footer_border_top_color: string
+  footer_p1_text: string
+  footer_p1_font: string
+  footer_p1_size: number
+  footer_p1_color: string
+  footer_p1_offset_x: number
+  footer_p1_offset_y: number
+  footer_p1_bold: boolean
+  footer_p1_italic: boolean
+  footer_p2_text: string
+  footer_p2_font: string
+  footer_p2_size: number
+  footer_p2_color: string
+  footer_p2_offset_x: number
+  footer_p2_offset_y: number
+  footer_p2_bold: boolean
+  footer_p2_italic: boolean
+  footer_p3_text: string
+  footer_p3_font: string
+  footer_p3_size: number
+  footer_p3_color: string
+  footer_p3_offset_x: number
+  footer_p3_offset_y: number
+  footer_p3_bold: boolean
+  footer_p3_italic: boolean
+  footer_p4_text: string
+  footer_p4_font: string
+  footer_p4_size: number
+  footer_p4_color: string
+  footer_p4_offset_x: number
+  footer_p4_offset_y: number
+  footer_p4_bold: boolean
+  footer_p4_italic: boolean
+  footer_p5_text: string
+  footer_p5_font: string
+  footer_p5_size: number
+  footer_p5_color: string
+  footer_p5_offset_x: number
+  footer_p5_offset_y: number
+  footer_p5_bold: boolean
+  footer_p5_italic: boolean
+  footer_p6_text: string
+  footer_p6_font: string
+  footer_p6_size: number
+  footer_p6_color: string
+  footer_p6_offset_x: number
+  footer_p6_offset_y: number
+  footer_p6_bold: boolean
+  footer_p6_italic: boolean
+  footer_p7_text: string
+  footer_p7_font: string
+  footer_p7_size: number
+  footer_p7_color: string
+  footer_p7_offset_x: number
+  footer_p7_offset_y: number
+  footer_p7_bold: boolean
+  footer_p7_italic: boolean
+  footer_p8_text: string
+  footer_p8_font: string
+  footer_p8_size: number
+  footer_p8_color: string
+  footer_p8_offset_x: number
+  footer_p8_offset_y: number
+  footer_p8_bold: boolean
+  footer_p8_italic: boolean
+  footer_p9_text: string
+  footer_p9_font: string
+  footer_p9_size: number
+  footer_p9_color: string
+  footer_p9_offset_x: number
+  footer_p9_offset_y: number
+  footer_p9_bold: boolean
+  footer_p9_italic: boolean
+  footer_p10_text: string
+  footer_p10_font: string
+  footer_p10_size: number
+  footer_p10_color: string
+  footer_p10_offset_x: number
+  footer_p10_offset_y: number
+  footer_p10_bold: boolean
+  footer_p10_italic: boolean
+  footer_p11_text: string
+  footer_p11_font: string
+  footer_p11_size: number
+  footer_p11_color: string
+  footer_p11_offset_x: number
+  footer_p11_offset_y: number
+  footer_p11_bold: boolean
+  footer_p11_italic: boolean
 }
 
 const defaultSettings: SiteSettings = {
@@ -860,6 +1290,10 @@ const defaultSettings: SiteSettings = {
   hero_bg_image_url: 'https://lh3.googleusercontent.com/aida/AP1WRLuQGJlvhXgSbL5PCfgd-rVegzYgpPNJgtHn0Ea6Nm0tVayzLhjzQkKmbYMugrdMebtxFro3tlHv1N8ozueW3IWAmerLpn5BMh0-V4suiSBYyv-_1zhWqzLrg3b4d-rpkTVAeU22eoHKYZCmNp_AZySP90gelzHtlnS-8x3nRmtLSJEw4C0yhBjOP0LTv8cqJJere8bX1erK4A1HpU_AQV5WthPlinuCGSknmAf4oBmhbRpEqOyxTA2YAMo',
   hero_bg_video_url: '',
   hero_card_text: '“ O seu desafio diário, nós resolvemos todos os dias com segurança e confiabilidade “',
+  hero_card_text_pt: '“ O seu desafio diário, nós resolvemos todos os dias com segurança e confiabilidade “',
+  hero_card_text_en: '“ Your daily challenge, we solve every day with safety and reliability “',
+  hero_card_text_es: '“ Su desafío diario, lo resolvemos todos los días con seguridad y confiabilidad “',
+  hero_card_text_offset_y: 0,
   hero_card_bg_color: '#74b934',
   hero_card_text_color: '#ffffff',
   hero_card_position: 'left',
@@ -895,6 +1329,98 @@ const defaultSettings: SiteSettings = {
   news_caption_opacity: 82,
   news_caption_height: 48,
   news_caption_color: '#333333',
+  footer_bg: '#eeebe9',
+  footer_ptop: 28,
+  footer_pbot: 28,
+  footer_border_top_color: '#c2c6d3',
+  footer_p1_text: 'Qualitec C S I M Ltda',
+  footer_p1_font: 'system-ui',
+  footer_p1_size: 12,
+  footer_p1_color: '#1c1b1b',
+  footer_p1_offset_x: 0,
+  footer_p1_offset_y: 0,
+  footer_p1_bold: true,
+  footer_p1_italic: false,
+  footer_p2_text: 'Rua Fazenda Monte Alegre, 367',
+  footer_p2_font: 'system-ui',
+  footer_p2_size: 12,
+  footer_p2_color: '#424751',
+  footer_p2_offset_x: 0,
+  footer_p2_offset_y: 0,
+  footer_p2_bold: false,
+  footer_p2_italic: false,
+  footer_p3_text: '05160-060 - São Paulo - SP',
+  footer_p3_font: 'system-ui',
+  footer_p3_size: 12,
+  footer_p3_color: '#424751',
+  footer_p3_offset_x: 0,
+  footer_p3_offset_y: 0,
+  footer_p3_bold: false,
+  footer_p3_italic: false,
+  footer_p4_text: 'Tel: +55 11 3908 7100',
+  footer_p4_font: 'system-ui',
+  footer_p4_size: 12,
+  footer_p4_color: '#424751',
+  footer_p4_offset_x: 0,
+  footer_p4_offset_y: 0,
+  footer_p4_bold: false,
+  footer_p4_italic: false,
+  footer_p5_text: 'vendas@qualitecinstrumentos.com.br',
+  footer_p5_font: 'system-ui',
+  footer_p5_size: 12,
+  footer_p5_color: '#004A96',
+  footer_p5_offset_x: 0,
+  footer_p5_offset_y: 0,
+  footer_p5_bold: true,
+  footer_p5_italic: false,
+  footer_p6_text: 'Todos os direitos reservados - 2024',
+  footer_p6_font: 'system-ui',
+  footer_p6_size: 11,
+  footer_p6_color: '#888888',
+  footer_p6_offset_x: 0,
+  footer_p6_offset_y: 0,
+  footer_p6_bold: false,
+  footer_p6_italic: false,
+  footer_p7_text: 'Representante Exclusivo',
+  footer_p7_font: 'system-ui',
+  footer_p7_size: 12,
+  footer_p7_color: '#1c1b1b',
+  footer_p7_offset_x: 0,
+  footer_p7_offset_y: 0,
+  footer_p7_bold: true,
+  footer_p7_italic: false,
+  footer_p8_text: 'HEROSE GmbH',
+  footer_p8_font: 'system-ui',
+  footer_p8_size: 12,
+  footer_p8_color: '#424751',
+  footer_p8_offset_x: 0,
+  footer_p8_offset_y: 0,
+  footer_p8_bold: false,
+  footer_p8_italic: false,
+  footer_p9_text: 'Generant Inc',
+  footer_p9_font: 'system-ui',
+  footer_p9_size: 12,
+  footer_p9_color: '#424751',
+  footer_p9_offset_x: 0,
+  footer_p9_offset_y: 0,
+  footer_p9_bold: false,
+  footer_p9_italic: false,
+  footer_p10_text: 'DataOnline LLC',
+  footer_p10_font: 'system-ui',
+  footer_p10_size: 12,
+  footer_p10_color: '#424751',
+  footer_p10_offset_x: 0,
+  footer_p10_offset_y: 0,
+  footer_p10_bold: false,
+  footer_p10_italic: false,
+  footer_p11_text: 'Como posso lhe ajudar?',
+  footer_p11_font: 'system-ui',
+  footer_p11_size: 14,
+  footer_p11_color: '#ffffff',
+  footer_p11_offset_x: 0,
+  footer_p11_offset_y: 0,
+  footer_p11_bold: true,
+  footer_p11_italic: false,
 }
 
 const settings = reactive<SiteSettings>({ ...defaultSettings })
@@ -939,6 +1465,20 @@ const handleSegmentUpload = async (key: 'criogenia' | 'oleo_gas' | 'sucroalcoole
   }
 }
 
+const heroTextTab = ref<'pt' | 'en' | 'es'>('pt')
+const previewLang = ref<'pt' | 'en' | 'es'>('pt')
+
+const heroPreviewText = computed(() => {
+  const lang = previewLang.value
+  if (lang === 'en') {
+    return settings.hero_card_text_en || settings.hero_card_text_pt || settings.hero_card_text || '“ Your daily challenge, we solve every day with safety and reliability “'
+  }
+  if (lang === 'es') {
+    return settings.hero_card_text_es || settings.hero_card_text_pt || settings.hero_card_text || '“ Su desafío diario, lo resolvemos todos los días con seguridad y confiabilidad “'
+  }
+  return settings.hero_card_text_pt || settings.hero_card_text || '“ O seu desafio diário, nós resolvemos todos os dias com segurança e confiabilidade “'
+})
+
 function hexToRgba(hex: string, opacityPercent: number): string {
   if (!hex || typeof hex !== 'string') return `rgba(255, 255, 255, ${(opacityPercent ?? 82) / 100})`
   let cleanHex = hex.replace('#', '').trim()
@@ -954,7 +1494,7 @@ function hexToRgba(hex: string, opacityPercent: number): string {
   return `rgba(${r}, ${g}, ${b}, ${alpha.toFixed(2)})`
 }
 
-function resetBlock(block: 'sections' | 'segmentCards' | 'newsCards') {
+function resetBlock(block: 'sections' | 'segmentCards' | 'newsCards' | 'footer') {
   if (block === 'sections') {
     settings.sec_segmentos_bg = defaultSettings.sec_segmentos_bg
     settings.sec_segmentos_ptop = defaultSettings.sec_segmentos_ptop
@@ -984,6 +1524,30 @@ function resetBlock(block: 'sections' | 'segmentCards' | 'newsCards') {
     settings.news_caption_height = defaultSettings.news_caption_height
     settings.news_caption_color = defaultSettings.news_caption_color
     props.triggerToast?.('Valores originais dos cards de novidades restaurados!', 'success')
+  } else if (block === 'footer') {
+    settings.footer_bg = defaultSettings.footer_bg
+    settings.footer_ptop = defaultSettings.footer_ptop
+    settings.footer_pbot = defaultSettings.footer_pbot
+    settings.footer_border_top_color = defaultSettings.footer_border_top_color
+    for (let i = 1; i <= 11; i++) {
+      const keyT = `footer_p${i}_text` as keyof SiteSettings
+      const keyF = `footer_p${i}_font` as keyof SiteSettings
+      const keyS = `footer_p${i}_size` as keyof SiteSettings
+      const keyC = `footer_p${i}_color` as keyof SiteSettings
+      const keyX = `footer_p${i}_offset_x` as keyof SiteSettings
+      const keyY = `footer_p${i}_offset_y` as keyof SiteSettings
+      const keyB = `footer_p${i}_bold` as keyof SiteSettings
+      const keyI = `footer_p${i}_italic` as keyof SiteSettings
+      ;(settings as any)[keyT] = (defaultSettings as any)[keyT]
+      ;(settings as any)[keyF] = (defaultSettings as any)[keyF]
+      ;(settings as any)[keyS] = (defaultSettings as any)[keyS]
+      ;(settings as any)[keyC] = (defaultSettings as any)[keyC]
+      ;(settings as any)[keyX] = (defaultSettings as any)[keyX]
+      ;(settings as any)[keyY] = (defaultSettings as any)[keyY]
+      ;(settings as any)[keyB] = (defaultSettings as any)[keyB]
+      ;(settings as any)[keyI] = (defaultSettings as any)[keyI]
+    }
+    props.triggerToast?.('Valores originais do rodapé restaurados!', 'success')
   }
 }
 

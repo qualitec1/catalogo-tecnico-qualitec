@@ -528,6 +528,7 @@ export function drawPageHeader(
     ? `category_icon_${catNorm}`
     : (imageCache && imageCache.has('__category_icon__') ? '__category_icon__' : null)
 
+  const iconSize = (settings.icon_size ? dimToMm(settings.icon_size, 6) : 6) * scale
   const textWidth = pdf.getTextWidth(catUpper)
   const textY = y + offsetY + fontSize * 0.35
 

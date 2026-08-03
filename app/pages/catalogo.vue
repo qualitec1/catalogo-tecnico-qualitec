@@ -160,29 +160,7 @@
     </main>
 
     <!-- Footer -->
-    <footer class="bg-[#f5f5f5] text-[#555555] w-full mt-20 border-t border-gray-200/50">
-      <div class="max-w-[2560px] w-full mx-auto py-14 px-8 md:px-16 flex flex-col md:flex-row justify-between gap-8 text-[13px] leading-relaxed">
-        <!-- Left Column: Address and Info -->
-        <div class="flex flex-col space-y-1 text-[#666666]">
-          <p class="text-[#333333] mb-1">Qualitec C S I M Ltda</p>
-          <p>Rua Fazenda Monte Alegre, 367</p>
-          <p>05160-060 - São Paulo - SP</p>
-          <p>Tel: +55 11 3908 7100</p>
-          <p>
-            <a href="mailto:vendas@qualitecinstrumentos.com.br" class="hover:text-gray-900 transition-colors">vendas@qualitecinstrumentos.com.br</a>
-          </p>
-          <p class="pt-6 text-[#777777]">Todos os direitos reservados - 2024</p>
-        </div>
-
-        <!-- Right Column: Exclusivity info -->
-        <div class="flex flex-col space-y-1 text-[#666666] md:pr-12">
-          <p class="text-[#333333] mb-1">Representante Exclusivo</p>
-          <p>HEROSE GmbH</p>
-          <p>Generant Inc</p>
-          <p>DataOnline LLC</p>
-        </div>
-      </div>
-    </footer>
+    <AppFooter />
 
     <!-- Image Modal -->
     <div 

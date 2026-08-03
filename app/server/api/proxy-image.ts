@@ -74,12 +74,17 @@ export default defineEventHandler(async (event) => {
     console.warn(`[SSRF Prevention] Blocked URL: ${url}`)
     throw createError({
       statusCode: 403,
-      statusMessage: 'URL não permitida por razões de segurança',
+      message: 'URL não permitida por razões de segurança',
     })
   }
 
   try {
-    const res = await fetch(url)
+    const res = await fetch(url, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept': 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8'
+      }
+    })
     if (!res.ok) throw new Error(`Falha ao baixar imagem remota: ${res.statusText}`)
 
     const contentType = res.headers.get('Content-Type') || 'image/png'
@@ -107,7 +112,7 @@ export default defineEventHandler(async (event) => {
     console.error('[API proxy-image] Erro ao carregar imagem:', url, error.message)
     throw createError({
       statusCode: 404,
-      statusMessage: 'Imagem não encontrada ou inacessível',
+      message: 'Imagem não encontrada ou inacessível',
     })
   }
 })

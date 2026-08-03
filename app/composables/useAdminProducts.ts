@@ -68,9 +68,9 @@ export function useAdminProducts(triggerToast: (msg: string, type?: 'success' | 
       const bgClass = product.bgClass || selectedColor.bgClass
       const tagColorClass = product.tagColorClass || selectedColor.tagColor
       const payload = {
-        title: product.title,
+        title: (product.title || '').toUpperCase().trim(),
         name_code: product.nameCode,
-        category: product.category.toUpperCase().trim(),
+        category: (product.category || 'GERAL').toUpperCase().trim(),
         image: product.image || '/placeholder.png',
         datasheet_name: product.datasheetName || null,
         datasheet_url: product.datasheetUrl || null,
@@ -108,9 +108,9 @@ export function useAdminProducts(triggerToast: (msg: string, type?: 'success' | 
       const bgClass = product.bgClass || selectedColor.bgClass
       const tagColorClass = product.tagColorClass || selectedColor.tagColor
       const payload: any = {
-        title: product.title,
+        title: (product.title || '').toUpperCase().trim(),
         name_code: product.nameCode,
-        category: product.category.toUpperCase().trim(),
+        category: (product.category || 'GERAL').toUpperCase().trim(),
         tag: product.tag,
         tag_color_class: tagColorClass,
         bg_class: bgClass,
@@ -322,8 +322,9 @@ export function useAdminProducts(triggerToast: (msg: string, type?: 'success' | 
           row[cleanH] = val
         })
         
+        const titleAliases = ['title', 'tittle', 'titulo', 'nome', 'title_pt', 'nome_produto']
         const exAliases = ['ex_image_url', 'ex_url', 'ex_foto', 'foto_ex', 'ex']
-        const coreColumns = ['title', 'name_code', 'category', 'tag', 'layout_slots', 'image_url', 'datasheet_url', 'specs', ...exAliases]
+        const coreColumns = [...titleAliases, 'name_code', 'category', 'tag', 'layout_slots', 'image_url', 'datasheet_url', 'specs', ...exAliases]
         const specs: { label: string, value: string }[] = []
         
         if (row['specs']) {
@@ -520,10 +521,19 @@ export function useAdminProducts(triggerToast: (msg: string, type?: 'success' | 
           }
         }
 
+        let rawTitle = ''
+        for (const alias of titleAliases) {
+          if (row[alias]) {
+            rawTitle = row[alias].trim()
+            break
+          }
+        }
+        const titleValue = rawTitle.toUpperCase().trim()
+
         parsedProducts.push({
-          title: row['title'],
+          title: titleValue,
           name_code: row['name_code'],
-          category: categoryValue,
+          category: categoryValue.toUpperCase().trim(),
           tag: row['tag'] || 'ATIVO',
           tag_color_class: 'text-[#005db7]',
           bg_class: 'bg-secondary',
@@ -570,6 +580,45 @@ export function useAdminProducts(triggerToast: (msg: string, type?: 'success' | 
     reader.readAsText(file)
   }
 
+  const convertTitlesAndCategoriesToUppercase = async () => {
+    if (!confirm('Deseja converter os TÍTULOS e CATEGORIAS de TODOS os equipamentos cadastrados para LETRAS MAIÚSCULAS (UPPERCASE)?')) return
+    loading.value = true
+    try {
+      const { data: allProds, error: fetchErr } = await supabase
+        .from('products')
+        .select('id, title, category')
+      
+      if (fetchErr) throw fetchErr
+      if (!allProds || allProds.length === 0) {
+        triggerToast('Nenhum produto cadastrado.', 'error')
+        return
+      }
+
+      let updatedCount = 0
+      for (const p of allProds) {
+        const upperTitle = (p.title || '').toUpperCase().trim()
+        const upperCat = (p.category || 'GERAL').toUpperCase().trim()
+        
+        if (upperTitle !== p.title || upperCat !== p.category) {
+          const { error: updateErr } = await supabase
+            .from('products')
+            .update({ title: upperTitle, category: upperCat })
+            .eq('id', p.id)
+          
+          if (!updateErr) updatedCount++
+        }
+      }
+
+      triggerToast(`${updatedCount} equipamento(s) convertidos para LETRAS MAIÚSCULAS com sucesso!`, 'success')
+      await fetchProducts()
+    } catch (err: any) {
+      console.error(err)
+      triggerToast(`Erro ao converter para maiúsculas: ${err.message || err}`, 'error')
+    } finally {
+      loading.value = false
+    }
+  }
+
   return {
     products,
     loading,
@@ -583,6 +632,7 @@ export function useAdminProducts(triggerToast: (msg: string, type?: 'success' | 
     deleteProduct,
     deleteMultipleProducts,
     deleteAllProducts,
-    handleCsvUpload
+    handleCsvUpload,
+    convertTitlesAndCategoriesToUppercase
   }
 }
