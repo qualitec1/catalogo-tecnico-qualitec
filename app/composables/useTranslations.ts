@@ -342,6 +342,25 @@ export default function useTranslations() {
   })
 
   const translateCategory = (catName: string): string => {
+    if (!catName) return ''
+    const catUpper = catName.toUpperCase().trim()
+    const { pdfSettings } = usePdfSettings()
+    const settings = pdfSettings.value ? pdfSettings.value[catUpper] : null
+    if (settings) {
+      const lang = currentLang.value
+      const layout = settings.layout_settings || {}
+      let custom: any = null
+      if (lang === 'en') {
+        custom = layout.cover_title_en || settings.cover_title_en || settings.coverTitleEn
+      } else if (lang === 'es') {
+        custom = layout.cover_title_es || layout.cover_title_de || settings.cover_title_es || settings.coverTitleEs
+      } else {
+        custom = layout.cover_title_pt || settings.cover_title_pt || settings.coverTitlePt
+      }
+      if (custom && String(custom).trim()) {
+        return String(custom).trim().toUpperCase()
+      }
+    }
     return translateCategoryName(catName, currentLang.value)
   }
 

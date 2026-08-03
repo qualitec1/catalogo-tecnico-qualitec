@@ -108,6 +108,13 @@ export default function usePdfSettings() {
               logo_position_x: item.logo_position_x || '-60px',
               logo_position_y: item.logo_position_y || '-30px',
               intro_image_url: item.intro_image_url || (item.layout_settings && (item.layout_settings.intro_image_url || item.layout_settings.introImageUrl)) || null,
+              layout_settings: item.layout_settings || {},
+              cover_title_pt: item.cover_title_pt || (item.layout_settings && item.layout_settings.cover_title_pt) || null,
+              cover_title_en: item.cover_title_en || (item.layout_settings && item.layout_settings.cover_title_en) || null,
+              cover_title_es: item.cover_title_es || (item.layout_settings && (item.layout_settings.cover_title_es || item.layout_settings.cover_title_de)) || null,
+              coverTitlePt: item.cover_title_pt || (item.layout_settings && item.layout_settings.cover_title_pt) || null,
+              coverTitleEn: item.cover_title_en || (item.layout_settings && item.layout_settings.cover_title_en) || null,
+              coverTitleEs: item.cover_title_es || (item.layout_settings && (item.layout_settings.cover_title_es || item.layout_settings.cover_title_de)) || null,
             }
             console.log(`[usePdfSettings] Loaded settings for category '${catKey}':`, JSON.stringify({
               logo_width: mapping[catKey].logo_width,

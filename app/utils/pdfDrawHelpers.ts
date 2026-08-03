@@ -25,12 +25,16 @@ export function getCoverTexts(categoryName: string, settings: any, lang: string 
 
   const langKey = (lang || 'pt').toLowerCase()
   const layout = settings?.layout_settings || {}
-  const customLangTitle = settings ? (
-    layout[`cover_title_${langKey}`] ||
-    layout[`coverTitle${langKey.toUpperCase()}`] ||
-    settings[`cover_title_${langKey}`] || 
-    settings[`coverTitle${langKey.toUpperCase()}`]
-  ) : null
+  let customLangTitle = null
+  if (settings) {
+    if (langKey === 'en') {
+      customLangTitle = layout.cover_title_en || layout.coverTitleEn || settings.cover_title_en || settings.coverTitleEn
+    } else if (langKey === 'es') {
+      customLangTitle = layout.cover_title_es || layout.coverTitleEs || layout.cover_title_de || layout.coverTitleDe || settings.cover_title_es || settings.coverTitleEs || settings.cover_title_de || settings.coverTitleDe
+    } else {
+      customLangTitle = layout.cover_title_pt || layout.coverTitlePt || settings.cover_title_pt || settings.coverTitlePt
+    }
+  }
   let title = customLangTitle ? String(customLangTitle).trim().toUpperCase() : ''
 
   if (!title) {
@@ -483,27 +487,24 @@ export function drawPageHeader(
   pdf.setFont(fontName, fontStyle)
   pdf.setFontSize(fontSize)
   
-  const { currentLang } = useTranslations()
+  const { currentLang, translateCategory } = useTranslations()
   const lang = (settings as any)?.lang || currentLang.value || 'pt'
-  let catUpper = category.toUpperCase().trim()
-
-  if (lang !== 'pt') {
-    if (categoryDict[catUpper] && categoryDict[catUpper][lang as 'en' | 'de']) {
-      catUpper = categoryDict[catUpper][lang as 'en' | 'de']
-    } else if (catUpper === 'GERAL') {
-      catUpper = lang === 'en' ? 'GENERAL' : 'ALLGEMEIN'
-    } else if (catUpper === 'VÁLVULAS 3 VIAS') {
-      catUpper = lang === 'en' ? 'DIVERTER VALVES' : '3-WEGE-VENTILE'
-    } else if (catUpper === 'VÁLVULAS CRIOGÊNICAS') {
-      catUpper = lang === 'en' ? 'CRYOGENIC VALVES' : 'KRYO-VENTILE'
-    } else if (catUpper === 'VÁLVULAS DE SEGURANÇA') {
-      catUpper = lang === 'en' ? 'SAFETY VALVES' : 'SICHERHEITSVENTILE'
-    } else if (catUpper === 'VÁLVULAS GLOBO') {
-      catUpper = lang === 'en' ? 'GLOBE VALVES' : 'GLOBE-VENTILE'
-    } else if (catUpper === 'TRANSMISSORES DE PRESSÃO') {
-      catUpper = lang === 'en' ? 'PRESSURE TRANSMITTERS' : 'DRUCKMESSUMFORMER'
+  const langKey = (lang || 'pt').toLowerCase()
+  const layout = settings?.layout_settings || {}
+  let customTitle = null
+  if (settings) {
+    if (langKey === 'en') {
+      customTitle = layout.cover_title_en || layout.coverTitleEn || settings.cover_title_en || settings.coverTitleEn
+    } else if (langKey === 'es') {
+      customTitle = layout.cover_title_es || layout.coverTitleEs || layout.cover_title_de || layout.coverTitleDe || settings.cover_title_es || settings.coverTitleEs || settings.cover_title_de || settings.coverTitleDe
+    } else {
+      customTitle = layout.cover_title_pt || layout.coverTitlePt || settings.cover_title_pt || settings.coverTitlePt
     }
   }
+
+  let catUpper = customTitle && String(customTitle).trim()
+    ? String(customTitle).trim().toUpperCase()
+    : translateCategory(category)
 
   const catNorm = category.toUpperCase().trim()
   const iconKey = imageCache && imageCache.has(`category_icon_${catNorm}`)

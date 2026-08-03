@@ -306,7 +306,7 @@
         </div>
       </section>
 
-      <!-- Novidades / Produtos em Destaque (Estilo Foto 2) -->
+      <!-- Novidades / Produtos em Destaque -->
       <section id="novidades" class="py-14 md:py-16 px-4 md:px-10 bg-white">
         <div class="max-w-[1100px] mx-auto">
           <h2 class="text-2xl md:text-3xl text-[#555555] font-normal mb-8">{{ mergedTranslations['home.news_title'] || 'Novidades' }}</h2>
@@ -321,14 +321,15 @@
                 rel="noopener"
                 class="flex flex-col group cursor-pointer no-underline"
               >
-                <div class="w-full bg-[#e0e0e0] h-48 md:h-52 flex items-center justify-center p-4">
+                <div class="w-full bg-[#d9d9d9] h-48 md:h-52 flex items-center justify-center p-4 overflow-hidden">
                   <img
                     :alt="getCardTitle(card)"
-                    class="object-contain max-h-full transition-transform duration-200 group-hover:scale-105"
-                    :src="card.image_url"
+                    class="object-contain max-h-full max-w-full transition-transform duration-200 group-hover:scale-105"
+                    :src="formatNewsImageUrl(card.image_url)"
+                    @error="handleImgError"
                   />
                 </div>
-                <h3 class="text-center text-[#665c48] text-sm md:text-base font-normal mt-3 leading-snug group-hover:text-[#665c48] transition-colors">
+                <h3 class="text-center text-[#555555] text-sm md:text-base font-normal mt-3 leading-snug group-hover:text-[#004A96] transition-colors">
                   <span class="news-card-title">{{ getCardTitle(card) }}</span>
                 </h3>
                 <p v-if="card.show_link_button && getCardLinkLabel(card)" class="text-center text-xs text-[#004A96] mt-1.5 underline">
@@ -341,14 +342,15 @@
                 :to="getCardHref(card)"
                 class="flex flex-col group cursor-pointer no-underline"
               >
-                <div class="w-full bg-[#e0e0e0] h-48 md:h-52 flex items-center justify-center p-4">
+                <div class="w-full bg-[#d9d9d9] h-48 md:h-52 flex items-center justify-center p-4 overflow-hidden">
                   <img
                     :alt="getCardTitle(card)"
-                    class="object-contain max-h-full transition-transform duration-200 group-hover:scale-105"
-                    :src="card.image_url"
+                    class="object-contain max-h-full max-w-full transition-transform duration-200 group-hover:scale-105"
+                    :src="formatNewsImageUrl(card.image_url)"
+                    @error="handleImgError"
                   />
                 </div>
-                <h3 class="text-center text-[#665c48] text-sm md:text-base font-normal mt-3 leading-snug group-hover:text-[#665c48] transition-colors">
+                <h3 class="text-center text-[#555555] text-sm md:text-base font-normal mt-3 leading-snug group-hover:text-[#004A96] transition-colors">
                   <span class="news-card-title">{{ getCardTitle(card) }}</span>
                 </h3>
                 <p v-if="card.show_link_button && getCardLinkLabel(card)" class="text-center text-xs text-[#004A96] mt-1.5 underline">
@@ -523,6 +525,19 @@ const getCardLinkLabel = (card: NewsCard) => {
   if (lang === 'en') return card.link_label_en || card.link_label_pt
   if (lang === 'es') return card.link_label_es || card.link_label_pt
   return card.link_label_pt
+}
+
+const formatNewsImageUrl = (url: string) => {
+  if (!url) return '/placeholder.png'
+  if (url.startsWith('/') || url.startsWith('data:')) return url
+  return `/api/proxy-image?url=${encodeURIComponent(url)}`
+}
+
+const handleImgError = (e: Event) => {
+  const img = e.target as HTMLImageElement
+  if (!img.src.endsWith('/placeholder.png')) {
+    img.src = '/placeholder.png'
+  }
 }
 
 const getCardHref = (card: NewsCard) => {

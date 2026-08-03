@@ -295,9 +295,9 @@ const pdfFileInputs = ref<(HTMLInputElement | null)[]>([null, null, null])
 
 const fetchCategories = async () => {
   try {
-    const { data } = await (supabase as any).from('category_assets').select('name').order('sort_order', { ascending: true })
+    const { data } = await (supabase as any).from('category_assets').select('category').order('category', { ascending: true })
     if (data && data.length > 0) {
-      availableCategories.value = data.map((c: any) => c.name)
+      availableCategories.value = data.map((c: any) => c.category)
     }
   } catch {}
 }

@@ -381,10 +381,15 @@ watch(productFilterMode, (newVal) => {
   }
 })
 
+const { fetchPdfSettings } = usePdfSettings()
+
 watch(() => props.open, (isOpen) => {
-  if (isOpen && props.listableCategories && props.listableCategories.length > 0) {
-    if (!specificCoverCategory.value) specificCoverCategory.value = props.listableCategories[0]
-    if (!filterCategory.value) filterCategory.value = props.listableCategories[0]
+  if (isOpen) {
+    fetchPdfSettings()
+    if (props.listableCategories && props.listableCategories.length > 0) {
+      if (!specificCoverCategory.value) specificCoverCategory.value = props.listableCategories[0]
+      if (!filterCategory.value) filterCategory.value = props.listableCategories[0]
+    }
   }
 })
 
