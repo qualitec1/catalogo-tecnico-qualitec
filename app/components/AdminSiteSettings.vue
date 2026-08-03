@@ -140,287 +140,468 @@
         </div>
       </div>
 
-      <!-- ===== SEÇÃO: LOGOTIPO DO HEADER ===== -->
+      <!-- ===== SEÇÃO 1: CORES E DIMENSÕES DAS SEÇÕES DA HOME ===== -->
       <div class="space-y-6 bg-slate-50 p-5 rounded-lg border border-slate-200">
         <div class="flex items-center justify-between border-b border-slate-200 pb-3">
           <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wide flex items-center gap-2">
-            <span class="material-symbols-outlined text-blue-600">aspect_ratio</span>
-            Logotipo do Cabeçalho (Header)
+            <span class="material-symbols-outlined text-blue-600">view_day</span>
+            Cores e Dimensões das Seções da Home
           </h3>
-          <span class="text-[10px] bg-blue-100 text-blue-700 font-bold px-2 py-0.5 rounded uppercase">Tamanho & Imagem da Logo</span>
+          <div class="flex items-center gap-2">
+            <button @click="resetBlock('sections')" class="px-2.5 py-1 bg-amber-50 hover:bg-amber-100 border border-amber-300 text-amber-700 text-[10px] font-bold rounded transition-colors cursor-pointer flex items-center gap-1">
+              <span class="material-symbols-outlined text-xs">restart_alt</span>
+              Restaurar Padrões das Faixas
+            </button>
+            <span class="text-[10px] bg-blue-100 text-blue-700 font-bold px-2 py-0.5 rounded uppercase">Faixas Horizontais</span>
+          </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <!-- Coluna da Esquerda: Controles da Logo -->
-          <div class="space-y-5">
-            <!-- Imagem / URL da Logo -->
-            <div class="space-y-2">
-              <label class="block text-[10px] text-gray-600 font-bold uppercase tracking-wider">Imagem do Logotipo (URL ou Upload)</label>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <!-- 1. Principais segmentos -->
+          <div class="bg-white p-4 rounded-lg border border-gray-200 space-y-4">
+            <h4 class="text-xs font-bold text-slate-800 uppercase border-b pb-2 flex justify-between items-center">
+              <span>1. Principais Segmentos</span>
+              <span class="w-3 h-3 rounded-full border shadow-xs" :style="{ backgroundColor: settings.sec_segmentos_bg || '#ffffff' }"></span>
+            </h4>
+
+            <!-- Cor de Fundo -->
+            <div class="space-y-1.5">
+              <label class="block text-[10px] text-gray-500 font-bold uppercase">Cor de Fundo</label>
               <div class="flex items-center gap-2">
-                <input 
-                  v-model="settings.header_logo_url" 
-                  type="text" 
-                  placeholder="https://exemplo.com/logo-qualitec.png" 
-                  class="flex-1 border border-gray-300 px-3 py-2 text-xs rounded bg-white text-slate-800 focus:ring-1 focus:ring-blue-600 focus:outline-none"
-                />
-                <button 
-                  @click="triggerLogoUpload" 
-                  :disabled="uploadingLogo"
-                  class="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white px-3 py-2 rounded text-xs font-bold uppercase transition-colors flex items-center gap-1 border-0 cursor-pointer shrink-0"
-                >
-                  <span class="material-symbols-outlined text-sm">{{ uploadingLogo ? 'sync' : 'upload' }}</span>
-                  {{ uploadingLogo ? 'Enviando...' : 'Upload' }}
-                </button>
-              </div>
-              <input ref="logoFileInput" type="file" accept="image/*" class="hidden" @change="handleLogoUpload" />
-            </div>
-
-            <!-- Tamanho / Altura da Logo (pixels) -->
-            <div class="space-y-3 bg-white p-3.5 rounded border border-gray-200">
-              <div class="flex justify-between items-center text-[10px] text-gray-600 font-bold uppercase">
-                <span>Altura da Logo: {{ settings.header_logo_height || 48 }}px</span>
-                <span class="text-gray-400 font-normal">Aumentar ou Diminuir</span>
-              </div>
-              
-              <div class="flex items-center gap-3">
-                <input 
-                  type="range" 
-                  min="20" 
-                  max="120" 
-                  step="2" 
-                  v-model.number="settings.header_logo_height" 
-                  class="flex-1 accent-blue-600 cursor-pointer" 
-                />
-                <div class="flex items-center gap-1">
-                  <input 
-                    type="number" 
-                    min="15" 
-                    max="150" 
-                    v-model.number="settings.header_logo_height" 
-                    class="w-16 border border-gray-300 p-1 text-xs text-center rounded bg-white font-mono" 
-                  />
-                  <span class="text-xs text-gray-500 font-medium">px</span>
-                </div>
-              </div>
-
-              <!-- Atalhos Rápidos de Tamanho -->
-              <div class="pt-2 border-t border-gray-100 flex flex-wrap gap-1.5">
-                <button @click="settings.header_logo_height = 36" class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-[10px] font-bold rounded cursor-pointer transition-colors">Pequeno (36px)</button>
-                <button @click="settings.header_logo_height = 48" class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-[10px] font-bold rounded cursor-pointer transition-colors">Padrão (48px)</button>
-                <button @click="settings.header_logo_height = 60" class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-[10px] font-bold rounded cursor-pointer transition-colors">Médio (60px)</button>
-                <button @click="settings.header_logo_height = 75" class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-[10px] font-bold rounded cursor-pointer transition-colors">Grande (75px)</button>
-                <button @click="settings.header_logo_height = 90" class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-[10px] font-bold rounded cursor-pointer transition-colors">Gigante (90px)</button>
+                <input v-model="settings.sec_segmentos_bg" type="color" class="w-7 h-7 p-0 border-0 bg-transparent cursor-pointer shrink-0 rounded-full" />
+                <input v-model="settings.sec_segmentos_bg" type="text" placeholder="#ffffff" class="flex-1 border border-gray-300 px-2 py-1 text-xs rounded bg-white text-center font-mono uppercase focus:ring-1 focus:ring-blue-600 focus:outline-none" />
               </div>
             </div>
 
-            <!-- Deslocamento Livre de Posição (X e Y) -->
-            <div class="space-y-3 bg-white p-3.5 rounded border border-gray-200">
-              <div class="flex justify-between items-center text-[10px] text-gray-600 font-bold uppercase">
-                <span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm text-blue-600">open_with</span> Deslocamento Livre da Logo (X / Y)</span>
-                <button 
-                  type="button"
-                  @click="settings.header_logo_offset_x = 0; settings.header_logo_offset_y = 0" 
-                  class="text-[9px] text-blue-600 font-bold hover:underline bg-transparent border-0 cursor-pointer"
-                >
-                  Zerar Posição (0, 0)
-                </button>
+            <!-- Padding Superior -->
+            <div class="space-y-1">
+              <div class="flex justify-between text-[10px] text-gray-600 font-semibold">
+                <span>Espaçamento Superior (Padding Top)</span>
+                <span class="font-mono text-blue-600 font-bold">{{ settings.sec_segmentos_ptop ?? 20 }}px</span>
               </div>
+              <input v-model.number="settings.sec_segmentos_ptop" type="range" min="0" max="300" step="2" class="w-full accent-blue-600 cursor-pointer" />
+            </div>
 
-              <!-- Slider Horizontal X -->
-              <div class="space-y-1">
-                <div class="flex justify-between items-center text-[10px] text-gray-500 font-semibold">
-                  <span>Horizontal (X): {{ settings.header_logo_offset_x || 0 }}px</span>
-                  <span>Esquerda ◄ ► Direita</span>
-                </div>
-                <div class="flex items-center gap-3">
-                  <input 
-                    type="range" 
-                    min="-150" 
-                    max="150" 
-                    step="1" 
-                    v-model.number="settings.header_logo_offset_x" 
-                    class="flex-1 accent-blue-600 cursor-pointer" 
-                  />
-                  <div class="flex items-center gap-1">
-                    <input 
-                      type="number" 
-                      min="-250" 
-                      max="250" 
-                      v-model.number="settings.header_logo_offset_x" 
-                      class="w-16 border border-gray-300 p-1 text-xs text-center rounded bg-white font-mono" 
-                    />
-                    <span class="text-xs text-gray-500 font-medium">px</span>
-                  </div>
-                </div>
+            <!-- Padding Inferior -->
+            <div class="space-y-1">
+              <div class="flex justify-between text-[10px] text-gray-600 font-semibold">
+                <span>Espaçamento Inferior (Padding Bottom)</span>
+                <span class="font-mono text-blue-600 font-bold">{{ settings.sec_segmentos_pbot ?? 24 }}px</span>
               </div>
+              <input v-model.number="settings.sec_segmentos_pbot" type="range" min="0" max="300" step="2" class="w-full accent-blue-600 cursor-pointer" />
+            </div>
 
-              <!-- Slider Vertical Y -->
-              <div class="space-y-1">
-                <div class="flex justify-between items-center text-[10px] text-gray-500 font-semibold">
-                  <span>Vertical (Y): {{ settings.header_logo_offset_y || 0 }}px</span>
-                  <span>Subir ▲ ▼ Descer</span>
-                </div>
-                <div class="flex items-center gap-3">
-                  <input 
-                    type="range" 
-                    min="-60" 
-                    max="60" 
-                    step="1" 
-                    v-model.number="settings.header_logo_offset_y" 
-                    class="flex-1 accent-blue-600 cursor-pointer" 
-                  />
-                  <div class="flex items-center gap-1">
-                    <input 
-                      type="number" 
-                      min="-100" 
-                      max="100" 
-                      v-model.number="settings.header_logo_offset_y" 
-                      class="w-16 border border-gray-300 p-1 text-xs text-center rounded bg-white font-mono" 
-                    />
-                    <span class="text-xs text-gray-500 font-medium">px</span>
-                  </div>
-                </div>
+            <!-- Altura Mínima -->
+            <div class="space-y-1">
+              <div class="flex justify-between text-[10px] text-gray-600 font-semibold">
+                <span>Altura Mínima (Min Height)</span>
+                <span class="font-mono text-blue-600 font-bold">{{ settings.sec_segmentos_min_height ?? 0 }}px</span>
               </div>
+              <input v-model.number="settings.sec_segmentos_min_height" type="range" min="0" max="800" step="10" class="w-full accent-blue-600 cursor-pointer" />
             </div>
           </div>
 
-          <!-- Coluna da Direita: Preview Interativo do Cabeçalho -->
-          <div class="space-y-2">
-            <label class="block text-[10px] text-gray-600 font-bold uppercase tracking-wider flex items-center justify-between">
-              <span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm text-blue-600">visibility</span> Pré-visualização (Header Fixo: 64px)</span>
-              <span class="text-blue-700 font-bold">Height: {{ settings.header_logo_height || 48 }}px | X: {{ settings.header_logo_offset_x || 0 }}px | Y: {{ settings.header_logo_offset_y || 0 }}px</span>
-            </label>
+          <!-- 2. Novidades -->
+          <div class="bg-white p-4 rounded-lg border border-gray-200 space-y-4">
+            <h4 class="text-xs font-bold text-slate-800 uppercase border-b pb-2 flex justify-between items-center">
+              <span>2. Novidades</span>
+              <span class="w-3 h-3 rounded-full border shadow-xs" :style="{ backgroundColor: settings.sec_novidades_bg || '#f0f0f0' }"></span>
+            </h4>
 
-            <!-- Box de Preview com Altura Fixa -->
-            <div class="w-full bg-white border border-gray-300 rounded-lg px-4 shadow-sm flex items-center justify-between overflow-hidden h-16 min-h-[64px] max-h-[64px] relative">
-              <div class="flex items-center h-full relative">
-                <img 
-                  :src="settings.header_logo_url || 'https://lh3.googleusercontent.com/aida/AP1WRLvb_lGcigKW6su6LN_Xd0Bf0AXsewLIulAi0GxcP_qLjBKDQwKkr4TLJgHAmnOXZ_CnTBIs1fPQUk9wsPoaEnw1KIo3G_pm2AD72CQGZpdCmL0me0d5Nw3sO0Jq1oNeH0TPtE84vraycYx20zMTmWG9t98pFKFcZH8ovF5vpsN6YK6J2ZqjcN6pDWW8byB81uqO2z6Crk115D73Mm9qXI78ObCCnUJ9BmIfEJoVkKB3TB8-KPNPPQ8kG9Y'" 
-                  alt="Qualitec Logo" 
-                  class="object-contain transition-transform duration-75"
-                  :style="{ 
-                    height: `${settings.header_logo_height || 48}px`,
-                    transform: `translate(${settings.header_logo_offset_x || 0}px, ${settings.header_logo_offset_y || 0}px)`
-                  }"
-                />
+            <!-- Cor de Fundo -->
+            <div class="space-y-1.5">
+              <label class="block text-[10px] text-gray-500 font-bold uppercase">Cor de Fundo</label>
+              <div class="flex items-center gap-2">
+                <input v-model="settings.sec_novidades_bg" type="color" class="w-7 h-7 p-0 border-0 bg-transparent cursor-pointer shrink-0 rounded-full" />
+                <input v-model="settings.sec_novidades_bg" type="text" placeholder="#f0f0f0" class="flex-1 border border-gray-300 px-2 py-1 text-xs rounded bg-white text-center font-mono uppercase focus:ring-1 focus:ring-blue-600 focus:outline-none" />
               </div>
-              <div class="hidden sm:flex items-center gap-4 text-xs font-semibold text-gray-600">
-                <span class="text-blue-700 border-b-2 border-blue-700 pb-0.5 font-bold">Início</span>
-                <span>Catálogo</span>
-                <span>Segmentos</span>
-                <span>Novidades</span>
-                <span>Contato</span>
+            </div>
+
+            <!-- Padding Superior -->
+            <div class="space-y-1">
+              <div class="flex justify-between text-[10px] text-gray-600 font-semibold">
+                <span>Espaçamento Superior (Padding Top)</span>
+                <span class="font-mono text-blue-600 font-bold">{{ settings.sec_novidades_ptop ?? 36 }}px</span>
               </div>
+              <input v-model.number="settings.sec_novidades_ptop" type="range" min="0" max="300" step="2" class="w-full accent-blue-600 cursor-pointer" />
+            </div>
+
+            <!-- Padding Inferior -->
+            <div class="space-y-1">
+              <div class="flex justify-between text-[10px] text-gray-600 font-semibold">
+                <span>Espaçamento Inferior (Padding Bottom)</span>
+                <span class="font-mono text-blue-600 font-bold">{{ settings.sec_novidades_pbot ?? 44 }}px</span>
+              </div>
+              <input v-model.number="settings.sec_novidades_pbot" type="range" min="0" max="300" step="2" class="w-full accent-blue-600 cursor-pointer" />
+            </div>
+
+            <!-- Altura Mínima -->
+            <div class="space-y-1">
+              <div class="flex justify-between text-[10px] text-gray-600 font-semibold">
+                <span>Altura Mínima (Min Height)</span>
+                <span class="font-mono text-blue-600 font-bold">{{ settings.sec_novidades_min_height ?? 0 }}px</span>
+              </div>
+              <input v-model.number="settings.sec_novidades_min_height" type="range" min="0" max="800" step="10" class="w-full accent-blue-600 cursor-pointer" />
+            </div>
+          </div>
+
+          <!-- 3. Newsletter -->
+          <div class="bg-white p-4 rounded-lg border border-gray-200 space-y-4">
+            <h4 class="text-xs font-bold text-slate-800 uppercase border-b pb-2 flex justify-between items-center">
+              <span>3. Newsletter</span>
+              <span class="w-3 h-3 rounded-full border shadow-xs" :style="{ backgroundColor: settings.sec_newsletter_bg || '#ffffff' }"></span>
+            </h4>
+
+            <!-- Cor de Fundo -->
+            <div class="space-y-1.5">
+              <label class="block text-[10px] text-gray-500 font-bold uppercase">Cor de Fundo</label>
+              <div class="flex items-center gap-2">
+                <input v-model="settings.sec_newsletter_bg" type="color" class="w-7 h-7 p-0 border-0 bg-transparent cursor-pointer shrink-0 rounded-full" />
+                <input v-model="settings.sec_newsletter_bg" type="text" placeholder="#ffffff" class="flex-1 border border-gray-300 px-2 py-1 text-xs rounded bg-white text-center font-mono uppercase focus:ring-1 focus:ring-blue-600 focus:outline-none" />
+              </div>
+            </div>
+
+            <!-- Padding Superior -->
+            <div class="space-y-1">
+              <div class="flex justify-between text-[10px] text-gray-600 font-semibold">
+                <span>Espaçamento Superior (Padding Top)</span>
+                <span class="font-mono text-blue-600 font-bold">{{ settings.sec_newsletter_ptop ?? 30 }}px</span>
+              </div>
+              <input v-model.number="settings.sec_newsletter_ptop" type="range" min="0" max="300" step="2" class="w-full accent-blue-600 cursor-pointer" />
+            </div>
+
+            <!-- Padding Inferior -->
+            <div class="space-y-1">
+              <div class="flex justify-between text-[10px] text-gray-600 font-semibold">
+                <span>Espaçamento Inferior (Padding Bottom)</span>
+                <span class="font-mono text-blue-600 font-bold">{{ settings.sec_newsletter_pbot ?? 40 }}px</span>
+              </div>
+              <input v-model.number="settings.sec_newsletter_pbot" type="range" min="0" max="300" step="2" class="w-full accent-blue-600 cursor-pointer" />
+            </div>
+
+            <!-- Altura Mínima -->
+            <div class="space-y-1">
+              <div class="flex justify-between text-[10px] text-gray-600 font-semibold">
+                <span>Altura Mínima (Min Height)</span>
+                <span class="font-mono text-blue-600 font-bold">{{ settings.sec_newsletter_min_height ?? 0 }}px</span>
+              </div>
+              <input v-model.number="settings.sec_newsletter_min_height" type="range" min="0" max="800" step="10" class="w-full accent-blue-600 cursor-pointer" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Live Preview das Faixas -->
+        <div class="bg-white p-3.5 rounded border border-gray-200 space-y-2">
+          <span class="text-[10px] text-gray-500 font-bold uppercase tracking-wider block">Pré-Visualização ao Vivo (Sequência das 3 Faixas na Home)</span>
+          <div class="border rounded overflow-hidden shadow-2xs font-mono text-[10px]">
+            <!-- Segmentos preview -->
+            <div
+              class="p-2 border-b flex justify-between items-center transition-colors"
+              :style="{ backgroundColor: settings.sec_segmentos_bg || '#ffffff', paddingTop: `${(settings.sec_segmentos_ptop ?? 20)/4}px`, paddingBottom: `${(settings.sec_segmentos_pbot ?? 24)/4}px` }"
+            >
+              <span class="font-sans font-medium text-gray-700">Principais segmentos</span>
+              <span class="text-gray-400">Top: {{ settings.sec_segmentos_ptop }}px | Bot: {{ settings.sec_segmentos_pbot }}px</span>
+            </div>
+            <!-- Novidades preview -->
+            <div
+              class="p-2 border-b flex justify-between items-center transition-colors"
+              :style="{ backgroundColor: settings.sec_novidades_bg || '#f0f0f0', paddingTop: `${(settings.sec_novidades_ptop ?? 36)/4}px`, paddingBottom: `${(settings.sec_novidades_pbot ?? 44)/4}px` }"
+            >
+              <span class="font-sans font-medium text-gray-700">Novidades</span>
+              <span class="text-gray-400">Top: {{ settings.sec_novidades_ptop }}px | Bot: {{ settings.sec_novidades_pbot }}px</span>
+            </div>
+            <!-- Newsletter preview -->
+            <div
+              class="p-2 flex justify-between items-center transition-colors"
+              :style="{ backgroundColor: settings.sec_newsletter_bg || '#ffffff', paddingTop: `${(settings.sec_newsletter_ptop ?? 30)/4}px`, paddingBottom: `${(settings.sec_newsletter_pbot ?? 40)/4}px` }"
+            >
+              <span class="font-sans font-medium text-gray-700">Newsletter</span>
+              <span class="text-gray-400">Top: {{ settings.sec_newsletter_ptop }}px | Bot: {{ settings.sec_newsletter_pbot }}px</span>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- ===== SEÇÃO: BANNER PRINCIPAL (HERO SECTION) ===== -->
+      <!-- ===== SEÇÃO 2: CARDS DE PRINCIPAIS SEGMENTOS ===== -->
       <div class="space-y-6 bg-slate-50 p-5 rounded-lg border border-slate-200">
         <div class="flex items-center justify-between border-b border-slate-200 pb-3">
           <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wide flex items-center gap-2">
-            <span class="material-symbols-outlined text-blue-600">featured_video</span>
-            Banner Principal da Home (Hero)
+            <span class="material-symbols-outlined text-blue-600">style</span>
+            Cards de Principais Segmentos
           </h3>
-          <span class="text-[10px] bg-blue-100 text-blue-700 font-bold px-2 py-0.5 rounded uppercase">Edição de Imagem, Vídeo e Posição Livre</span>
+          <div class="flex items-center gap-2">
+            <button @click="resetBlock('segmentCards')" class="px-2.5 py-1 bg-amber-50 hover:bg-amber-100 border border-amber-300 text-amber-700 text-[10px] font-bold rounded transition-colors cursor-pointer flex items-center gap-1">
+              <span class="material-symbols-outlined text-xs">restart_alt</span>
+              Restaurar Padrões destes Cards
+            </button>
+            <span class="text-[10px] bg-blue-100 text-blue-700 font-bold px-2 py-0.5 rounded uppercase">Estilo Visual</span>
+          </div>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <!-- Coluna da Esquerda: Formulário de Configuração -->
-          <div class="space-y-5">
+          <!-- Controles -->
+          <div class="space-y-4 bg-white p-4 rounded-lg border border-gray-200">
+            <!-- Altura da Imagem -->
+            <div class="space-y-1">
+              <div class="flex justify-between text-[10px] text-gray-600 font-semibold">
+                <span>Altura da Área da Imagem</span>
+                <span class="font-mono text-blue-600 font-bold">{{ settings.seg_card_img_height ?? 110 }}px</span>
+              </div>
+              <input v-model.number="settings.seg_card_img_height" type="range" min="60" max="450" step="2" class="w-full accent-blue-600 cursor-pointer" />
+            </div>
+
+            <!-- Altura da Legenda -->
+            <div class="space-y-1">
+              <div class="flex justify-between text-[10px] text-gray-600 font-semibold">
+                <span>Altura da Faixa da Legenda</span>
+                <span class="font-mono text-blue-600 font-bold">{{ settings.seg_caption_height ?? 55 }}px</span>
+              </div>
+              <input v-model.number="settings.seg_caption_height" type="range" min="30" max="150" step="2" class="w-full accent-blue-600 cursor-pointer" />
+            </div>
+
+            <!-- Cor de Fundo da Legenda -->
+            <div class="space-y-1.5">
+              <label class="block text-[10px] text-gray-500 font-bold uppercase">Cor de Fundo da Legenda</label>
+              <div class="flex items-center gap-2">
+                <input v-model="settings.seg_caption_bg" type="color" class="w-7 h-7 p-0 border-0 bg-transparent cursor-pointer shrink-0 rounded-full" />
+                <input v-model="settings.seg_caption_bg" type="text" placeholder="#e8e3e2" class="flex-1 border border-gray-300 px-2 py-1 text-xs rounded bg-white text-center font-mono uppercase focus:ring-1 focus:ring-blue-600 focus:outline-none" />
+              </div>
+            </div>
+
+            <!-- Opacidade da Legenda -->
+            <div class="space-y-1">
+              <div class="flex justify-between text-[10px] text-gray-600 font-semibold">
+                <span>Opacidade da Legenda</span>
+                <span class="font-mono text-blue-600 font-bold">{{ settings.seg_caption_opacity ?? 100 }}%</span>
+              </div>
+              <input v-model.number="settings.seg_caption_opacity" type="range" min="0" max="100" step="1" class="w-full accent-blue-600 cursor-pointer" />
+              <div class="text-[9px] text-gray-400 font-mono">
+                Resultado: <span class="text-blue-600 font-bold">{{ hexToRgba(settings.seg_caption_bg, settings.seg_caption_opacity) }}</span>
+              </div>
+            </div>
+
+            <!-- Cor do Texto -->
+            <div class="space-y-1.5">
+              <label class="block text-[10px] text-gray-500 font-bold uppercase">Cor do Texto da Legenda</label>
+              <div class="flex items-center gap-2">
+                <input v-model="settings.seg_caption_color" type="color" class="w-7 h-7 p-0 border-0 bg-transparent cursor-pointer shrink-0 rounded-full" />
+                <input v-model="settings.seg_caption_color" type="text" placeholder="#444444" class="flex-1 border border-gray-300 px-2 py-1 text-xs rounded bg-white text-center font-mono uppercase focus:ring-1 focus:ring-blue-600 focus:outline-none" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Live Preview -->
+          <div class="bg-white p-4 rounded-lg border border-gray-200 space-y-3 flex flex-col justify-between">
+            <span class="text-[10px] text-gray-500 font-bold uppercase tracking-wider block">Pré-Visualização do Card de Segmento (Com Faixa Sobreposta)</span>
+            
+            <div class="w-56 mx-auto border rounded overflow-hidden relative shadow-xs bg-slate-200" :style="{ height: `${Math.min(180, (settings.seg_card_img_height ?? 165))}px`, maxWidth: '100%' }">
+              <div class="w-full h-full flex items-center justify-center text-[10px] text-slate-400 font-mono">
+                [ Imagem do Segmento ]
+              </div>
+              <div
+                class="absolute bottom-0 left-0 right-0 flex items-center justify-center p-2 text-center transition-colors backdrop-blur-xs"
+                :style="{
+                  height: `${settings.seg_caption_height ?? 48}px`,
+                  backgroundColor: hexToRgba(settings.seg_caption_bg || '#ffffff', settings.seg_caption_opacity ?? 82),
+                  color: settings.seg_caption_color || '#333333'
+                }"
+              >
+                <span class="text-xs font-normal">Criogênia &amp; Gases</span>
+              </div>
+            </div>
+
+            <div class="text-[10px] text-gray-400 font-mono text-center">
+              Card: {{ settings.seg_card_img_height }}px | Faixa Transparente: {{ settings.seg_caption_height }}px @ {{ settings.seg_caption_opacity ?? 82 }}%
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== SEÇÃO 3: CARDS DE NOVIDADES ===== -->
+      <div class="space-y-6 bg-slate-50 p-5 rounded-lg border border-slate-200">
+        <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+          <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wide flex items-center gap-2">
+            <span class="material-symbols-outlined text-blue-600">newspaper</span>
+            Cards de Novidades
+          </h3>
+          <div class="flex items-center gap-2">
+            <button @click="resetBlock('newsCards')" class="px-2.5 py-1 bg-amber-50 hover:bg-amber-100 border border-amber-300 text-amber-700 text-[10px] font-bold rounded transition-colors cursor-pointer flex items-center gap-1">
+              <span class="material-symbols-outlined text-xs">restart_alt</span>
+              Restaurar Padrões destes Cards
+            </button>
+            <span class="text-[10px] bg-blue-100 text-blue-700 font-bold px-2 py-0.5 rounded uppercase">Overlay Semitransparente</span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- Controles -->
+          <div class="space-y-4 bg-white p-4 rounded-lg border border-gray-200">
+            <!-- Altura Total do Card -->
+            <div class="space-y-1">
+              <div class="flex justify-between text-[10px] text-gray-600 font-semibold">
+                <span>Altura Total do Card</span>
+                <span class="font-mono text-blue-600 font-bold">{{ settings.news_card_height ?? 165 }}px</span>
+              </div>
+              <input v-model.number="settings.news_card_height" type="range" min="100" max="500" step="5" class="w-full accent-blue-600 cursor-pointer" />
+            </div>
+
+            <!-- Altura da Imagem -->
+            <div class="space-y-1">
+              <div class="flex justify-between text-[10px] text-gray-600 font-semibold">
+                <span>Altura da Área da Imagem</span>
+                <span class="font-mono text-blue-600 font-bold">{{ settings.news_img_height ?? 165 }}px</span>
+              </div>
+              <input v-model.number="settings.news_img_height" type="range" min="60" max="450" step="5" class="w-full accent-blue-600 cursor-pointer" />
+            </div>
+
+            <!-- Altura da Faixa -->
+            <div class="space-y-1">
+              <div class="flex justify-between text-[10px] text-gray-600 font-semibold">
+                <span>Altura da Faixa Transparente</span>
+                <span class="font-mono text-blue-600 font-bold">{{ settings.news_caption_height ?? 48 }}px</span>
+              </div>
+              <input v-model.number="settings.news_caption_height" type="range" min="30" max="150" step="2" class="w-full accent-blue-600 cursor-pointer" />
+            </div>
+
+            <!-- Opacidade da Faixa -->
+            <div class="space-y-1">
+              <div class="flex justify-between text-[10px] text-gray-600 font-semibold">
+                <span>Opacidade da Faixa</span>
+                <span class="font-mono text-blue-600 font-bold">{{ settings.news_caption_opacity ?? 82 }}%</span>
+              </div>
+              <input v-model.number="settings.news_caption_opacity" type="range" min="0" max="100" step="1" class="w-full accent-blue-600 cursor-pointer" />
+              <div class="text-[9px] text-gray-400 font-mono">
+                Resultado aplicado: <span class="text-blue-600">{{ hexToRgba(settings.news_caption_bg, settings.news_caption_opacity) }}</span>
+              </div>
+            </div>
+
+            <!-- Cor de Fundo da Faixa -->
+            <div class="space-y-1.5">
+              <label class="block text-[10px] text-gray-500 font-bold uppercase">Cor Base da Faixa Transparente</label>
+              <div class="flex items-center gap-2">
+                <input v-model="settings.news_caption_bg" type="color" class="w-7 h-7 p-0 border-0 bg-transparent cursor-pointer shrink-0 rounded-full" />
+                <input v-model="settings.news_caption_bg" type="text" placeholder="#ffffff" class="flex-1 border border-gray-300 px-2 py-1 text-xs rounded bg-white text-center font-mono uppercase focus:ring-1 focus:ring-blue-600 focus:outline-none" />
+              </div>
+            </div>
+
+            <!-- Cor do Texto -->
+            <div class="space-y-1.5">
+              <label class="block text-[10px] text-gray-500 font-bold uppercase">Cor do Texto da Legenda</label>
+              <div class="flex items-center gap-2">
+                <input v-model="settings.news_caption_color" type="color" class="w-7 h-7 p-0 border-0 bg-transparent cursor-pointer shrink-0 rounded-full" />
+                <input v-model="settings.news_caption_color" type="text" placeholder="#333333" class="flex-1 border border-gray-300 px-2 py-1 text-xs rounded bg-white text-center font-mono uppercase focus:ring-1 focus:ring-blue-600 focus:outline-none" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Live Preview -->
+          <div class="bg-white p-4 rounded-lg border border-gray-200 space-y-3 flex flex-col justify-between">
+            <span class="text-[10px] text-gray-500 font-bold uppercase tracking-wider block">Pré-Visualização do Card de Novidades (Com Faixa Sobreposta)</span>
+            
+            <div
+              class="w-56 mx-auto border rounded overflow-hidden relative shadow-xs bg-slate-200 flex flex-col justify-between"
+              :style="{ height: `${Math.min(220, (settings.news_card_height ?? 165))}px`, maxWidth: '100%' }"
+            >
+              <div
+                class="w-full flex items-center justify-center text-[10px] text-slate-400 font-mono transition-all"
+                :style="{ height: `${Math.min(180, (settings.news_img_height ?? 165))}px` }"
+              >
+                [ Imagem do Card ]
+              </div>
+              <div
+                class="absolute bottom-0 left-0 right-0 flex items-center justify-center p-2 text-center transition-colors backdrop-blur-xs"
+                :style="{
+                  height: `${settings.news_caption_height ?? 48}px`,
+                  backgroundColor: hexToRgba(settings.news_caption_bg, settings.news_caption_opacity),
+                  color: settings.news_caption_color || '#333333'
+                }"
+              >
+                <span class="text-xs font-normal">Novo Catálogo</span>
+              </div>
+            </div>
+
+            <div class="text-[10px] text-gray-400 font-mono text-center">
+              Card: {{ settings.news_card_height }}px | Overlaid Strip: {{ settings.news_caption_height }}px @ {{ settings.news_caption_opacity }}%
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== SEÇÃO 4: CONFIGURAÇÕES GERAIS DA HOME & HERO BANNER ===== -->
+      <div class="space-y-6 bg-slate-50 p-5 rounded-lg border border-slate-200">
+        <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+          <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wide flex items-center gap-2">
+            <span class="material-symbols-outlined text-blue-600">view_carousel</span>
+            Fundo do Banner Principal (Hero) &amp; Card de Destaque
+          </h3>
+          <span class="text-[10px] bg-blue-100 text-blue-700 font-bold px-2 py-0.5 rounded uppercase">Hero Principal</span>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- Coluna da Esquerda: Controles -->
+          <div class="space-y-5 bg-white p-4 rounded-lg border border-gray-200">
             <!-- Tipo de Fundo -->
-            <div class="space-y-2">
-              <label class="block text-[10px] text-gray-600 font-bold uppercase tracking-wider">Tipo de Fundo</label>
-              <div class="flex items-center gap-4">
+            <div class="space-y-1.5">
+              <label class="block text-[10px] text-gray-600 font-bold uppercase tracking-wider">Tipo de Mídia de Fundo</label>
+              <div class="flex gap-4">
                 <label class="flex items-center gap-2 cursor-pointer text-xs font-semibold text-slate-700">
                   <input type="radio" v-model="settings.hero_bg_type" value="image" class="text-blue-600 focus:ring-blue-500" />
-                  <span class="flex items-center gap-1"><span class="material-symbols-outlined text-base">image</span> Foto / Imagem</span>
+                  <span>Imagem de Fundo</span>
                 </label>
                 <label class="flex items-center gap-2 cursor-pointer text-xs font-semibold text-slate-700">
                   <input type="radio" v-model="settings.hero_bg_type" value="video" class="text-blue-600 focus:ring-blue-500" />
-                  <span class="flex items-center gap-1"><span class="material-symbols-outlined text-base">movie</span> Vídeo (MP4/WebM)</span>
+                  <span>Vídeo em Loop (YouTube, Vimeo, MP4)</span>
                 </label>
               </div>
             </div>
 
-            <!-- URL de Imagem / Upload -->
-            <div v-if="settings.hero_bg_type === 'image'" class="space-y-2">
-              <label class="block text-[10px] text-gray-600 font-bold uppercase tracking-wider">Imagem de Fundo (URL ou Upload)</label>
-              <div class="flex items-center gap-2">
-                <input 
-                  v-model="settings.hero_bg_image_url" 
-                  type="text" 
-                  placeholder="https://exemplo.com/imagem-fundo.jpg" 
-                  class="flex-1 border border-gray-300 px-3 py-2 text-xs rounded bg-white text-slate-800 focus:ring-1 focus:ring-blue-600 focus:outline-none"
-                />
-                <button 
-                  @click="triggerBgUpload" 
-                  :disabled="uploadingBg"
-                  class="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white px-3 py-2 rounded text-xs font-bold uppercase transition-colors flex items-center gap-1 border-0 cursor-pointer shrink-0"
-                >
+            <!-- URL Imagem -->
+            <div v-if="settings.hero_bg_type === 'image'" class="space-y-1.5">
+              <label class="block text-[10px] text-gray-600 font-bold uppercase tracking-wider">URL da Imagem de Fundo</label>
+              <div class="flex gap-2">
+                <input v-model="settings.hero_bg_image_url" type="text" placeholder="https://..." class="w-full border border-gray-300 px-3 py-2 text-xs rounded bg-white text-slate-800 focus:ring-1 focus:ring-blue-600 focus:outline-none font-mono" />
+                <button type="button" @click="triggerBgUpload" :disabled="uploadingBg" class="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white px-3 py-2 rounded text-xs font-bold transition-colors shrink-0 border-0 cursor-pointer flex items-center gap-1">
                   <span class="material-symbols-outlined text-sm">{{ uploadingBg ? 'sync' : 'upload' }}</span>
-                  {{ uploadingBg ? 'Enviando...' : 'Upload' }}
+                  Upload
                 </button>
               </div>
-              <input ref="bgFileInput" type="file" accept="image/*,video/*" class="hidden" @change="handleBgUpload" />
             </div>
 
-            <!-- URL de Vídeo / Upload -->
-            <div v-else class="space-y-2">
-              <label class="block text-[10px] text-gray-600 font-bold uppercase tracking-wider">Vídeo de Fundo (URL MP4 ou Upload)</label>
-              <div class="flex items-center gap-2">
-                <input 
-                  v-model="settings.hero_bg_video_url" 
-                  type="text" 
-                  placeholder="https://exemplo.com/video-fundo.mp4" 
-                  class="flex-1 border border-gray-300 px-3 py-2 text-xs rounded bg-white text-slate-800 focus:ring-1 focus:ring-blue-600 focus:outline-none"
-                />
-                <button 
-                  @click="triggerBgUpload" 
-                  :disabled="uploadingBg"
-                  class="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white px-3 py-2 rounded text-xs font-bold uppercase transition-colors flex items-center gap-1 border-0 cursor-pointer shrink-0"
-                >
+            <!-- URL Vídeo -->
+            <div v-else class="space-y-1.5">
+              <label class="block text-[10px] text-gray-600 font-bold uppercase tracking-wider">URL do Vídeo (MP4, YouTube ou Vimeo)</label>
+              <div class="flex gap-2">
+                <input v-model="settings.hero_bg_video_url" type="text" placeholder="https://youtube.com/watch?v=... ou https://..." class="w-full border border-gray-300 px-3 py-2 text-xs rounded bg-white text-slate-800 focus:ring-1 focus:ring-blue-600 focus:outline-none font-mono" />
+                <button type="button" @click="triggerBgUpload" :disabled="uploadingBg" class="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white px-3 py-2 rounded text-xs font-bold transition-colors shrink-0 border-0 cursor-pointer flex items-center gap-1">
                   <span class="material-symbols-outlined text-sm">{{ uploadingBg ? 'sync' : 'upload' }}</span>
-                  {{ uploadingBg ? 'Enviando...' : 'Upload' }}
+                  Upload MP4
                 </button>
               </div>
-              <input ref="bgFileInput" type="file" accept="video/*,image/*" class="hidden" @change="handleBgUpload" />
             </div>
 
-            <!-- Frase do Card Verde -->
+            <!-- Texto do Card Verde -->
             <div class="space-y-1.5">
-              <label class="block text-[10px] text-gray-600 font-bold uppercase tracking-wider">Frase / Texto do Card Destaque</label>
-              <textarea 
-                v-model="settings.hero_card_text" 
-                rows="3"
-                placeholder="“ O seu desafio diário, nós resolvemos todos os dias com segurança e confiabilidade “"
-                class="w-full border border-gray-300 p-2.5 text-xs rounded bg-white text-slate-800 focus:ring-1 focus:ring-blue-600 focus:outline-none"
-              ></textarea>
+              <label class="block text-[10px] text-gray-600 font-bold uppercase tracking-wider">Frase do Card de Destaque</label>
+              <textarea v-model="settings.hero_card_text" rows="2" class="w-full border border-gray-300 p-2 text-xs rounded bg-white text-slate-800 focus:ring-1 focus:ring-blue-600 focus:outline-none font-sans"></textarea>
             </div>
 
             <!-- Modo de Posicionamento -->
-            <div class="space-y-2 border-t border-slate-200 pt-3">
+            <div class="space-y-1.5 border-t border-slate-200 pt-3">
               <label class="block text-[10px] text-gray-600 font-bold uppercase tracking-wider">Modo de Posicionamento do Card</label>
-              <div class="flex items-center gap-4">
+              <div class="flex gap-4">
                 <label class="flex items-center gap-2 cursor-pointer text-xs font-semibold text-slate-700">
                   <input type="radio" v-model="settings.hero_card_position_mode" value="custom" class="text-blue-600 focus:ring-blue-500" />
-                  <span class="flex items-center gap-1"><span class="material-symbols-outlined text-base">open_with</span> Livre (Arrastar ou Ajustar X / Y)</span>
+                  <span>Arrasto Livre (Sliders X / Y)</span>
                 </label>
                 <label class="flex items-center gap-2 cursor-pointer text-xs font-semibold text-slate-700">
                   <input type="radio" v-model="settings.hero_card_position_mode" value="preset" class="text-blue-600 focus:ring-blue-500" />
-                  <span class="flex items-center gap-1"><span class="material-symbols-outlined text-base">grid_view</span> Posições Fixas</span>
+                  <span>Grade / Alinhamento Fixo</span>
                 </label>
               </div>
             </div>
 
-            <!-- Posição Livre (Sliders & Controles de X e Y) -->
-            <div v-if="settings.hero_card_position_mode === 'custom'" class="space-y-4 bg-white p-3.5 rounded border border-gray-200">
-              <p class="text-[11px] text-blue-800 font-medium flex items-center gap-1">
-                <span class="material-symbols-outlined text-sm text-blue-600">pan_tool</span>
-                Arraste o card verde na caixa de preview ao lado ou ajuste as barras abaixo:
-              </p>
-
+            <!-- Sliders X / Y (Modo Custom) -->
+            <div v-if="settings.hero_card_position_mode === 'custom'" class="space-y-3 bg-white p-3.5 rounded border border-gray-200">
               <!-- Slider Horizontal X -->
               <div class="space-y-1">
                 <div class="flex justify-between items-center text-[10px] text-gray-600 font-bold uppercase">
@@ -470,296 +651,77 @@
                   />
                 </div>
               </div>
-
-              <!-- Atalhos Rápidos de Posição -->
-              <div class="pt-2 border-t border-gray-100 flex flex-wrap gap-1.5">
-                <button @click="setPresetOffset(5, 55)" class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-[10px] font-bold rounded cursor-pointer transition-colors">Canto Inferior Esquerdo</button>
-                <button @click="setPresetOffset(30, 30)" class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-[10px] font-bold rounded cursor-pointer transition-colors">Centro</button>
-                <button @click="setPresetOffset(5, 5)" class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-[10px] font-bold rounded cursor-pointer transition-colors">Topo Esquerdo</button>
-                <button @click="setPresetOffset(50, 55)" class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-[10px] font-bold rounded cursor-pointer transition-colors">Canto Inferior Direito</button>
-              </div>
-            </div>
-
-            <!-- Posição Fixa (Preset Selects) -->
-            <div v-else class="grid grid-cols-2 gap-4">
-              <div class="space-y-1.5">
-                <label class="block text-[10px] text-gray-600 font-bold uppercase tracking-wider">Alinhamento Horizontal</label>
-                <select v-model="settings.hero_card_position" class="w-full border border-gray-300 px-3 py-2 text-xs rounded bg-white text-slate-800 focus:ring-1 focus:ring-blue-600 focus:outline-none cursor-pointer">
-                  <option value="left">Esquerda</option>
-                  <option value="center">Centro</option>
-                  <option value="right">Direita</option>
-                </select>
-              </div>
-
-              <div class="space-y-1.5">
-                <label class="block text-[10px] text-gray-600 font-bold uppercase tracking-wider">Alinhamento Vertical</label>
-                <select v-model="settings.hero_card_vertical_align" class="w-full border border-gray-300 px-3 py-2 text-xs rounded bg-white text-slate-800 focus:ring-1 focus:ring-blue-600 focus:outline-none cursor-pointer">
-                  <option value="top">Topo</option>
-                  <option value="center">Centro</option>
-                  <option value="bottom">Base (Abaixo)</option>
-                </select>
-              </div>
-            </div>
-
-            <!-- Opacidade do Card e Extensão Vertical -->
-            <div class="grid grid-cols-2 gap-4 border-t border-slate-200 pt-3">
-              <div class="space-y-1">
-                <div class="flex justify-between items-center text-[10px] text-gray-600 font-bold uppercase">
-                  <span>Transparência (Opacidade): {{ settings.hero_card_opacity }}%</span>
-                </div>
-                <div class="flex items-center gap-2">
-                  <input 
-                    type="range" 
-                    min="10" 
-                    max="100" 
-                    step="5" 
-                    v-model.number="settings.hero_card_opacity" 
-                    class="flex-1 accent-blue-600 cursor-pointer" 
-                  />
-                  <span class="text-xs font-mono font-bold text-slate-700 w-8 text-right">{{ settings.hero_card_opacity }}%</span>
-                </div>
-              </div>
-
-              <div class="space-y-1.5">
-                <label class="block text-[10px] text-gray-600 font-bold uppercase tracking-wider">Altura do Card</label>
-                <label class="flex items-center gap-2 cursor-pointer text-xs font-semibold text-slate-700 mt-1">
-                  <input type="checkbox" v-model="settings.hero_card_extend_bottom" class="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500" />
-                  <span>Estender até a base do Banner</span>
-                </label>
-              </div>
-            </div>
-
-            <!-- Cores do Card -->
-            <div class="grid grid-cols-2 gap-4">
-              <div class="space-y-1.5">
-                <label class="block text-[10px] text-gray-600 font-bold uppercase tracking-wider">Cor de Fundo do Card</label>
-                <div class="flex items-center gap-2">
-                  <input v-model="settings.hero_card_bg_color" type="color" class="w-8 h-8 p-0 border-0 bg-transparent cursor-pointer rounded" />
-                  <input v-model="settings.hero_card_bg_color" type="text" class="border border-gray-300 px-3 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-blue-600 w-full text-center bg-white font-mono rounded" />
-                </div>
-              </div>
-
-              <div class="space-y-1.5">
-                <label class="block text-[10px] text-gray-600 font-bold uppercase tracking-wider">Cor do Texto</label>
-                <div class="flex items-center gap-2">
-                  <input v-model="settings.hero_card_text_color" type="color" class="w-8 h-8 p-0 border-0 bg-transparent cursor-pointer rounded" />
-                  <input v-model="settings.hero_card_text_color" type="text" class="border border-gray-300 px-3 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-blue-600 w-full text-center bg-white font-mono rounded" />
-                </div>
-              </div>
             </div>
           </div>
 
-          <!-- Coluna da Direita: Preview Interativo com Drag & Drop -->
-          <div class="space-y-2">
+          <!-- Coluna da Direita: Preview Interativo -->
+          <div class="space-y-3">
             <label class="block text-[10px] text-gray-600 font-bold uppercase tracking-wider flex items-center justify-between">
-              <span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm text-blue-600">touch_app</span> Preview Interativo (Clique e Arraste)</span>
-              <span class="text-emerald-600 font-bold">X: {{ settings.hero_card_offset_x }}% | Y: {{ settings.hero_card_offset_y }}%</span>
+              <span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm text-blue-600">touch_app</span> Pré-visualização Interativa (Arraste o Card)</span>
+              <span class="text-blue-700 font-bold">X: {{ settings.hero_card_offset_x || 0 }}% | Y: {{ settings.hero_card_offset_y || 0 }}%</span>
             </label>
-            
+
             <div 
               ref="previewContainerRef"
-              @mousedown="onCardMouseDown"
-              class="relative w-full h-80 rounded-lg overflow-hidden border border-gray-300 bg-slate-900 shadow-inner select-none cursor-crosshair flex"
+              @mousedown="handleCardDragStart"
+              class="w-full bg-slate-800 rounded-lg overflow-hidden relative shadow-inner cursor-crosshair h-56 select-none"
             >
-              <!-- Background Image Layer (Always behind video for instant load) -->
+              <!-- Video preview -->
+              <video 
+                v-if="settings.hero_bg_type === 'video' && settings.hero_bg_video_url" 
+                :src="settings.hero_bg_video_url"
+                autoplay 
+                loop 
+                muted 
+                playsinline
+                class="w-full h-full object-cover pointer-events-none"
+              ></video>
+              <!-- Image preview -->
               <img 
-                class="absolute inset-0 w-full h-full object-cover z-0 pointer-events-none" 
-                :src="settings.hero_bg_image_url || 'https://lh3.googleusercontent.com/aida/AP1WRLuQGJlvhXgSbL5PCfgd-rVegzYgpPNJgtHn0Ea6Nm0tVayzLhjzQkKmbYMugrdMebtxFro3tlHv1N8ozueW3IWAmerLpn5BMh0-V4suiSBYyv-_1zhWqzLrg3b4d-rpkTVAeU22eoHKYZCmNp_AZySP90gelzHtlnS-8x3nRmtLSJEw4C0yhBjOP0LTv8cqJJere8bX1erK4A1HpU_AQV5WthPlinuCGSknmAf4oBmhbRpEqOyxTA2YAMo'"
+                v-else
+                :src="settings.hero_bg_image_url || 'https://lh3.googleusercontent.com/aida/AP1WRLuQGJlvhXgSbL5PCfgd-rVegzYgpPNJgtHn0Ea6Nm0tVayzLhjzQkKmbYMugrdMebtxFro3tlHv1N8ozueW3IWAmerLpn5BMh0-V4suiSBYyv-_1zhWqzLrg3b4d-rpkTVAeU22eoHKYZCmNp_AZySP90gelzHtlnS-8x3nRmtLSJEw4C0yhBjOP0LTv8cqJJere8bX1erK4A1HpU_AQV5WthPlinuCGSknmAf4oBmhbRpEqOyxTA2YAMo'" 
+                alt="Hero Fundo"
+                class="w-full h-full object-cover pointer-events-none"
               />
 
-              <!-- Background Video Layer -->
-              <template v-if="settings.hero_bg_type === 'video' && settings.hero_bg_video_url">
-                <iframe 
-                  v-if="parsedVideo.type === 'youtube' || parsedVideo.type === 'vimeo'"
-                  class="w-[160%] h-[160%] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 object-cover pointer-events-none scale-125 border-0 z-10"
-                  :src="parsedVideo.url"
-                  allow="autoplay; fullscreen"
-                ></iframe>
-                <video 
-                  v-else
-                  ref="adminPreviewVideoRef"
-                  class="absolute inset-0 w-full h-full object-cover z-10 pointer-events-none"
-                  autoplay
-                  loop
-                  muted
-                  :muted="true"
-                  playsinline
-                  webkit-playsinline
-                  :src="parsedVideo.url"
-                ></video>
-              </template>
-
-              <!-- Preview Card (Mode: Custom vs Preset) -->
+              <!-- Card Verde Arrastável na Prévia -->
               <div 
-                v-if="settings.hero_card_position_mode === 'custom'"
-                class="absolute z-20 p-3 max-w-[220px] shadow-xl transition-all duration-75 cursor-grab active:cursor-grabbing backdrop-blur-sm ring-2 ring-blue-500/50 hover:ring-blue-500 flex flex-col justify-between"
-                :class="settings.hero_card_extend_bottom ? 'bottom-0 rounded-t-md rounded-b-none' : 'rounded-md'"
+                class="absolute p-3 rounded-lg shadow-lg border border-white/20 transition-all duration-75 max-w-[65%]"
                 :style="{
-                  left: settings.hero_card_offset_x + '%',
-                  top: settings.hero_card_offset_y + '%',
+                  left: `${settings.hero_card_offset_x || 18}%`,
+                  top: `${settings.hero_card_offset_y || 45}%`,
                   bottom: settings.hero_card_extend_bottom ? '0px' : 'auto',
-                  ...getCardBgStyle(settings.hero_card_bg_color, settings.hero_card_opacity)
+                  backgroundColor: getCardBgStyle(settings.hero_card_bg_color, settings.hero_card_opacity),
+                  color: settings.hero_card_text_color || '#ffffff'
                 }"
               >
-                <div class="text-[9px] text-white/80 font-mono mb-1 flex items-center justify-between pointer-events-none">
-                  <span>⋮⋮ ARRASTE</span>
-                  <span>{{ settings.hero_card_offset_x }}%, {{ settings.hero_card_offset_y }}%</span>
-                </div>
-                <p 
-                  class="font-medium text-[11px] leading-snug whitespace-pre-line pointer-events-none"
-                  :style="{ color: settings.hero_card_text_color || '#ffffff' }"
-                >
+                <p class="text-[10px] font-semibold leading-snug drop-shadow-sm">
                   {{ settings.hero_card_text || '“ O seu desafio diário, nós resolvemos todos os dias com segurança e confiabilidade “' }}
                 </p>
               </div>
-
-              <!-- Preset Mode Preview -->
-              <div 
-                v-else
-                class="relative z-10 w-full h-full p-4 flex transition-all duration-300 pointer-events-none"
-                :class="[previewHorizontalClass, previewVerticalClass]"
-              >
-                <div 
-                  class="p-4 max-w-xs rounded shadow-md transition-all duration-300 backdrop-blur-xs"
-                  :style="{ backgroundColor: settings.hero_card_bg_color || '#74b934' }"
-                >
-                  <p 
-                    class="font-medium text-xs leading-snug whitespace-pre-line"
-                    :style="{ color: settings.hero_card_text_color || '#ffffff' }"
-                  >
-                    {{ settings.hero_card_text || '“ O seu desafio diário, nós resolvemos todos os dias com segurança e confiabilidade “' }}
-                  </p>
-                </div>
-              </div>
             </div>
+            
+            <p class="text-[10px] text-gray-400 font-mono text-center">
+              Clique e arraste sobre o banner para ajustar a posição (X, Y) em tempo real.
+            </p>
           </div>
         </div>
       </div>
 
-      <!-- ===== SEÇÃO: BOTÃO "VER DOCUMENTAÇÃO" ===== -->
-      <div class="space-y-4 pt-4 border-t border-gray-200">
-        <h3 class="text-sm font-bold text-slate-700 uppercase tracking-wide flex items-center gap-2 border-b border-gray-100 pb-2">
-          <span class="material-symbols-outlined text-gray-500">smart_button</span>
-          Botão "Ver Documentação" (Ficha Técnica)
-        </h3>
+      <!-- ===== BOTÃO SALVAR TODAS AS CONFIGURAÇÕES VISUAIS ===== -->
+      <div class="pt-4 border-t border-gray-200 flex justify-between items-center">
+        <NuxtLink to="/" target="_blank" class="text-xs font-bold text-blue-600 hover:text-blue-800 flex items-center gap-1 text-decoration-none">
+          <span class="material-symbols-outlined text-sm">open_in_new</span>
+          Visualizar na Home Pública
+        </NuxtLink>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <!-- Cor de Fundo -->
-          <div class="space-y-1.5">
-            <label class="block text-[10px] text-gray-500 font-bold uppercase tracking-wider">Cor de Fundo</label>
-            <div class="flex items-center gap-2">
-              <input v-model="settings.btn_doc_bg_color" type="color" class="w-8 h-8 p-0 border-0 bg-transparent cursor-pointer rounded" />
-              <input v-model="settings.btn_doc_bg_color" type="text" class="border border-gray-300 px-3 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-blue-600 w-28 text-center bg-white font-mono rounded" />
-            </div>
-          </div>
-
-          <!-- Cor de Fundo Hover -->
-          <div class="space-y-1.5">
-            <label class="block text-[10px] text-gray-500 font-bold uppercase tracking-wider">Cor de Fundo (Hover)</label>
-            <div class="flex items-center gap-2">
-              <input v-model="settings.btn_doc_hover_color" type="color" class="w-8 h-8 p-0 border-0 bg-transparent cursor-pointer rounded" />
-              <input v-model="settings.btn_doc_hover_color" type="text" class="border border-gray-300 px-3 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-blue-600 w-28 text-center bg-white font-mono rounded" />
-            </div>
-          </div>
-
-          <!-- Cor do Texto -->
-          <div class="space-y-1.5">
-            <label class="block text-[10px] text-gray-500 font-bold uppercase tracking-wider">Cor do Texto</label>
-            <div class="flex items-center gap-2">
-              <input v-model="settings.btn_doc_text_color" type="color" class="w-8 h-8 p-0 border-0 bg-transparent cursor-pointer rounded" />
-              <input v-model="settings.btn_doc_text_color" type="text" class="border border-gray-300 px-3 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-blue-600 w-28 text-center bg-white font-mono rounded" />
-            </div>
-          </div>
-
-          <!-- Fonte -->
-          <div class="space-y-1.5">
-            <label class="block text-[10px] text-gray-500 font-bold uppercase tracking-wider">Fonte</label>
-            <select v-model="settings.btn_doc_font_family" class="border border-gray-300 px-3 py-1.5 text-xs w-full focus:outline-none focus:ring-1 focus:ring-blue-600 bg-white rounded cursor-pointer">
-              <option v-for="font in fontOptions" :key="font" :value="font" :style="{ fontFamily: font }">{{ font }}</option>
-            </select>
-          </div>
-
-          <!-- Tamanho da Fonte -->
-          <div class="space-y-1.5">
-            <label class="block text-[10px] text-gray-500 font-bold uppercase tracking-wider">Tamanho da Fonte</label>
-            <select v-model="settings.btn_doc_font_size" class="border border-gray-300 px-3 py-1.5 text-xs w-full focus:outline-none focus:ring-1 focus:ring-blue-600 bg-white rounded cursor-pointer">
-              <option v-for="size in fontSizeOptions" :key="size" :value="size">{{ size }}</option>
-            </select>
-          </div>
-
-          <!-- Estilo -->
-          <div class="space-y-1.5">
-            <label class="block text-[10px] text-gray-500 font-bold uppercase tracking-wider">Estilo da Fonte</label>
-            <div class="flex items-center gap-2">
-              <button 
-                @click="settings.btn_doc_bold = !settings.btn_doc_bold"
-                :class="settings.btn_doc_bold ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600'"
-                class="w-8 h-8 rounded border-0 cursor-pointer font-bold text-sm transition-colors flex items-center justify-center"
-                title="Negrito"
-              >B</button>
-              <button 
-                @click="settings.btn_doc_italic = !settings.btn_doc_italic"
-                :class="settings.btn_doc_italic ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600'"
-                class="w-8 h-8 rounded border-0 cursor-pointer italic text-sm transition-colors flex items-center justify-center"
-                title="Itálico"
-              >I</button>
-              <button 
-                @click="settings.btn_doc_uppercase = !settings.btn_doc_uppercase"
-                :class="settings.btn_doc_uppercase ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600'"
-                class="w-8 h-8 rounded border-0 cursor-pointer text-[10px] font-bold transition-colors flex items-center justify-center"
-                title="Maiúsculas"
-              >AA</button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ===== SEÇÃO: ESPECIFICAÇÕES DOS CARDS ===== -->
-      <div class="space-y-4 pt-4 border-t border-gray-200">
-        <h3 class="text-sm font-bold text-slate-700 uppercase tracking-wide flex items-center gap-2 border-b border-gray-100 pb-2">
-          <span class="material-symbols-outlined text-gray-500">table_rows</span>
-          Tabela de Especificações dos Cards
-        </h3>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <!-- Cor de Fundo da Tabela -->
-          <div class="space-y-1.5">
-            <label class="block text-[10px] text-gray-500 font-bold uppercase tracking-wider">Cor de Fundo das Linhas Par</label>
-            <div class="flex items-center gap-2">
-              <input v-model="settings.card_specs_bg_color" type="color" class="w-8 h-8 p-0 border-0 bg-transparent cursor-pointer rounded" />
-              <input v-model="settings.card_specs_bg_color" type="text" class="border border-gray-300 px-3 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-blue-600 w-28 text-center bg-white font-mono rounded" />
-            </div>
-          </div>
-
-          <!-- Cor do Rótulo -->
-          <div class="space-y-1.5">
-            <label class="block text-[10px] text-gray-500 font-bold uppercase tracking-wider">Cor do Rótulo (Campo)</label>
-            <div class="flex items-center gap-2">
-              <input v-model="settings.card_specs_label_color" type="color" class="w-8 h-8 p-0 border-0 bg-transparent cursor-pointer rounded" />
-              <input v-model="settings.card_specs_label_color" type="text" class="border border-gray-300 px-3 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-blue-600 w-28 text-center bg-white font-mono rounded" />
-            </div>
-          </div>
-
-          <!-- Cor do Valor -->
-          <div class="space-y-1.5">
-            <label class="block text-[10px] text-gray-500 font-bold uppercase tracking-wider">Cor do Valor</label>
-            <div class="flex items-center gap-2">
-              <input v-model="settings.card_specs_value_color" type="color" class="w-8 h-8 p-0 border-0 bg-transparent cursor-pointer rounded" />
-              <input v-model="settings.card_specs_value_color" type="text" class="border border-gray-300 px-3 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-blue-600 w-28 text-center bg-white font-mono rounded" />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ===== Botão Salvar ===== -->
-      <div class="flex justify-end pt-4 border-t border-gray-200">
-        <button 
-          @click="saveSettings" 
+        <button
+          @click="saveSettings"
           :disabled="saving"
-          class="bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white px-6 py-2.5 rounded text-xs font-bold uppercase tracking-wider transition-colors flex items-center gap-1.5 border-0 cursor-pointer shadow-sm"
+          class="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white px-8 py-3 rounded text-xs font-bold uppercase tracking-wider transition-colors flex items-center gap-2 border-0 cursor-pointer shadow-md"
         >
           <span class="material-symbols-outlined text-base">{{ saving ? 'sync' : 'save' }}</span>
-          {{ saving ? 'Salvando...' : 'Salvar Configurações do Site' }}
+          {{ saving ? 'Salvando...' : 'Salvar Alterações Visuais da Home' }}
         </button>
       </div>
     </template>
@@ -841,6 +803,32 @@ interface SiteSettings {
   segment_img_criogenia: string
   segment_img_oleo_gas: string
   segment_img_sucroalcooleiro: string
+  // Cores e Dimensões das Seções da Home
+  sec_segmentos_bg: string
+  sec_segmentos_ptop: number
+  sec_segmentos_pbot: number
+  sec_segmentos_min_height: number
+  sec_novidades_bg: string
+  sec_novidades_ptop: number
+  sec_novidades_pbot: number
+  sec_novidades_min_height: number
+  sec_newsletter_bg: string
+  sec_newsletter_ptop: number
+  sec_newsletter_pbot: number
+  sec_newsletter_min_height: number
+  // Cards de Principais Segmentos
+  seg_card_img_height: number
+  seg_caption_bg: string
+  seg_caption_opacity: number
+  seg_caption_height: number
+  seg_caption_color: string
+  // Cards de Novidades
+  news_card_height: number
+  news_img_height: number
+  news_caption_bg: string
+  news_caption_opacity: number
+  news_caption_height: number
+  news_caption_color: string
 }
 
 const defaultSettings: SiteSettings = {
@@ -884,6 +872,29 @@ const defaultSettings: SiteSettings = {
   segment_img_criogenia: 'https://lh3.googleusercontent.com/aida/AP1WRLsDWV00WRL33tuhAG3BPA8GTPcBz-pfzYJ5QGz2_CFnkvCSprf16WTZORxqYJd3VFMaSLF81Wdm-S9-UEVYwRS6IZjDh4VV8WwGm6i7fTQgU4oSmP9IGxRBZnXvSg-lgNzx7dHLh96NV6al1sI8sdEOoVx6IZCUOcKyTMikgpuW736a8c-W4OfY41ayLpgc1yRxJm4ux29KF3X6Vl4DjzUrBJhQVrk6zwaVUJrs9k2kRxWzoaJlEeyRARs',
   segment_img_oleo_gas: 'https://lh3.googleusercontent.com/aida/AP1WRLtMAi3za4oatqWzMuvla-WvZQlt9FguAx22h8nx9U6lR8p142s5QcL4EPPE0ligkQbqZ0q-ZYW-hqDRV2uJVGv0NMmhiEuyzJbKk7sUfZpHHA4_sz8P-TyC7QparCuJFeAeovwFTiSEpumRpFGJg-y1rdhCKN1ensV_n46sSPNrBJMqn7MqzXsxs1FqEOTTk7iB0mQ42_IaiLxVLi8QHfDnmf1qJl39Y9bqn9spftMGhs_woAvKg85Vgk0',
   segment_img_sucroalcooleiro: 'https://lh3.googleusercontent.com/aida/AP1WRLtx-24uZLAzxnTShKPl8Wv12JS85bEMJBe8sqHO25f6hSfCDYWD7dOd3t0TS1qSXQfoEmpRejEnBgmszPULohKQhnktzaTJxNZlqCZtWMl_i2qHHdWBFpI5OD1WyuR3zn6bDrno3XOkEm5_52rNlHCVRUzbbVXx-6T9Fq-atHYsA-bfuEzXbOwh0ibv0HAdlvONto1p0-R41aQY_ZMMGGD6KANY4mawEiSd7OT1CHuJeCgTozkzRuxGGg',
+  sec_segmentos_bg: '#ffffff',
+  sec_segmentos_ptop: 20,
+  sec_segmentos_pbot: 24,
+  sec_segmentos_min_height: 0,
+  sec_novidades_bg: '#f0f0f0',
+  sec_novidades_ptop: 36,
+  sec_novidades_pbot: 44,
+  sec_novidades_min_height: 0,
+  sec_newsletter_bg: '#ffffff',
+  sec_newsletter_ptop: 30,
+  sec_newsletter_pbot: 40,
+  sec_newsletter_min_height: 0,
+  seg_card_img_height: 110,
+  seg_caption_bg: '#e8e3e2',
+  seg_caption_opacity: 100,
+  seg_caption_height: 55,
+  seg_caption_color: '#444444',
+  news_card_height: 165,
+  news_img_height: 165,
+  news_caption_bg: '#ffffff',
+  news_caption_opacity: 82,
+  news_caption_height: 48,
+  news_caption_color: '#333333',
 }
 
 const settings = reactive<SiteSettings>({ ...defaultSettings })
@@ -925,6 +936,54 @@ const handleSegmentUpload = async (key: 'criogenia' | 'oleo_gas' | 'sucroalcoole
   } finally {
     uploadingSegment.value = null
     if (target) target.value = ''
+  }
+}
+
+function hexToRgba(hex: string, opacityPercent: number): string {
+  if (!hex || typeof hex !== 'string') return `rgba(255, 255, 255, ${(opacityPercent ?? 82) / 100})`
+  let cleanHex = hex.replace('#', '').trim()
+  if (cleanHex.length === 3) {
+    cleanHex = cleanHex.split('').map(c => c + c).join('')
+  }
+  if (cleanHex.length !== 6) return `rgba(255, 255, 255, ${(opacityPercent ?? 82) / 100})`
+  const num = parseInt(cleanHex, 16)
+  const r = (num >> 16) & 255
+  const g = (num >> 8) & 255
+  const b = num & 255
+  const alpha = Math.max(0, Math.min(100, opacityPercent ?? 82)) / 100
+  return `rgba(${r}, ${g}, ${b}, ${alpha.toFixed(2)})`
+}
+
+function resetBlock(block: 'sections' | 'segmentCards' | 'newsCards') {
+  if (block === 'sections') {
+    settings.sec_segmentos_bg = defaultSettings.sec_segmentos_bg
+    settings.sec_segmentos_ptop = defaultSettings.sec_segmentos_ptop
+    settings.sec_segmentos_pbot = defaultSettings.sec_segmentos_pbot
+    settings.sec_segmentos_min_height = defaultSettings.sec_segmentos_min_height
+    settings.sec_novidades_bg = defaultSettings.sec_novidades_bg
+    settings.sec_novidades_ptop = defaultSettings.sec_novidades_ptop
+    settings.sec_novidades_pbot = defaultSettings.sec_novidades_pbot
+    settings.sec_novidades_min_height = defaultSettings.sec_novidades_min_height
+    settings.sec_newsletter_bg = defaultSettings.sec_newsletter_bg
+    settings.sec_newsletter_ptop = defaultSettings.sec_newsletter_ptop
+    settings.sec_newsletter_pbot = defaultSettings.sec_newsletter_pbot
+    settings.sec_newsletter_min_height = defaultSettings.sec_newsletter_min_height
+    props.triggerToast?.('Valores originais das faixas da home restaurados!', 'success')
+  } else if (block === 'segmentCards') {
+    settings.seg_card_img_height = defaultSettings.seg_card_img_height
+    settings.seg_caption_bg = defaultSettings.seg_caption_bg
+    settings.seg_caption_opacity = defaultSettings.seg_caption_opacity
+    settings.seg_caption_height = defaultSettings.seg_caption_height
+    settings.seg_caption_color = defaultSettings.seg_caption_color
+    props.triggerToast?.('Valores originais dos cards de segmentos restaurados!', 'success')
+  } else if (block === 'newsCards') {
+    settings.news_card_height = defaultSettings.news_card_height
+    settings.news_img_height = defaultSettings.news_img_height
+    settings.news_caption_bg = defaultSettings.news_caption_bg
+    settings.news_caption_opacity = defaultSettings.news_caption_opacity
+    settings.news_caption_height = defaultSettings.news_caption_height
+    settings.news_caption_color = defaultSettings.news_caption_color
+    props.triggerToast?.('Valores originais dos cards de novidades restaurados!', 'success')
   }
 }
 

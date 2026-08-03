@@ -47,6 +47,32 @@ export interface SiteVisualSettings {
   segment_img_criogenia: string
   segment_img_oleo_gas: string
   segment_img_sucroalcooleiro: string
+  // Cores e Dimensões das Seções da Home
+  sec_segmentos_bg: string
+  sec_segmentos_ptop: number
+  sec_segmentos_pbot: number
+  sec_segmentos_min_height: number
+  sec_novidades_bg: string
+  sec_novidades_ptop: number
+  sec_novidades_pbot: number
+  sec_novidades_min_height: number
+  sec_newsletter_bg: string
+  sec_newsletter_ptop: number
+  sec_newsletter_pbot: number
+  sec_newsletter_min_height: number
+  // Cards de Principais Segmentos
+  seg_card_img_height: number
+  seg_caption_bg: string
+  seg_caption_opacity: number
+  seg_caption_height: number
+  seg_caption_color: string
+  // Cards de Novidades
+  news_card_height: number
+  news_img_height: number
+  news_caption_bg: string
+  news_caption_opacity: number
+  news_caption_height: number
+  news_caption_color: string
 }
 
 const defaults: SiteVisualSettings = {
@@ -90,6 +116,29 @@ const defaults: SiteVisualSettings = {
   segment_img_criogenia: 'https://lh3.googleusercontent.com/aida/AP1WRLsDWV00WRL33tuhAG3BPA8GTPcBz-pfzYJ5QGz2_CFnkvCSprf16WTZORxqYJd3VFMaSLF81Wdm-S9-UEVYwRS6IZjDh4VV8WwGm6i7fTQgU4oSmP9IGxRBZnXvSg-lgNzx7dHLh96NV6al1sI8sdEOoVx6IZCUOcKyTMikgpuW736a8c-W4OfY41ayLpgc1yRxJm4ux29KF3X6Vl4DjzUrBJhQVrk6zwaVUJrs9k2kRxWzoaJlEeyRARs',
   segment_img_oleo_gas: 'https://lh3.googleusercontent.com/aida/AP1WRLtMAi3za4oatqWzMuvla-WvZQlt9FguAx22h8nx9U6lR8p142s5QcL4EPPE0ligkQbqZ0q-ZYW-hqDRV2uJVGv0NMmhiEuyzJbKk7sUfZpHHA4_sz8P-TyC7QparCuJFeAeovwFTiSEpumRpFGJg-y1rdhCKN1ensV_n46sSPNrBJMqn7MqzXsxs1FqEOTTk7iB0mQ42_IaiLxVLi8QHfDnmf1qJl39Y9bqn9spftMGhs_woAvKg85Vgk0',
   segment_img_sucroalcooleiro: 'https://lh3.googleusercontent.com/aida/AP1WRLtx-24uZLAzxnTShKPl8Wv12JS85bEMJBe8sqHO25f6hSfCDYWD7dOd3t0TS1qSXQfoEmpRejEnBgmszPULohKQhnktzaTJxNZlqCZtWMl_i2qHHdWBFpI5OD1WyuR3zn6bDrno3XOkEm5_52rNlHCVRUzbbVXx-6T9Fq-atHYsA-bfuEzXbOwh0ibv0HAdlvONto1p0-R41aQY_ZMMGGD6KANY4mawEiSd7OT1CHuJeCgTozkzRuxGGg',
+  sec_segmentos_bg: '#ffffff',
+  sec_segmentos_ptop: 20,
+  sec_segmentos_pbot: 24,
+  sec_segmentos_min_height: 0,
+  sec_novidades_bg: '#f0f0f0',
+  sec_novidades_ptop: 36,
+  sec_novidades_pbot: 44,
+  sec_novidades_min_height: 0,
+  sec_newsletter_bg: '#ffffff',
+  sec_newsletter_ptop: 30,
+  sec_newsletter_pbot: 40,
+  sec_newsletter_min_height: 0,
+  seg_card_img_height: 165,
+  seg_caption_bg: '#ffffff',
+  seg_caption_opacity: 82,
+  seg_caption_height: 48,
+  seg_caption_color: '#333333',
+  news_card_height: 165,
+  news_img_height: 165,
+  news_caption_bg: '#ffffff',
+  news_caption_opacity: 82,
+  news_caption_height: 48,
+  news_caption_color: '#333333',
 }
 
 export default function useSiteSettings() {

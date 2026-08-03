@@ -255,53 +255,106 @@
       <div class="bg-white h-3 w-full border-b border-gray-200"></div>
 
       <!-- Principais Segmentos -->
-      <section id="segmentos" style="background:#fff;padding:20px 0 24px;">
+      <section
+        id="segmentos"
+        :style="{
+          backgroundColor: siteSettings.sec_segmentos_bg || '#ffffff',
+          paddingTop: `${siteSettings.sec_segmentos_ptop ?? 20}px`,
+          paddingBottom: `${siteSettings.sec_segmentos_pbot ?? 24}px`,
+          minHeight: siteSettings.sec_segmentos_min_height ? `${siteSettings.sec_segmentos_min_height}px` : undefined
+        }"
+      >
         <div style="max-width:832px;margin:0 auto;padding:0 16px;">
           <h2 style="font-size:24px;color:#555555;font-weight:400;margin:0 0 10px 0;">Principais segmentos</h2>
           <div style="display:flex;gap:13px;">
 
             <!-- Criogenia & Gases industriais -->
-            <a href="/catalogo?segment=CRIOGENIA" style="flex:1;min-width:0;text-decoration:none;display:flex;flex-direction:column;" class="seg-card">
-              <div style="width:100%;height:110px;overflow:hidden;background:#d0d0d0;">
-                <img
-                  alt="Criogenia & Gases industriais"
-                  style="width:100%;height:100%;object-fit:cover;display:block;"
-                  :src="formatNewsImageUrl(siteSettings.segment_img_criogenia)"
-                  @error="handleImgError"
-                />
-              </div>
-              <div style="height:55px;background:#e8e3e2;display:flex;align-items:center;justify-content:center;padding:0 8px;" class="seg-label">
-                <span style="font-size:13px;color:#444;font-weight:400;text-align:center;">Criogênia &amp; Gases industriais</span>
+            <a
+              href="/catalogo?segment=CRIOGENIA"
+              style="flex:1;min-width:0;position:relative;overflow:hidden;background:#d0d0d0;display:block;text-decoration:none;cursor:pointer;"
+              :style="{ height: `${siteSettings.seg_card_img_height ?? 165}px` }"
+              class="seg-card"
+            >
+              <img
+                alt="Criogenia & Gases industriais"
+                style="width:100%;height:100%;object-fit:cover;object-position:center;display:block;"
+                :src="formatNewsImageUrl(siteSettings.segment_img_criogenia)"
+                @error="handleImgError"
+              />
+              <div
+                class="seg-label"
+                style="position:absolute;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:center;padding:0 8px;transition:background-color 0.2s ease;backdrop-filter:blur(1px);"
+                :style="{
+                  height: `${siteSettings.seg_caption_height ?? 48}px`,
+                  backgroundColor: hexToRgba(siteSettings.seg_caption_bg || '#ffffff', siteSettings.seg_caption_opacity ?? 82)
+                }"
+              >
+                <span
+                  style="font-size:13px;font-weight:400;text-align:center;transition:color 0.2s ease;"
+                  :style="{ color: siteSettings.seg_caption_color || '#333333' }"
+                >
+                  Criogênia &amp; Gases industriais
+                </span>
               </div>
             </a>
 
             <!-- Óleo & Gás -->
-            <a href="/catalogo?segment=OLEO_GAS" style="flex:1;min-width:0;text-decoration:none;display:flex;flex-direction:column;" class="seg-card">
-              <div style="width:100%;height:110px;overflow:hidden;background:#d0d0d0;">
-                <img
-                  alt="Óleo & Gás"
-                  style="width:100%;height:100%;object-fit:cover;display:block;"
-                  :src="formatNewsImageUrl(siteSettings.segment_img_oleo_gas)"
-                  @error="handleImgError"
-                />
-              </div>
-              <div style="height:55px;background:#e8e3e2;display:flex;align-items:center;justify-content:center;padding:0 8px;" class="seg-label">
-                <span style="font-size:13px;color:#444;font-weight:400;text-align:center;">Óleo &amp; Gás</span>
+            <a
+              href="/catalogo?segment=OLEO_GAS"
+              style="flex:1;min-width:0;position:relative;overflow:hidden;background:#d0d0d0;display:block;text-decoration:none;cursor:pointer;"
+              :style="{ height: `${siteSettings.seg_card_img_height ?? 165}px` }"
+              class="seg-card"
+            >
+              <img
+                alt="Óleo & Gás"
+                style="width:100%;height:100%;object-fit:cover;object-position:center;display:block;"
+                :src="formatNewsImageUrl(siteSettings.segment_img_oleo_gas)"
+                @error="handleImgError"
+              />
+              <div
+                class="seg-label"
+                style="position:absolute;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:center;padding:0 8px;transition:background-color 0.2s ease;backdrop-filter:blur(1px);"
+                :style="{
+                  height: `${siteSettings.seg_caption_height ?? 48}px`,
+                  backgroundColor: hexToRgba(siteSettings.seg_caption_bg || '#ffffff', siteSettings.seg_caption_opacity ?? 82)
+                }"
+              >
+                <span
+                  style="font-size:13px;font-weight:400;text-align:center;transition:color 0.2s ease;"
+                  :style="{ color: siteSettings.seg_caption_color || '#333333' }"
+                >
+                  Óleo &amp; Gás
+                </span>
               </div>
             </a>
 
             <!-- Açúcar e Álcool -->
-            <a href="/catalogo?segment=SUCROALCOOLEIRO" style="flex:1;min-width:0;text-decoration:none;display:flex;flex-direction:column;" class="seg-card">
-              <div style="width:100%;height:110px;overflow:hidden;background:#d0d0d0;">
-                <img
-                  alt="Açúcar e Álcool"
-                  style="width:100%;height:100%;object-fit:cover;display:block;"
-                  :src="formatNewsImageUrl(siteSettings.segment_img_sucroalcooleiro)"
-                  @error="handleImgError"
-                />
-              </div>
-              <div style="height:55px;background:#e8e3e2;display:flex;align-items:center;justify-content:center;padding:0 8px;" class="seg-label">
-                <span style="font-size:13px;color:#444;font-weight:400;text-align:center;">Açúcar e álcool</span>
+            <a
+              href="/catalogo?segment=SUCROALCOOLEIRO"
+              style="flex:1;min-width:0;position:relative;overflow:hidden;background:#d0d0d0;display:block;text-decoration:none;cursor:pointer;"
+              :style="{ height: `${siteSettings.seg_card_img_height ?? 165}px` }"
+              class="seg-card"
+            >
+              <img
+                alt="Açúcar e Álcool"
+                style="width:100%;height:100%;object-fit:cover;object-position:center;display:block;"
+                :src="formatNewsImageUrl(siteSettings.segment_img_sucroalcooleiro)"
+                @error="handleImgError"
+              />
+              <div
+                class="seg-label"
+                style="position:absolute;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:center;padding:0 8px;transition:background-color 0.2s ease;backdrop-filter:blur(1px);"
+                :style="{
+                  height: `${siteSettings.seg_caption_height ?? 48}px`,
+                  backgroundColor: hexToRgba(siteSettings.seg_caption_bg || '#ffffff', siteSettings.seg_caption_opacity ?? 82)
+                }"
+              >
+                <span
+                  style="font-size:13px;font-weight:400;text-align:center;transition:color 0.2s ease;"
+                  :style="{ color: siteSettings.seg_caption_color || '#333333' }"
+                >
+                  Açúcar e álcool
+                </span>
               </div>
             </a>
 
@@ -310,7 +363,15 @@
       </section>
 
       <!-- Novidades / Produtos em Destaque -->
-      <section id="novidades" style="background:#f0f0f0;padding:36px 0 44px;">
+      <section
+        id="novidades"
+        :style="{
+          backgroundColor: siteSettings.sec_novidades_bg || '#f0f0f0',
+          paddingTop: `${siteSettings.sec_novidades_ptop ?? 36}px`,
+          paddingBottom: `${siteSettings.sec_novidades_pbot ?? 44}px`,
+          minHeight: siteSettings.sec_novidades_min_height ? `${siteSettings.sec_novidades_min_height}px` : undefined
+        }"
+      >
         <div style="max-width:832px;margin:0 auto;padding:0 16px;">
           <h2 style="font-size:24px;color:#555555;font-weight:400;margin:0 0 16px 0;">{{ mergedTranslations['home.news_title'] || 'Novidades' }}</h2>
 
@@ -321,7 +382,8 @@
                 :href="getCardHref(card)"
                 target="_blank"
                 rel="noopener"
-                style="flex:1;min-width:0;height:165px;position:relative;overflow:hidden;background:#d9d9d9;display:block;text-decoration:none;cursor:pointer;"
+                style="flex:1;min-width:0;position:relative;overflow:hidden;background:#d9d9d9;display:block;text-decoration:none;cursor:pointer;"
+                :style="{ height: `${siteSettings.news_card_height ?? 165}px` }"
                 class="news-card-link novidade-card"
               >
                 <img
@@ -330,15 +392,22 @@
                   :src="formatNewsImageUrl(card.image_url)"
                   @error="handleImgError"
                 />
-                <div class="news-card-caption novidade-card__legenda">
-                  <span>{{ getCardTitle(card) }}</span>
+                <div
+                  class="news-card-caption novidade-card__legenda"
+                  :style="{
+                    height: `${siteSettings.news_caption_height ?? 48}px`,
+                    backgroundColor: hexToRgba(siteSettings.news_caption_bg || '#ffffff', siteSettings.news_caption_opacity ?? 82)
+                  }"
+                >
+                  <span :style="{ color: siteSettings.news_caption_color || '#333333' }">{{ getCardTitle(card) }}</span>
                 </div>
               </a>
 
               <a
                 v-else
                 :href="getCardHref(card)"
-                style="flex:1;min-width:0;height:165px;position:relative;overflow:hidden;background:#d9d9d9;display:block;text-decoration:none;cursor:pointer;"
+                style="flex:1;min-width:0;position:relative;overflow:hidden;background:#d9d9d9;display:block;text-decoration:none;cursor:pointer;"
+                :style="{ height: `${siteSettings.news_card_height ?? 165}px` }"
                 class="news-card-link novidade-card"
               >
                 <img
@@ -347,8 +416,14 @@
                   :src="formatNewsImageUrl(card.image_url)"
                   @error="handleImgError"
                 />
-                <div class="news-card-caption novidade-card__legenda">
-                  <span>{{ getCardTitle(card) }}</span>
+                <div
+                  class="news-card-caption novidade-card__legenda"
+                  :style="{
+                    height: `${siteSettings.news_caption_height ?? 48}px`,
+                    backgroundColor: hexToRgba(siteSettings.news_caption_bg || '#ffffff', siteSettings.news_caption_opacity ?? 82)
+                  }"
+                >
+                  <span :style="{ color: siteSettings.news_caption_color || '#333333' }">{{ getCardTitle(card) }}</span>
                 </div>
               </a>
             </template>
@@ -357,7 +432,14 @@
       </section>
 
       <!-- Newsletter -->
-      <section style="background:#ffffff;padding:30px 0 40px;">
+      <section
+        :style="{
+          backgroundColor: siteSettings.sec_newsletter_bg || '#ffffff',
+          paddingTop: `${siteSettings.sec_newsletter_ptop ?? 30}px`,
+          paddingBottom: `${siteSettings.sec_newsletter_pbot ?? 40}px`,
+          minHeight: siteSettings.sec_newsletter_min_height ? `${siteSettings.sec_newsletter_min_height}px` : undefined
+        }"
+      >
         <div style="max-width:832px;margin:0 auto;padding:0 16px;">
           <h2 style="font-size:15px;color:#333;font-weight:400;margin:0 0 4px 0;">
             {{ mergedTranslations['home.newsletter_title'] || 'Cadastre-se para receber nossa newsletter.' }}
@@ -517,6 +599,21 @@ const isVideoActive = computed(() => {
   if (!url) return false
   return siteSettings.value.hero_bg_type === 'video' && url.length > 0
 })
+
+const hexToRgba = (hex: string, opacityPercent: number) => {
+  if (!hex || typeof hex !== 'string') return `rgba(255, 255, 255, ${(opacityPercent ?? 82) / 100})`
+  let cleanHex = hex.replace('#', '').trim()
+  if (cleanHex.length === 3) {
+    cleanHex = cleanHex.split('').map(c => c + c).join('')
+  }
+  if (cleanHex.length !== 6) return `rgba(255, 255, 255, ${(opacityPercent ?? 82) / 100})`
+  const num = parseInt(cleanHex, 16)
+  const r = (num >> 16) & 255
+  const g = (num >> 8) & 255
+  const b = num & 255
+  const alpha = Math.max(0, Math.min(100, opacityPercent ?? 82)) / 100
+  return `rgba(${r}, ${g}, ${b}, ${alpha.toFixed(2)})`
+}
 
 function getCardBgStyle(hex: string, opacityPercent: number) {
   const alpha = ((opacityPercent ?? 85) / 100)
