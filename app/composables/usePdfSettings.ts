@@ -115,6 +115,12 @@ export default function usePdfSettings() {
               coverTitlePt: item.cover_title_pt || (item.layout_settings && item.layout_settings.cover_title_pt) || null,
               coverTitleEn: item.cover_title_en || (item.layout_settings && item.layout_settings.cover_title_en) || null,
               coverTitleEs: item.cover_title_es || (item.layout_settings && (item.layout_settings.cover_title_es || item.layout_settings.cover_title_de)) || null,
+              cover_subtitle_pt: item.cover_subtitle_pt || (item.layout_settings && item.layout_settings.cover_subtitle_pt) || null,
+              cover_subtitle_en: item.cover_subtitle_en || (item.layout_settings && item.layout_settings.cover_subtitle_en) || null,
+              cover_subtitle_es: item.cover_subtitle_es || (item.layout_settings && item.layout_settings.cover_subtitle_es) || null,
+              coverSubtitlePt: item.cover_subtitle_pt || (item.layout_settings && item.layout_settings.cover_subtitle_pt) || null,
+              coverSubtitleEn: item.cover_subtitle_en || (item.layout_settings && item.layout_settings.cover_subtitle_en) || null,
+              coverSubtitleEs: item.cover_subtitle_es || (item.layout_settings && item.layout_settings.cover_subtitle_es) || null,
             }
             console.log(`[usePdfSettings] Loaded settings for category '${catKey}':`, JSON.stringify({
               logo_width: mapping[catKey].logo_width,

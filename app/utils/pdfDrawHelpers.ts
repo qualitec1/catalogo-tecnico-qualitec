@@ -15,16 +15,33 @@ import { addImageSafe } from './pdfImageLoader'
 import useTranslations, { categoryDict, translateCategoryName } from '../composables/useTranslations'
 
 export function getCoverTexts(categoryName: string, settings: any, lang: string = 'pt') {
-  let rawSub = settings.cover_subtitle_text || settings.coverSubtitleText
-  let subText = rawSub
-  if (!rawSub || rawSub.trim() === '' || rawSub.trim().toUpperCase() === 'CATÁLOGO DE PRODUTOS') {
-    if (lang === 'en') subText = 'PRODUCT CATALOG'
-    else if (lang === 'de') subText = 'PRODUKTKATALOG'
-    else subText = 'CATÁLOGO DE PRODUTOS'
-  }
-
   const langKey = (lang || 'pt').toLowerCase()
   const layout = settings?.layout_settings || {}
+
+  // 1. Cover Subtitle resolution (custom override > generic override > language automatic fallback)
+  let customLangSub = null
+  if (settings) {
+    if (langKey === 'en') {
+      customLangSub = layout.cover_subtitle_en || layout.coverSubtitleEn || settings.cover_subtitle_en || settings.coverSubtitleEn
+    } else if (langKey === 'es') {
+      customLangSub = layout.cover_subtitle_es || layout.coverSubtitleEs || settings.cover_subtitle_es || settings.coverSubtitleEs
+    } else {
+      customLangSub = layout.cover_subtitle_pt || layout.coverSubtitlePt || settings.cover_subtitle_pt || settings.coverSubtitlePt
+    }
+  }
+
+  let subText = customLangSub ? String(customLangSub).trim().toUpperCase() : ''
+  if (!subText) {
+    const rawSub = settings?.cover_subtitle_text || settings?.coverSubtitleText
+    if (rawSub && rawSub.trim() !== '' && rawSub.trim().toUpperCase() !== 'CATÁLOGO DE PRODUTOS') {
+      subText = rawSub.trim().toUpperCase()
+    } else {
+      if (langKey === 'en') subText = 'PRODUCT CATALOG'
+      else if (langKey === 'es') subText = 'CATÁLOGO DE PRODUCTOS'
+      else subText = 'CATÁLOGO DE PRODUTOS'
+    }
+  }
+
   let customLangTitle = null
   if (settings) {
     if (langKey === 'en') {

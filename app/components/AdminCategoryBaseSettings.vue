@@ -24,46 +24,100 @@
       </div>
     </div>
 
-    <!-- Multi-language Cover Titles (PDF) -->
-    <div class="space-y-2 pt-2 border-t border-gray-200">
+    <!-- Multi-language Cover Titles & Subtitles (PDF) -->
+    <div class="space-y-3 pt-2 border-t border-gray-200">
       <label class="block text-[10px] text-gray-500 font-bold uppercase tracking-wider flex items-center gap-1">
         <span class="material-symbols-outlined text-xs text-blue-600">translate</span>
-        Nome da Capa por Idioma (PDF)
+        Título & Subtítulo da Capa por Idioma (PDF)
       </label>
-      <p class="text-[9px] text-gray-400 leading-tight">Personalize o título da capa em cada idioma (se vazio, usará a tradução automática).</p>
+      <p class="text-[9px] text-gray-400 leading-tight">Personalize o título principal e o subtítulo da capa em cada idioma (se vazio, usará os padrões automáticos do idioma).</p>
       
-      <div class="space-y-2">
-        <div class="flex items-center gap-2">
-          <span class="text-xs shrink-0 w-12 font-bold text-gray-600">🇧🇷 PT</span>
-          <input 
-            v-model="category.coverTitlePt" 
-            type="text" 
-            @input="category.hasChanges = true" 
-            placeholder="Ex: VÁLVULAS CRIOGÊNICAS" 
-            class="flex-1 border border-gray-300 rounded p-1.5 text-xs focus:ring-1 focus:ring-blue-600 focus:outline-none bg-white text-slate-800 uppercase"
-          />
+      <div class="space-y-3">
+        <!-- 🇧🇷 PT -->
+        <div class="p-2.5 bg-gray-50 border border-gray-200 rounded space-y-1.5">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-bold text-gray-700">🇧🇷 Português (PT)</span>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <div>
+              <label class="block text-[9px] text-gray-500 font-semibold uppercase">Título da Capa</label>
+              <input 
+                v-model="category.coverTitlePt" 
+                type="text" 
+                @input="category.hasChanges = true" 
+                placeholder="Ex: VÁLVULAS CRIOGÊNICAS" 
+                class="w-full border border-gray-300 rounded p-1.5 text-xs focus:ring-1 focus:ring-blue-600 focus:outline-none bg-white text-slate-800 uppercase"
+              />
+            </div>
+            <div>
+              <label class="block text-[9px] text-gray-500 font-semibold uppercase">Subtítulo da Capa</label>
+              <input 
+                v-model="category.coverSubtitlePt" 
+                type="text" 
+                @input="category.hasChanges = true" 
+                placeholder="Padrão: CATÁLOGO DE PRODUTOS" 
+                class="w-full border border-gray-300 rounded p-1.5 text-xs focus:ring-1 focus:ring-blue-600 focus:outline-none bg-white text-slate-800 uppercase"
+              />
+            </div>
+          </div>
         </div>
 
-        <div class="flex items-center gap-2">
-          <span class="text-xs shrink-0 w-12 font-bold text-gray-600">🇬🇧 EN</span>
-          <input 
-            v-model="category.coverTitleEn" 
-            type="text" 
-            @input="category.hasChanges = true" 
-            placeholder="Ex: CRYOGENIC VALVES" 
-            class="flex-1 border border-gray-300 rounded p-1.5 text-xs focus:ring-1 focus:ring-blue-600 focus:outline-none bg-white text-slate-800 uppercase"
-          />
+        <!-- 🇬🇧 EN -->
+        <div class="p-2.5 bg-gray-50 border border-gray-200 rounded space-y-1.5">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-bold text-gray-700">🇬🇧 English (EN)</span>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <div>
+              <label class="block text-[9px] text-gray-500 font-semibold uppercase">Título da Capa</label>
+              <input 
+                v-model="category.coverTitleEn" 
+                type="text" 
+                @input="category.hasChanges = true" 
+                placeholder="Ex: CRYOGENIC VALVES" 
+                class="w-full border border-gray-300 rounded p-1.5 text-xs focus:ring-1 focus:ring-blue-600 focus:outline-none bg-white text-slate-800 uppercase"
+              />
+            </div>
+            <div>
+              <label class="block text-[9px] text-gray-500 font-semibold uppercase">Subtítulo da Capa</label>
+              <input 
+                v-model="category.coverSubtitleEn" 
+                type="text" 
+                @input="category.hasChanges = true" 
+                placeholder="Padrão: PRODUCT CATALOG" 
+                class="w-full border border-gray-300 rounded p-1.5 text-xs focus:ring-1 focus:ring-blue-600 focus:outline-none bg-white text-slate-800 uppercase"
+              />
+            </div>
+          </div>
         </div>
 
-        <div class="flex items-center gap-2">
-          <span class="text-xs shrink-0 w-12 font-bold text-gray-600">🇪🇸 ES</span>
-          <input 
-            v-model="category.coverTitleEs" 
-            type="text" 
-            @input="category.hasChanges = true" 
-            placeholder="Ex: VÁLVULAS CRIOGÉNICAS" 
-            class="flex-1 border border-gray-300 rounded p-1.5 text-xs focus:ring-1 focus:ring-blue-600 focus:outline-none bg-white text-slate-800 uppercase"
-          />
+        <!-- 🇪🇸 ES -->
+        <div class="p-2.5 bg-gray-50 border border-gray-200 rounded space-y-1.5">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-bold text-gray-700">🇪🇸 Español (ES)</span>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <div>
+              <label class="block text-[9px] text-gray-500 font-semibold uppercase">Título da Capa</label>
+              <input 
+                v-model="category.coverTitleEs" 
+                type="text" 
+                @input="category.hasChanges = true" 
+                placeholder="Ex: VÁLVULAS CRIOGÉNICAS" 
+                class="w-full border border-gray-300 rounded p-1.5 text-xs focus:ring-1 focus:ring-blue-600 focus:outline-none bg-white text-slate-800 uppercase"
+              />
+            </div>
+            <div>
+              <label class="block text-[9px] text-gray-500 font-semibold uppercase">Subtítulo da Capa</label>
+              <input 
+                v-model="category.coverSubtitleEs" 
+                type="text" 
+                @input="category.hasChanges = true" 
+                placeholder="Padrão: CATÁLOGO DE PRODUCTOS" 
+                class="w-full border border-gray-300 rounded p-1.5 text-xs focus:ring-1 focus:ring-blue-600 focus:outline-none bg-white text-slate-800 uppercase"
+              />
+            </div>
+          </div>
         </div>
       </div>
     </div>
