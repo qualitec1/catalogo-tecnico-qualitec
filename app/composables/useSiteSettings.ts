@@ -31,6 +31,13 @@ export interface SiteVisualSettings {
   // Barra do Mega Menu (Header do Catálogo)
   mega_menu_bg_color: string
   mega_menu_height: number
+  // Botões de Categoria (Abas no Header)
+  mega_menu_cat_font_family: string
+  mega_menu_cat_font_size: number
+  mega_menu_cat_color: string
+  mega_menu_cat_bold: boolean
+  mega_menu_cat_italic: boolean
+  mega_menu_cat_uppercase: boolean
   // Família no Mega Menu
   mega_menu_family_font_family: string
   mega_menu_family_font_size: number
@@ -220,6 +227,12 @@ const defaults: SiteVisualSettings = {
   catalog_grid_gap_y: 20,
   mega_menu_bg_color: '#1d1d1f',
   mega_menu_height: 44,
+  mega_menu_cat_font_family: 'system-ui',
+  mega_menu_cat_font_size: 12,
+  mega_menu_cat_color: '#ffffff',
+  mega_menu_cat_bold: true,
+  mega_menu_cat_italic: false,
+  mega_menu_cat_uppercase: true,
   mega_menu_family_font_family: 'system-ui',
   mega_menu_family_font_size: 12,
   mega_menu_family_color: '#6e6e73',

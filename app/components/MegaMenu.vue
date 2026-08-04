@@ -13,7 +13,15 @@
           v-for="item in menuTree"
           :key="item.category"
           class="mega-menu-tab"
-          :style="{ height: `${siteSettings.mega_menu_height || 44}px` }"
+          :style="{
+            height: `${siteSettings.mega_menu_height || 44}px`,
+            fontFamily: siteSettings.mega_menu_cat_font_family || 'inherit',
+            fontSize: `${siteSettings.mega_menu_cat_font_size || 12}px`,
+            color: siteSettings.mega_menu_cat_color || '#ffffff',
+            fontWeight: siteSettings.mega_menu_cat_bold ? '700' : '400',
+            fontStyle: siteSettings.mega_menu_cat_italic ? 'italic' : 'normal',
+            textTransform: siteSettings.mega_menu_cat_uppercase ? 'uppercase' : 'none'
+          }"
           :class="{
             'mega-menu-tab--active': selectedCategory === item.category,
             'mega-menu-tab--hover': hoveredCategory === item.category
@@ -35,6 +43,7 @@
       <div 
         v-show="isOpen && activeDropdownCategory"
         class="mega-menu-dropdown"
+        :style="{ backgroundColor: siteSettings.mega_menu_bg_color || '#1d1d1f' }"
       >
         <div class="mega-menu-dropdown-inner">
           <!-- Cross-fade content for each category -->
@@ -282,7 +291,6 @@ watch(isOpen, (val) => {
   left: 0;
   right: 0;
   z-index: 101;
-  background: #ffffff;
   border-bottom: none;
   box-shadow: 0 15px 35px rgba(0,0,0,0.08);
   -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 78%, rgba(0, 0, 0, 0.7) 90%, transparent 100%);

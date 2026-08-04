@@ -640,8 +640,83 @@
           </div>
         </div>
 
-        <!-- Tipografia das Famílias & Subcategorias no Dropdown -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+        <!-- Tipografia dos Botões de Categoria & Famílias & Subcategorias -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
+          <!-- Card: Tipografia dos Botões de Categoria (Abas) -->
+          <div class="bg-white p-4 rounded-lg border border-gray-200 space-y-4">
+            <div class="flex items-center justify-between border-b border-gray-100 pb-2">
+              <span class="text-xs font-bold text-slate-800 uppercase tracking-wide flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-blue-600 text-base">tab</span>
+                Botões de Categoria (Abas Header)
+              </span>
+            </div>
+
+            <!-- Fonte & Tamanho -->
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-[10px] text-gray-500 font-bold uppercase mb-1">Fonte</label>
+                <select v-model="settings.mega_menu_cat_font_family" class="w-full border border-gray-300 rounded p-2 text-xs bg-white text-slate-800 focus:ring-1 focus:ring-blue-600 focus:outline-none">
+                  <option value="system-ui">Padrão Sistema (Sans-serif)</option>
+                  <option value="-apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif">Apple SF Pro</option>
+                  <option value="Inter, sans-serif">Inter</option>
+                  <option value="Roboto, sans-serif">Roboto</option>
+                  <option value="Montserrat, sans-serif">Montserrat</option>
+                  <option value="Verdana, sans-serif">Verdana</option>
+                </select>
+              </div>
+
+              <div>
+                <div class="flex justify-between text-[10px] text-gray-500 font-bold uppercase mb-1">
+                  <span>Tamanho</span>
+                  <span class="font-mono text-blue-600 font-bold">{{ settings.mega_menu_cat_font_size ?? 12 }}px</span>
+                </div>
+                <input v-model.number="settings.mega_menu_cat_font_size" type="range" min="9" max="22" step="1" class="w-full accent-blue-600 cursor-pointer mt-1" />
+              </div>
+            </div>
+
+            <!-- Cor & Estilos -->
+            <div class="grid grid-cols-2 gap-3 pt-2 border-t border-gray-100 items-end">
+              <div>
+                <label class="block text-[10px] text-gray-500 font-bold uppercase mb-1">Cor do Texto</label>
+                <div class="flex items-center gap-2">
+                  <input v-model="settings.mega_menu_cat_color" type="color" class="w-8 h-8 rounded border border-gray-300 cursor-pointer p-0.5" />
+                  <input v-model="settings.mega_menu_cat_color" type="text" class="flex-1 border border-gray-300 px-2 py-1 text-xs rounded font-mono text-slate-800 bg-white" />
+                </div>
+              </div>
+
+              <!-- Format Buttons: Bold, Italic, Uppercase -->
+              <div class="flex items-center gap-1">
+                <button 
+                  type="button"
+                  @click="settings.mega_menu_cat_bold = !settings.mega_menu_cat_bold"
+                  class="flex-1 py-1.5 text-xs font-bold rounded border cursor-pointer transition-colors"
+                  :class="settings.mega_menu_cat_bold ? 'bg-blue-600 text-white border-blue-600' : 'bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200'"
+                  title="Negrito"
+                >
+                  <strong>N</strong>
+                </button>
+                <button 
+                  type="button"
+                  @click="settings.mega_menu_cat_italic = !settings.mega_menu_cat_italic"
+                  class="flex-1 py-1.5 text-xs italic rounded border cursor-pointer transition-colors"
+                  :class="settings.mega_menu_cat_italic ? 'bg-blue-600 text-white border-blue-600' : 'bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200'"
+                  title="Itálico"
+                >
+                  <i>I</i>
+                </button>
+                <button 
+                  type="button"
+                  @click="settings.mega_menu_cat_uppercase = !settings.mega_menu_cat_uppercase"
+                  class="flex-1 py-1.5 text-[10px] font-bold uppercase rounded border cursor-pointer transition-colors"
+                  :class="settings.mega_menu_cat_uppercase ? 'bg-blue-600 text-white border-blue-600' : 'bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200'"
+                  title="Letras Maiúsculas"
+                >
+                  AA
+                </button>
+              </div>
+            </div>
+          </div>
+
           <!-- Card: Tipografia das Famílias -->
           <div class="bg-white p-4 rounded-lg border border-gray-200 space-y-4">
             <div class="flex items-center justify-between border-b border-gray-100 pb-2">
@@ -1541,6 +1616,13 @@ interface SiteSettings {
   // Barra do Mega Menu (Header)
   mega_menu_bg_color: string
   mega_menu_height: number
+  // Botões de Categoria (Abas)
+  mega_menu_cat_font_family: string
+  mega_menu_cat_font_size: number
+  mega_menu_cat_color: string
+  mega_menu_cat_bold: boolean
+  mega_menu_cat_italic: boolean
+  mega_menu_cat_uppercase: boolean
   // Família no Mega Menu
   mega_menu_family_font_family: string
   mega_menu_family_font_size: number
@@ -1692,6 +1774,12 @@ const defaultSettings: SiteSettings = {
   catalog_grid_gap_y: 20,
   mega_menu_bg_color: '#1d1d1f',
   mega_menu_height: 44,
+  mega_menu_cat_font_family: 'system-ui',
+  mega_menu_cat_font_size: 12,
+  mega_menu_cat_color: '#ffffff',
+  mega_menu_cat_bold: true,
+  mega_menu_cat_italic: false,
+  mega_menu_cat_uppercase: true,
   mega_menu_family_font_family: 'system-ui',
   mega_menu_family_font_size: 12,
   mega_menu_family_color: '#6e6e73',
