@@ -1,6 +1,52 @@
 import { resolve } from 'node:path'
 import nodemailer from 'nodemailer'
 import { readBody, createError } from 'h3'
+import { createClient } from '@supabase/supabase-js'
+
+async function saveNewsletterSubscriber(email: string, lang: string) {
+  try {
+    const config = useRuntimeConfig()
+    const supabaseUrl = (config.public as any)?.supabaseUrl || process.env.SUPABASE_URL
+    const supabaseKey = (config.public as any)?.supabaseAnonKey || process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_KEY
+
+    if (!supabaseUrl || !supabaseKey) return
+
+    const supabase = createClient(supabaseUrl, supabaseKey)
+    const normalizedEmail = email.toLowerCase().trim()
+
+    const { data } = await supabase
+      .from('pdf_settings')
+      .select('id, layout_settings')
+      .eq('category', 'GERAL')
+      .maybeSingle()
+
+    if (data) {
+      const currentLayout = data.layout_settings || {}
+      const existingList: Array<{ email: string; lang: string; subscribed_at: string }> = currentLayout.newsletter_subscribers || []
+
+      const exists = existingList.some(item => item.email.toLowerCase() === normalizedEmail)
+      if (!exists) {
+        existingList.unshift({
+          email: normalizedEmail,
+          lang: (lang || 'pt').toLowerCase(),
+          subscribed_at: new Date().toISOString()
+        })
+
+        const updatedLayout = {
+          ...currentLayout,
+          newsletter_subscribers: existingList
+        }
+
+        await supabase
+          .from('pdf_settings')
+          .update({ layout_settings: updatedLayout })
+          .eq('category', 'GERAL')
+      }
+    }
+  } catch (err) {
+    console.warn('[Supabase Save Subscriber Warning]', err)
+  }
+}
 
 function getNewsletterTemplate(email: string, langRaw = 'pt') {
   const lang = String(langRaw || 'pt').toLowerCase()
@@ -532,6 +578,9 @@ export default defineEventHandler(async (event) => {
 
     if (type === 'newsletter') {
       const activeLang = (lang || 'pt').toLowerCase()
+
+      // 0. Gravar e-mail cadastrado no Supabase
+      await saveNewsletterSubscriber(email, activeLang)
 
       // 1. Notificar equipe interna
       const internalMailOptions = {

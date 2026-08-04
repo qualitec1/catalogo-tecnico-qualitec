@@ -287,6 +287,44 @@
               </div>
               <input v-model.number="settings.sec_newsletter_min_height" type="range" min="0" max="800" step="10" class="w-full accent-blue-600 cursor-pointer" />
             </div>
+
+            <!-- E-mails Cadastrados na Newsletter (Gravados no Supabase) -->
+            <div class="pt-3 border-t border-slate-200 space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] font-bold text-slate-700 uppercase flex items-center gap-1.5">
+                  <span class="material-symbols-outlined text-sm text-blue-600">mark_email_read</span>
+                  Inscritos na Newsletter ({{ subscribers.length }})
+                </span>
+                <button 
+                  type="button" 
+                  @click="exportSubscribersCSV" 
+                  :disabled="!subscribers.length"
+                  class="px-2 py-1 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-40 text-white rounded text-[10px] font-bold flex items-center gap-1 transition-colors border-0 cursor-pointer shadow-2xs"
+                  title="Exportar lista de inscritos em formato CSV"
+                >
+                  <span class="material-symbols-outlined text-xs">download</span>
+                  Exportar CSV
+                </button>
+              </div>
+
+              <!-- Lista de Emails -->
+              <div v-if="subscribers.length" class="max-h-36 overflow-y-auto border border-slate-200 rounded bg-slate-50 divide-y divide-slate-200 text-xs">
+                <div v-for="(sub, idx) in subscribers" :key="idx" class="px-2.5 py-1.5 flex justify-between items-center hover:bg-slate-100">
+                  <span class="font-medium text-slate-800 font-mono text-[11px] truncate max-w-[180px]">{{ sub.email }}</span>
+                  <div class="flex items-center gap-2">
+                    <span class="text-[9px] font-bold uppercase px-1.5 py-0.5 rounded bg-blue-100 text-blue-800 font-mono">
+                      {{ (sub.lang || 'pt').toUpperCase() }}
+                    </span>
+                    <span class="text-[10px] text-slate-500 font-mono">
+                      {{ sub.subscribed_at ? new Date(sub.subscribed_at).toLocaleDateString('pt-BR') : '' }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <p v-else class="text-[11px] text-slate-500 italic text-center py-2 bg-slate-50 rounded border border-slate-200 margin-0">
+                Nenhum e-mail inscrito ainda. Os e-mails cadastrados pelos visitantes na home aparecerão aqui automaticamente.
+              </p>
+            </div>
           </div>
         </div>
 
@@ -1733,6 +1771,36 @@ const handleLogoUpload = async (e: Event) => {
   }
 }
 
+const subscribers = ref<Array<{ email: string; lang: string; subscribed_at: string }>>([])
+
+const loadSubscribers = async () => {
+  try {
+    const res = await fetch('/api/admin/subscribers')
+    const data = await res.json()
+    if (data?.subscribers) {
+      subscribers.value = data.subscribers
+    }
+  } catch (err) {
+    console.error('Erro ao carregar inscritos da newsletter:', err)
+  }
+}
+
+const exportSubscribersCSV = () => {
+  if (!subscribers.value.length) return
+  let csvContent = 'data:text/csv;charset=utf-8,Email,Idioma,DataInscricao\n'
+  subscribers.value.forEach(item => {
+    const dt = item.subscribed_at ? new Date(item.subscribed_at).toLocaleString('pt-BR') : ''
+    csvContent += `"${item.email}","${item.lang || 'pt'}","${dt}"\n`
+  })
+  const encodedUri = encodeURI(csvContent)
+  const link = document.createElement('a')
+  link.setAttribute('href', encodedUri)
+  link.setAttribute('download', `inscritos_newsletter_${new Date().toISOString().slice(0, 10)}.csv`)
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
+}
+
 const loadSettings = async () => {
   loading.value = true
   try {
@@ -1750,6 +1818,7 @@ const loadSettings = async () => {
         }
       })
     }
+    await loadSubscribers()
   } catch (err) {
     console.error('[AdminSiteSettings] Error loading settings:', err)
   } finally {
@@ -1791,5 +1860,7 @@ const saveSettings = async () => {
   }
 }
 
-onMounted(loadSettings)
+onMounted(() => {
+  loadSettings()
+})
 </script>
