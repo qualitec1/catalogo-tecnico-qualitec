@@ -2,144 +2,7 @@ import { ref } from 'vue'
 import { hexToBase64 } from '../utils/image'
 
 export const cleanupDuplicateCategories = async (supabase: any) => {
-  try {
-    const canonicals = [
-      'GERAL',
-      'VÁLVULAS CRIOGÊNICAS',
-      'TRANSMISSORES DE PRESSÃO',
-      'VÁLVULAS 3 VIAS',
-      'VÁLVULAS DE SEGURANÇA',
-      'VÁLVULAS GLOBO'
-    ]
-
-    const { data: assets } = await supabase.from('category_assets').select('id, category')
-    const { data: pdfSettings } = await supabase.from('pdf_settings').select('id, category')
-
-    if (!assets || assets.length === 0) return
-
-    const normalizeCat = (text: string) => {
-      return (text || '')
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '')
-        .toUpperCase()
-        .replace(/[^A-Z0-9]/g, ' ')
-        .replace(/\s+/g, ' ')
-        .trim()
-    }
-
-    const aliasMap: Record<string, string> = {
-      '3 WAY VALVE': 'VÁLVULAS 3 VIAS',
-      '3 WAY VALVES': 'VÁLVULAS 3 VIAS',
-      '3-WAY VALVE': 'VÁLVULAS 3 VIAS',
-      '3-WAY VALVES': 'VÁLVULAS 3 VIAS',
-      '3 WEGE VENTIL': 'VÁLVULAS 3 VIAS',
-      '3 WEGE VENTILE': 'VÁLVULAS 3 VIAS',
-      '3-WEGE VENTIL': 'VÁLVULAS 3 VIAS',
-      '3-WEGE-VENTIL': 'VÁLVULAS 3 VIAS',
-      '3-WEGE-VENTILE': 'VÁLVULAS 3 VIAS',
-      'VALVULAS 3 VIAS': 'VÁLVULAS 3 VIAS',
-
-      'CRYOGENIC VALVE': 'VÁLVULAS CRIOGÊNICAS',
-      'CRYOGENIC VALVES': 'VÁLVULAS CRIOGÊNICAS',
-      'KRYO VENTIL': 'VÁLVULAS CRIOGÊNICAS',
-      'KRYO VENTILE': 'VÁLVULAS CRIOGÊNICAS',
-      'KRYO-VENTIL': 'VÁLVULAS CRIOGÊNICAS',
-      'KRYO-VENTILE': 'VÁLVULAS CRIOGÊNICAS',
-      'KRYOVENTIL': 'VÁLVULAS CRIOGÊNICAS',
-      'KRYOVENTILE': 'VÁLVULAS CRIOGÊNICAS',
-      'VALVULAS CRIOGENICAS': 'VÁLVULAS CRIOGÊNICAS',
-
-      'SAFETY VALVE': 'VÁLVULAS DE SEGURANÇA',
-      'SAFETY VALVES': 'VÁLVULAS DE SEGURANÇA',
-      'SICHERHEITSVENTIL': 'VÁLVULAS DE SEGURANÇA',
-      'SICHERHEITSVENTILE': 'VÁLVULAS DE SEGURANÇA',
-      'VALVULAS DE SEGURANCA': 'VÁLVULAS DE SEGURANÇA',
-
-      'GLOBE VALVE': 'VÁLVULAS GLOBO',
-      'GLOBE VALVES': 'VÁLVULAS GLOBO',
-      'VENTIL': 'VÁLVULAS GLOBO',
-      'VENTILE': 'VÁLVULAS GLOBO',
-      'VALVULAS GLOBO': 'VÁLVULAS GLOBO',
-
-      'PRESSURE TRANSMITTER': 'TRANSMISSORES DE PRESSÃO',
-      'PRESSURE TRANSMITTERS': 'TRANSMISSORES DE PRESSÃO',
-      'DRUCKMESSUMFORMER': 'TRANSMISSORES DE PRESSÃO',
-      'DRUCKUMFORMER': 'TRANSMISSORES DE PRESSÃO',
-      'TRANSMISSORES DE PRESSAO': 'TRANSMISSORES DE PRESSÃO',
-
-      'GERAL': 'GERAL',
-      'GENERAL': 'GERAL',
-      'ALLGEMEIN': 'GERAL'
-    }
-
-    const normAliasMap: Record<string, string> = {}
-    for (const [k, v] of Object.entries(aliasMap)) {
-      normAliasMap[normalizeCat(k)] = v
-    }
-
-    const deleteAssetIds: string[] = []
-    let cleanedAny = false
-
-    for (const asset of assets) {
-      const cat = asset.category
-      if (canonicals.includes(cat)) continue
-
-      const norm = normalizeCat(cat)
-      let canonicalTarget = normAliasMap[norm] || null
-
-      if (!canonicalTarget) {
-        for (const can of canonicals) {
-          if (normalizeCat(can) === norm) {
-            canonicalTarget = can
-            break
-          }
-        }
-      }
-
-      if (canonicalTarget && canonicalTarget !== cat) {
-        await supabase.from('products').update({ category: canonicalTarget }).eq('category', cat)
-        deleteAssetIds.push(asset.id)
-        cleanedAny = true
-      }
-    }
-
-    if (deleteAssetIds.length > 0) {
-      await supabase.from('category_assets').delete().in('id', deleteAssetIds)
-    }
-
-    if (pdfSettings) {
-      const deleteSettingsIds: string[] = []
-      for (const setting of pdfSettings) {
-        const cat = setting.category
-        if (canonicals.includes(cat)) continue
-
-        const norm = normalizeCat(cat)
-        let canonicalTarget = normAliasMap[norm] || null
-        if (!canonicalTarget) {
-          for (const can of canonicals) {
-            if (normalizeCat(can) === norm) {
-              canonicalTarget = can
-              break
-            }
-          }
-        }
-
-        if (canonicalTarget && canonicalTarget !== cat) {
-          deleteSettingsIds.push(setting.id)
-          cleanedAny = true
-        }
-      }
-      if (deleteSettingsIds.length > 0) {
-        await supabase.from('pdf_settings').delete().in('id', deleteSettingsIds)
-      }
-    }
-
-    if (cleanedAny) {
-      console.log('[Cleanup] Duplicate categories cleaned successfully!')
-    }
-  } catch (err) {
-    console.error('[Cleanup Error]', err)
-  }
+  // Desativado: preserva todas as categorias criadas pelo usuário ou importadas via CSV
 }
 
 export function useAdminCategories(triggerToast: (msg: string, type?: 'success' | 'error') => void) {
@@ -536,13 +399,13 @@ export function useAdminCategories(triggerToast: (msg: string, type?: 'success' 
       const catName = name.toUpperCase().trim()
       const payload = {
         category: catName,
-        cover_image_url: '/placeholder.png',
+        cover_image_url: null,
         color_hex: '#376092'
       }
       const { error } = await supabase.from('category_assets').insert([payload])
       if (error) throw error
 
-      // Configurações padrão herdadas da categoria VÁLVULAS DE SEGURANÇA
+      // Configurações padrão clonadas
       const { data: templateSettings } = await supabase
         .from('pdf_settings')
         .select('*')
@@ -554,10 +417,16 @@ export function useAdminCategories(triggerToast: (msg: string, type?: 'success' 
       if (templateSettings && templateSettings.length > 0) {
         const source = templateSettings[0]
         const { id, created_at, ...copiedSettings } = source
+        const clonedLayoutSettings = JSON.parse(JSON.stringify(source.layout_settings || {}))
+        clonedLayoutSettings.cover_title_pt = catName
+        clonedLayoutSettings.cover_title_en = catName
+        clonedLayoutSettings.cover_title_es = catName
+        clonedLayoutSettings.cover_title_de = catName
+
         settingsPayload = {
           ...copiedSettings,
           category: catName,
-          layout_settings: JSON.parse(JSON.stringify(source.layout_settings || {}))
+          layout_settings: clonedLayoutSettings
         }
       } else {
         settingsPayload = {
@@ -566,7 +435,13 @@ export function useAdminCategories(triggerToast: (msg: string, type?: 'success' 
           card_title_font_family: 'Calibri',
           card_model_font_family: 'Calibri',
           specs_font_family: 'Calibri',
-          tag_font_family: 'Calibri'
+          tag_font_family: 'Calibri',
+          layout_settings: {
+            cover_title_pt: catName,
+            cover_title_en: catName,
+            cover_title_es: catName,
+            cover_title_de: catName
+          }
         }
       }
 

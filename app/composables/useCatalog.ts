@@ -179,29 +179,25 @@ export function useCatalog() {
       if (normVal === 'es' || normVal.includes('espanol') || normVal.includes('spanish') || normVal.includes('esp')) return 'es'
       if (normVal === 'de' || normVal.includes('alem') || normVal.includes('deutsch') || normVal.includes('german')) return 'es'
       if (normVal === 'en' || normVal.includes('ing') || normVal.includes('english') || normVal.includes('uk') || normVal.includes('us')) return 'en'
-      if (normVal === 'pt' || normVal.includes('portugues') || normVal.includes('brazil') || normVal.includes('br')) return 'pt'
+      if (normVal === 'pt' || normVal.includes('portugues') || normVal.includes('brazil') || normVal.includes('br') || normVal === 'idioma') return 'pt'
     }
 
-    // Fallback: detect Spanish or English keywords in title, category, or specs
-    const specText = (product.specs || []).map((s: any) => (s.label || '') + ' ' + (s.value || '')).join(' ')
-    const fullText = (product.title + ' ' + (product.category || '') + ' ' + specText).toLowerCase()
+    // Fallback: detect Spanish or English keywords in title or category (not spec labels)
+    const titleAndCat = ((product.title || '') + ' ' + (product.category || '')).toLowerCase()
     
-    // Spanish language indicators (and German fallbacks)
+    // Spanish language indicators
     if (
-      fullText.includes('espanol') || fullText.includes('español') || fullText.includes('seguridad') ||
-      fullText.includes('presion') || fullText.includes('presión') || fullText.includes('transmisor') ||
-      fullText.includes('criogenica') || fullText.includes('criogénica') || fullText.includes('kryo-ventil') ||
-      fullText.includes('kryo ventil') || fullText.includes('sicherheitsventil') || fullText.includes('3-wege-ventil') ||
-      fullText.includes('globe-ventil') || fullText.includes('druckmessumformer') || fullText.includes('druckumformer') ||
-      fullText.includes('deutsch')
+      titleAndCat.includes('espanol') || titleAndCat.includes('español') || titleAndCat.includes('seguridad') ||
+      titleAndCat.includes('presion') || titleAndCat.includes('presión') || titleAndCat.includes('transmisor') ||
+      titleAndCat.includes('criogenica') || titleAndCat.includes('criogénica')
     ) {
       return 'es'
     }
     
     // English language indicators
     if (
-      fullText.includes('cryogenic valve') || fullText.includes('safety valve') || fullText.includes('globe valve') ||
-      fullText.includes('3-way valve') || fullText.includes('pressure transmitter') || fullText.includes('english')
+      titleAndCat.includes('cryogenic valve') || titleAndCat.includes('safety valve') || titleAndCat.includes('globe valve') ||
+      titleAndCat.includes('3-way valve') || titleAndCat.includes('pressure transmitter') || titleAndCat.includes('english')
     ) {
       return 'en'
     }
@@ -222,8 +218,9 @@ export function useCatalog() {
     const tree: { category: string; color: string; families: { name: string; subcategories: string[] }[] }[] = []
     const catMap = new Map<string, Map<string, Set<string>>>()
 
+    // Apenas mapear categorias de produtos do idioma selecionado que possuem produtos cadastrados
     languageFilteredProducts.value.forEach(p => {
-      if (!p.category) return
+      if (!p.category || p.category.toUpperCase().trim() === 'GERAL') return
       const cat = p.category.toUpperCase().trim()
       if (!catMap.has(cat)) catMap.set(cat, new Map())
       const famMap = catMap.get(cat)!

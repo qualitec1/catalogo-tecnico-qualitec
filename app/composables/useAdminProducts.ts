@@ -330,7 +330,36 @@ export function useAdminProducts(triggerToast: (msg: string, type?: 'success' | 
         
         const titleAliases = ['title', 'tittle', 'titulo', 'nome', 'title_pt', 'nome_produto']
         const exAliases = ['ex_image_url', 'ex_url', 'ex_foto', 'foto_ex', 'ex']
-        const coreColumns = [...titleAliases, 'name_code', 'category', 'family', 'subcategory', 'tag', 'layout_slots', 'image_url', 'datasheet_url', 'specs', ...exAliases]
+        const coreColumns = [...titleAliases, 'name_code', 'sku', 'code', 'codigo', 'category', 'categoria', 'family', 'familia', 'subcategory', 'sub_category', 'subcategoria', 'subfamily', 'subfamilia', 'tag', 'layout_slots', 'image_url', 'image', 'foto', 'datasheet_url', 'specs', ...exAliases]
+        
+        let rawTitle = ''
+        for (const alias of titleAliases) {
+          if (row[alias]) {
+            rawTitle = row[alias].trim()
+            break
+          }
+        }
+        const titleValue = rawTitle.toUpperCase().trim()
+
+        // Ignorar linha de cabeçalho repetida caso exista no CSV
+        const rawCatHeader = (row['category'] || row['categoria'] || '').toString().trim().toUpperCase()
+        if (titleValue === 'TITLE' || rawCatHeader === 'CATEGORY' || titleValue === 'NOME' || titleValue === 'TÍTULO') {
+          continue
+        }
+
+        // Resolvendo name_code (SKU) com suporte a múltiplos sinônimos
+        const rawNameCode = (
+          row['name_code'] ||
+          row['sku'] ||
+          row['code'] ||
+          row['codigo'] ||
+          row['cod'] ||
+          row['ref'] ||
+          row['reference'] ||
+          titleValue ||
+          `PROD-${Date.now()}-${i}`
+        ).toString().trim()
+
         const specs: { label: string, value: string }[] = []
         
         if (row['specs']) {
@@ -379,106 +408,33 @@ export function useAdminProducts(triggerToast: (msg: string, type?: 'success' | 
           }
         }
 
-        let rawCat = row['category'] ? row['category'].trim() : 'GERAL'
-        const normRawCat = (rawCat || '')
-          .normalize('NFD')
-          .replace(/[\u0300-\u036f]/g, '')
-          .toUpperCase()
-          .replace(/[^A-Z0-9]/g, ' ')
-          .replace(/\s+/g, ' ')
-          .trim()
-
+        // Categoria informada no CSV — aceita category, categoria ou cat
+        let rawCat = (row['category'] || row['categoria'] || row['cat'] || '').trim()
+        if (!rawCat) {
+          rawCat = 'GERAL'
+        }
         let categoryValue = rawCat.toUpperCase().trim()
         let detectedLang: string | null = null
 
-        // Mapeamento de sinonimos e traducoes de categorias (Ex: VÁLVULAS DE SEGURIDAD -> VÁLVULAS DE SEGURANÇA)
-        const categoryAliasesMap: Record<string, { base: string; lang: string }> = {
-          '3-WAY VALVE': { base: 'VÁLVULAS 3 VIAS', lang: 'en' },
-          '3-WAY VALVES': { base: 'VÁLVULAS 3 VIAS', lang: 'en' },
-          '3 WAY VALVE': { base: 'VÁLVULAS 3 VIAS', lang: 'en' },
-          '3 WAY VALVES': { base: 'VÁLVULAS 3 VIAS', lang: 'en' },
-          'VÁLVULAS 3 VÍAS': { base: 'VÁLVULAS 3 VIAS', lang: 'es' },
-          'VALVULAS 3 VIAS': { base: 'VÁLVULAS 3 VIAS', lang: 'pt' },
-
-          'CRYOGENIC VALVE': { base: 'VÁLVULAS CRIOGÊNICAS', lang: 'en' },
-          'CRYOGENIC VALVES': { base: 'VÁLVULAS CRIOGÊNICAS', lang: 'en' },
-          'VÁLVULAS CRIOGÉNICAS': { base: 'VÁLVULAS CRIOGÊNICAS', lang: 'es' },
-          'VALVULAS CRIOGENICAS': { base: 'VÁLVULAS CRIOGÊNICAS', lang: 'pt' },
-
-          'SAFETY VALVE': { base: 'VÁLVULAS DE SEGURANÇA', lang: 'en' },
-          'SAFETY VALVES': { base: 'VÁLVULAS DE SEGURANÇA', lang: 'en' },
-          'VÁLVULAS DE SEGURIDAD': { base: 'VÁLVULAS DE SEGURANÇA', lang: 'es' },
-          'VALVULAS DE SEGURIDAD': { base: 'VÁLVULAS DE SEGURANÇA', lang: 'es' },
-          'VALVULAS DE SEGURANCA': { base: 'VÁLVULAS DE SEGURANÇA', lang: 'pt' },
-
-          'GLOBE VALVE': { base: 'VÁLVULAS GLOBO', lang: 'en' },
-          'GLOBE VALVES': { base: 'VÁLVULAS GLOBO', lang: 'en' },
-          'VALVULAS GLOBO': { base: 'VÁLVULAS GLOBO', lang: 'pt' },
-
-          'PRESSURE TRANSMITTER': { base: 'TRANSMISSORES DE PRESSÃO', lang: 'en' },
-          'PRESSURE TRANSMITTERS': { base: 'TRANSMISSORES DE PRESSÃO', lang: 'en' },
-          'TRANSMISORES DE PRESIÓN': { base: 'TRANSMISSORES DE PRESSÃO', lang: 'es' },
-          'TRANSMISORES DE PRESION': { base: 'TRANSMISSORES DE PRESSÃO', lang: 'es' },
-          'TRANSMISSORES DE PRESSAO': { base: 'TRANSMISSORES DE PRESSÃO', lang: 'pt' },
-
-          'GERAL': { base: 'GERAL', lang: 'pt' },
-          'GENERAL': { base: 'GERAL', lang: 'en' }
-        }
-
-        // 1. Check aliases map using normalized strings
-        for (const [aliasKey, aliasData] of Object.entries(categoryAliasesMap)) {
-          const normAlias = aliasKey
-            .normalize('NFD')
-            .replace(/[\u0300-\u036f]/g, '')
-            .toUpperCase()
-            .replace(/[^A-Z0-9]/g, ' ')
-            .replace(/\s+/g, ' ')
-            .trim()
-          if (normAlias === normRawCat) {
-            categoryValue = aliasData.base
-            detectedLang = aliasData.lang
-            break
-          }
-        }
-
-        // 2. If no alias match, match normalized string against existing validCategories from DB
-        if (!detectedLang) {
-          for (const existingCat of validCategories) {
-            const normExisting = existingCat
-              .normalize('NFD')
-              .replace(/[\u0300-\u036f]/g, '')
-              .toUpperCase()
-              .replace(/[^A-Z0-9]/g, ' ')
-              .replace(/\s+/g, ' ')
-              .trim()
-            if (normExisting === normRawCat) {
-              categoryValue = existingCat
-              break
-            }
-          }
-        }
-
-        // 3. Ensure explicit language spec exists in specs array
+        // Garantir que especificação de Idioma exista no array specs
         const hasLangSpec = specs.some(s => {
           const lbl = (s.label || '').toLowerCase().trim()
           return lbl === 'idioma' || lbl === 'lang' || lbl === 'language' || lbl === 'sprache'
         })
 
         if (!hasLangSpec) {
-          if (!detectedLang) {
-            const fullText = ((row['title'] || '') + ' ' + rawCat).toLowerCase()
-            if (fullText.includes('espanol') || fullText.includes('español') || fullText.includes('seguridad') || fullText.includes('presion') || fullText.includes('presión')) {
-              detectedLang = 'es'
-            } else if (fullText.includes('valve') || fullText.includes('english') || fullText.includes('safety') || fullText.includes('transmitter')) {
-              detectedLang = 'en'
-            } else {
-              detectedLang = 'pt'
-            }
+          const fullText = (titleValue + ' ' + categoryValue).toLowerCase()
+          if (fullText.includes('espanol') || fullText.includes('español') || fullText.includes('seguridad') || fullText.includes('presion') || fullText.includes('presión')) {
+            detectedLang = 'es'
+          } else if (fullText.includes('valve') || fullText.includes('english') || fullText.includes('safety') || fullText.includes('transmitter')) {
+            detectedLang = 'en'
+          } else {
+            detectedLang = 'pt'
           }
           specs.push({ label: 'Idioma', value: detectedLang })
         }
 
-        // Auto-criar categoria se realmente não existir no banco (mesmo após normalização)
+        // Auto-criar categoria com o NOME EXATO se não existir no banco de dados
         if (!validCategories.has(categoryValue)) {
           const normCatValue = categoryValue.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase().replace(/[^A-Z0-9]/g, ' ').replace(/\s+/g, ' ').trim()
           const matchedDB = Array.from(validCategories).find(c => {
@@ -490,7 +446,7 @@ export function useAdminProducts(triggerToast: (msg: string, type?: 'success' | 
           } else if (categoryValue && categoryValue !== '(VAZIO)') {
             validCategories.add(categoryValue)
             try {
-              // Copy ALL settings from an existing category template (full clone)
+              // Copiar assets de um modelo de categoria existente
               const { data: templateAssets } = await supabase
                 .from('category_assets')
                 .select('*')
@@ -499,19 +455,21 @@ export function useAdminProducts(triggerToast: (msg: string, type?: 'success' | 
 
               let assetsPayload: Record<string, any> = {
                 category: categoryValue,
-                cover_image_url: '/placeholder.png',
-                color_hex: '#005db7'
+                cover_image_url: null,
+                color_hex: '#376092'
               }
               if (templateAssets && templateAssets.length > 0) {
-                const { id, created_at, category: _cat, ...copiedAssets } = templateAssets[0] as any
+                const { id, created_at, category: _cat, cover_image_url: _cImg, color_hex: _cHex, ...copiedAssets } = templateAssets[0] as any
                 assetsPayload = {
                   ...copiedAssets,
-                  category: categoryValue
+                  category: categoryValue,
+                  cover_image_url: null,
+                  color_hex: '#376092'
                 }
               }
               await supabase.from('category_assets').insert([assetsPayload])
 
-              // Copy ALL pdf_settings from an existing template (full clone)
+              // Copiar pdf_settings de um modelo existente sem herdar títulos de idioma antigos
               const { data: templateSettings } = await supabase
                 .from('pdf_settings')
                 .select('*')
@@ -522,33 +480,39 @@ export function useAdminProducts(triggerToast: (msg: string, type?: 'success' | 
               let settingsPayload: Record<string, any> = {}
               if (templateSettings && templateSettings.length > 0) {
                 const { id, created_at, category: _catS, ...copiedSettings } = templateSettings[0] as any
+                const clonedLayoutSettings = JSON.parse(JSON.stringify(templateSettings[0].layout_settings || {}))
+                clonedLayoutSettings.cover_title_pt = categoryValue
+                clonedLayoutSettings.cover_title_en = categoryValue
+                clonedLayoutSettings.cover_title_es = categoryValue
+                clonedLayoutSettings.cover_title_de = categoryValue
+
                 settingsPayload = {
                   ...copiedSettings,
                   category: categoryValue,
-                  layout_settings: JSON.parse(JSON.stringify(templateSettings[0].layout_settings || {}))
+                  layout_settings: clonedLayoutSettings
                 }
               } else {
                 settingsPayload = {
                   category: categoryValue,
-                  orientation: 'portrait'
+                  orientation: 'portrait',
+                  layout_settings: {
+                    cover_title_pt: categoryValue,
+                    cover_title_en: categoryValue,
+                    cover_title_es: categoryValue,
+                    cover_title_de: categoryValue
+                  }
                 }
               }
               await supabase.from('pdf_settings').insert([settingsPayload])
             } catch (catErr) {
               console.warn('[CSV Import] Auto-criacao de categoria aviso:', catErr)
             }
-          } else {
-            invalidCategories.push({
-              line: i + 1,
-              category: row['category'] || '(vazio)'
-            })
           }
         }
 
-        // Resolver datasheet_url: se for nome de arquivo, buscar no storage
-        let resolvedDatasheetUrl = row['datasheet_url'] || null
+        // Resolver datasheet_url
+        let resolvedDatasheetUrl = row['datasheet_url'] || row['datasheet'] || null
         if (resolvedDatasheetUrl && !resolvedDatasheetUrl.startsWith('http')) {
-          // É uma referência de arquivo, tentar buscar no storage
           const fileRef = resolvedDatasheetUrl.trim()
           const { data: fileData } = await supabase
             .from('uploaded_files')
@@ -562,22 +526,17 @@ export function useAdminProducts(triggerToast: (msg: string, type?: 'success' | 
           }
         }
 
-        let rawTitle = ''
-        for (const alias of titleAliases) {
-          if (row[alias]) {
-            rawTitle = row[alias].trim()
-            break
-          }
-        }
-        const titleValue = rawTitle.toUpperCase().trim()
-
-        // Read family and subcategory from CSV
-        const familyValue = (row['family'] || '').trim() || null
-        const subcategoryValue = (row['subcategory'] || row['sub_category'] || row['subcategoria'] || '').trim() || null
+        // Ler family e subcategory do CSV com suporte a alias adicionais
+        // family/familia: usado na coluna família (NÃO como alias de category neste ponto)
+        const familyValue = (row['family'] || row['familia'] || '').trim() || null
+        const subcategoryValue = (
+          row['subcategory'] || row['sub_category'] || row['subcategoria'] ||
+          row['subfamily'] || row['subfamilia'] || ''
+        ).trim() || null
 
         parsedProducts.push({
-          title: titleValue,
-          name_code: row['name_code'],
+          title: titleValue || rawNameCode,
+          name_code: rawNameCode,
           category: categoryValue.toUpperCase().trim(),
           family: familyValue,
           subcategory: subcategoryValue,
@@ -585,8 +544,8 @@ export function useAdminProducts(triggerToast: (msg: string, type?: 'success' | 
           tag_color_class: 'text-[#005db7]',
           bg_class: 'bg-secondary',
           layout_slots: dbLayoutSlots,
-          image: row['image_url'] || '/placeholder.png',
-          image_scale: 1.0,  // Escala padrão de imagem
+          image: row['image_url'] || row['image'] || row['foto'] || '/placeholder.png',
+          image_scale: 1.0,
           booklet_image_scale: 1.0,
           booklet_image_offset_x: 0,
           booklet_image_offset_y: 0,
@@ -616,7 +575,14 @@ export function useAdminProducts(triggerToast: (msg: string, type?: 'success' | 
         const { error } = await supabase.from('products').insert(parsedProducts)
         if (error) throw error
         triggerToast(`${parsedProducts.length} produtos importados com sucesso!`, 'success')
-        await fetchProducts()
+        
+        const { fetchAssets } = useCategoryColors()
+        const { fetchPdfSettings } = usePdfSettings()
+        await Promise.all([
+          fetchProducts(),
+          fetchAssets(),
+          fetchPdfSettings()
+        ])
       } catch (err: any) {
         console.error(err)
         triggerToast(`Erro ao importar CSV: ${err.message}`, 'error')

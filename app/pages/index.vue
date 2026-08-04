@@ -83,19 +83,18 @@
         </div>
       </div>
 
-      <!-- Linha inferior: segmentos (igual ao catálogo) -->
-      <div class="bg-gray-100 border-b border-gray-200">
-        <div class="max-w-[1280px] w-full mx-auto px-4 md:px-10 py-4 flex justify-center items-center">
-          <nav class="flex flex-wrap justify-center items-center gap-x-16 gap-y-2">
-            <NuxtLink
-              v-for="seg in translatedSegments"
-              :key="seg.key"
-              :to="`/catalogo?segment=${encodeURIComponent(seg.key)}`"
-              class="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
-            >{{ seg.label }}</NuxtLink>
-          </nav>
-        </div>
-      </div>
+
+      <!-- SETORES: barra removida da home — dados preservados para página dedicada futura -->
+      <!-- v-for="seg in translatedSegments" :to="`/catalogo?segment=${seg.key}`" -->
+
+      <!-- Mega Menu (mesmos botoes de categoria do Catalogo) -->
+      <MegaMenu
+        :menu-tree="megaMenuTree"
+        :selected-category="homeMegaCategory"
+        :selected-family="''"
+        :selected-subcategory="''"
+        @select="handleHomeMegaMenuSelect"
+      />
 
       <!-- Barra branca fina -->
       <div class="bg-white h-3 w-full border-b border-gray-200"></div>
@@ -507,6 +506,21 @@ const { fetchTranslationsFromDB } = useTranslationsAdmin()
 const heroVideoRef = ref<HTMLVideoElement | null>(null)
 const supabase = useSupabaseClient()
 
+// --- Mega Menu (mesmos botoes do Catalogo) ---
+const { megaMenuTree, loadProducts, fetchAssets } = useCatalog()
+const homeMegaCategory = ref('TODAS')
+const handleHomeMegaMenuSelect = (payload: { category: string; family: string; subcategory: string }) => {
+  // Navegar para catálogo com filtro da categoria selecionada
+  const cat = payload.category && payload.category !== 'TODAS' ? payload.category : ''
+  const fam = payload.family || ''
+  const sub = payload.subcategory || ''
+  const query: Record<string, string> = {}
+  if (cat) query.cat = cat
+  if (fam) query.family = fam
+  if (sub) query.subcategory = sub
+  navigateTo({ path: '/catalogo', query })
+}
+
 const activeHeroCardText = computed(() => {
   const lang = currentLang.value
   if (lang === 'en') {
@@ -662,6 +676,8 @@ onMounted(async () => {
   await Promise.all([
     fetchSiteSettings(),
     fetchTranslationsFromDB(),
+    fetchAssets(),
+    loadProducts(),
   ])
   nextTick(() => {
     playVideo()
