@@ -133,52 +133,7 @@
       <div class="bg-white h-3 w-full border-b border-gray-200"></div>
     </header>
 
-    <!-- Active Filters Breadcrumb -->
-    <div 
-      v-if="selectedCategory !== 'TODAS' || selectedFamily || selectedSubcategory || searchQuery"
-      class="bg-white border-b border-gray-200 px-8 py-2.5 flex items-center gap-3 max-w-[2560px] mx-auto w-full"
-    >
-      <span class="text-xs text-gray-500 font-medium uppercase tracking-wider">Filtro:</span>
-      <div class="flex items-center gap-1.5 flex-wrap">
-        <span 
-          v-if="searchQuery"
-          class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-600 text-white"
-        >
-          Busca: "{{ searchQuery }}"
-          <button @click="clearFilter('search')" class="ml-0.5 hover:text-red-300 transition-colors border-0 bg-transparent text-white cursor-pointer text-xs">&times;</button>
-        </span>
-        <span v-if="searchQuery && selectedCategory !== 'TODAS'" class="text-gray-400 text-xs">&rsaquo;</span>
-        <span 
-          v-if="selectedCategory !== 'TODAS'"
-          class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-800 text-white"
-        >
-          {{ selectedCategory }}
-          <button @click="clearFilter('category')" class="ml-0.5 hover:text-red-300 transition-colors border-0 bg-transparent text-white cursor-pointer text-xs">&times;</button>
-        </span>
-        <span v-if="selectedFamily" class="text-gray-400 text-xs">&rsaquo;</span>
-        <span 
-          v-if="selectedFamily"
-          class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-600 text-white"
-        >
-          {{ selectedFamily }}
-          <button @click="clearFilter('family')" class="ml-0.5 hover:text-red-300 transition-colors border-0 bg-transparent text-white cursor-pointer text-xs">&times;</button>
-        </span>
-        <span v-if="selectedSubcategory" class="text-gray-400 text-xs">&rsaquo;</span>
-        <span 
-          v-if="selectedSubcategory"
-          class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-600 text-white"
-        >
-          {{ selectedSubcategory }}
-          <button @click="clearFilter('subcategory')" class="ml-0.5 hover:text-red-300 transition-colors border-0 bg-transparent text-white cursor-pointer text-xs">&times;</button>
-        </span>
-      </div>
-      <button 
-        @click="clearFilter('all')" 
-        class="ml-auto text-xs text-gray-500 hover:text-red-600 transition-colors border-0 bg-transparent cursor-pointer underline"
-      >
-        Limpar filtros
-      </button>
-    </div>
+
 
     <!-- Main Content -->
     <main class="max-w-[2560px] w-full mx-auto px-6 py-6 flex-grow">
