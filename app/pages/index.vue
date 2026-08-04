@@ -777,7 +777,8 @@ const handleNewsletterSubmit = async () => {
       method: 'POST',
       body: {
         type: 'newsletter',
-        email: emailVal
+        email: emailVal,
+        lang: currentLang.value || 'pt'
       }
     }) as any
 
