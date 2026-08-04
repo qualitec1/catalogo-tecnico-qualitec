@@ -15,7 +15,7 @@ export function useAdminProducts(triggerToast: (msg: string, type?: 'success' | 
     try {
       const { data, error } = await supabase
         .from('products')
-        .select('id, tag, tag_color_class, name_code, title, image, datasheet_name, datasheet_url, bg_class, card_layout, category, specs, layout_slots, image_scale, image_offset_x, image_offset_y, ex_image_url')
+        .select('id, tag, tag_color_class, name_code, title, image, datasheet_name, datasheet_url, bg_class, card_layout, category, family, subcategory, specs, layout_slots, image_scale, image_offset_x, image_offset_y, ex_image_url')
         .order('sort_order', { ascending: true })
         .order('id', { ascending: true })
       if (error) throw error
@@ -35,6 +35,8 @@ export function useAdminProducts(triggerToast: (msg: string, type?: 'success' | 
           bgClass: item.bg_class || 'bg-secondary',
           cardLayout: item.card_layout,
           category: item.category,
+          family: item.family || null,
+          subcategory: item.subcategory || null,
           specs: item.specs || [],
           layoutSlots: item.layout_slots || 3,
           imageScale: item.image_scale !== null ? Number(item.image_scale) : 1.0,
@@ -71,6 +73,8 @@ export function useAdminProducts(triggerToast: (msg: string, type?: 'success' | 
         title: (product.title || '').toUpperCase().trim(),
         name_code: product.nameCode,
         category: (product.category || 'GERAL').toUpperCase().trim(),
+        family: (product.family || '').trim() || null,
+        subcategory: (product.subcategory || '').trim() || null,
         image: product.image || '/placeholder.png',
         datasheet_name: product.datasheetName || null,
         datasheet_url: product.datasheetUrl || null,
@@ -111,6 +115,8 @@ export function useAdminProducts(triggerToast: (msg: string, type?: 'success' | 
         title: (product.title || '').toUpperCase().trim(),
         name_code: product.nameCode,
         category: (product.category || 'GERAL').toUpperCase().trim(),
+        family: (product.family || '').trim() || null,
+        subcategory: (product.subcategory || '').trim() || null,
         tag: product.tag,
         tag_color_class: tagColorClass,
         bg_class: bgClass,
@@ -324,7 +330,7 @@ export function useAdminProducts(triggerToast: (msg: string, type?: 'success' | 
         
         const titleAliases = ['title', 'tittle', 'titulo', 'nome', 'title_pt', 'nome_produto']
         const exAliases = ['ex_image_url', 'ex_url', 'ex_foto', 'foto_ex', 'ex']
-        const coreColumns = [...titleAliases, 'name_code', 'category', 'tag', 'layout_slots', 'image_url', 'datasheet_url', 'specs', ...exAliases]
+        const coreColumns = [...titleAliases, 'name_code', 'category', 'family', 'subcategory', 'tag', 'layout_slots', 'image_url', 'datasheet_url', 'specs', ...exAliases]
         const specs: { label: string, value: string }[] = []
         
         if (row['specs']) {
@@ -484,15 +490,50 @@ export function useAdminProducts(triggerToast: (msg: string, type?: 'success' | 
           } else if (categoryValue && categoryValue !== '(VAZIO)') {
             validCategories.add(categoryValue)
             try {
-              await supabase.from('category_assets').insert([{
+              // Copy ALL settings from an existing category template (full clone)
+              const { data: templateAssets } = await supabase
+                .from('category_assets')
+                .select('*')
+                .limit(1)
+                .order('created_at', { ascending: true })
+
+              let assetsPayload: Record<string, any> = {
                 category: categoryValue,
                 cover_image_url: '/placeholder.png',
                 color_hex: '#005db7'
-              }])
-              await supabase.from('pdf_settings').insert([{
-                category: categoryValue,
-                orientation: 'portrait'
-              }])
+              }
+              if (templateAssets && templateAssets.length > 0) {
+                const { id, created_at, category: _cat, ...copiedAssets } = templateAssets[0] as any
+                assetsPayload = {
+                  ...copiedAssets,
+                  category: categoryValue
+                }
+              }
+              await supabase.from('category_assets').insert([assetsPayload])
+
+              // Copy ALL pdf_settings from an existing template (full clone)
+              const { data: templateSettings } = await supabase
+                .from('pdf_settings')
+                .select('*')
+                .not('category', 'eq', 'GERAL')
+                .limit(1)
+                .order('created_at', { ascending: true })
+
+              let settingsPayload: Record<string, any> = {}
+              if (templateSettings && templateSettings.length > 0) {
+                const { id, created_at, category: _catS, ...copiedSettings } = templateSettings[0] as any
+                settingsPayload = {
+                  ...copiedSettings,
+                  category: categoryValue,
+                  layout_settings: JSON.parse(JSON.stringify(templateSettings[0].layout_settings || {}))
+                }
+              } else {
+                settingsPayload = {
+                  category: categoryValue,
+                  orientation: 'portrait'
+                }
+              }
+              await supabase.from('pdf_settings').insert([settingsPayload])
             } catch (catErr) {
               console.warn('[CSV Import] Auto-criacao de categoria aviso:', catErr)
             }
@@ -530,10 +571,16 @@ export function useAdminProducts(triggerToast: (msg: string, type?: 'success' | 
         }
         const titleValue = rawTitle.toUpperCase().trim()
 
+        // Read family and subcategory from CSV
+        const familyValue = (row['family'] || '').trim() || null
+        const subcategoryValue = (row['subcategory'] || row['sub_category'] || row['subcategoria'] || '').trim() || null
+
         parsedProducts.push({
           title: titleValue,
           name_code: row['name_code'],
           category: categoryValue.toUpperCase().trim(),
+          family: familyValue,
+          subcategory: subcategoryValue,
           tag: row['tag'] || 'ATIVO',
           tag_color_class: 'text-[#005db7]',
           bg_class: 'bg-secondary',

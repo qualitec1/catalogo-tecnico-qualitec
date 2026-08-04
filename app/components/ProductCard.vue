@@ -1,22 +1,13 @@
 <template>
-  <article class="product-card bg-white border border-gray-300 overflow-hidden flex flex-col h-full shadow-sm text-slate-800">
-    <!-- Header com Tag e Checkbox -->
-    <div class="px-3.5 py-2.5 border-b border-gray-200">
-      <div class="flex justify-between items-center">
-        <span 
-          class="tracking-wider uppercase" 
-          :style="tagStyle"
-        >
-          {{ product.tag }}
-        </span>
-        <input 
-          v-if="showSelectCheckbox"
-          :checked="isSelected" 
-          @change="$emit('toggleSelect', product.id)"
-          class="w-4 h-4 border-2 border-gray-400 text-blue-600 focus:ring-0 cursor-pointer" 
-          type="checkbox"
-        >
-      </div>
+  <article class="product-card bg-white border border-gray-300 overflow-hidden flex flex-col h-full shadow-sm text-slate-800" :style="{ borderRadius: `${ss.card_border_radius ?? 0}px` }">
+    <!-- Header com Checkbox (apenas para modo de seleção) -->
+    <div v-if="showSelectCheckbox" class="px-3.5 py-2 border-b border-gray-200 flex justify-end items-center">
+      <input 
+        :checked="isSelected" 
+        @change="$emit('toggleSelect', product.id)"
+        class="w-4 h-4 border-2 border-gray-400 text-blue-600 focus:ring-0 cursor-pointer" 
+        type="checkbox"
+      >
     </div>
 
     <!-- Imagem do Produto -->
@@ -183,7 +174,7 @@ const btnDocStyle = computed(() => ({
   fontWeight: ss.value.btn_doc_bold ? 'bold' : '600',
   fontStyle: ss.value.btn_doc_italic ? 'italic' : 'normal',
   textTransform: ss.value.btn_doc_uppercase ? 'uppercase' as const : 'none' as const,
-  borderRadius: ss.value.btn_doc_border_radius,
+  borderRadius: `${ss.value.card_border_radius ?? 0}px`,
   letterSpacing: '0.05em',
 }))
 

@@ -565,6 +565,348 @@
         </div>
       </div>
 
+      <!-- ===== SEÇÃO: BARRA DO MEGA MENU (HEADER DO CATÁLOGO) ===== -->
+      <div class="space-y-6 bg-slate-50 p-5 rounded-lg border border-slate-200">
+        <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+          <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wide flex items-center gap-2">
+            <span class="material-symbols-outlined text-blue-600">menu</span>
+            Barra do Mega Menu (Cor de Fundo &amp; Espessura / Altura)
+          </h3>
+          <span class="text-[10px] bg-emerald-100 text-emerald-700 font-bold px-2 py-0.5 rounded uppercase">Catálogo Público</span>
+        </div>
+
+        <p class="text-xs text-slate-600">
+          Personalize a cor de fundo da barra do Mega Menu de categorias e ajuste a sua espessura (altura em pixels).
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-white p-4 rounded-lg border border-gray-200">
+          <!-- Cor de Fundo -->
+          <div class="space-y-2">
+            <label class="block text-xs text-gray-700 font-bold uppercase">Cor de Fundo da Barra</label>
+            <div class="flex items-center gap-3">
+              <input 
+                v-model="settings.mega_menu_bg_color" 
+                type="color" 
+                class="w-12 h-10 rounded border border-gray-300 cursor-pointer p-0.5" 
+              />
+              <input 
+                v-model="settings.mega_menu_bg_color" 
+                type="text" 
+                class="flex-1 border border-gray-300 px-3 py-2 text-xs rounded bg-white text-slate-800 font-mono focus:ring-1 focus:ring-blue-600 focus:outline-none" 
+                placeholder="#1d1d1f"
+              />
+            </div>
+            <!-- Atalhos de cor -->
+            <div class="flex items-center gap-2 pt-1 flex-wrap">
+              <span class="text-[10px] text-gray-500 font-bold uppercase">Atalhos:</span>
+              <button @click="settings.mega_menu_bg_color = '#1d1d1f'" type="button" class="px-2 py-1 bg-slate-900 text-white text-[10px] font-bold rounded border border-slate-800 cursor-pointer">Preto Apple (#1d1d1f)</button>
+              <button @click="settings.mega_menu_bg_color = '#005db7'" type="button" class="px-2 py-1 bg-[#005db7] text-white text-[10px] font-bold rounded border border-blue-600 cursor-pointer">Azul Qualitec (#005db7)</button>
+              <button @click="settings.mega_menu_bg_color = '#101828'" type="button" class="px-2 py-1 bg-[#101828] text-white text-[10px] font-bold rounded border border-slate-700 cursor-pointer">Escuro (#101828)</button>
+            </div>
+          </div>
+
+          <!-- Altura / Espessura -->
+          <div class="space-y-2">
+            <div class="flex justify-between text-xs text-gray-700 font-bold">
+              <span>Espessura / Altura da Barra</span>
+              <span class="font-mono text-blue-600 font-bold text-sm">{{ settings.mega_menu_height ?? 44 }}px</span>
+            </div>
+            <input 
+              v-model.number="settings.mega_menu_height" 
+              type="range" 
+              min="30" 
+              max="80" 
+              step="2" 
+              class="w-full accent-blue-600 cursor-pointer mt-2" 
+            />
+            <p class="text-[10px] text-gray-500 font-sans">
+              Ajuste a espessura vertical da barra de categorias. O padrão original é <span class="font-mono font-bold">44px</span>.
+            </p>
+          </div>
+        </div>
+
+        <!-- Preview da Barra -->
+        <div class="bg-white p-4 rounded-lg border border-gray-200 space-y-2">
+          <span class="text-[10px] text-gray-500 font-bold uppercase tracking-wider block">Pré-Visualização em Tempo Real da Barra</span>
+          <div 
+            class="w-full rounded flex items-center justify-center transition-all px-4 overflow-hidden border border-gray-300 shadow-xs"
+            :style="{ backgroundColor: settings.mega_menu_bg_color || '#1d1d1f', height: `${settings.mega_menu_height || 44}px` }"
+          >
+            <div class="flex items-center gap-6 text-xs text-white/90 font-medium uppercase tracking-wider">
+              <span class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> VÁLVULAS DE SEGURANÇA</span>
+              <span class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> VÁLVULAS 3 VIAS</span>
+              <span class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-blue-400"></span> TRANSMISSORES DE PRESSÃO</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tipografia das Famílias & Subcategorias no Dropdown -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+          <!-- Card: Tipografia das Famílias -->
+          <div class="bg-white p-4 rounded-lg border border-gray-200 space-y-4">
+            <div class="flex items-center justify-between border-b border-gray-100 pb-2">
+              <span class="text-xs font-bold text-slate-800 uppercase tracking-wide flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-blue-600 text-base">text_fields</span>
+                Tipografia das Famílias (ex: Criogenia)
+              </span>
+            </div>
+
+            <!-- Fonte & Tamanho -->
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-[10px] text-gray-500 font-bold uppercase mb-1">Família da Fonte</label>
+                <select v-model="settings.mega_menu_family_font_family" class="w-full border border-gray-300 rounded p-2 text-xs bg-white text-slate-800 focus:ring-1 focus:ring-blue-600 focus:outline-none">
+                  <option value="system-ui">Padrão Sistema (Sans-serif)</option>
+                  <option value="-apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif">Apple SF Pro</option>
+                  <option value="Inter, sans-serif">Inter</option>
+                  <option value="Roboto, sans-serif">Roboto</option>
+                  <option value="Montserrat, sans-serif">Montserrat</option>
+                  <option value="Verdana, sans-serif">Verdana</option>
+                </select>
+              </div>
+
+              <div>
+                <div class="flex justify-between text-[10px] text-gray-500 font-bold uppercase mb-1">
+                  <span>Tamanho</span>
+                  <span class="font-mono text-blue-600 font-bold">{{ settings.mega_menu_family_font_size ?? 12 }}px</span>
+                </div>
+                <input v-model.number="settings.mega_menu_family_font_size" type="range" min="9" max="22" step="1" class="w-full accent-blue-600 cursor-pointer mt-1" />
+              </div>
+            </div>
+
+            <!-- Cor & Estilos -->
+            <div class="grid grid-cols-2 gap-3 pt-2 border-t border-gray-100 items-end">
+              <div>
+                <label class="block text-[10px] text-gray-500 font-bold uppercase mb-1">Cor do Texto</label>
+                <div class="flex items-center gap-2">
+                  <input v-model="settings.mega_menu_family_color" type="color" class="w-8 h-8 rounded border border-gray-300 cursor-pointer p-0.5" />
+                  <input v-model="settings.mega_menu_family_color" type="text" class="flex-1 border border-gray-300 px-2 py-1 text-xs rounded font-mono text-slate-800 bg-white" />
+                </div>
+              </div>
+
+              <!-- Format Buttons: Bold, Italic, Uppercase -->
+              <div class="flex items-center gap-1">
+                <button 
+                  type="button"
+                  @click="settings.mega_menu_family_bold = !settings.mega_menu_family_bold"
+                  class="flex-1 py-1.5 text-xs font-bold rounded border cursor-pointer transition-colors"
+                  :class="settings.mega_menu_family_bold ? 'bg-blue-600 text-white border-blue-600' : 'bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200'"
+                  title="Negrito"
+                >
+                  <strong>N</strong>
+                </button>
+                <button 
+                  type="button"
+                  @click="settings.mega_menu_family_italic = !settings.mega_menu_family_italic"
+                  class="flex-1 py-1.5 text-xs italic rounded border cursor-pointer transition-colors"
+                  :class="settings.mega_menu_family_italic ? 'bg-blue-600 text-white border-blue-600' : 'bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200'"
+                  title="Itálico"
+                >
+                  <i>I</i>
+                </button>
+                <button 
+                  type="button"
+                  @click="settings.mega_menu_family_uppercase = !settings.mega_menu_family_uppercase"
+                  class="flex-1 py-1.5 text-[10px] font-bold uppercase rounded border cursor-pointer transition-colors"
+                  :class="settings.mega_menu_family_uppercase ? 'bg-blue-600 text-white border-blue-600' : 'bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200'"
+                  title="Letras Maiúsculas"
+                >
+                  AA
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card: Tipografia das Subcategorias -->
+          <div class="bg-white p-4 rounded-lg border border-gray-200 space-y-4">
+            <div class="flex items-center justify-between border-b border-gray-100 pb-2">
+              <span class="text-xs font-bold text-slate-800 uppercase tracking-wide flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-blue-600 text-base">format_list_bulleted</span>
+                Tipografia das Subcategorias (ex: Válvulas 3 vias)
+              </span>
+            </div>
+
+            <!-- Fonte & Tamanho -->
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-[10px] text-gray-500 font-bold uppercase mb-1">Família da Fonte</label>
+                <select v-model="settings.mega_menu_sub_font_family" class="w-full border border-gray-300 rounded p-2 text-xs bg-white text-slate-800 focus:ring-1 focus:ring-blue-600 focus:outline-none">
+                  <option value="system-ui">Padrão Sistema (Sans-serif)</option>
+                  <option value="-apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif">Apple SF Pro</option>
+                  <option value="Inter, sans-serif">Inter</option>
+                  <option value="Roboto, sans-serif">Roboto</option>
+                  <option value="Montserrat, sans-serif">Montserrat</option>
+                  <option value="Verdana, sans-serif">Verdana</option>
+                </select>
+              </div>
+
+              <div>
+                <div class="flex justify-between text-[10px] text-gray-500 font-bold uppercase mb-1">
+                  <span>Tamanho</span>
+                  <span class="font-mono text-blue-600 font-bold">{{ settings.mega_menu_sub_font_size ?? 13 }}px</span>
+                </div>
+                <input v-model.number="settings.mega_menu_sub_font_size" type="range" min="10" max="24" step="1" class="w-full accent-blue-600 cursor-pointer mt-1" />
+              </div>
+            </div>
+
+            <!-- Cor & Estilos -->
+            <div class="grid grid-cols-2 gap-3 pt-2 border-t border-gray-100 items-end">
+              <div>
+                <label class="block text-[10px] text-gray-500 font-bold uppercase mb-1">Cor do Texto</label>
+                <div class="flex items-center gap-2">
+                  <input v-model="settings.mega_menu_sub_color" type="color" class="w-8 h-8 rounded border border-gray-300 cursor-pointer p-0.5" />
+                  <input v-model="settings.mega_menu_sub_color" type="text" class="flex-1 border border-gray-300 px-2 py-1 text-xs rounded font-mono text-slate-800 bg-white" />
+                </div>
+              </div>
+
+              <!-- Format Buttons: Bold, Italic, Uppercase -->
+              <div class="flex items-center gap-1">
+                <button 
+                  type="button"
+                  @click="settings.mega_menu_sub_bold = !settings.mega_menu_sub_bold"
+                  class="flex-1 py-1.5 text-xs font-bold rounded border cursor-pointer transition-colors"
+                  :class="settings.mega_menu_sub_bold ? 'bg-blue-600 text-white border-blue-600' : 'bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200'"
+                  title="Negrito"
+                >
+                  <strong>N</strong>
+                </button>
+                <button 
+                  type="button"
+                  @click="settings.mega_menu_sub_italic = !settings.mega_menu_sub_italic"
+                  class="flex-1 py-1.5 text-xs italic rounded border cursor-pointer transition-colors"
+                  :class="settings.mega_menu_sub_italic ? 'bg-blue-600 text-white border-blue-600' : 'bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200'"
+                  title="Itálico"
+                >
+                  <i>I</i>
+                </button>
+                <button 
+                  type="button"
+                  @click="settings.mega_menu_sub_uppercase = !settings.mega_menu_sub_uppercase"
+                  class="flex-1 py-1.5 text-[10px] font-bold uppercase rounded border cursor-pointer transition-colors"
+                  :class="settings.mega_menu_sub_uppercase ? 'bg-blue-600 text-white border-blue-600' : 'bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200'"
+                  title="Letras Maiúsculas"
+                >
+                  AA
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== SEÇÃO: CARDS DE EQUIPAMENTOS (CATÁLOGO) ===== -->
+      <div class="space-y-6 bg-slate-50 p-5 rounded-lg border border-slate-200">
+        <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+          <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wide flex items-center gap-2">
+            <span class="material-symbols-outlined text-blue-600">rounded_corner</span>
+            Cards de Equipamentos no Catálogo
+          </h3>
+          <span class="text-[10px] bg-emerald-100 text-emerald-700 font-bold px-2 py-0.5 rounded uppercase">Página Catálogo</span>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- Controles -->
+          <div class="space-y-4 bg-white p-4 rounded-lg border border-gray-200">
+            <div class="space-y-1.5">
+              <div class="flex justify-between text-xs text-gray-700 font-bold">
+                <span>Arredondamento dos Canto dos Cards (Border Radius)</span>
+                <span class="font-mono text-blue-600 font-bold text-sm">{{ settings.card_border_radius ?? 0 }}px</span>
+              </div>
+              <input 
+                v-model.number="settings.card_border_radius" 
+                type="range" 
+                min="0" 
+                max="30" 
+                step="1" 
+                class="w-full accent-blue-600 cursor-pointer" 
+              />
+              <p class="text-[10px] text-gray-500 font-sans mt-1">
+                Defina <span class="font-mono font-bold">0px</span> para cantos 100% retos/quadrados ou deslize para a direita para bordas arredondadas e suavizadas.
+              </p>
+            </div>
+
+            <!-- Botões Rápidos de Preset -->
+            <div class="flex items-center gap-2 pt-2 border-t border-gray-100">
+              <span class="text-[10px] text-gray-500 font-bold uppercase">Atalhos:</span>
+              <button @click="settings.card_border_radius = 0" type="button" class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-[10px] font-bold rounded border border-slate-300 cursor-pointer">0px (Reto)</button>
+              <button @click="settings.card_border_radius = 6" type="button" class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-[10px] font-bold rounded border border-slate-300 cursor-pointer">6px (Suave)</button>
+              <button @click="settings.card_border_radius = 12" type="button" class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-[10px] font-bold rounded border border-slate-300 cursor-pointer">12px (Médio)</button>
+              <button @click="settings.card_border_radius = 20" type="button" class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-[10px] font-bold rounded border border-slate-300 cursor-pointer">20px (Arredondado)</button>
+            </div>
+
+            <!-- Espaçamento Horizontal (Entre colunas de Cards / Gap X) -->
+            <div class="space-y-1.5 pt-3 border-t border-gray-200">
+              <div class="flex justify-between text-xs text-gray-700 font-bold">
+                <span>Distância Horizontal Entre Cards (Gap Lateral)</span>
+                <span class="font-mono text-blue-600 font-bold text-sm">{{ settings.catalog_grid_gap_x ?? 20 }}px</span>
+              </div>
+              <input 
+                v-model.number="settings.catalog_grid_gap_x" 
+                type="range" 
+                min="0" 
+                max="80" 
+                step="2" 
+                class="w-full accent-blue-600 cursor-pointer" 
+              />
+              <p class="text-[10px] text-gray-500 font-sans">
+                Aumente ou diminua o espaço lateral entre as colunas de cards.
+              </p>
+            </div>
+
+            <!-- Espaçamento Vertical (Entre linhas/grupos de Cards / Gap Y) -->
+            <div class="space-y-1.5 pt-2">
+              <div class="flex justify-between text-xs text-gray-700 font-bold">
+                <span>Distância Vertical Entre Grupos/Linhas (Gap Vertical)</span>
+                <span class="font-mono text-blue-600 font-bold text-sm">{{ settings.catalog_grid_gap_y ?? 20 }}px</span>
+              </div>
+              <input 
+                v-model.number="settings.catalog_grid_gap_y" 
+                type="range" 
+                min="0" 
+                max="100" 
+                step="2" 
+                class="w-full accent-blue-600 cursor-pointer" 
+              />
+              <p class="text-[10px] text-gray-500 font-sans">
+                Aumente ou diminua a distância vertical entre uma linha de cards e a linha abaixo.
+              </p>
+            </div>
+          </div>
+
+          <!-- Live Preview do Grid do Catálogo -->
+          <div class="bg-white p-4 rounded-lg border border-gray-200 space-y-3 flex flex-col justify-between">
+            <span class="text-[10px] text-gray-500 font-bold uppercase tracking-wider block">Pré-Visualização em Tempo Real do Grid (2x2)</span>
+            
+            <!-- Mini Grid 2x2 -->
+            <div 
+              class="grid grid-cols-2 p-2 bg-slate-100 rounded border border-slate-200 overflow-hidden"
+              :style="{ 
+                columnGap: `${Math.min(30, (settings.catalog_grid_gap_x ?? 20) / 2)}px`, 
+                rowGap: `${Math.min(30, (settings.catalog_grid_gap_y ?? 20) / 2)}px` 
+              }"
+            >
+              <div 
+                v-for="i in 4" 
+                :key="i"
+                class="bg-white border border-gray-300 overflow-hidden shadow-2xs p-2 transition-all flex flex-col justify-between"
+                :style="{ borderRadius: `${(settings.card_border_radius ?? 0) / 1.5}px` }"
+              >
+                <div class="bg-slate-50 h-8 flex items-center justify-center text-[8px] text-slate-400 font-mono">
+                  Card {{ i }}
+                </div>
+                <div class="bg-emerald-600 h-4 rounded-xs mt-1 flex items-center justify-end px-1 text-[7px] text-white font-bold">
+                  06510
+                </div>
+              </div>
+            </div>
+
+            <div class="text-[10px] text-gray-400 font-mono text-center">
+              Raio: {{ settings.card_border_radius ?? 0 }}px | Gap X: {{ settings.catalog_grid_gap_x ?? 20 }}px | Gap Y: {{ settings.catalog_grid_gap_y ?? 20 }}px
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- ===== SEÇÃO 4: CONFIGURAÇÕES GERAIS DA HOME & HERO BANNER ===== -->
       <div class="space-y-6 bg-slate-50 p-5 rounded-lg border border-slate-200">
         <div class="flex items-center justify-between border-b border-slate-200 pb-3">
@@ -1192,6 +1534,27 @@ interface SiteSettings {
   sec_newsletter_ptop: number
   sec_newsletter_pbot: number
   sec_newsletter_min_height: number
+  // Estilos dos Cards de Equipamento (Catálogo)
+  card_border_radius: number
+  catalog_grid_gap_x: number
+  catalog_grid_gap_y: number
+  // Barra do Mega Menu (Header)
+  mega_menu_bg_color: string
+  mega_menu_height: number
+  // Família no Mega Menu
+  mega_menu_family_font_family: string
+  mega_menu_family_font_size: number
+  mega_menu_family_color: string
+  mega_menu_family_bold: boolean
+  mega_menu_family_italic: boolean
+  mega_menu_family_uppercase: boolean
+  // Subcategoria no Mega Menu
+  mega_menu_sub_font_family: string
+  mega_menu_sub_font_size: number
+  mega_menu_sub_color: string
+  mega_menu_sub_bold: boolean
+  mega_menu_sub_italic: boolean
+  mega_menu_sub_uppercase: boolean
   // Cards de Principais Segmentos
   seg_card_img_height: number
   seg_caption_bg: string
@@ -1324,6 +1687,23 @@ const defaultSettings: SiteSettings = {
   card_specs_font_family: 'system-ui',
   card_specs_label_font_size: '11px',
   card_specs_value_font_size: '12px',
+  card_border_radius: 0,
+  catalog_grid_gap_x: 20,
+  catalog_grid_gap_y: 20,
+  mega_menu_bg_color: '#1d1d1f',
+  mega_menu_height: 44,
+  mega_menu_family_font_family: 'system-ui',
+  mega_menu_family_font_size: 12,
+  mega_menu_family_color: '#6e6e73',
+  mega_menu_family_bold: false,
+  mega_menu_family_italic: false,
+  mega_menu_family_uppercase: false,
+  mega_menu_sub_font_family: 'system-ui',
+  mega_menu_sub_font_size: 13,
+  mega_menu_sub_color: '#1d1d1f',
+  mega_menu_sub_bold: true,
+  mega_menu_sub_italic: false,
+  mega_menu_sub_uppercase: false,
   hero_bg_type: 'image',
   hero_bg_image_url: 'https://lh3.googleusercontent.com/aida/AP1WRLuQGJlvhXgSbL5PCfgd-rVegzYgpPNJgtHn0Ea6Nm0tVayzLhjzQkKmbYMugrdMebtxFro3tlHv1N8ozueW3IWAmerLpn5BMh0-V4suiSBYyv-_1zhWqzLrg3b4d-rpkTVAeU22eoHKYZCmNp_AZySP90gelzHtlnS-8x3nRmtLSJEw4C0yhBjOP0LTv8cqJJere8bX1erK4A1HpU_AQV5WthPlinuCGSknmAf4oBmhbRpEqOyxTA2YAMo',
   hero_bg_video_url: '',

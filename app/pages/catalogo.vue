@@ -20,7 +20,47 @@
             </NuxtLink>
           </div>
           <!-- Top Navigation & Language Flags -->
-          <nav class="flex items-center space-x-8" style="margin-right: 60px;">
+          <nav class="flex items-center space-x-6" style="margin-right: 60px;">
+            <!-- Header Search (Lupa de Pesquisa) -->
+            <div class="relative flex items-center">
+              <Transition
+                enter-active-class="transition-all duration-200 ease-out"
+                enter-from-class="opacity-0 w-0"
+                enter-to-class="opacity-100 w-56 sm:w-64"
+                leave-active-class="transition-all duration-150 ease-in"
+                leave-from-class="opacity-100 w-56 sm:w-64"
+                leave-to-class="opacity-0 w-0"
+              >
+                <div v-if="isSearchOpen" class="flex items-center bg-gray-100 rounded-full px-3 py-1 border border-gray-300 shadow-inner overflow-hidden">
+                  <span class="material-symbols-outlined text-gray-400 text-base mr-1 select-none">search</span>
+                  <input
+                    ref="searchInputRef"
+                    v-model="searchQuery"
+                    type="text"
+                    :placeholder="t.searchPlaceholder || 'Buscar equipamento...'"
+                    class="bg-transparent text-xs text-gray-800 outline-none w-36 sm:w-44 py-0.5"
+                    @keyup.esc="closeSearch"
+                  />
+                  <button 
+                    @click="closeSearch" 
+                    class="text-gray-400 hover:text-gray-700 text-xs ml-1.5 border-0 bg-transparent cursor-pointer flex items-center justify-center p-0.5"
+                    title="Fechar busca"
+                  >
+                    <span class="material-symbols-outlined text-sm">close</span>
+                  </button>
+                </div>
+
+                <button
+                  v-else
+                  @click="toggleSearch"
+                  class="p-1.5 rounded-full hover:bg-gray-100 text-gray-700 hover:text-blue-700 transition-colors border-0 bg-transparent cursor-pointer flex items-center justify-center"
+                  title="Buscar no catálogo"
+                >
+                  <span class="material-symbols-outlined text-xl">search</span>
+                </button>
+              </Transition>
+            </div>
+
             <NuxtLink to="/" class="text-sm font-normal text-gray-600 hover:text-gray-900 transition-colors">{{ t.home }}</NuxtLink>
             <NuxtLink to="/catalogo" class="text-sm font-normal text-blue-700 font-bold transition-colors">{{ t.catalog }}</NuxtLink>
             <NuxtLink to="/#sobre" class="text-sm font-normal text-gray-600 hover:text-gray-900 transition-colors">{{ t.about }}</NuxtLink>
@@ -80,42 +120,78 @@
         </div>
       </div>
 
-      <!-- Bottom Row (Light Gray Background) -->
-      <div class="bg-gray-100 border-b border-gray-200">
-        <div class="max-w-[2560px] w-full mx-auto px-8 py-4 flex justify-center items-center">
-          <nav class="flex flex-wrap justify-center items-center gap-x-20 gap-y-2">
-            <button 
-              v-for="segment in translatedSegments"
-              :key="segment.key"
-              @click="toggleSegmentFilter(segment.key)"
-              class="text-sm font-medium transition-colors border-0 bg-transparent cursor-pointer p-0"
-              :class="selectedSegment === segment.key 
-                ? 'text-blue-700 font-bold underline underline-offset-4 decoration-2' 
-                : 'text-gray-600 hover:text-gray-900'"
-            >
-              {{ segment.label }}
-            </button>
-          </nav>
-        </div>
-      </div>
+      <!-- Mega Menu (replaces segment bar) -->
+      <MegaMenu
+        :menu-tree="megaMenuTree"
+        :selected-category="selectedCategory"
+        :selected-family="selectedFamily"
+        :selected-subcategory="selectedSubcategory"
+        @select="handleMegaMenuSelect"
+      />
 
       <!-- Thin White Bar -->
       <div class="bg-white h-3 w-full border-b border-gray-200"></div>
     </header>
 
+    <!-- Active Filters Breadcrumb -->
+    <div 
+      v-if="selectedCategory !== 'TODAS' || selectedFamily || selectedSubcategory || searchQuery"
+      class="bg-white border-b border-gray-200 px-8 py-2.5 flex items-center gap-3 max-w-[2560px] mx-auto w-full"
+    >
+      <span class="text-xs text-gray-500 font-medium uppercase tracking-wider">Filtro:</span>
+      <div class="flex items-center gap-1.5 flex-wrap">
+        <span 
+          v-if="searchQuery"
+          class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-600 text-white"
+        >
+          Busca: "{{ searchQuery }}"
+          <button @click="clearFilter('search')" class="ml-0.5 hover:text-red-300 transition-colors border-0 bg-transparent text-white cursor-pointer text-xs">&times;</button>
+        </span>
+        <span v-if="searchQuery && selectedCategory !== 'TODAS'" class="text-gray-400 text-xs">&rsaquo;</span>
+        <span 
+          v-if="selectedCategory !== 'TODAS'"
+          class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-800 text-white"
+        >
+          {{ selectedCategory }}
+          <button @click="clearFilter('category')" class="ml-0.5 hover:text-red-300 transition-colors border-0 bg-transparent text-white cursor-pointer text-xs">&times;</button>
+        </span>
+        <span v-if="selectedFamily" class="text-gray-400 text-xs">&rsaquo;</span>
+        <span 
+          v-if="selectedFamily"
+          class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-600 text-white"
+        >
+          {{ selectedFamily }}
+          <button @click="clearFilter('family')" class="ml-0.5 hover:text-red-300 transition-colors border-0 bg-transparent text-white cursor-pointer text-xs">&times;</button>
+        </span>
+        <span v-if="selectedSubcategory" class="text-gray-400 text-xs">&rsaquo;</span>
+        <span 
+          v-if="selectedSubcategory"
+          class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-600 text-white"
+        >
+          {{ selectedSubcategory }}
+          <button @click="clearFilter('subcategory')" class="ml-0.5 hover:text-red-300 transition-colors border-0 bg-transparent text-white cursor-pointer text-xs">&times;</button>
+        </span>
+      </div>
+      <button 
+        @click="clearFilter('all')" 
+        class="ml-auto text-xs text-gray-500 hover:text-red-600 transition-colors border-0 bg-transparent cursor-pointer underline"
+      >
+        Limpar filtros
+      </button>
+    </div>
+
     <!-- Main Content -->
     <main class="max-w-[2560px] w-full mx-auto px-6 py-6 flex-grow">
-      <!-- Toolbar Component -->
-      <CatalogSearchToolbar 
-        v-model:searchQuery="searchQuery"
-        v-model:selectedCategory="selectedCategory"
-        :products="languageFilteredProducts"
-        :category-button-groups="categoryButtonGroups"
-        :show-category-buttons="showCategoryButtons"
-      />
 
       <!-- Product Grid (4 items per row on desktop) -->
-      <div v-if="paginatedProducts.length > 0" class="responsive-catalog-grid gap-5">
+      <div 
+        v-if="paginatedProducts.length > 0" 
+        class="responsive-catalog-grid"
+        :style="{ 
+          columnGap: `${siteSettings.catalog_grid_gap_x ?? 20}px`, 
+          rowGap: `${siteSettings.catalog_grid_gap_y ?? 20}px` 
+        }"
+      >
         <div v-for="product in paginatedProducts" :key="product.id">
           <ProductCard 
             :product="product" 
@@ -232,7 +308,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from 'vue'
+import { ref, computed, watch, onMounted, nextTick } from 'vue'
 import { useCatalog } from '../composables/useCatalog'
 import useCategoryColors from '../composables/useCategoryColors'
 import usePdfSettings from '../composables/usePdfSettings'
@@ -270,10 +346,13 @@ const {
   selectedProductObjects,
   searchQuery,
   selectedCategory,
+  selectedFamily,
+  selectedSubcategory,
   selectedSegment,
   currentLang,
   activePage,
   availableCategories,
+  megaMenuTree,
   languageFilteredProducts,
   filteredProducts,
   paginatedProducts,
@@ -305,11 +384,46 @@ const {
   closeImageModal
 } = useCatalog()
 
-const toggleSegmentFilter = (segment: string) => {
-  if (selectedSegment.value === segment) {
-    selectedSegment.value = ''
-  } else {
-    selectedSegment.value = segment
+const isSearchOpen = ref(false)
+const searchInputRef = ref<HTMLInputElement | null>(null)
+
+const toggleSearch = () => {
+  isSearchOpen.value = !isSearchOpen.value
+  if (isSearchOpen.value) {
+    nextTick(() => {
+      searchInputRef.value?.focus()
+    })
+  }
+}
+
+const closeSearch = () => {
+  searchQuery.value = ''
+  isSearchOpen.value = false
+}
+
+const handleMegaMenuSelect = (payload: { category: string; family: string; subcategory: string }) => {
+  selectedCategory.value = payload.category
+  selectedFamily.value = payload.family
+  selectedSubcategory.value = payload.subcategory
+}
+
+const clearFilter = (level: 'category' | 'family' | 'subcategory' | 'search' | 'all') => {
+  if (level === 'all') {
+    selectedCategory.value = 'TODAS'
+    selectedFamily.value = ''
+    selectedSubcategory.value = ''
+    searchQuery.value = ''
+  } else if (level === 'category') {
+    selectedCategory.value = 'TODAS'
+    selectedFamily.value = ''
+    selectedSubcategory.value = ''
+  } else if (level === 'family') {
+    selectedFamily.value = ''
+    selectedSubcategory.value = ''
+  } else if (level === 'subcategory') {
+    selectedSubcategory.value = ''
+  } else if (level === 'search') {
+    searchQuery.value = ''
   }
 }
 
@@ -408,6 +522,12 @@ onMounted(async () => {
   }
   if (route.query.segment) {
     selectedSegment.value = String(route.query.segment)
+  }
+  if (route.query.family) {
+    selectedFamily.value = String(route.query.family)
+  }
+  if (route.query.subcategory) {
+    selectedSubcategory.value = String(route.query.subcategory)
   }
 })
 </script>

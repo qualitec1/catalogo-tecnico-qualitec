@@ -35,6 +35,17 @@
         
         <div class="grid grid-cols-2 gap-4">
           <div>
+            <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Família / Aplicação</label>
+            <input v-model="localProduct.family" class="w-full border border-gray-300 rounded p-3 focus:ring-1 focus:ring-blue-600 focus:outline-none transition-all bg-white text-slate-800" placeholder="Ex: Criogenia, Industrial..." type="text" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Subcategoria / Tipo</label>
+            <input v-model="localProduct.subcategory" class="w-full border border-gray-300 rounded p-3 focus:ring-1 focus:ring-blue-600 focus:outline-none transition-all bg-white text-slate-800" placeholder="Ex: Válvulas Globo, 3 Vias..." type="text" />
+          </div>
+        </div>
+        
+        <div class="grid grid-cols-2 gap-4">
+          <div>
             <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Imagem Técnica</label>
             
             <div @click="triggerFileInput('imgInput')" class="border-2 border-dashed border-gray-300 p-4 flex flex-col items-center justify-center cursor-pointer hover:bg-gray-50 transition-colors rounded h-28 relative bg-white" title="Clique para fazer upload de arquivo">

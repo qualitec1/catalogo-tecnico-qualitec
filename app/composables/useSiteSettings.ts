@@ -24,6 +24,27 @@ export interface SiteVisualSettings {
   card_specs_font_family: string
   card_specs_label_font_size: string
   card_specs_value_font_size: string
+  // Arredondamento e Espaçamento dos Cards do Catálogo
+  card_border_radius: number
+  catalog_grid_gap_x: number
+  catalog_grid_gap_y: number
+  // Barra do Mega Menu (Header do Catálogo)
+  mega_menu_bg_color: string
+  mega_menu_height: number
+  // Família no Mega Menu
+  mega_menu_family_font_family: string
+  mega_menu_family_font_size: number
+  mega_menu_family_color: string
+  mega_menu_family_bold: boolean
+  mega_menu_family_italic: boolean
+  mega_menu_family_uppercase: boolean
+  // Subcategoria no Mega Menu
+  mega_menu_sub_font_family: string
+  mega_menu_sub_font_size: number
+  mega_menu_sub_color: string
+  mega_menu_sub_bold: boolean
+  mega_menu_sub_italic: boolean
+  mega_menu_sub_uppercase: boolean
   // Banner Principal (Hero Section)
   hero_bg_type: 'image' | 'video'
   hero_bg_image_url: string
@@ -194,6 +215,23 @@ const defaults: SiteVisualSettings = {
   card_specs_font_family: 'system-ui',
   card_specs_label_font_size: '11px',
   card_specs_value_font_size: '12px',
+  card_border_radius: 0,
+  catalog_grid_gap_x: 20,
+  catalog_grid_gap_y: 20,
+  mega_menu_bg_color: '#1d1d1f',
+  mega_menu_height: 44,
+  mega_menu_family_font_family: 'system-ui',
+  mega_menu_family_font_size: 12,
+  mega_menu_family_color: '#6e6e73',
+  mega_menu_family_bold: false,
+  mega_menu_family_italic: false,
+  mega_menu_family_uppercase: false,
+  mega_menu_sub_font_family: 'system-ui',
+  mega_menu_sub_font_size: 13,
+  mega_menu_sub_color: '#1d1d1f',
+  mega_menu_sub_bold: true,
+  mega_menu_sub_italic: false,
+  mega_menu_sub_uppercase: false,
   hero_bg_type: 'image',
   hero_bg_image_url: 'https://lh3.googleusercontent.com/aida/AP1WRLuQGJlvhXgSbL5PCfgd-rVegzYgpPNJgtHn0Ea6Nm0tVayzLhjzQkKmbYMugrdMebtxFro3tlHv1N8ozueW3IWAmerLpn5BMh0-V4suiSBYyv-_1zhWqzLrg3b4d-rpkTVAeU22eoHKYZCmNp_AZySP90gelzHtlnS-8x3nRmtLSJEw4C0yhBjOP0LTv8cqJJere8bX1erK4A1HpU_AQV5WthPlinuCGSknmAf4oBmhbRpEqOyxTA2YAMo',
   hero_bg_video_url: '',

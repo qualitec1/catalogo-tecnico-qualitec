@@ -14,6 +14,8 @@ export interface Product {
   bgClass: string
   cardLayout: any
   category: string
+  family: string | null
+  subcategory: string | null
   specs: any[]
   layoutSlots: number
   imageScale: number
@@ -25,7 +27,7 @@ export interface Product {
 
 export function useCatalog() {
   const supabase = useSupabaseClient()
-  const { categoryAssets, fetchAssets } = useCategoryColors()
+  const { categoryAssets, fetchAssets, getCategoryColor } = useCategoryColors()
 
   const products = ref<Product[]>([])
   const loading = ref(true)
@@ -72,7 +74,7 @@ export function useCatalog() {
       fetchPdfSettings()
       const { data, error } = await supabase
         .from('products')
-        .select('id, tag, tag_color_class, name_code, title, image, datasheet_name, datasheet_url, bg_class, card_layout, category, specs, layout_slots, image_scale, image_offset_x, image_offset_y, ex_image_url')
+        .select('id, tag, tag_color_class, name_code, title, image, datasheet_name, datasheet_url, bg_class, card_layout, category, family, subcategory, specs, layout_slots, image_scale, image_offset_x, image_offset_y, ex_image_url')
         .order('sort_order', { ascending: true })
         .order('id', { ascending: true })
       
@@ -92,6 +94,8 @@ export function useCatalog() {
           bgClass: item.bg_class || 'bg-secondary',
           cardLayout: item.card_layout,
           category: item.category,
+          family: item.family || null,
+          subcategory: item.subcategory || null,
           specs: item.specs || [],
           layoutSlots: item.layout_slots || 3,
           imageScale: item.image_scale !== null ? Number(item.image_scale) : 1.0,
@@ -124,6 +128,8 @@ export function useCatalog() {
   // Search, Categories, Sectors & Language
   const searchQuery = ref('')
   const selectedCategory = ref('TODAS')
+  const selectedFamily = ref('')
+  const selectedSubcategory = ref('')
   const selectedSegment = ref('')
   const { currentLang } = useTranslations()
   const activePage = ref(1)
@@ -211,10 +217,68 @@ export function useCatalog() {
     })
   })
 
+  // Build mega menu tree structure: Category -> Family -> Subcategory
+  const megaMenuTree = computed(() => {
+    const tree: { category: string; color: string; families: { name: string; subcategories: string[] }[] }[] = []
+    const catMap = new Map<string, Map<string, Set<string>>>()
+
+    languageFilteredProducts.value.forEach(p => {
+      if (!p.category) return
+      const cat = p.category.toUpperCase().trim()
+      if (!catMap.has(cat)) catMap.set(cat, new Map())
+      const famMap = catMap.get(cat)!
+      const fam = (p.family || '').trim()
+      if (fam) {
+        if (!famMap.has(fam)) famMap.set(fam, new Set())
+        const sub = (p.subcategory || '').trim()
+        if (sub) famMap.get(fam)!.add(sub)
+      }
+    })
+
+    const geralSettings = getPdfSettings('GERAL')
+    const savedCategoryOrder: string[] = geralSettings?.layout_settings?.category_order || []
+
+    const sortedCats = Array.from(catMap.keys()).sort((a, b) => {
+      if (savedCategoryOrder.length > 0) {
+        const idxA = savedCategoryOrder.indexOf(a)
+        const idxB = savedCategoryOrder.indexOf(b)
+        if (idxA !== -1 && idxB !== -1) return idxA - idxB
+        if (idxA !== -1) return -1
+        if (idxB !== -1) return 1
+      }
+      return a.localeCompare(b)
+    })
+
+    for (const cat of sortedCats) {
+      const famMap = catMap.get(cat)!
+      const families = Array.from(famMap.entries()).map(([famName, subs]) => ({
+        name: famName,
+        subcategories: Array.from(subs).sort()
+      })).sort((a, b) => a.name.localeCompare(b.name))
+
+      tree.push({
+        category: cat,
+        color: getCategoryColor(cat) || '#376092',
+        families
+      })
+    }
+    return tree
+  })
+
   const filteredProducts = computed(() => {
     return languageFilteredProducts.value.filter(product => {
       // 1. Category Filter
       if (selectedCategory.value !== 'TODAS' && product.category !== selectedCategory.value) {
+        return false
+      }
+
+      // 1b. Family Filter
+      if (selectedFamily.value && (product.family || '').trim() !== selectedFamily.value) {
+        return false
+      }
+
+      // 1c. Subcategory Filter
+      if (selectedSubcategory.value && (product.subcategory || '').trim() !== selectedSubcategory.value) {
         return false
       }
 
@@ -306,7 +370,7 @@ export function useCatalog() {
     return counts
   })
 
-  watch([searchQuery, selectedCategory, selectedSegment, currentLang], () => {
+  watch([searchQuery, selectedCategory, selectedFamily, selectedSubcategory, selectedSegment, currentLang], () => {
     activePage.value = 1
   })
 
@@ -502,10 +566,13 @@ export function useCatalog() {
     selectedProductObjects,
     searchQuery,
     selectedCategory,
+    selectedFamily,
+    selectedSubcategory,
     selectedSegment,
     currentLang,
     activePage,
     availableCategories,
+    megaMenuTree,
     languageFilteredProducts,
     filteredProducts,
     paginatedProducts,

@@ -10,6 +10,8 @@ export interface ProductPayload {
   title: string
   nameCode: string
   category: string
+  family?: string
+  subcategory?: string
   tag: string
   layoutSlots: number
   image?: string | null
@@ -35,6 +37,8 @@ export function useAdminProductForm(props: { product?: ProductPayload, isEdit?: 
     title: '',
     nameCode: '',
     category: '',
+    family: '',
+    subcategory: '',
     tag: 'NOVO',
     layoutSlots: 3,
     image: '',
