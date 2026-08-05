@@ -45,25 +45,28 @@ export default defineEventHandler(async (event) => {
       }))
     }
 
-    // 2. Buscar no JSON legado 'pdf_settings' (category = 'GERAL')
-    const { data: legacyData } = await supabase
-      .from('pdf_settings')
-      .select('layout_settings')
-      .eq('category', 'GERAL')
-      .maybeSingle()
-
-    const legacyContacts = legacyData?.layout_settings?.contact_submissions || []
-
-    // 3. Mesclar mantendo IDs únicos
+    // 2. Buscar no JSON legado 'pdf_settings' (varrendo todas as linhas de configuração)
     const contactMap = new Map<string, any>()
 
-    for (const c of legacyContacts) {
-      if (c) {
-        const id = c.id || c.created_at || Math.random().toString()
-        contactMap.set(id, c)
+    const { data: legacyRows } = await supabase
+      .from('pdf_settings')
+      .select('layout_settings')
+
+    if (legacyRows && legacyRows.length > 0) {
+      for (const row of legacyRows) {
+        const cnts = row.layout_settings?.contact_submissions
+        if (Array.isArray(cnts)) {
+          for (const c of cnts) {
+            if (c) {
+              const id = c.id || c.created_at || Math.random().toString()
+              contactMap.set(id, c)
+            }
+          }
+        }
       }
     }
 
+    // 3. Mesclar dados da nova tabela
     for (const c of combinedContacts) {
       if (c) {
         contactMap.set(c.id, c)

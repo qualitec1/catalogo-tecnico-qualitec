@@ -38,29 +38,32 @@ export default defineEventHandler(async (event) => {
       }))
     }
 
-    // 2. Buscar no JSON legado 'pdf_settings' (category = 'GERAL')
-    const { data: legacyData } = await supabase
-      .from('pdf_settings')
-      .select('layout_settings')
-      .eq('category', 'GERAL')
-      .maybeSingle()
-
-    const legacySubscribers = legacyData?.layout_settings?.newsletter_subscribers || []
-
-    // 3. Mesclar e remover duplicados por e-mail
+    // 2. Buscar no JSON legado 'pdf_settings' (varrendo todas as linhas de configuração)
     const emailMap = new Map<string, { email: string; lang: string; subscribed_at: string }>()
 
-    for (const sub of legacySubscribers) {
-      if (sub?.email) {
-        const norm = sub.email.toLowerCase().trim()
-        emailMap.set(norm, {
-          email: norm,
-          lang: sub.lang || 'pt',
-          subscribed_at: sub.subscribed_at || new Date().toISOString()
-        })
+    const { data: legacyRows } = await supabase
+      .from('pdf_settings')
+      .select('layout_settings')
+
+    if (legacyRows && legacyRows.length > 0) {
+      for (const row of legacyRows) {
+        const subs = row.layout_settings?.newsletter_subscribers
+        if (Array.isArray(subs)) {
+          for (const sub of subs) {
+            if (sub?.email) {
+              const norm = sub.email.toLowerCase().trim()
+              emailMap.set(norm, {
+                email: norm,
+                lang: sub.lang || 'pt',
+                subscribed_at: sub.subscribed_at || new Date().toISOString()
+              })
+            }
+          }
+        }
       }
     }
 
+    // 3. Mesclar dados da nova tabela
     for (const sub of combinedSubscribers) {
       if (sub?.email) {
         const norm = sub.email.toLowerCase().trim()
