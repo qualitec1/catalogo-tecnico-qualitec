@@ -5,7 +5,17 @@ import { supabaseAdmin } from '../utils/supabaseAdmin'
 export default defineEventHandler(async (event) => {
   const path = event.path
 
-  // Rotas que requerem autenticação
+  // Exceções para rotas de consulta do painel administrativo
+  const allowedAdminReadRoutes = [
+    '/api/admin/subscribers',
+    '/api/admin/contacts'
+  ]
+
+  if (allowedAdminReadRoutes.some(route => path.startsWith(route))) {
+    return // Permite consulta das inscrições e contatos no painel
+  }
+
+  // Rotas que requerem autenticação estrita
   const protectedRoutes = [
     '/api/admin/',
     '/api/upload-r2'
