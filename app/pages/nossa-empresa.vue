@@ -115,7 +115,7 @@
         <!-- Overlay de imagem industrial de fundo com padrão blueprint -->
         <div class="absolute inset-0 z-0 opacity-40 mix-blend-luminosity">
           <img 
-            :src="siteSettings.hero_bg_url || 'https://pub-25a6482a064a4590a456d3dd2a76114b.r2.dev/products/image_1_valvula_de_alivio_criogenica.png'" 
+            :src="siteSettings.about_hero_bg_url || 'https://pub-25a6482a064a4590a456d3dd2a76114b.r2.dev/products/image_1_valvula_de_alivio_criogenica.png'" 
             alt="Fundo Industrial Qualitec" 
             class="w-full h-full object-cover object-center"
             @error="handleImgFallback"
@@ -130,15 +130,15 @@
             <!-- Badge técnico superior -->
             <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-950/80 border border-blue-500/40 text-blue-300 text-xs font-mono font-bold tracking-wider uppercase backdrop-blur-md">
               <span class="w-2 h-2 rounded-full bg-blue-400 animate-pulse"></span>
-              QUALITEC C S I M LTDA | ENGENHARIA & INSTRUMENTAÇÃO
+              {{ siteSettings.about_hero_badge_text || 'QUALITEC C S I M LTDA | ENGENHARIA & INSTRUMENTAÇÃO' }}
             </div>
 
             <h1 class="text-3xl md:text-5xl lg:text-6xl font-bold tracking-tight text-white leading-tight font-['Hanken_Grotesk',sans-serif]">
-              {{ mergedTranslations['about.hero_title'] || 'Soluções técnicas para processos industriais críticos' }}
+              {{ siteSettings.about_hero_title || mergedTranslations['about.hero_title'] || 'Soluções técnicas para processos industriais críticos' }}
             </h1>
 
             <p class="text-base md:text-xl text-slate-300 max-w-3xl leading-relaxed font-light">
-              {{ mergedTranslations['about.hero_text'] || 'A Qualitec fornece instrumentação, válvulas e suporte técnico para aplicações que exigem segurança, precisão e confiabilidade.' }}
+              {{ siteSettings.about_hero_text || mergedTranslations['about.hero_text'] || 'A Qualitec fornece instrumentação, válvulas e suporte técnico para aplicações que exigem segurança, precisão e confiabilidade.' }}
             </p>
 
             <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 pt-4">
@@ -146,7 +146,7 @@
                 href="#setores" 
                 class="px-7 py-3.5 bg-[#004A96] hover:bg-[#003770] text-white font-bold text-sm uppercase tracking-wider rounded-md shadow-lg hover:shadow-blue-900/30 transition-all flex items-center justify-center gap-2 text-center no-underline border-0 cursor-pointer"
               >
-                <span>{{ mergedTranslations['about.hero_btn_solutions'] || 'Conheça nossas soluções' }}</span>
+                <span>{{ siteSettings.about_hero_btn_solutions_text || mergedTranslations['about.hero_btn_solutions'] || 'Conheça nossas soluções' }}</span>
                 <span class="material-symbols-outlined text-lg">arrow_downward</span>
               </a>
 
@@ -155,7 +155,7 @@
                 class="px-7 py-3.5 bg-slate-800/90 hover:bg-slate-800 text-white hover:text-blue-300 font-bold text-sm uppercase tracking-wider rounded-md border border-slate-700 backdrop-blur-xs transition-all flex items-center justify-center gap-2 cursor-pointer"
               >
                 <span class="material-symbols-outlined text-lg text-blue-400">headset_mic</span>
-                <span>{{ mergedTranslations['about.hero_btn_specialist'] || 'Fale com um especialista' }}</span>
+                <span>{{ siteSettings.about_hero_btn_specialist_text || mergedTranslations['about.hero_btn_specialist'] || 'Fale com um especialista' }}</span>
               </button>
             </div>
           </div>
@@ -200,29 +200,29 @@
           <div class="lg:col-span-7 space-y-6">
             <div class="inline-flex items-center gap-2 text-[#004A96] text-xs font-bold font-mono uppercase tracking-widest">
               <span class="w-1.5 h-6 bg-[#004A96]"></span>
-              SOBRE A QUALITEC
+              {{ siteSettings.about_who_badge_text || 'SOBRE A QUALITEC' }}
             </div>
 
             <h2 class="text-2xl md:text-4xl font-bold text-slate-900 tracking-tight leading-tight">
-              {{ mergedTranslations['about.who_title'] || 'Tecnologia, conhecimento técnico e atendimento próximo' }}
+              {{ siteSettings.about_who_title || mergedTranslations['about.who_title'] || 'Tecnologia, conhecimento técnico e atendimento próximo' }}
             </h2>
 
             <p class="text-slate-700 text-base md:text-lg leading-relaxed font-normal">
-              {{ mergedTranslations['about.who_text'] || 'A Qualitec C S I M Ltda atua no fornecimento de instrumentação industrial, válvulas e soluções para controle de pressão e processos. Com atendimento técnico-comercial especializado, conectamos indústrias brasileiras a equipamentos de alta confiabilidade para aplicações em criogenia, gases industriais, óleo & gás, energia, alimentos e outros processos críticos.' }}
+              {{ siteSettings.about_who_text || mergedTranslations['about.who_text'] || 'A Qualitec C S I M Ltda atua no fornecimento de instrumentação industrial, válvulas e soluções para controle de pressão e processos. Com atendimento técnico-comercial especializado, conectamos indústrias brasileiras a equipamentos de alta confiabilidade para aplicações em criogenia, gases industriais, óleo & gás, energia, alimentos e outros processos críticos.' }}
             </p>
 
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-4 border-t border-slate-100">
               <div class="space-y-1">
-                <span class="text-2xl md:text-3xl font-bold text-[#004A96] font-['Hanken_Grotesk']">100%</span>
-                <p class="text-xs text-slate-600 font-semibold uppercase tracking-wider">Suporte Técnico Especializado</p>
+                <span class="text-2xl md:text-3xl font-bold text-[#004A96] font-['Hanken_Grotesk']">{{ siteSettings.about_who_stat1_number || '100%' }}</span>
+                <p class="text-xs text-slate-600 font-semibold uppercase tracking-wider">{{ siteSettings.about_who_stat1_label || 'Suporte Técnico Especializado' }}</p>
               </div>
               <div class="space-y-1">
-                <span class="text-2xl md:text-3xl font-bold text-[#004A96] font-['Hanken_Grotesk']">CGA E4.1</span>
-                <p class="text-xs text-slate-600 font-semibold uppercase tracking-wider">Padrão de Limpeza Oxigênio</p>
+                <span class="text-2xl md:text-3xl font-bold text-[#004A96] font-['Hanken_Grotesk']">{{ siteSettings.about_who_stat2_number || 'CGA E4.1' }}</span>
+                <p class="text-xs text-slate-600 font-semibold uppercase tracking-wider">{{ siteSettings.about_who_stat2_label || 'Padrão de Limpeza Oxigênio' }}</p>
               </div>
               <div class="space-y-1">
-                <span class="text-2xl md:text-3xl font-bold text-[#004A96] font-['Hanken_Grotesk']">Global</span>
-                <p class="text-xs text-slate-600 font-semibold uppercase tracking-wider">Parceiros Internacionais</p>
+                <span class="text-2xl md:text-3xl font-bold text-[#004A96] font-['Hanken_Grotesk']">{{ siteSettings.about_who_stat3_number || 'Global' }}</span>
+                <p class="text-xs text-slate-600 font-semibold uppercase tracking-wider">{{ siteSettings.about_who_stat3_label || 'Parceiros Internacionais' }}</p>
               </div>
             </div>
           </div>
@@ -231,7 +231,7 @@
           <div class="lg:col-span-5">
             <div class="relative rounded-2xl overflow-hidden shadow-2xl border border-slate-200 bg-slate-900 group">
               <img 
-                src="https://pub-25a6482a064a4590a456d3dd2a76114b.r2.dev/products/image_1_valvula_de_alivio_criogenica.png" 
+                :src="siteSettings.about_who_img_url || 'https://pub-25a6482a064a4590a456d3dd2a76114b.r2.dev/products/image_1_valvula_de_alivio_criogenica.png'" 
                 alt="Equipamentos de alta tecnologia Qualitec" 
                 class="w-full h-96 object-cover object-center group-hover:scale-105 transition-transform duration-500"
                 @error="handleImgFallback"
@@ -252,10 +252,10 @@
           <div class="max-w-3xl mx-auto space-y-3">
             <span class="text-xs font-bold font-mono text-[#004A96] uppercase tracking-widest">PARCEIROS GLOBAIS</span>
             <h2 class="text-2xl md:text-4xl font-bold text-slate-900 tracking-tight">
-              {{ mergedTranslations['about.brands_title'] || 'Tecnologia global, suporte técnico local' }}
+              {{ siteSettings.about_brands_title || mergedTranslations['about.brands_title'] || 'Tecnologia global, suporte técnico local' }}
             </h2>
             <p class="text-slate-600 text-sm md:text-base leading-relaxed">
-              {{ mergedTranslations['about.brands_text'] || 'Trabalhamos com fabricantes reconhecidos internacionalmente, oferecendo produtos, documentação técnica e apoio para a definição da configuração mais adequada a cada processo.' }}
+              {{ siteSettings.about_brands_text || mergedTranslations['about.brands_text'] || 'Trabalhamos com fabricantes reconhecidos internacionalmente, oferecendo produtos, documentação técnica e apoio para a definição da configuração mais adequada a cada processo.' }}
             </p>
           </div>
 
@@ -489,7 +489,10 @@
       </section>
 
       <!-- 6. COMPROMISSO TÉCNICO (Fundo azul escuro industrial) -->
-      <section class="py-20 bg-[#004A96] text-white px-4 md:px-10 relative overflow-hidden">
+      <section 
+        class="py-20 text-white px-4 md:px-10 relative overflow-hidden transition-colors"
+        :style="{ backgroundColor: siteSettings.about_commitment_bg_color || '#004A96' }"
+      >
         <!-- Padrão gráfico blueprint sutil -->
         <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#ffffff_1px,transparent_1px)] bg-[size:16px_16px]"></div>
         
@@ -499,11 +502,11 @@
           </span>
 
           <h2 class="text-2xl md:text-4xl lg:text-5xl font-bold tracking-tight leading-tight text-white font-['Hanken_Grotesk']">
-            {{ mergedTranslations['about.commitment_title'] || 'Mais do que fornecer produtos, ajudamos a especificar soluções.' }}
+            {{ siteSettings.about_commitment_title || mergedTranslations['about.commitment_title'] || 'Mais do que fornecer produtos, ajudamos a especificar soluções.' }}
           </h2>
 
           <p class="text-base md:text-xl text-blue-100 leading-relaxed font-light max-w-3xl mx-auto">
-            {{ mergedTranslations['about.commitment_text'] || 'Cada processo possui requisitos próprios. Nossa equipe apoia a avaliação de pressão, temperatura, fluido, materiais, conexões, normas e certificações para que o equipamento selecionado seja adequado à operação.' }}
+            {{ siteSettings.about_commitment_text || mergedTranslations['about.commitment_text'] || 'Cada processo possui requisitos próprios. Nossa equipe apoia a avaliação de pressão, temperatura, fluido, materiais, conexões, normas e certificações para que o equipamento selecionado seja adequado à operação.' }}
           </p>
         </div>
       </section>
@@ -513,10 +516,10 @@
         <div class="max-w-[1100px] mx-auto bg-slate-900 rounded-2xl p-8 md:p-14 text-white shadow-2xl relative overflow-hidden flex flex-col lg:flex-row items-center justify-between gap-8">
           <div class="space-y-4 max-w-2xl text-left">
             <h2 class="text-2xl md:text-4xl font-bold text-white tracking-tight">
-              {{ mergedTranslations['about.cta_title'] || 'Precisa de apoio para especificar seu equipamento?' }}
+              {{ siteSettings.about_cta_title || mergedTranslations['about.cta_title'] || 'Precisa de apoio para especificar seu equipamento?' }}
             </h2>
             <p class="text-slate-300 text-sm md:text-base leading-relaxed">
-              {{ mergedTranslations['about.cta_text'] || 'Nossa equipe está pronta para entender sua aplicação e indicar a solução mais adequada.' }}
+              {{ siteSettings.about_cta_text || mergedTranslations['about.cta_text'] || 'Nossa equipe está pronta para entender sua aplicação e indicar a solução mais adequada.' }}
             </p>
           </div>
 
@@ -525,14 +528,14 @@
               @click="openContactModal('Solicitar Cotação')" 
               class="px-7 py-3.5 bg-[#004A96] hover:bg-blue-600 text-white font-bold text-sm uppercase tracking-wider rounded-md shadow-lg transition-all border-0 cursor-pointer text-center"
             >
-              {{ mergedTranslations['about.cta_btn_quote'] || 'Solicitar cotação' }}
+              {{ siteSettings.about_cta_btn_quote_text || mergedTranslations['about.cta_btn_quote'] || 'Solicitar cotação' }}
             </button>
 
             <button 
               @click="openContactModal('Falar com Especialista')" 
               class="px-7 py-3.5 bg-slate-800 hover:bg-slate-700 text-white font-bold text-sm uppercase tracking-wider rounded-md border border-slate-700 transition-all cursor-pointer text-center"
             >
-              {{ mergedTranslations['about.cta_btn_specialist'] || 'Falar com um especialista' }}
+              {{ siteSettings.about_cta_btn_specialist_text || mergedTranslations['about.cta_btn_specialist'] || 'Falar com um especialista' }}
             </button>
           </div>
         </div>

@@ -18,6 +18,262 @@
     </div>
 
     <template v-else>
+      <!-- ===== SEÇÃO: PÁGINA NOSSA EMPRESA (INSTITUCIONAL) ===== -->
+      <div class="space-y-6 bg-slate-50 p-5 rounded-lg border border-slate-200">
+        <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+          <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wide flex items-center gap-2">
+            <span class="material-symbols-outlined text-[#004A96]">corporate_fare</span>
+            Personalização da Página Nossa Empresa (/nossa-empresa)
+          </h3>
+          <span class="text-[10px] bg-blue-100 text-blue-800 font-bold px-2 py-0.5 rounded uppercase">Página Institucional</span>
+        </div>
+
+        <p class="text-xs text-slate-600">
+          Personalize as imagens, títulos, textos, estatísticas e cores exibidas na página institucional "Nossa Empresa".
+        </p>
+
+        <!-- Subseção 1: Hero Banner -->
+        <div class="bg-white p-5 rounded-lg border border-gray-200 space-y-4">
+          <h4 class="text-xs font-bold text-slate-800 uppercase border-b border-gray-100 pb-2 flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-sm text-blue-600">image</span>
+            Hero Banner (Topo da Página)
+          </h4>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Imagem de Fundo Hero -->
+            <div class="space-y-2 md:col-span-2">
+              <label class="block text-[11px] font-bold text-slate-700 uppercase">URL da Imagem / Banner de Fundo</label>
+              <div class="flex gap-2">
+                <input
+                  v-model="settings.about_hero_bg_url"
+                  type="text"
+                  placeholder="https://..."
+                  class="flex-1 border border-gray-300 px-3 py-2 text-xs rounded bg-white text-slate-800 focus:ring-1 focus:ring-blue-600 focus:outline-none"
+                />
+                <button
+                  @click="triggerAboutUpload('about_hero_bg_url')"
+                  :disabled="uploadingAbout === 'about_hero_bg_url'"
+                  class="bg-[#004A96] hover:bg-blue-700 disabled:opacity-50 text-white px-3 py-2 rounded text-xs font-bold uppercase transition-colors flex items-center gap-1 border-0 cursor-pointer shrink-0"
+                >
+                  <span class="material-symbols-outlined text-sm">{{ uploadingAbout === 'about_hero_bg_url' ? 'sync' : 'upload' }}</span>
+                  Upload R2
+                </button>
+                <input ref="aboutHeroFileInput" type="file" accept="image/*" class="hidden" @change="handleAboutUpload('about_hero_bg_url', $event)" />
+              </div>
+            </div>
+
+            <!-- Badge Texto Superior -->
+            <div class="space-y-1 md:col-span-2">
+              <label class="block text-[11px] font-bold text-slate-700 uppercase">Badge de Destaque Superior</label>
+              <input
+                v-model="settings.about_hero_badge_text"
+                type="text"
+                class="w-full border border-gray-300 px-3 py-2 text-xs rounded bg-white text-slate-800 focus:ring-1 focus:ring-blue-600 focus:outline-none"
+              />
+            </div>
+
+            <!-- Título do Hero -->
+            <div class="space-y-1 md:col-span-2">
+              <label class="block text-[11px] font-bold text-slate-700 uppercase">Título Principal do Hero</label>
+              <input
+                v-model="settings.about_hero_title"
+                type="text"
+                class="w-full border border-gray-300 px-3 py-2 text-xs rounded bg-white text-slate-800 focus:ring-1 focus:ring-blue-600 focus:outline-none"
+              />
+            </div>
+
+            <!-- Subtítulo / Texto do Hero -->
+            <div class="space-y-1 md:col-span-2">
+              <label class="block text-[11px] font-bold text-slate-700 uppercase">Subtítulo / Descrição</label>
+              <textarea
+                v-model="settings.about_hero_text"
+                rows="2"
+                class="w-full border border-gray-300 px-3 py-2 text-xs rounded bg-white text-slate-800 focus:ring-1 focus:ring-blue-600 focus:outline-none resize-y"
+              ></textarea>
+            </div>
+
+            <!-- Texto Botão 1 -->
+            <div class="space-y-1">
+              <label class="block text-[11px] font-bold text-slate-700 uppercase">Texto Botão 1 (Soluções)</label>
+              <input
+                v-model="settings.about_hero_btn_solutions_text"
+                type="text"
+                class="w-full border border-gray-300 px-3 py-2 text-xs rounded bg-white text-slate-800 focus:ring-1 focus:ring-blue-600 focus:outline-none"
+              />
+            </div>
+
+            <!-- Texto Botão 2 -->
+            <div class="space-y-1">
+              <label class="block text-[11px] font-bold text-slate-700 uppercase">Texto Botão 2 (Especialista)</label>
+              <input
+                v-model="settings.about_hero_btn_specialist_text"
+                type="text"
+                class="w-full border border-gray-300 px-3 py-2 text-xs rounded bg-white text-slate-800 focus:ring-1 focus:ring-blue-600 focus:outline-none"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Subseção 2: Seção Quem Somos -->
+        <div class="bg-white p-5 rounded-lg border border-gray-200 space-y-4">
+          <h4 class="text-xs font-bold text-slate-800 uppercase border-b border-gray-100 pb-2 flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-sm text-blue-600">info</span>
+            Seção Quem Somos
+          </h4>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Badge -->
+            <div class="space-y-1">
+              <label class="block text-[11px] font-bold text-slate-700 uppercase">Rótulo da Seção (Badge)</label>
+              <input
+                v-model="settings.about_who_badge_text"
+                type="text"
+                class="w-full border border-gray-300 px-3 py-2 text-xs rounded bg-white text-slate-800 focus:ring-1 focus:ring-blue-600 focus:outline-none"
+              />
+            </div>
+
+            <!-- Imagem Card Equipamentos -->
+            <div class="space-y-1">
+              <label class="block text-[11px] font-bold text-slate-700 uppercase">Imagem do Card Equipamento (Direita)</label>
+              <div class="flex gap-2">
+                <input
+                  v-model="settings.about_who_img_url"
+                  type="text"
+                  placeholder="https://..."
+                  class="flex-1 border border-gray-300 px-3 py-2 text-xs rounded bg-white text-slate-800 focus:ring-1 focus:ring-blue-600 focus:outline-none"
+                />
+                <button
+                  @click="triggerAboutUpload('about_who_img_url')"
+                  :disabled="uploadingAbout === 'about_who_img_url'"
+                  class="bg-[#004A96] hover:bg-blue-700 disabled:opacity-50 text-white px-3 py-2 rounded text-xs font-bold uppercase transition-colors flex items-center gap-1 border-0 cursor-pointer shrink-0"
+                >
+                  <span class="material-symbols-outlined text-sm">{{ uploadingAbout === 'about_who_img_url' ? 'sync' : 'upload' }}</span>
+                  Upload
+                </button>
+                <input ref="aboutWhoFileInput" type="file" accept="image/*" class="hidden" @change="handleAboutUpload('about_who_img_url', $event)" />
+              </div>
+            </div>
+
+            <!-- Título Quem Somos -->
+            <div class="space-y-1 md:col-span-2">
+              <label class="block text-[11px] font-bold text-slate-700 uppercase">Título Principal</label>
+              <input
+                v-model="settings.about_who_title"
+                type="text"
+                class="w-full border border-gray-300 px-3 py-2 text-xs rounded bg-white text-slate-800 focus:ring-1 focus:ring-blue-600 focus:outline-none"
+              />
+            </div>
+
+            <!-- Texto Principal -->
+            <div class="space-y-1 md:col-span-2">
+              <label class="block text-[11px] font-bold text-slate-700 uppercase">Texto Institucional Completo</label>
+              <textarea
+                v-model="settings.about_who_text"
+                rows="4"
+                class="w-full border border-gray-300 px-3 py-2 text-xs rounded bg-white text-slate-800 focus:ring-1 focus:ring-blue-600 focus:outline-none resize-y"
+              ></textarea>
+            </div>
+
+            <!-- Destaque 1 -->
+            <div class="space-y-1">
+              <label class="block text-[10px] font-bold text-slate-700 uppercase">Destaque 1 (Número)</label>
+              <input v-model="settings.about_who_stat1_number" type="text" class="w-full border border-gray-300 px-3 py-1.5 text-xs rounded bg-white text-slate-800" />
+            </div>
+            <div class="space-y-1">
+              <label class="block text-[10px] font-bold text-slate-700 uppercase">Destaque 1 (Descrição)</label>
+              <input v-model="settings.about_who_stat1_label" type="text" class="w-full border border-gray-300 px-3 py-1.5 text-xs rounded bg-white text-slate-800" />
+            </div>
+
+            <!-- Destaque 2 -->
+            <div class="space-y-1">
+              <label class="block text-[10px] font-bold text-slate-700 uppercase">Destaque 2 (Número)</label>
+              <input v-model="settings.about_who_stat2_number" type="text" class="w-full border border-gray-300 px-3 py-1.5 text-xs rounded bg-white text-slate-800" />
+            </div>
+            <div class="space-y-1">
+              <label class="block text-[10px] font-bold text-slate-700 uppercase">Destaque 2 (Descrição)</label>
+              <input v-model="settings.about_who_stat2_label" type="text" class="w-full border border-gray-300 px-3 py-1.5 text-xs rounded bg-white text-slate-800" />
+            </div>
+
+            <!-- Destaque 3 -->
+            <div class="space-y-1">
+              <label class="block text-[10px] font-bold text-slate-700 uppercase">Destaque 3 (Número)</label>
+              <input v-model="settings.about_who_stat3_number" type="text" class="w-full border border-gray-300 px-3 py-1.5 text-xs rounded bg-white text-slate-800" />
+            </div>
+            <div class="space-y-1">
+              <label class="block text-[10px] font-bold text-slate-700 uppercase">Destaque 3 (Descrição)</label>
+              <input v-model="settings.about_who_stat3_label" type="text" class="w-full border border-gray-300 px-3 py-1.5 text-xs rounded bg-white text-slate-800" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Subseção 3: Compromisso Técnico e CTA Final -->
+        <div class="bg-white p-5 rounded-lg border border-gray-200 space-y-4">
+          <h4 class="text-xs font-bold text-slate-800 uppercase border-b border-gray-100 pb-2 flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-sm text-blue-600">verified_user</span>
+            Compromisso Técnico &amp; CTA Final
+          </h4>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Título Compromisso -->
+            <div class="space-y-1 md:col-span-2">
+              <label class="block text-[11px] font-bold text-slate-700 uppercase">Título do Compromisso Técnico</label>
+              <input
+                v-model="settings.about_commitment_title"
+                type="text"
+                class="w-full border border-gray-300 px-3 py-2 text-xs rounded bg-white text-slate-800 focus:ring-1 focus:ring-blue-600 focus:outline-none"
+              />
+            </div>
+
+            <!-- Texto Compromisso -->
+            <div class="space-y-1 md:col-span-2">
+              <label class="block text-[11px] font-bold text-slate-700 uppercase">Texto do Compromisso Técnico</label>
+              <textarea
+                v-model="settings.about_commitment_text"
+                rows="3"
+                class="w-full border border-gray-300 px-3 py-2 text-xs rounded bg-white text-slate-800 focus:ring-1 focus:ring-blue-600 focus:outline-none resize-y"
+              ></textarea>
+            </div>
+
+            <!-- Cor de Fundo do Compromisso -->
+            <div class="space-y-1">
+              <label class="block text-[11px] font-bold text-slate-700 uppercase">Cor de Fundo da Seção Compromisso</label>
+              <div class="flex items-center gap-2">
+                <input
+                  v-model="settings.about_commitment_bg_color"
+                  type="color"
+                  class="w-9 h-9 border border-gray-300 rounded cursor-pointer p-0.5 bg-white"
+                />
+                <input
+                  v-model="settings.about_commitment_bg_color"
+                  type="text"
+                  class="w-28 border border-gray-300 px-3 py-2 text-xs rounded bg-white text-slate-800 font-mono"
+                />
+              </div>
+            </div>
+
+            <!-- Título CTA Final -->
+            <div class="space-y-1 md:col-span-2">
+              <label class="block text-[11px] font-bold text-slate-700 uppercase">Título do CTA Final</label>
+              <input
+                v-model="settings.about_cta_title"
+                type="text"
+                class="w-full border border-gray-300 px-3 py-2 text-xs rounded bg-white text-slate-800 focus:ring-1 focus:ring-blue-600 focus:outline-none"
+              />
+            </div>
+
+            <!-- Texto CTA Final -->
+            <div class="space-y-1 md:col-span-2">
+              <label class="block text-[11px] font-bold text-slate-700 uppercase">Texto / Chamada do CTA Final</label>
+              <textarea
+                v-model="settings.about_cta_text"
+                rows="2"
+                class="w-full border border-gray-300 px-3 py-2 text-xs rounded bg-white text-slate-800 focus:ring-1 focus:ring-blue-600 focus:outline-none resize-y"
+              ></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- ===== SEÇÃO: CARDS DOS PRINCIPAIS SEGMENTOS ===== -->
       <div class="space-y-6 bg-slate-50 p-5 rounded-lg border border-slate-200">
         <div class="flex items-center justify-between border-b border-slate-200 pb-3">
@@ -2235,6 +2491,46 @@ const handleLogoUpload = async (e: Event) => {
     props.triggerToast?.(`Erro no upload: ${err.message || err}`, 'error')
   } finally {
     uploadingLogo.value = false
+    if (target) target.value = ''
+  }
+}
+
+const uploadingAbout = ref<string | null>(null)
+const aboutHeroFileInput = ref<HTMLInputElement | null>(null)
+const aboutWhoFileInput = ref<HTMLInputElement | null>(null)
+
+const triggerAboutUpload = (field: 'about_hero_bg_url' | 'about_who_img_url') => {
+  if (field === 'about_hero_bg_url') aboutHeroFileInput.value?.click()
+  else if (field === 'about_who_img_url') aboutWhoFileInput.value?.click()
+}
+
+const handleAboutUpload = async (field: 'about_hero_bg_url' | 'about_who_img_url', e: Event) => {
+  const target = e.target as HTMLInputElement
+  const file = target.files?.[0]
+  if (!file) return
+
+  uploadingAbout.value = field
+  try {
+    const formData = new FormData()
+    formData.append('file', file)
+
+    const res = await fetch('/api/upload-r2', {
+      method: 'POST',
+      body: formData
+    })
+    const data = await res.json()
+
+    if (data.url) {
+      settings[field] = data.url
+      props.triggerToast?.('Imagem enviada com sucesso!', 'success')
+    } else {
+      throw new Error(data.error || 'Erro ao enviar imagem')
+    }
+  } catch (err: any) {
+    console.error('Erro no upload de imagem:', err)
+    props.triggerToast?.(`Erro no upload: ${err.message || err}`, 'error')
+  } finally {
+    uploadingAbout.value = null
     if (target) target.value = ''
   }
 }

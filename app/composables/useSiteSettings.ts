@@ -199,6 +199,32 @@ export interface SiteVisualSettings {
   footer_p11_offset_y: number
   footer_p11_bold: boolean
   footer_p11_italic: boolean
+  // Página Nossa Empresa (Institucional)
+  about_hero_bg_url?: string
+  about_hero_badge_text?: string
+  about_hero_title?: string
+  about_hero_text?: string
+  about_hero_btn_solutions_text?: string
+  about_hero_btn_specialist_text?: string
+  about_who_badge_text?: string
+  about_who_title?: string
+  about_who_text?: string
+  about_who_img_url?: string
+  about_who_stat1_number?: string
+  about_who_stat1_label?: string
+  about_who_stat2_number?: string
+  about_who_stat2_label?: string
+  about_who_stat3_number?: string
+  about_who_stat3_label?: string
+  about_brands_title?: string
+  about_brands_text?: string
+  about_commitment_title?: string
+  about_commitment_text?: string
+  about_commitment_bg_color?: string
+  about_cta_title?: string
+  about_cta_text?: string
+  about_cta_btn_quote_text?: string
+  about_cta_btn_specialist_text?: string
 }
 
 const defaults: SiteVisualSettings = {
@@ -384,6 +410,31 @@ const defaults: SiteVisualSettings = {
   footer_p11_offset_y: 0,
   footer_p11_bold: true,
   footer_p11_italic: false,
+  about_hero_bg_url: 'https://pub-25a6482a064a4590a456d3dd2a76114b.r2.dev/products/image_1_valvula_de_alivio_criogenica.png',
+  about_hero_badge_text: 'QUALITEC C S I M LTDA | ENGENHARIA & INSTRUMENTAÇÃO',
+  about_hero_title: 'Soluções técnicas para processos industriais críticos',
+  about_hero_text: 'A Qualitec fornece instrumentação, válvulas e suporte técnico para aplicações que exigem segurança, precisão e confiabilidade.',
+  about_hero_btn_solutions_text: 'Conheça nossas soluções',
+  about_hero_btn_specialist_text: 'Fale com um especialista',
+  about_who_badge_text: 'SOBRE A QUALITEC',
+  about_who_title: 'Tecnologia, conhecimento técnico e atendimento próximo',
+  about_who_text: 'A Qualitec C S I M Ltda atua no fornecimento de instrumentação industrial, válvulas e soluções para controle de pressão e processos. Com atendimento técnico-comercial especializado, conectamos indústrias brasileiras a equipamentos de alta confiabilidade para aplicações em criogenia, gases industriais, óleo & gás, energia, alimentos e outros processos críticos.',
+  about_who_img_url: 'https://pub-25a6482a064a4590a456d3dd2a76114b.r2.dev/products/image_1_valvula_de_alivio_criogenica.png',
+  about_who_stat1_number: '100%',
+  about_who_stat1_label: 'Suporte Técnico Especializado',
+  about_who_stat2_number: 'CGA E4.1',
+  about_who_stat2_label: 'Padrão de Limpeza Oxigênio',
+  about_who_stat3_number: 'Global',
+  about_who_stat3_label: 'Parceiros Internacionais',
+  about_brands_title: 'Tecnologia global, suporte técnico local',
+  about_brands_text: 'Trabalhamos com fabricantes reconhecidos internacionalmente, oferecendo produtos, documentação técnica e apoio para a definição da configuração mais adequada a cada processo.',
+  about_commitment_title: 'Mais do que fornecer produtos, ajudamos a especificar soluções.',
+  about_commitment_text: 'Cada processo possui requisitos próprios. Nossa equipe apoia a avaliação de pressão, temperatura, fluido, materiais, conexões, normas e certificações para que o equipamento selecionado seja adequado à operação.',
+  about_commitment_bg_color: '#004A96',
+  about_cta_title: 'Precisa de apoio para especificar seu equipamento?',
+  about_cta_text: 'Nossa equipe está pronta para entender sua aplicação e indicar a solução mais adequada.',
+  about_cta_btn_quote_text: 'Solicitar cotação',
+  about_cta_btn_specialist_text: 'Falar com um especialista',
 }
 
 export default function useSiteSettings() {
