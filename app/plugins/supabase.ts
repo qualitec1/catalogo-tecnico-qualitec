@@ -5,17 +5,24 @@ import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 export default defineNuxtPlugin(async (nuxtApp) => {
   const runtimeConfig = useRuntimeConfig()
 
-  // runtimeConfig.public está disponível tanto no servidor quanto no browser
+  if (import.meta.server) {
+    // Popula runtimeConfig.public no servidor a partir do process.env do Docker
+    // Isso é enviado automaticamente para o browser no payload SSR do Nuxt!
+    const url = process.env.SUPABASE_URL || process.env.NUXT_PUBLIC_SUPABASE_URL || (runtimeConfig.public as any).supabaseUrl
+    const key = process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_KEY || process.env.NUXT_PUBLIC_SUPABASE_ANON_KEY || (runtimeConfig.public as any).supabaseAnonKey
+
+    if (url) (runtimeConfig.public as any).supabaseUrl = url
+    if (key) (runtimeConfig.public as any).supabaseAnonKey = key
+  }
+
+  // runtimeConfig.public está disponível tanto no servidor quanto no browser após hidratação
   const supabaseUrl =
     ((runtimeConfig.public as any)?.supabaseUrl as string) ||
-    process.env.SUPABASE_URL ||
-    process.env.NUXT_PUBLIC_SUPABASE_URL ||
+    (import.meta.server ? process.env.SUPABASE_URL || process.env.NUXT_PUBLIC_SUPABASE_URL : '') ||
     ''
   const supabaseAnonKey =
     ((runtimeConfig.public as any)?.supabaseAnonKey as string) ||
-    process.env.SUPABASE_ANON_KEY ||
-    process.env.SUPABASE_KEY ||
-    process.env.NUXT_PUBLIC_SUPABASE_ANON_KEY ||
+    (import.meta.server ? process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_KEY || process.env.NUXT_PUBLIC_SUPABASE_ANON_KEY : '') ||
     ''
 
   if (!supabaseUrl || !supabaseAnonKey) {
