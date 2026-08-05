@@ -112,11 +112,76 @@ const searchQuery = ref('')
 const fetchSubscribers = async () => {
   loading.value = true
   try {
-    const res = await fetch('/api/admin/subscribers')
-    const data = await res.json()
-    if (data?.subscribers) {
-      subscribers.value = data.subscribers
+    const supabase = useSupabaseClient()
+    let list: Subscriber[] = []
+
+    // 1. Busca no JSON de 'pdf_settings' (como o resto do site)
+    try {
+      const { data: pdfData } = await supabase
+        .from('pdf_settings')
+        .select('layout_settings')
+
+      if (pdfData && pdfData.length > 0) {
+        const emailMap = new Map<string, Subscriber>()
+
+        for (const row of pdfData) {
+          const subs = row.layout_settings?.newsletter_subscribers
+          if (Array.isArray(subs)) {
+            for (const s of subs) {
+              if (s?.email) {
+                const norm = s.email.toLowerCase().trim()
+                emailMap.set(norm, {
+                  email: norm,
+                  lang: s.lang || 'pt',
+                  subscribed_at: s.subscribed_at || new Date().toISOString()
+                })
+              }
+            }
+          }
+        }
+
+        list = Array.from(emailMap.values())
+      }
+    } catch (_) {}
+
+    // 2. Tenta buscar na nova tabela 'newsletter_subscribers'
+    try {
+      const { data: tblData } = await supabase
+        .from('newsletter_subscribers')
+        .select('email, lang, created_at')
+        .order('created_at', { ascending: false })
+
+      if (tblData && tblData.length > 0) {
+        const emailMap = new Map<string, Subscriber>()
+        for (const s of list) {
+          emailMap.set(s.email.toLowerCase(), s)
+        }
+        for (const item of tblData) {
+          if (item?.email) {
+            const norm = item.email.toLowerCase().trim()
+            emailMap.set(norm, {
+              email: norm,
+              lang: item.lang || 'pt',
+              subscribed_at: item.created_at || new Date().toISOString()
+            })
+          }
+        }
+        list = Array.from(emailMap.values())
+      }
+    } catch (_) {}
+
+    // 3. Fallback para a rota interna de API se a busca direta retornar vazia
+    if (list.length === 0) {
+      const res = await fetch('/api/admin/subscribers')
+      const data = await res.json()
+      if (data?.subscribers && data.subscribers.length > 0) {
+        list = data.subscribers
+      }
     }
+
+    subscribers.value = list.sort(
+      (a, b) => new Date(b.subscribed_at).getTime() - new Date(a.subscribed_at).getTime()
+    )
   } catch (err) {
     console.error('Erro ao carregar lista de inscritos:', err)
   } finally {
