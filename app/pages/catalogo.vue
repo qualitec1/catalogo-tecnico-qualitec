@@ -63,7 +63,7 @@
 
             <NuxtLink to="/" class="text-sm font-normal text-gray-600 hover:text-gray-900 transition-colors">{{ t.home }}</NuxtLink>
             <NuxtLink to="/catalogo" class="text-sm font-normal text-blue-700 font-bold transition-colors">{{ t.catalog }}</NuxtLink>
-            <NuxtLink to="/#sobre" class="text-sm font-normal text-gray-600 hover:text-gray-900 transition-colors">{{ t.about }}</NuxtLink>
+            <NuxtLink to="/nossa-empresa" class="text-sm font-normal text-gray-600 hover:text-gray-900 transition-colors">{{ t.about }}</NuxtLink>
             <a href="/#contato" class="text-sm font-normal text-gray-600 hover:text-gray-900 transition-colors">{{ t.contact }}</a>
 
             <!-- Flags Selector -->

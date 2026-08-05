@@ -24,7 +24,7 @@
           <nav class="hidden md:flex items-center space-x-8" style="margin-right: 60px;">
             <NuxtLink to="/" class="text-sm font-normal text-blue-700 font-bold transition-colors">{{ t.home }}</NuxtLink>
             <NuxtLink to="/catalogo" class="text-sm font-normal text-gray-600 hover:text-gray-900 transition-colors">{{ t.catalog }}</NuxtLink>
-            <NuxtLink to="/#sobre" class="text-sm font-normal text-gray-600 hover:text-gray-900 transition-colors">{{ t.about }}</NuxtLink>
+            <NuxtLink to="/nossa-empresa" class="text-sm font-normal text-gray-600 hover:text-gray-900 transition-colors">{{ t.about }}</NuxtLink>
             <a href="#contato" class="text-sm font-normal text-gray-600 hover:text-gray-900 transition-colors">{{ t.contact }}</a>
 
             <!-- Flags Selector -->
