@@ -2204,6 +2204,32 @@ const defaultSettings: SiteSettings = {
   footer_p11_offset_y: 0,
   footer_p11_bold: true,
   footer_p11_italic: false,
+  about_hero_bg_url: 'https://pub-25a6482a064a4590a456d3dd2a76114b.r2.dev/products/image_1_valvula_de_alivio_criogenica.png',
+  about_hero_bg_opacity: 70,
+  about_hero_badge_text: 'QUALITEC C S I M LTDA | ENGENHARIA & INSTRUMENTAÇÃO',
+  about_hero_title: 'Soluções técnicas para processos industriais críticos',
+  about_hero_text: 'A Qualitec fornece instrumentação, válvulas e suporte técnico para aplicações que exigem segurança, precisão e confiabilidade.',
+  about_hero_btn_solutions_text: 'Conheça nossas soluções',
+  about_hero_btn_specialist_text: 'Fale com um especialista',
+  about_who_badge_text: 'SOBRE A QUALITEC',
+  about_who_title: 'Tecnologia, conhecimento técnico e atendimento próximo',
+  about_who_text: 'A Qualitec C S I M Ltda atua no fornecimento de instrumentação industrial, válvulas e soluções para controle de pressão e processos. Com atendimento técnico-comercial especializado, conectamos indústrias brasileiras a equipamentos de alta confiabilidade para aplicações em criogenia, gases industriais, óleo & gás, energia, alimentos e outros processos críticos.',
+  about_who_img_url: 'https://pub-25a6482a064a4590a456d3dd2a76114b.r2.dev/products/image_1_valvula_de_alivio_criogenica.png',
+  about_who_stat1_number: '100%',
+  about_who_stat1_label: 'Suporte Técnico Especializado',
+  about_who_stat2_number: 'CGA E4.1',
+  about_who_stat2_label: 'Padrão de Limpeza Oxigênio',
+  about_who_stat3_number: 'Global',
+  about_who_stat3_label: 'Parceiros Internacionais',
+  about_brands_title: 'Tecnologia global, suporte técnico local',
+  about_brands_text: 'Trabalhamos com fabricantes reconhecidos internacionalmente, oferecendo produtos, documentação técnica e apoio para a definição da configuração mais adequada a cada processo.',
+  about_commitment_title: 'Mais do que fornecer produtos, ajudamos a especificar soluções.',
+  about_commitment_text: 'Cada processo possui requisitos próprios. Nossa equipe apoia a avaliação de pressão, temperatura, fluido, materiais, conexões, normas e certificações para que o equipamento selecionado seja adequado à operação.',
+  about_commitment_bg_color: '#004A96',
+  about_cta_title: 'Precisa de apoio para especificar seu equipamento?',
+  about_cta_text: 'Nossa equipe está pronta para entender sua aplicação e indicar a solução mais adequada.',
+  about_cta_btn_quote_text: 'Solicitar cotação',
+  about_cta_btn_specialist_text: 'Falar com um especialista',
 }
 
 const settings = reactive<SiteSettings>({ ...defaultSettings })
@@ -2598,10 +2624,14 @@ const loadSettings = async () => {
     if (data?.layout_settings?.site_settings) {
       const saved = data.layout_settings.site_settings
       Object.keys(defaultSettings).forEach(key => {
-        if (saved[key] !== undefined) {
+        if (saved[key] !== undefined && saved[key] !== null && String(saved[key]).trim() !== '') {
           (settings as any)[key] = saved[key]
+        } else if ((defaultSettings as any)[key] !== undefined) {
+          (settings as any)[key] = (defaultSettings as any)[key]
         }
       })
+    } else {
+      Object.assign(settings, defaultSettings)
     }
     await loadSubscribers()
   } catch (err) {
