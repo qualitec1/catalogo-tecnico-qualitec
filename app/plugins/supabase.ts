@@ -6,11 +6,20 @@ export default defineNuxtPlugin(async (nuxtApp) => {
   const runtimeConfig = useRuntimeConfig()
 
   // runtimeConfig.public está disponível tanto no servidor quanto no browser
-  const supabaseUrl = (runtimeConfig.public as any).supabaseUrl as string
-  const supabaseAnonKey = (runtimeConfig.public as any).supabaseAnonKey as string
+  const supabaseUrl =
+    ((runtimeConfig.public as any)?.supabaseUrl as string) ||
+    process.env.SUPABASE_URL ||
+    process.env.NUXT_PUBLIC_SUPABASE_URL ||
+    ''
+  const supabaseAnonKey =
+    ((runtimeConfig.public as any)?.supabaseAnonKey as string) ||
+    process.env.SUPABASE_ANON_KEY ||
+    process.env.SUPABASE_KEY ||
+    process.env.NUXT_PUBLIC_SUPABASE_ANON_KEY ||
+    ''
 
   if (!supabaseUrl || !supabaseAnonKey) {
-    console.warn('[supabase plugin] supabaseUrl ou supabaseAnonKey não definidos no runtimeConfig.public.')
+    console.warn('[supabase plugin] supabaseUrl ou supabaseAnonKey não definidos no runtimeConfig.public ou env.')
   }
 
   // Compartilha o token de acesso HttpOnly do servidor para o cliente
@@ -21,25 +30,27 @@ export default defineNuxtPlugin(async (nuxtApp) => {
     return null
   })
 
-  let client: SupabaseClient
+  let client: SupabaseClient | null = null
 
-  if (import.meta.server) {
-    // No servidor: usar 'ws' como transport do Realtime para evitar erro no Node < 22
-    const ws = await import('ws').then(m => m.default ?? m)
-    client = createClient(supabaseUrl, supabaseAnonKey, {
-      auth: { persistSession: false },
-      realtime: { transport: ws as any }
-    })
-    
-    if (tokenState.value) {
-      await client.auth.setSession({ access_token: tokenState.value, refresh_token: '' })
-    }
-  } else {
-    // No browser: WebSocket nativo disponível
-    client = createClient(supabaseUrl, supabaseAnonKey)
-    
-    if (tokenState.value) {
-      await client.auth.setSession({ access_token: tokenState.value, refresh_token: '' })
+  if (supabaseUrl && supabaseAnonKey) {
+    if (import.meta.server) {
+      // No servidor: usar 'ws' como transport do Realtime para evitar erro no Node < 22
+      const ws = await import('ws').then(m => m.default ?? m)
+      client = createClient(supabaseUrl, supabaseAnonKey, {
+        auth: { persistSession: false },
+        realtime: { transport: ws as any }
+      })
+
+      if (tokenState.value) {
+        await client.auth.setSession({ access_token: tokenState.value, refresh_token: '' })
+      }
+    } else {
+      // No browser: WebSocket nativo disponível
+      client = createClient(supabaseUrl, supabaseAnonKey)
+
+      if (tokenState.value) {
+        await client.auth.setSession({ access_token: tokenState.value, refresh_token: '' })
+      }
     }
   }
 
