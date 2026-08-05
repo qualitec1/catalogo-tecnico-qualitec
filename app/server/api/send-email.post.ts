@@ -6,14 +6,26 @@ import { createClient } from '@supabase/supabase-js'
 async function saveNewsletterSubscriber(email: string, lang: string) {
   try {
     const config = useRuntimeConfig()
-    const supabaseUrl = (config.public as any)?.supabaseUrl || process.env.SUPABASE_URL
-    const supabaseKey = (config.public as any)?.supabaseAnonKey || process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_KEY
+    const supabaseUrl = process.env.SUPABASE_URL || process.env.NUXT_PUBLIC_SUPABASE_URL || (config.public as any)?.supabaseUrl
+    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_KEY || (config.public as any)?.supabaseAnonKey
 
     if (!supabaseUrl || !supabaseKey) return
 
     const supabase = createClient(supabaseUrl, supabaseKey)
     const normalizedEmail = email.toLowerCase().trim()
 
+    // 1. Tentar gravar na nova tabela dedicada 'newsletter_subscribers'
+    try {
+      await supabase.from('newsletter_subscribers').upsert({
+        email: normalizedEmail,
+        lang: (lang || 'pt').toLowerCase(),
+        created_at: new Date().toISOString()
+      }, { onConflict: 'email' })
+    } catch (newTableErr) {
+      console.warn('[Supabase Save New Table Warning]', newTableErr)
+    }
+
+    // 2. Gravar também no JSON legado 'pdf_settings' para retrocompatibilidade
     const { data } = await supabase
       .from('pdf_settings')
       .select('id, layout_settings')
@@ -60,13 +72,32 @@ async function saveContactSubmission(contactData: {
 }) {
   try {
     const config = useRuntimeConfig()
-    const supabaseUrl = (config.public as any)?.supabaseUrl || process.env.SUPABASE_URL
-    const supabaseKey = (config.public as any)?.supabaseAnonKey || process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_KEY
+    const supabaseUrl = process.env.SUPABASE_URL || process.env.NUXT_PUBLIC_SUPABASE_URL || (config.public as any)?.supabaseUrl
+    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_KEY || (config.public as any)?.supabaseAnonKey
 
     if (!supabaseUrl || !supabaseKey) return
 
     const supabase = createClient(supabaseUrl, supabaseKey)
 
+    // 1. Tentar gravar na nova tabela dedicada 'contact_submissions'
+    try {
+      await supabase.from('contact_submissions').insert({
+        name: contactData.name || '',
+        email: (contactData.email || '').toLowerCase().trim(),
+        phone: contactData.phone || '',
+        company: contactData.company || '',
+        subject: contactData.subject || '',
+        message: contactData.message || '',
+        product_name: contactData.productName || '',
+        type: contactData.type || 'contact',
+        status: 'new',
+        created_at: new Date().toISOString()
+      })
+    } catch (newTableErr) {
+      console.warn('[Supabase Save Contact New Table Warning]', newTableErr)
+    }
+
+    // 2. Gravar também no JSON legado 'pdf_settings' para retrocompatibilidade
     const { data } = await supabase
       .from('pdf_settings')
       .select('id, layout_settings')
