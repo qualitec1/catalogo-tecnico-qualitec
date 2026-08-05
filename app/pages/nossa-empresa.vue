@@ -115,7 +115,7 @@
         <!-- Overlay de imagem industrial de fundo com padrão blueprint -->
         <div class="absolute inset-0 z-0 opacity-40 mix-blend-luminosity">
           <img 
-            src="/images/email/newsletter-hero.jpg" 
+            :src="siteSettings.hero_bg_url || 'https://pub-25a6482a064a4590a456d3dd2a76114b.r2.dev/products/image_1_valvula_de_alivio_criogenica.png'" 
             alt="Fundo Industrial Qualitec" 
             class="w-full h-full object-cover object-center"
             @error="handleImgFallback"
