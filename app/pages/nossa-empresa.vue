@@ -221,7 +221,10 @@
       </section>
 
       <!-- 2. QUEM SOMOS -->
-      <section class="py-16 md:py-24 bg-white border-b border-slate-200 px-4 md:px-10">
+      <section 
+        class="py-16 md:py-24 border-b border-slate-200 px-4 md:px-10 transition-colors"
+        :style="{ backgroundColor: siteSettings.about_who_bg_color || '#ffffff' }"
+      >
         <div class="max-w-[1280px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           <!-- Texto à esquerda -->
           <div class="lg:col-span-7 space-y-6">
@@ -254,17 +257,41 @@
             </div>
           </div>
 
-          <!-- Imagem técnica/equipamento à direita -->
+          <!-- Imagem ou Vídeo técnico/equipamento à direita -->
           <div class="lg:col-span-5">
-            <div class="relative rounded-2xl overflow-hidden shadow-2xl border border-slate-200 bg-slate-900 group">
+            <div class="relative rounded-2xl overflow-hidden shadow-2xl border border-slate-200 bg-slate-900 group h-96">
+              <!-- Vídeo (YouTube, Vimeo, MP4, Wix Proxy) -->
+              <template v-if="isWhoVideoMedia && parsedWhoVideo.url">
+                <iframe 
+                  v-if="parsedWhoVideo.type === 'youtube' || parsedWhoVideo.type === 'vimeo'"
+                  class="w-[160%] h-[160%] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 object-cover pointer-events-none scale-125 border-0"
+                  :src="parsedWhoVideo.url"
+                  allow="autoplay; fullscreen; picture-in-picture"
+                ></iframe>
+                <video 
+                  v-else
+                  class="w-full h-full object-cover min-w-full min-h-full pointer-events-none"
+                  autoplay
+                  loop
+                  muted
+                  :muted="true"
+                  playsinline
+                  webkit-playsinline
+                  preload="auto"
+                  :src="parsedWhoVideo.url"
+                ></video>
+              </template>
+
+              <!-- Imagem estática -->
               <img 
+                v-else
                 :src="siteSettings.about_who_img_url || 'https://pub-25a6482a064a4590a456d3dd2a76114b.r2.dev/products/image_1_valvula_de_alivio_criogenica.png'" 
                 alt="Equipamentos de alta tecnologia Qualitec" 
                 class="w-full h-96 object-cover object-center group-hover:scale-105 transition-transform duration-500"
                 @error="handleImgFallback"
               />
-              <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent"></div>
-              <div class="absolute bottom-4 left-4 right-4 p-4 bg-white/90 backdrop-blur-md rounded-lg border border-white/50 shadow-md">
+              <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent pointer-events-none"></div>
+              <div class="absolute bottom-4 left-4 right-4 p-4 bg-white/90 backdrop-blur-md rounded-lg border border-white/50 shadow-md z-10">
                 <p class="text-xs font-bold text-slate-900 uppercase font-mono tracking-wider">Engenharia de Aplicação</p>
                 <p class="text-[11px] text-slate-600 font-medium">Especificação precisa para válvulas criogênicas e transmissores industriais.</p>
               </div>
@@ -274,7 +301,10 @@
       </section>
 
       <!-- 3. MARCAS / PARCERIAS -->
-      <section class="py-16 md:py-20 bg-slate-50 border-b border-slate-200 px-4 md:px-10">
+      <section 
+        class="py-16 md:py-20 border-b border-slate-200 px-4 md:px-10 transition-colors"
+        :style="{ backgroundColor: siteSettings.about_brands_bg_color || '#f8fafc' }"
+      >
         <div class="max-w-[1280px] mx-auto text-center space-y-10">
           <div class="max-w-3xl mx-auto space-y-3">
             <span class="text-xs font-bold font-mono text-[#004A96] uppercase tracking-widest">PARCEIROS GLOBAIS</span>
@@ -346,15 +376,19 @@
       </section>
 
       <!-- 4. SETORES ATENDIDOS (Grid de Cards Técnicos) -->
-      <section id="setores" class="py-16 md:py-24 bg-white border-b border-slate-200 px-4 md:px-10">
+      <section 
+        id="setores" 
+        class="py-16 md:py-24 border-b border-slate-200 px-4 md:px-10 transition-colors"
+        :style="{ backgroundColor: siteSettings.about_sectors_bg_color || '#ffffff' }"
+      >
         <div class="max-w-[1280px] mx-auto space-y-12">
           <div class="text-center max-w-2xl mx-auto space-y-3">
             <span class="text-xs font-bold font-mono text-[#004A96] uppercase tracking-widest">APLICAÇÕES INDUSTRIAIS</span>
             <h2 class="text-2xl md:text-4xl font-bold text-slate-900 tracking-tight">
-              {{ mergedTranslations['about.sectors_title'] || 'Setores Atendidos' }}
+              {{ siteSettings.about_sectors_title || mergedTranslations['about.sectors_title'] || 'Setores Atendidos' }}
             </h2>
             <p class="text-slate-600 text-sm md:text-base">
-              Equipamentos e válvulas configurados rigorosamente conforme os requisitos de cada segmento.
+              {{ siteSettings.about_sectors_text || 'Equipamentos e válvulas configurados rigorosamente conforme os requisitos de cada segmento.' }}
             </p>
           </div>
 
@@ -458,13 +492,19 @@
       </section>
 
       <!-- 5. POR QUE ESCOLHER A QUALITEC? -->
-      <section class="py-16 md:py-24 bg-slate-900 text-white px-4 md:px-10">
+      <section 
+        class="py-16 md:py-24 text-white px-4 md:px-10 transition-colors"
+        :style="{ backgroundColor: siteSettings.about_why_bg_color || '#0f172a' }"
+      >
         <div class="max-w-[1280px] mx-auto space-y-12">
           <div class="text-center max-w-2xl mx-auto space-y-3">
             <span class="text-xs font-bold font-mono text-blue-400 uppercase tracking-widest">DIFERENCIAIS</span>
             <h2 class="text-2xl md:text-4xl font-bold text-white tracking-tight">
-              {{ mergedTranslations['about.why_title'] || 'Por que escolher a Qualitec?' }}
+              {{ siteSettings.about_why_title || mergedTranslations['about.why_title'] || 'Por que escolher a Qualitec?' }}
             </h2>
+            <p class="text-slate-300 text-sm md:text-base">
+              {{ siteSettings.about_why_text || 'Combinamos portfólio de classe mundial, agilidade de atendimento e equipe de engenharia para apoiar sua planta em qualquer desafio.' }}
+            </p>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -644,6 +684,59 @@ const isVideoMedia = computed(() => {
 
 const parsedAboutVideo = computed(() => {
   const url = heroMediaUrl.value
+  if (!url) return { type: 'none', url: '' }
+
+  const ytMatch = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w-]{11})/)
+  if (ytMatch && ytMatch[1]) {
+    const id = ytMatch[1]
+    return {
+      type: 'youtube',
+      url: `https://www.youtube.com/embed/${id}?autoplay=1&mute=1&loop=1&playlist=${id}&controls=0&disabledkb=1&modestbranding=1&rel=0&showinfo=0&playsinline=1`
+    }
+  }
+
+  const vimeoMatch = url.match(/vimeo\.com\/(?:video\/)?([0-9]+)/)
+  if (vimeoMatch && vimeoMatch[1]) {
+    const id = vimeoMatch[1]
+    return {
+      type: 'vimeo',
+      url: `https://player.vimeo.com/video/${id}?autoplay=1&muted=1&loop=1&background=1&autopause=0`
+    }
+  }
+
+  if (url.includes('wixstatic.com')) {
+    return {
+      type: 'direct',
+      url: `/api/proxy-video?url=${encodeURIComponent(url)}`
+    }
+  }
+
+  return {
+    type: 'direct',
+    url
+  }
+})
+
+// Who Section Media & Video parsing
+const whoMediaUrl = computed(() => {
+  return (siteSettings.value.about_who_img_url || '').trim()
+})
+
+const isWhoVideoMedia = computed(() => {
+  const url = whoMediaUrl.value.toLowerCase()
+  return (
+    url.endsWith('.mp4') ||
+    url.endsWith('.webm') ||
+    url.endsWith('.mov') ||
+    url.includes('video.wixstatic.com') ||
+    url.includes('youtube.com') ||
+    url.includes('youtu.be') ||
+    url.includes('vimeo.com')
+  )
+})
+
+const parsedWhoVideo = computed(() => {
+  const url = whoMediaUrl.value
   if (!url) return { type: 'none', url: '' }
 
   const ytMatch = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w-]{11})/)

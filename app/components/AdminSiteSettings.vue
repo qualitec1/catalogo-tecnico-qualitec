@@ -153,14 +153,16 @@
               />
             </div>
 
-            <!-- Imagem Card Equipamentos -->
+            <!-- Imagem ou Vídeo Card Equipamentos -->
             <div class="space-y-1">
-              <label class="block text-[11px] font-bold text-slate-700 uppercase">Imagem do Card Equipamento (Direita)</label>
+              <label class="block text-[11px] font-bold text-slate-700 uppercase">
+                Imagem ou Vídeo do Card Equipamento (Direita)
+              </label>
               <div class="flex gap-2">
                 <input
                   v-model="settings.about_who_img_url"
                   type="text"
-                  placeholder="https://..."
+                  placeholder="https://... (.jpg, .png, .mp4, YouTube, Vimeo, Wix)"
                   class="flex-1 border border-gray-300 px-3 py-2 text-xs rounded bg-white text-slate-800 focus:ring-1 focus:ring-blue-600 focus:outline-none"
                 />
                 <button
@@ -169,10 +171,13 @@
                   class="bg-[#004A96] hover:bg-blue-700 disabled:opacity-50 text-white px-3 py-2 rounded text-xs font-bold uppercase transition-colors flex items-center gap-1 border-0 cursor-pointer shrink-0"
                 >
                   <span class="material-symbols-outlined text-sm">{{ uploadingAbout === 'about_who_img_url' ? 'sync' : 'upload' }}</span>
-                  Upload
+                  Upload R2
                 </button>
-                <input ref="aboutWhoFileInput" type="file" accept="image/*" class="hidden" @change="handleAboutUpload('about_who_img_url', $event)" />
+                <input ref="aboutWhoFileInput" type="file" accept="image/*,video/*" class="hidden" @change="handleAboutUpload('about_who_img_url', $event)" />
               </div>
+              <p class="text-[10px] text-slate-500 italic">
+                Aceita URLs de imagem (.jpg, .png) ou vídeos em loop (.mp4, YouTube, Vimeo, Wix).
+              </p>
             </div>
 
             <!-- Título Quem Somos -->
@@ -223,6 +228,154 @@
             <div class="space-y-1">
               <label class="block text-[10px] font-bold text-slate-700 uppercase">Destaque 3 (Descrição)</label>
               <input v-model="settings.about_who_stat3_label" type="text" class="w-full border border-gray-300 px-3 py-1.5 text-xs rounded bg-white text-slate-800" />
+            </div>
+            <!-- Cor de Fundo da Seção Quem Somos -->
+            <div class="space-y-1 md:col-span-2">
+              <label class="block text-[11px] font-bold text-slate-700 uppercase">Cor de Fundo da Seção Quem Somos</label>
+              <div class="flex items-center gap-2">
+                <input
+                  v-model="settings.about_who_bg_color"
+                  type="color"
+                  class="w-9 h-9 border border-gray-300 rounded cursor-pointer p-0.5 bg-white"
+                />
+                <input
+                  v-model="settings.about_who_bg_color"
+                  type="text"
+                  class="w-28 border border-gray-300 px-3 py-2 text-xs rounded bg-white text-slate-800 font-mono"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Subseção 3: Marcas & Parcerias -->
+        <div class="bg-white p-5 rounded-lg border border-gray-200 space-y-4">
+          <h4 class="text-xs font-bold text-slate-800 uppercase border-b border-gray-100 pb-2 flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-sm text-blue-600">handshake</span>
+            Seção Marcas / Parcerias ("Tecnologia global, suporte técnico local")
+          </h4>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="space-y-1 md:col-span-2">
+              <label class="block text-[11px] font-bold text-slate-700 uppercase">Título da Seção Marcas</label>
+              <input
+                v-model="settings.about_brands_title"
+                type="text"
+                class="w-full border border-gray-300 px-3 py-2 text-xs rounded bg-white text-slate-800 focus:ring-1 focus:ring-blue-600 focus:outline-none"
+              />
+            </div>
+
+            <div class="space-y-1 md:col-span-2">
+              <label class="block text-[11px] font-bold text-slate-700 uppercase">Descrição da Seção Marcas</label>
+              <textarea
+                v-model="settings.about_brands_text"
+                rows="2"
+                class="w-full border border-gray-300 px-3 py-2 text-xs rounded bg-white text-slate-800 focus:ring-1 focus:ring-blue-600 focus:outline-none resize-y"
+              ></textarea>
+            </div>
+
+            <div class="space-y-1 md:col-span-2">
+              <label class="block text-[11px] font-bold text-slate-700 uppercase">Cor de Fundo da Seção Marcas</label>
+              <div class="flex items-center gap-2">
+                <input
+                  v-model="settings.about_brands_bg_color"
+                  type="color"
+                  class="w-9 h-9 border border-gray-300 rounded cursor-pointer p-0.5 bg-white"
+                />
+                <input
+                  v-model="settings.about_brands_bg_color"
+                  type="text"
+                  class="w-28 border border-gray-300 px-3 py-2 text-xs rounded bg-white text-slate-800 font-mono"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Subseção 4: Setores Atendidos -->
+        <div class="bg-white p-5 rounded-lg border border-gray-200 space-y-4">
+          <h4 class="text-xs font-bold text-slate-800 uppercase border-b border-gray-100 pb-2 flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-sm text-blue-600">factory</span>
+            Seção Setores Atendidos
+          </h4>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="space-y-1 md:col-span-2">
+              <label class="block text-[11px] font-bold text-slate-700 uppercase">Título da Seção Setores Atendidos</label>
+              <input
+                v-model="settings.about_sectors_title"
+                type="text"
+                class="w-full border border-gray-300 px-3 py-2 text-xs rounded bg-white text-slate-800 focus:ring-1 focus:ring-blue-600 focus:outline-none"
+              />
+            </div>
+
+            <div class="space-y-1 md:col-span-2">
+              <label class="block text-[11px] font-bold text-slate-700 uppercase">Descrição da Seção Setores Atendidos</label>
+              <textarea
+                v-model="settings.about_sectors_text"
+                rows="2"
+                class="w-full border border-gray-300 px-3 py-2 text-xs rounded bg-white text-slate-800 focus:ring-1 focus:ring-blue-600 focus:outline-none resize-y"
+              ></textarea>
+            </div>
+
+            <div class="space-y-1 md:col-span-2">
+              <label class="block text-[11px] font-bold text-slate-700 uppercase">Cor de Fundo da Seção Setores Atendidos</label>
+              <div class="flex items-center gap-2">
+                <input
+                  v-model="settings.about_sectors_bg_color"
+                  type="color"
+                  class="w-9 h-9 border border-gray-300 rounded cursor-pointer p-0.5 bg-white"
+                />
+                <input
+                  v-model="settings.about_sectors_bg_color"
+                  type="text"
+                  class="w-28 border border-gray-300 px-3 py-2 text-xs rounded bg-white text-slate-800 font-mono"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Subseção 5: Por Que Escolher a Qualitec -->
+        <div class="bg-white p-5 rounded-lg border border-gray-200 space-y-4">
+          <h4 class="text-xs font-bold text-slate-800 uppercase border-b border-gray-100 pb-2 flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-sm text-blue-600">workspace_premium</span>
+            Seção "Por que escolher a Qualitec?"
+          </h4>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="space-y-1 md:col-span-2">
+              <label class="block text-[11px] font-bold text-slate-700 uppercase">Título da Seção "Por que escolher a Qualitec?"</label>
+              <input
+                v-model="settings.about_why_title"
+                type="text"
+                class="w-full border border-gray-300 px-3 py-2 text-xs rounded bg-white text-slate-800 focus:ring-1 focus:ring-blue-600 focus:outline-none"
+              />
+            </div>
+
+            <div class="space-y-1 md:col-span-2">
+              <label class="block text-[11px] font-bold text-slate-700 uppercase">Descrição da Seção "Por que escolher a Qualitec?"</label>
+              <textarea
+                v-model="settings.about_why_text"
+                rows="2"
+                class="w-full border border-gray-300 px-3 py-2 text-xs rounded bg-white text-slate-800 focus:ring-1 focus:ring-blue-600 focus:outline-none resize-y"
+              ></textarea>
+            </div>
+
+            <div class="space-y-1 md:col-span-2">
+              <label class="block text-[11px] font-bold text-slate-700 uppercase">Cor de Fundo da Seção "Por que escolher a Qualitec?"</label>
+              <div class="flex items-center gap-2">
+                <input
+                  v-model="settings.about_why_bg_color"
+                  type="color"
+                  class="w-9 h-9 border border-gray-300 rounded cursor-pointer p-0.5 bg-white"
+                />
+                <input
+                  v-model="settings.about_why_bg_color"
+                  type="text"
+                  class="w-28 border border-gray-300 px-3 py-2 text-xs rounded bg-white text-slate-800 font-mono"
+                />
+              </div>
             </div>
           </div>
         </div>
