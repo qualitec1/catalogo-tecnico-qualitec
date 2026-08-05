@@ -555,7 +555,7 @@
 import { ref, computed, onMounted } from 'vue'
 import useTranslations, { type LanguageCode } from '~/composables/useTranslations'
 import useSiteSettings from '~/composables/useSiteSettings'
-import useCatalog from '~/composables/useCatalog'
+import { useCatalog } from '~/composables/useCatalog'
 import MegaMenu from '~/components/MegaMenu.vue'
 import AppFooter from '~/components/AppFooter.vue'
 import ContactModal from '~/components/ContactModal.vue'
