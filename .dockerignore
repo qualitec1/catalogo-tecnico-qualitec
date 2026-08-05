@@ -1,0 +1,10 @@
+node_modules
+.output
+.nuxt
+.git
+.gitignore
+.env
+*.log
+database_backup.*
+backups
+.gemini
