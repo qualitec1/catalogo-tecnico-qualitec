@@ -201,6 +201,7 @@ export interface SiteVisualSettings {
   footer_p11_italic: boolean
   // Página Nossa Empresa (Institucional)
   about_hero_bg_url?: string
+  about_hero_bg_opacity?: number
   about_hero_badge_text?: string
   about_hero_title?: string
   about_hero_text?: string
@@ -411,6 +412,7 @@ const defaults: SiteVisualSettings = {
   footer_p11_bold: true,
   footer_p11_italic: false,
   about_hero_bg_url: 'https://pub-25a6482a064a4590a456d3dd2a76114b.r2.dev/products/image_1_valvula_de_alivio_criogenica.png',
+  about_hero_bg_opacity: 70,
   about_hero_badge_text: 'QUALITEC C S I M LTDA | ENGENHARIA & INSTRUMENTAÇÃO',
   about_hero_title: 'Soluções técnicas para processos industriais críticos',
   about_hero_text: 'A Qualitec fornece instrumentação, válvulas e suporte técnico para aplicações que exigem segurança, precisão e confiabilidade.',

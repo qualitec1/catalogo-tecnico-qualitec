@@ -40,14 +40,16 @@
           </h4>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <!-- Imagem de Fundo Hero -->
+            <!-- Imagem ou Vídeo de Fundo Hero -->
             <div class="space-y-2 md:col-span-2">
-              <label class="block text-[11px] font-bold text-slate-700 uppercase">URL da Imagem / Banner de Fundo</label>
+              <label class="block text-[11px] font-bold text-slate-700 uppercase">
+                URL da Imagem ou Vídeo de Fundo (MP4 / YouTube / Vimeo / Wix)
+              </label>
               <div class="flex gap-2">
                 <input
                   v-model="settings.about_hero_bg_url"
                   type="text"
-                  placeholder="https://..."
+                  placeholder="https://... (.jpg, .png, .mp4, ou URL de vídeo)"
                   class="flex-1 border border-gray-300 px-3 py-2 text-xs rounded bg-white text-slate-800 focus:ring-1 focus:ring-blue-600 focus:outline-none"
                 />
                 <button
@@ -58,8 +60,27 @@
                   <span class="material-symbols-outlined text-sm">{{ uploadingAbout === 'about_hero_bg_url' ? 'sync' : 'upload' }}</span>
                   Upload R2
                 </button>
-                <input ref="aboutHeroFileInput" type="file" accept="image/*" class="hidden" @change="handleAboutUpload('about_hero_bg_url', $event)" />
+                <input ref="aboutHeroFileInput" type="file" accept="image/*,video/*" class="hidden" @change="handleAboutUpload('about_hero_bg_url', $event)" />
               </div>
+              <p class="text-[11px] text-slate-500 italic">
+                Suporta links diretos de imagem (.jpg, .png) ou vídeos em loop (.mp4, YouTube, Vimeo, Wix Video).
+              </p>
+            </div>
+
+            <!-- Opacidade do Fundo -->
+            <div class="space-y-1 md:col-span-2">
+              <div class="flex justify-between items-center">
+                <label class="block text-[11px] font-bold text-slate-700 uppercase">Visibilidade / Nitidez do Fundo</label>
+                <span class="text-xs font-mono font-bold text-[#004A96]">{{ settings.about_hero_bg_opacity ?? 70 }}%</span>
+              </div>
+              <input
+                v-model.number="settings.about_hero_bg_opacity"
+                type="range"
+                min="10"
+                max="100"
+                step="5"
+                class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[#004A96]"
+              />
             </div>
 
             <!-- Badge Texto Superior -->

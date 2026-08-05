@@ -112,10 +112,37 @@
     <main class="flex-1">
       <!-- 1. HERO INSTITUCIONAL -->
       <section class="relative bg-slate-950 text-white py-24 md:py-32 px-4 md:px-10 overflow-hidden">
-        <!-- Overlay de imagem industrial de fundo com padrão blueprint -->
-        <div class="absolute inset-0 z-0 opacity-40 mix-blend-luminosity">
+        <!-- Overlay de imagem ou vídeo industrial de fundo -->
+        <div 
+          class="absolute inset-0 z-0 overflow-hidden transition-opacity duration-300"
+          :style="{ opacity: ((siteSettings.about_hero_bg_opacity ?? 70) / 100) }"
+        >
+          <!-- Vídeo (YouTube, Vimeo, MP4, Wix Proxy) -->
+          <template v-if="isVideoMedia && parsedAboutVideo.url">
+            <iframe 
+              v-if="parsedAboutVideo.type === 'youtube' || parsedAboutVideo.type === 'vimeo'"
+              class="w-[160%] h-[160%] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 object-cover pointer-events-none scale-125 border-0"
+              :src="parsedAboutVideo.url"
+              allow="autoplay; fullscreen; picture-in-picture"
+            ></iframe>
+            <video 
+              v-else
+              class="w-full h-full object-cover min-w-full min-h-full pointer-events-none"
+              autoplay
+              loop
+              muted
+              :muted="true"
+              playsinline
+              webkit-playsinline
+              preload="auto"
+              :src="parsedAboutVideo.url"
+            ></video>
+          </template>
+
+          <!-- Imagem de Fundo (Se não for vídeo) -->
           <img 
-            :src="siteSettings.about_hero_bg_url || 'https://pub-25a6482a064a4590a456d3dd2a76114b.r2.dev/products/image_1_valvula_de_alivio_criogenica.png'" 
+            v-else
+            :src="heroMediaUrl || 'https://pub-25a6482a064a4590a456d3dd2a76114b.r2.dev/products/image_1_valvula_de_alivio_criogenica.png'" 
             alt="Fundo Industrial Qualitec" 
             class="w-full h-full object-cover object-center"
             @error="handleImgFallback"
@@ -123,7 +150,7 @@
         </div>
         <!-- Padrão técnico sutil (grade Blueprint) -->
         <div class="absolute inset-0 z-0 bg-[linear-gradient(to_right,#ffffff08_1px,transparent_1px),linear-gradient(to_bottom,#ffffff08_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none"></div>
-        <div class="absolute inset-0 z-0 bg-gradient-to-r from-slate-950 via-slate-950/90 to-slate-900/70"></div>
+        <div class="absolute inset-0 z-0 bg-gradient-to-r from-slate-950/85 via-slate-950/60 to-slate-900/40"></div>
 
         <div class="max-w-[1280px] mx-auto relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
           <div class="lg:col-span-8 space-y-6">
@@ -596,6 +623,59 @@ const handleImgFallback = (event: Event) => {
     target.src = 'https://pub-25a6482a064a4590a456d3dd2a76114b.r2.dev/products/image_1_valvula_de_alivio_criogenica.png'
   }
 }
+
+// Media & Video parsing
+const heroMediaUrl = computed(() => {
+  return (siteSettings.value.about_hero_bg_url || '').trim()
+})
+
+const isVideoMedia = computed(() => {
+  const url = heroMediaUrl.value.toLowerCase()
+  return (
+    url.endsWith('.mp4') ||
+    url.endsWith('.webm') ||
+    url.endsWith('.mov') ||
+    url.includes('video.wixstatic.com') ||
+    url.includes('youtube.com') ||
+    url.includes('youtu.be') ||
+    url.includes('vimeo.com')
+  )
+})
+
+const parsedAboutVideo = computed(() => {
+  const url = heroMediaUrl.value
+  if (!url) return { type: 'none', url: '' }
+
+  const ytMatch = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w-]{11})/)
+  if (ytMatch && ytMatch[1]) {
+    const id = ytMatch[1]
+    return {
+      type: 'youtube',
+      url: `https://www.youtube.com/embed/${id}?autoplay=1&mute=1&loop=1&playlist=${id}&controls=0&disabledkb=1&modestbranding=1&rel=0&showinfo=0&playsinline=1`
+    }
+  }
+
+  const vimeoMatch = url.match(/vimeo\.com\/(?:video\/)?([0-9]+)/)
+  if (vimeoMatch && vimeoMatch[1]) {
+    const id = vimeoMatch[1]
+    return {
+      type: 'vimeo',
+      url: `https://player.vimeo.com/video/${id}?autoplay=1&muted=1&loop=1&background=1&autopause=0`
+    }
+  }
+
+  if (url.includes('wixstatic.com')) {
+    return {
+      type: 'direct',
+      url: `/api/proxy-video?url=${encodeURIComponent(url)}`
+    }
+  }
+
+  return {
+    type: 'direct',
+    url
+  }
+})
 
 onMounted(() => {
   fetchSiteSettings()
