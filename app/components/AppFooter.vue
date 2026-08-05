@@ -166,32 +166,18 @@
       </div>
     </div>
 
-    <!-- Floating Support Button (Phrase 11) -->
-    <div
-      class="fixed bottom-6 right-6 z-50 transition-all duration-150"
-      :style="{
-        transform: `translate(${siteSettings.footer_p11_offset_x || 0}px, ${siteSettings.footer_p11_offset_y || 0}px)`
+    <!-- Floating Support Chat Widget (Phrase 11) -->
+    <ChatWidget 
+      :buttonText="siteSettings.footer_p11_text || 'Como posso lhe ajudar?'"
+      :customBtnStyle="{
+        transform: `translate(${siteSettings.footer_p11_offset_x || 0}px, ${siteSettings.footer_p11_offset_y || 0}px)`,
+        fontFamily: siteSettings.footer_p11_font || 'system-ui',
+        fontSize: `${siteSettings.footer_p11_size ?? 14}px`,
+        color: siteSettings.footer_p11_color || '#ffffff',
+        fontWeight: siteSettings.footer_p11_bold ?? true ? '700' : '400',
+        fontStyle: siteSettings.footer_p11_italic ? 'italic' : 'normal'
       }"
-    >
-      <a
-        href="https://wa.me/551139087100"
-        target="_blank"
-        class="bg-[#004A96] hover:bg-[#00346c] text-white px-5 py-3 rounded-full flex items-center gap-2.5 shadow-xl transition-all hover:scale-105 cursor-pointer no-underline"
-      >
-        <span class="material-symbols-outlined text-2xl">chat_bubble</span>
-        <span
-          :style="{
-            fontFamily: siteSettings.footer_p11_font || 'system-ui',
-            fontSize: `${siteSettings.footer_p11_size ?? 14}px`,
-            color: siteSettings.footer_p11_color || '#ffffff',
-            fontWeight: siteSettings.footer_p11_bold ?? true ? '700' : '400',
-            fontStyle: siteSettings.footer_p11_italic ? 'italic' : 'normal'
-          }"
-        >
-          {{ siteSettings.footer_p11_text || 'Como posso lhe ajudar?' }}
-        </span>
-      </a>
-    </div>
+    />
   </footer>
 </template>
 

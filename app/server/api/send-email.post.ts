@@ -48,6 +48,63 @@ async function saveNewsletterSubscriber(email: string, lang: string) {
   }
 }
 
+async function saveContactSubmission(contactData: {
+  name: string
+  email: string
+  phone?: string
+  company?: string
+  subject?: string
+  message: string
+  productName?: string
+  type?: string
+}) {
+  try {
+    const config = useRuntimeConfig()
+    const supabaseUrl = (config.public as any)?.supabaseUrl || process.env.SUPABASE_URL
+    const supabaseKey = (config.public as any)?.supabaseAnonKey || process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_KEY
+
+    if (!supabaseUrl || !supabaseKey) return
+
+    const supabase = createClient(supabaseUrl, supabaseKey)
+
+    const { data } = await supabase
+      .from('pdf_settings')
+      .select('id, layout_settings')
+      .eq('category', 'GERAL')
+      .maybeSingle()
+
+    if (data) {
+      const currentLayout = data.layout_settings || {}
+      const existingList: Array<any> = currentLayout.contact_submissions || []
+
+      existingList.unshift({
+        id: 'cnt_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7),
+        name: contactData.name || '',
+        email: (contactData.email || '').toLowerCase().trim(),
+        phone: contactData.phone || '',
+        company: contactData.company || '',
+        subject: contactData.subject || '',
+        message: contactData.message || '',
+        productName: contactData.productName || '',
+        type: contactData.type || 'contact',
+        created_at: new Date().toISOString()
+      })
+
+      const updatedLayout = {
+        ...currentLayout,
+        contact_submissions: existingList
+      }
+
+      await supabase
+        .from('pdf_settings')
+        .update({ layout_settings: updatedLayout })
+        .eq('category', 'GERAL')
+    }
+  } catch (err) {
+    console.warn('[Supabase Save Contact Warning]', err)
+  }
+}
+
 function getNewsletterTemplate(email: string, langRaw = 'pt') {
   const lang = String(langRaw || 'pt').toLowerCase()
 
@@ -638,6 +695,18 @@ export default defineEventHandler(async (event) => {
     if (type === 'contact' || type === 'quote') {
       const isQuote = type === 'quote'
       const titleSubject = isQuote ? 'Solicitação de Orçamento' : 'Formulário de Contato'
+
+      // Save contact to database
+      await saveContactSubmission({
+        name,
+        email,
+        phone,
+        company,
+        subject,
+        message,
+        productName,
+        type
+      })
 
       // Notificar equipe
       const internalMailOptions = {
