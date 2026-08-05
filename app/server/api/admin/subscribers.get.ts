@@ -4,9 +4,10 @@ export default defineEventHandler(async (event) => {
   try {
     const config = useRuntimeConfig()
     const supabaseUrl = (config.public as any)?.supabaseUrl || process.env.SUPABASE_URL
-    const supabaseKey = (config.public as any)?.supabaseAnonKey || process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_KEY
+    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || (config.public as any)?.supabaseAnonKey || process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_KEY
 
     if (!supabaseUrl || !supabaseKey) {
+      console.warn('[API Subscribers] SUPABASE_URL ou Chave não configuradas.')
       return { subscribers: [] }
     }
 
@@ -18,7 +19,12 @@ export default defineEventHandler(async (event) => {
       .eq('category', 'GERAL')
       .maybeSingle()
 
-    if (error || !data) {
+    if (error) {
+      console.error('[API Subscribers Error]', error)
+      return { subscribers: [] }
+    }
+
+    if (!data) {
       return { subscribers: [] }
     }
 
