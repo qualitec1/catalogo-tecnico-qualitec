@@ -173,8 +173,17 @@
           :class="[heroHorizontalClass, heroVerticalClass]"
         >
           <div 
-            class="backdrop-blur-xs p-8 md:p-12 max-w-xl rounded shadow-lg transition-all duration-300 pointer-events-auto"
-            :style="{ backgroundColor: siteSettings.hero_card_bg_color || '#74b934' }"
+            class="backdrop-blur-xs shadow-lg transition-all duration-300 pointer-events-auto"
+            :style="{ 
+              ...getCardBgStyle(siteSettings.hero_card_bg_color, siteSettings.hero_card_opacity),
+              borderRadius: `${siteSettings.hero_card_border_radius ?? 8}px`,
+              paddingTop: `${siteSettings.hero_card_padding_y ?? 36}px`,
+              paddingBottom: `${siteSettings.hero_card_padding_y ?? 36}px`,
+              paddingLeft: `${siteSettings.hero_card_padding_x ?? 44}px`,
+              paddingRight: `${siteSettings.hero_card_padding_x ?? 44}px`,
+              maxWidth: `${siteSettings.hero_card_width ?? 576}px`,
+              width: '100%'
+            }"
           >
             <h1 
               class="font-['Rubik',sans-serif] text-2xl md:text-4xl font-medium leading-tight whitespace-pre-line transition-transform duration-150"
@@ -191,18 +200,27 @@
         <!-- Custom Free Positioning Container -->
         <div 
           v-else
-          class="absolute z-20 max-w-[90vw] md:max-w-xl transition-all duration-150 pointer-events-auto"
+          class="absolute z-20 max-w-[90vw] transition-all duration-150 pointer-events-auto"
           :class="siteSettings.hero_card_extend_bottom ? 'bottom-0 flex flex-col justify-center' : ''"
           :style="{
             left: (siteSettings.hero_card_offset_x ?? 18) + '%',
             top: (siteSettings.hero_card_offset_y ?? 45) + '%',
-            bottom: siteSettings.hero_card_extend_bottom ? '0px' : 'auto'
+            bottom: siteSettings.hero_card_extend_bottom ? '0px' : 'auto',
+            maxWidth: `${siteSettings.hero_card_width ?? 576}px`,
+            width: '100%'
           }"
         >
           <div 
-            class="backdrop-blur-sm p-6 md:p-10 shadow-lg transition-all duration-300 flex items-center"
-            :class="siteSettings.hero_card_extend_bottom ? 'h-full rounded-t-md rounded-b-none' : 'rounded-md'"
-            :style="getCardBgStyle(siteSettings.hero_card_bg_color, siteSettings.hero_card_opacity)"
+            class="backdrop-blur-sm shadow-lg transition-all duration-300 flex items-center"
+            :class="siteSettings.hero_card_extend_bottom ? 'h-full rounded-t-md rounded-b-none' : ''"
+            :style="{
+              ...getCardBgStyle(siteSettings.hero_card_bg_color, siteSettings.hero_card_opacity),
+              borderRadius: siteSettings.hero_card_extend_bottom ? undefined : `${siteSettings.hero_card_border_radius ?? 8}px`,
+              paddingTop: `${siteSettings.hero_card_padding_y ?? 32}px`,
+              paddingBottom: `${siteSettings.hero_card_padding_y ?? 32}px`,
+              paddingLeft: `${siteSettings.hero_card_padding_x ?? 40}px`,
+              paddingRight: `${siteSettings.hero_card_padding_x ?? 40}px`
+            }"
           >
             <h1 
               class="font-['Rubik',sans-serif] text-xl md:text-3xl font-medium leading-tight whitespace-pre-line transition-transform duration-150"
@@ -217,22 +235,62 @@
         </div>
       </section>
 
-      <!-- Faixa fina branca -->
-      <div class="bg-white h-3 w-full"></div>
+      <!-- Faixa fina divisória (Hero -> Busca) -->
+      <div 
+        v-if="(siteSettings.divider_hero_busca_height ?? 12) > 0"
+        class="w-full transition-all"
+        :style="{
+          height: `${siteSettings.divider_hero_busca_height ?? 12}px`,
+          backgroundColor: siteSettings.divider_hero_busca_bg || '#ffffff'
+        }"
+      ></div>
 
       <!-- Busca Rápida e Links Diretos -->
-      <section class="bg-[#e9e9e9] py-12 md:py-16 px-4 md:px-10">
+      <section 
+        class="px-4 md:px-10 transition-colors duration-150"
+        :style="{
+          backgroundColor: siteSettings.sec_busca_bg || '#e9e9e9',
+          paddingTop: `${siteSettings.sec_busca_ptop ?? 48}px`,
+          paddingBottom: `${siteSettings.sec_busca_pbot ?? 56}px`,
+          minHeight: siteSettings.sec_busca_min_height ? `${siteSettings.sec_busca_min_height}px` : undefined
+        }"
+      >
         <div class="max-w-[1100px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 items-start">
           <!-- Left Column: Search -->
           <div class="flex flex-col gap-2">
-            <h2 class="text-2xl md:text-3xl text-[#333333] font-normal tracking-tight">{{ mergedTranslations['home.search_title'] || 'Como podemos te ajudar?' }}</h2>
-            <p class="text-[#666666] text-sm md:text-base font-normal mb-3">{{ mergedTranslations['home.search_subtitle'] || 'Utilize a busca rápida e encontre sua necessidade' }}</p>
+            <h2 
+              class="text-2xl md:text-3xl font-normal tracking-tight transition-colors"
+              :style="{ color: siteSettings.sec_busca_title_color || '#333333' }"
+            >
+              {{ mergedTranslations['home.search_title'] || 'Como podemos te ajudar?' }}
+            </h2>
+            <p 
+              class="text-sm md:text-base font-normal mb-3 transition-colors"
+              :style="{ color: siteSettings.sec_busca_subtitle_color || '#666666' }"
+            >
+              {{ mergedTranslations['home.search_subtitle'] || 'Utilize a busca rápida e encontre sua necessidade' }}
+            </p>
             <form @submit.prevent="handleSearch" class="relative w-full max-w-md">
-              <span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-blue-600 text-lg">search</span>
+              <span 
+                class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-lg pointer-events-none transition-colors"
+                :style="{ color: siteSettings.sec_busca_input_icon_color || '#2563eb' }"
+              >
+                search
+              </span>
               <input 
                 v-model="searchInput"
-                class="w-full pl-10 pr-4 py-2.5 rounded-md border border-blue-400/80 focus:border-blue-600 bg-white text-sm text-gray-800 placeholder-gray-400 outline-none shadow-2xs transition-all" 
-                :placeholder="t.searchPlaceholder || 'Search...'" 
+                class="w-full pl-10 pr-4 text-sm outline-none transition-all"
+                :class="siteSettings.sec_busca_input_shadow !== false ? 'shadow-2xs' : ''"
+                :style="{
+                  backgroundColor: siteSettings.sec_busca_input_bg || '#ffffff',
+                  color: siteSettings.sec_busca_input_text_color || '#1f2937',
+                  borderWidth: `${siteSettings.sec_busca_input_border_width ?? 1}px`,
+                  borderColor: siteSettings.sec_busca_input_border_color || '#93c5fd',
+                  borderStyle: (siteSettings.sec_busca_input_border_width ?? 1) > 0 ? 'solid' : 'none',
+                  borderRadius: `${siteSettings.sec_busca_input_border_radius ?? 6}px`,
+                  height: `${siteSettings.sec_busca_input_height ?? 42}px`
+                }"
+                :placeholder="t.searchPlaceholder || 'Buscar equipamento...'" 
                 type="text"
               />
             </form>
@@ -240,18 +298,40 @@
 
           <!-- Right Column: Quick Links -->
           <div class="flex flex-col gap-2.5">
-            <span class="text-xs font-semibold text-[#666666] tracking-tight mb-1">{{ mergedTranslations['home.search_quick_title'] || 'Buscas mais utilizadas' }}</span>
+            <span 
+              class="text-xs font-semibold tracking-tight mb-1 transition-colors"
+              :style="{ color: siteSettings.sec_busca_quick_title_color || '#666666' }"
+            >
+              {{ mergedTranslations['home.search_quick_title'] || 'Buscas mais utilizadas' }}
+            </span>
             <div class="flex flex-col gap-2">
-              <button type="button" @click="openContactModal()" class="text-[#444444] hover:text-blue-700 font-normal text-base md:text-[17px] transition-colors w-fit border-0 bg-transparent cursor-pointer p-0 text-left">
+              <button 
+                type="button" 
+                @click="openContactModal()" 
+                class="hover:text-blue-700 font-normal text-base md:text-[17px] transition-colors w-fit border-0 bg-transparent cursor-pointer p-0 text-left"
+                :style="{ color: siteSettings.sec_busca_quick_links_color || '#444444' }"
+              >
                 {{ mergedTranslations['home.search_quick_1'] || 'Contato de vendas / suporte' }}
               </button>
-              <NuxtLink to="/catalogo?cat=V%C3%81LVULAS%20DE%20SEGURAN%C3%87A" class="text-[#444444] hover:text-blue-700 font-normal text-base md:text-[17px] transition-colors w-fit">
+              <NuxtLink 
+                to="/catalogo?cat=V%C3%81LVULAS%20DE%20SEGURAN%C3%87A" 
+                class="hover:text-blue-700 font-normal text-base md:text-[17px] transition-colors w-fit"
+                :style="{ color: siteSettings.sec_busca_quick_links_color || '#444444' }"
+              >
                 {{ mergedTranslations['home.search_quick_2'] || 'Válvulas de Segurança' }}
               </NuxtLink>
-              <NuxtLink to="/catalogo?q=HEROSE" class="text-[#444444] hover:text-blue-700 font-normal text-base md:text-[17px] transition-colors w-fit">
+              <NuxtLink 
+                to="/catalogo?q=HEROSE" 
+                class="hover:text-blue-700 font-normal text-base md:text-[17px] transition-colors w-fit"
+                :style="{ color: siteSettings.sec_busca_quick_links_color || '#444444' }"
+              >
                 {{ mergedTranslations['home.search_quick_3'] || 'Reparos HEROSE' }}
               </NuxtLink>
-              <NuxtLink to="/catalogo?cat=TRANSMISSORES" class="text-[#444444] hover:text-blue-700 font-normal text-base md:text-[17px] transition-colors w-fit">
+              <NuxtLink 
+                to="/catalogo?cat=TRANSMISSORES" 
+                class="hover:text-blue-700 font-normal text-base md:text-[17px] transition-colors w-fit"
+                :style="{ color: siteSettings.sec_busca_quick_links_color || '#444444' }"
+              >
                 {{ mergedTranslations['home.search_quick_4'] || 'Transmissores de Pressão' }}
               </NuxtLink>
             </div>
@@ -259,8 +339,15 @@
         </div>
       </section>
 
-      <!-- Faixa fina branca -->
-      <div class="bg-white h-3 w-full"></div>
+      <!-- Faixa fina divisória (Busca -> Segmentos) -->
+      <div 
+        v-if="(siteSettings.divider_busca_segmentos_height ?? 12) > 0"
+        class="w-full transition-all"
+        :style="{
+          height: `${siteSettings.divider_busca_segmentos_height ?? 12}px`,
+          backgroundColor: siteSettings.divider_busca_segmentos_bg || '#ffffff'
+        }"
+      ></div>
 
       <!-- Principais Segmentos -->
       <section

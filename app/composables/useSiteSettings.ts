@@ -31,6 +31,9 @@ export interface SiteVisualSettings {
   // Barra do Mega Menu (Header do Catálogo)
   mega_menu_bg_color: string
   mega_menu_height: number
+  mega_menu_blur: number
+  mega_menu_overlay_opacity: number
+  mega_menu_overlay_color: string
   // Botões de Categoria (Abas no Header)
   mega_menu_cat_font_family: string
   mega_menu_cat_font_size: number
@@ -70,6 +73,10 @@ export interface SiteVisualSettings {
   hero_card_offset_y: number
   hero_card_opacity: number
   hero_card_extend_bottom: boolean
+  hero_card_width?: number
+  hero_card_padding_y?: number
+  hero_card_padding_x?: number
+  hero_card_border_radius?: number
   // Logotipo do Cabeçalho (Header Logo)
   header_logo_url: string
   header_logo_height: number
@@ -80,6 +87,28 @@ export interface SiteVisualSettings {
   segment_img_oleo_gas: string
   segment_img_sucroalcooleiro: string
   // Cores e Dimensões das Seções da Home
+  sec_busca_bg: string
+  sec_busca_ptop: number
+  sec_busca_pbot: number
+  sec_busca_min_height: number
+  sec_busca_title_color: string
+  sec_busca_subtitle_color: string
+  sec_busca_quick_title_color: string
+  sec_busca_quick_links_color: string
+  sec_busca_input_bg: string
+  sec_busca_input_text_color: string
+  sec_busca_input_border_color: string
+  sec_busca_input_icon_color: string
+  sec_busca_input_placeholder_color: string
+  sec_busca_input_border_radius: number
+  sec_busca_input_border_width: number
+  sec_busca_input_height: number
+  sec_busca_input_shadow: boolean
+  // Faixas Divisórias (Linhas brancas entre seções)
+  divider_hero_busca_height: number
+  divider_hero_busca_bg: string
+  divider_busca_segmentos_height: number
+  divider_busca_segmentos_bg: string
   sec_segmentos_bg: string
   sec_segmentos_ptop: number
   sec_segmentos_pbot: number
@@ -262,6 +291,9 @@ const defaults: SiteVisualSettings = {
   catalog_grid_gap_y: 20,
   mega_menu_bg_color: '#1d1d1f',
   mega_menu_height: 44,
+  mega_menu_blur: 20,
+  mega_menu_overlay_opacity: 48,
+  mega_menu_overlay_color: '#000000',
   mega_menu_cat_font_family: 'system-ui',
   mega_menu_cat_font_size: 12,
   mega_menu_cat_color: '#ffffff',
@@ -297,6 +329,10 @@ const defaults: SiteVisualSettings = {
   hero_card_offset_y: 45,
   hero_card_opacity: 85,
   hero_card_extend_bottom: true,
+  hero_card_width: 576,
+  hero_card_padding_y: 32,
+  hero_card_padding_x: 40,
+  hero_card_border_radius: 8,
   header_logo_url: 'https://lh3.googleusercontent.com/aida/AP1WRLvb_lGcigKW6su6LN_Xd0Bf0AXsewLIulAi0GxcP_qLjBKDQwKkr4TLJgHAmnOXZ_CnTBIs1fPQUk9wsPoaEnw1KIo3G_pm2AD72CQGZpdCmL0me0d5Nw3sO0Jq1oNeH0TPtE84vraycYx20zMTmWG9t98pFKFcZH8ovF5vpsN6YK6J2ZqjcN6pDWW8byB81uqO2z6Crk115D73Mm9qXI78ObCCnUJ9BmIfEJoVkKB3TB8-KPNPPQ8kG9Y',
   header_logo_height: 48,
   header_logo_offset_x: 0,
@@ -304,6 +340,27 @@ const defaults: SiteVisualSettings = {
   segment_img_criogenia: 'https://lh3.googleusercontent.com/aida/AP1WRLsDWV00WRL33tuhAG3BPA8GTPcBz-pfzYJ5QGz2_CFnkvCSprf16WTZORxqYJd3VFMaSLF81Wdm-S9-UEVYwRS6IZjDh4VV8WwGm6i7fTQgU4oSmP9IGxRBZnXvSg-lgNzx7dHLh96NV6al1sI8sdEOoVx6IZCUOcKyTMikgpuW736a8c-W4OfY41ayLpgc1yRxJm4ux29KF3X6Vl4DjzUrBJhQVrk6zwaVUJrs9k2kRxWzoaJlEeyRARs',
   segment_img_oleo_gas: 'https://lh3.googleusercontent.com/aida/AP1WRLtMAi3za4oatqWzMuvla-WvZQlt9FguAx22h8nx9U6lR8p142s5QcL4EPPE0ligkQbqZ0q-ZYW-hqDRV2uJVGv0NMmhiEuyzJbKk7sUfZpHHA4_sz8P-TyC7QparCuJFeAeovwFTiSEpumRpFGJg-y1rdhCKN1ensV_n46sSPNrBJMqn7MqzXsxs1FqEOTTk7iB0mQ42_IaiLxVLi8QHfDnmf1qJl39Y9bqn9spftMGhs_woAvKg85Vgk0',
   segment_img_sucroalcooleiro: 'https://lh3.googleusercontent.com/aida/AP1WRLtx-24uZLAzxnTShKPl8Wv12JS85bEMJBe8sqHO25f6hSfCDYWD7dOd3t0TS1qSXQfoEmpRejEnBgmszPULohKQhnktzaTJxNZlqCZtWMl_i2qHHdWBFpI5OD1WyuR3zn6bDrno3XOkEm5_52rNlHCVRUzbbVXx-6T9Fq-atHYsA-bfuEzXbOwh0ibv0HAdlvONto1p0-R41aQY_ZMMGGD6KANY4mawEiSd7OT1CHuJeCgTozkzRuxGGg',
+  sec_busca_bg: '#e9e9e9',
+  sec_busca_ptop: 48,
+  sec_busca_pbot: 56,
+  sec_busca_min_height: 0,
+  sec_busca_title_color: '#333333',
+  sec_busca_subtitle_color: '#666666',
+  sec_busca_quick_title_color: '#666666',
+  sec_busca_quick_links_color: '#444444',
+  sec_busca_input_bg: '#ffffff',
+  sec_busca_input_text_color: '#1f2937',
+  sec_busca_input_border_color: '#93c5fd',
+  sec_busca_input_icon_color: '#2563eb',
+  sec_busca_input_placeholder_color: '#9ca3af',
+  sec_busca_input_border_radius: 6,
+  sec_busca_input_border_width: 1,
+  sec_busca_input_height: 42,
+  sec_busca_input_shadow: true,
+  divider_hero_busca_height: 12,
+  divider_hero_busca_bg: '#ffffff',
+  divider_busca_segmentos_height: 12,
+  divider_busca_segmentos_bg: '#ffffff',
   sec_segmentos_bg: '#ffffff',
   sec_segmentos_ptop: 20,
   sec_segmentos_pbot: 24,

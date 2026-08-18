@@ -62,7 +62,7 @@
             </div>
 
             <NuxtLink to="/" class="text-sm font-normal text-gray-600 hover:text-gray-900 transition-colors">{{ t.home }}</NuxtLink>
-            <NuxtLink to="/catalogo" class="text-sm font-normal text-blue-700 font-bold transition-colors">{{ t.catalog }}</NuxtLink>
+            <NuxtLink to="/catalogo" @click="resetAllFilters" class="text-sm font-normal text-blue-700 font-bold transition-colors cursor-pointer">{{ t.catalog }}</NuxtLink>
             <NuxtLink to="/nossa-empresa" class="text-sm font-normal text-gray-600 hover:text-gray-900 transition-colors">{{ t.about }}</NuxtLink>
             <a href="/#contato" class="text-sm font-normal text-gray-600 hover:text-gray-900 transition-colors">{{ t.contact }}</a>
 
@@ -362,12 +362,22 @@ const handleMegaMenuSelect = (payload: { category: string; family: string; subca
   selectedSubcategory.value = payload.subcategory
 }
 
+const resetAllFilters = () => {
+  selectedCategory.value = 'TODAS'
+  selectedFamily.value = ''
+  selectedSubcategory.value = ''
+  selectedSegment.value = ''
+  searchQuery.value = ''
+  activePage.value = 1
+  isSearchOpen.value = false
+  if (Object.keys(route.query).length > 0) {
+    navigateTo('/catalogo', { replace: true })
+  }
+}
+
 const clearFilter = (level: 'category' | 'family' | 'subcategory' | 'search' | 'all') => {
   if (level === 'all') {
-    selectedCategory.value = 'TODAS'
-    selectedFamily.value = ''
-    selectedSubcategory.value = ''
-    searchQuery.value = ''
+    resetAllFilters()
   } else if (level === 'category') {
     selectedCategory.value = 'TODAS'
     selectedFamily.value = ''
@@ -462,6 +472,22 @@ watch(modalImageSrc, (newVal) => {
 
 const route = useRoute()
 
+const applyRouteQuery = () => {
+  searchQuery.value = route.query.q ? String(route.query.q) : ''
+  selectedCategory.value = route.query.cat ? String(route.query.cat) : 'TODAS'
+  selectedSegment.value = route.query.segment ? String(route.query.segment) : (route.query.segmento ? String(route.query.segmento) : '')
+  selectedFamily.value = route.query.family ? String(route.query.family) : ''
+  selectedSubcategory.value = route.query.subcategory ? String(route.query.subcategory) : ''
+  activePage.value = 1
+  if (!route.query.q) {
+    isSearchOpen.value = false
+  }
+}
+
+watch(() => route.query, () => {
+  applyRouteQuery()
+}, { deep: true })
+
 onMounted(async () => {
   await Promise.all([
     fetchAssets(),
@@ -469,21 +495,7 @@ onMounted(async () => {
     fetchSiteSettings(),
     fetchTranslationsFromDB(),
   ])
-  if (route.query.q) {
-    searchQuery.value = String(route.query.q)
-  }
-  if (route.query.cat) {
-    selectedCategory.value = String(route.query.cat)
-  }
-  if (route.query.segment) {
-    selectedSegment.value = String(route.query.segment)
-  }
-  if (route.query.family) {
-    selectedFamily.value = String(route.query.family)
-  }
-  if (route.query.subcategory) {
-    selectedSubcategory.value = String(route.query.subcategory)
-  }
+  applyRouteQuery()
 })
 </script>
 

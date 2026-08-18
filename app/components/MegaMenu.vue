@@ -114,6 +114,11 @@
     <div 
       v-show="isOpen"
       class="mega-menu-overlay"
+      :style="{
+        backdropFilter: `blur(${siteSettings.mega_menu_blur ?? 20}px) saturate(180%)`,
+        WebkitBackdropFilter: `blur(${siteSettings.mega_menu_blur ?? 20}px) saturate(180%)`,
+        backgroundColor: getOverlayBg(siteSettings.mega_menu_overlay_color, siteSettings.mega_menu_overlay_opacity)
+      }"
       @click="closeMenu"
     ></div>
   </Transition>
@@ -122,6 +127,22 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import useTranslations from '~/composables/useTranslations'
+
+function getOverlayBg(hex?: string, opacityPercent?: number): string {
+  const op = opacityPercent ?? 48
+  const alpha = Math.max(0, Math.min(100, op)) / 100
+  if (!hex || typeof hex !== 'string') return `rgba(0, 0, 0, ${alpha.toFixed(2)})`
+  let cleanHex = hex.replace('#', '').trim()
+  if (cleanHex.length === 3) {
+    cleanHex = cleanHex.split('').map(c => c + c).join('')
+  }
+  if (cleanHex.length !== 6) return `rgba(0, 0, 0, ${alpha.toFixed(2)})`
+  const num = parseInt(cleanHex, 16)
+  const r = (num >> 16) & 255
+  const g = (num >> 8) & 255
+  const b = num & 255
+  return `rgba(${r}, ${g}, ${b}, ${alpha.toFixed(2)})`
+}
 
 export interface MegaMenuItem {
   category: string

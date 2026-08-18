@@ -570,6 +570,435 @@
         </div>
       </div>
 
+      <!-- ===== SEÇÃO: ÁREA DE BUSCA & INPUT DE PESQUISA (COMO PODEMOS TE AJUDAR?) ===== -->
+      <div class="space-y-6 bg-slate-50 p-5 rounded-lg border border-slate-200">
+        <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+          <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wide flex items-center gap-2">
+            <span class="material-symbols-outlined text-blue-600">search_check</span>
+            Área de Busca &amp; Input de Pesquisa ("Como podemos te ajudar?")
+          </h3>
+          <div class="flex items-center gap-2">
+            <button @click="resetBlock('busca')" type="button" class="px-2.5 py-1 bg-amber-50 hover:bg-amber-100 border border-amber-300 text-amber-700 text-[10px] font-bold rounded transition-colors cursor-pointer flex items-center gap-1">
+              <span class="material-symbols-outlined text-xs">restart_alt</span>
+              Restaurar Padrões da Busca
+            </button>
+            <span class="text-[10px] bg-blue-100 text-blue-700 font-bold px-2 py-0.5 rounded uppercase">Home Principal</span>
+          </div>
+        </div>
+
+        <p class="text-xs text-slate-600">
+          Personalize a altura vertical (padding), a cor de fundo da área, as cores dos títulos e todos os detalhes visuais do campo de pesquisa (formato/modelo, borda, cores e sombras).
+        </p>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- Coluna Esquerda: Controles da Área e do Input -->
+          <div class="space-y-5">
+            <!-- 1. Dimensões & Fundo da Área -->
+            <div class="bg-white p-4 rounded-lg border border-gray-200 space-y-4">
+              <h4 class="text-xs font-bold text-slate-800 uppercase border-b pb-2 flex justify-between items-center">
+                <span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-sm text-blue-600">aspect_ratio</span> Dimensões &amp; Fundo da Área</span>
+                <span class="w-3.5 h-3.5 rounded-full border shadow-xs" :style="{ backgroundColor: settings.sec_busca_bg || '#e9e9e9' }"></span>
+              </h4>
+
+              <!-- Cor de Fundo da Faixa -->
+              <div class="space-y-1.5">
+                <label class="block text-[10px] text-gray-600 font-bold uppercase">Cor de Fundo da Faixa</label>
+                <div class="flex items-center gap-2">
+                  <input v-model="settings.sec_busca_bg" type="color" class="w-8 h-8 p-0 border-0 bg-transparent cursor-pointer shrink-0 rounded-full" />
+                  <input v-model="settings.sec_busca_bg" type="text" placeholder="#e9e9e9" class="flex-1 border border-gray-300 px-3 py-1.5 text-xs rounded bg-white font-mono uppercase focus:ring-1 focus:ring-blue-600 focus:outline-none" />
+                </div>
+                <!-- Atalhos -->
+                <div class="flex items-center gap-1.5 pt-1 flex-wrap">
+                  <span class="text-[10px] text-gray-400 font-bold uppercase">Atalhos:</span>
+                  <button @click="settings.sec_busca_bg = '#e9e9e9'" type="button" class="px-2 py-0.5 bg-[#e9e9e9] text-gray-800 text-[10px] font-bold rounded border border-gray-300 cursor-pointer">Cinza Padrão (#e9e9e9)</button>
+                  <button @click="settings.sec_busca_bg = '#ffffff'" type="button" class="px-2 py-0.5 bg-white text-gray-800 text-[10px] font-bold rounded border border-gray-300 cursor-pointer">Branco Puro</button>
+                  <button @click="settings.sec_busca_bg = '#f1f5f9'" type="button" class="px-2 py-0.5 bg-slate-100 text-slate-800 text-[10px] font-bold rounded border border-slate-300 cursor-pointer">Gelo / Slate</button>
+                  <button @click="settings.sec_busca_bg = '#1e293b'; settings.sec_busca_title_color = '#ffffff'; settings.sec_busca_subtitle_color = '#94a3b8'; settings.sec_busca_quick_title_color = '#94a3b8'; settings.sec_busca_quick_links_color = '#cbd5e1'" type="button" class="px-2 py-0.5 bg-slate-800 text-white text-[10px] font-bold rounded border border-slate-700 cursor-pointer">Escuro</button>
+                </div>
+              </div>
+
+              <!-- Espaçamento Vertical Superior (Padding Top) -->
+              <div class="space-y-1">
+                <div class="flex justify-between text-[10px] text-gray-700 font-bold uppercase">
+                  <span>Espaçamento Superior (Padding Top)</span>
+                  <span class="font-mono text-blue-600 font-bold text-xs">{{ settings.sec_busca_ptop ?? 48 }}px</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <input v-model.number="settings.sec_busca_ptop" type="range" min="0" max="200" step="2" class="flex-1 accent-blue-600 cursor-pointer" />
+                  <input v-model.number="settings.sec_busca_ptop" type="number" min="0" max="200" class="w-14 border border-gray-300 p-1 text-xs text-center rounded bg-white font-mono" />
+                </div>
+              </div>
+
+              <!-- Espaçamento Vertical Inferior (Padding Bottom) -->
+              <div class="space-y-1">
+                <div class="flex justify-between text-[10px] text-gray-700 font-bold uppercase">
+                  <span>Espaçamento Inferior (Padding Bottom)</span>
+                  <span class="font-mono text-blue-600 font-bold text-xs">{{ settings.sec_busca_pbot ?? 56 }}px</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <input v-model.number="settings.sec_busca_pbot" type="range" min="0" max="200" step="2" class="flex-1 accent-blue-600 cursor-pointer" />
+                  <input v-model.number="settings.sec_busca_pbot" type="number" min="0" max="200" class="w-14 border border-gray-300 p-1 text-xs text-center rounded bg-white font-mono" />
+                </div>
+              </div>
+
+              <!-- Altura Mínima da Seção -->
+              <div class="space-y-1">
+                <div class="flex justify-between text-[10px] text-gray-700 font-bold uppercase">
+                  <span>Altura Mínima da Seção (Min Height)</span>
+                  <span class="font-mono text-blue-600 font-bold text-xs">{{ settings.sec_busca_min_height ?? 0 }}px</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <input v-model.number="settings.sec_busca_min_height" type="range" min="0" max="600" step="10" class="flex-1 accent-blue-600 cursor-pointer" />
+                  <input v-model.number="settings.sec_busca_min_height" type="number" min="0" max="600" class="w-14 border border-gray-300 p-1 text-xs text-center rounded bg-white font-mono" />
+                </div>
+              </div>
+
+              <!-- Faixa Divisória Superior (Linha entre Hero e Busca) -->
+              <div class="pt-3 border-t border-gray-100 space-y-2">
+                <div class="flex justify-between items-center text-[10px] text-gray-700 font-bold uppercase">
+                  <span class="flex items-center gap-1">
+                    <span class="material-symbols-outlined text-sm text-blue-600">horizontal_rule</span>
+                    Linha Divisória Superior (Entre Hero e Busca)
+                  </span>
+                  <span class="font-mono text-blue-600 font-bold text-xs">{{ settings.divider_hero_busca_height ?? 12 }}px</span>
+                </div>
+                <!-- Atalhos -->
+                <div class="flex items-center gap-1.5 flex-wrap">
+                  <span class="text-[10px] text-gray-400 font-bold uppercase">Espessura:</span>
+                  <button @click="settings.divider_hero_busca_height = 0" type="button" class="px-2 py-0.5 text-[10px] font-bold rounded border cursor-pointer" :class="(settings.divider_hero_busca_height ?? 12) === 0 ? 'bg-blue-600 text-white border-blue-600' : 'bg-slate-100 text-slate-700 border-slate-300'">0px (Subir / Sem Linha)</button>
+                  <button @click="settings.divider_hero_busca_height = 4" type="button" class="px-2 py-0.5 text-[10px] font-bold rounded border cursor-pointer" :class="(settings.divider_hero_busca_height ?? 12) === 4 ? 'bg-blue-600 text-white border-blue-600' : 'bg-slate-100 text-slate-700 border-slate-300'">4px (Fina)</button>
+                  <button @click="settings.divider_hero_busca_height = 12" type="button" class="px-2 py-0.5 text-[10px] font-bold rounded border cursor-pointer" :class="(settings.divider_hero_busca_height ?? 12) === 12 ? 'bg-blue-600 text-white border-blue-600' : 'bg-slate-100 text-slate-700 border-slate-300'">12px (Padrão)</button>
+                  <button @click="settings.divider_hero_busca_height = 24" type="button" class="px-2 py-0.5 text-[10px] font-bold rounded border cursor-pointer" :class="(settings.divider_hero_busca_height ?? 12) === 24 ? 'bg-blue-600 text-white border-blue-600' : 'bg-slate-100 text-slate-700 border-slate-300'">24px (Média)</button>
+                </div>
+                <div class="flex items-center gap-2">
+                  <input v-model.number="settings.divider_hero_busca_height" type="range" min="0" max="60" step="1" class="flex-1 accent-blue-600 cursor-pointer" />
+                  <input v-model.number="settings.divider_hero_busca_height" type="number" min="0" max="60" class="w-14 border border-gray-300 p-1 text-xs text-center rounded bg-white font-mono" />
+                </div>
+                <!-- Cor da Linha Divisória Superior -->
+                <div class="flex items-center gap-2 pt-1">
+                  <label class="text-[10px] text-gray-500 font-bold uppercase shrink-0">Cor da Linha:</label>
+                  <input v-model="settings.divider_hero_busca_bg" type="color" class="w-6 h-6 p-0 border-0 bg-transparent cursor-pointer shrink-0 rounded-full" />
+                  <input v-model="settings.divider_hero_busca_bg" type="text" placeholder="#ffffff" class="flex-1 border border-gray-300 px-2 py-0.5 text-xs rounded bg-white font-mono uppercase focus:ring-1 focus:ring-blue-600 focus:outline-none" />
+                </div>
+              </div>
+
+              <!-- Faixa Divisória Inferior (Linha entre Busca e Segmentos) -->
+              <div class="pt-3 border-t border-gray-100 space-y-2">
+                <div class="flex justify-between items-center text-[10px] text-gray-700 font-bold uppercase">
+                  <span class="flex items-center gap-1">
+                    <span class="material-symbols-outlined text-sm text-blue-600">horizontal_rule</span>
+                    Linha Divisória Inferior (Entre Busca e Segmentos)
+                  </span>
+                  <span class="font-mono text-blue-600 font-bold text-xs">{{ settings.divider_busca_segmentos_height ?? 12 }}px</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <input v-model.number="settings.divider_busca_segmentos_height" type="range" min="0" max="60" step="1" class="flex-1 accent-blue-600 cursor-pointer" />
+                  <input v-model.number="settings.divider_busca_segmentos_height" type="number" min="0" max="60" class="w-14 border border-gray-300 p-1 text-xs text-center rounded bg-white font-mono" />
+                </div>
+                <div class="flex items-center gap-2 pt-1">
+                  <label class="text-[10px] text-gray-500 font-bold uppercase shrink-0">Cor da Linha:</label>
+                  <input v-model="settings.divider_busca_segmentos_bg" type="color" class="w-6 h-6 p-0 border-0 bg-transparent cursor-pointer shrink-0 rounded-full" />
+                  <input v-model="settings.divider_busca_segmentos_bg" type="text" placeholder="#ffffff" class="flex-1 border border-gray-300 px-2 py-0.5 text-xs rounded bg-white font-mono uppercase focus:ring-1 focus:ring-blue-600 focus:outline-none" />
+                </div>
+              </div>
+            </div>
+
+            <!-- 2. Cores dos Textos da Área -->
+            <div class="bg-white p-4 rounded-lg border border-gray-200 space-y-3">
+              <h4 class="text-xs font-bold text-slate-800 uppercase border-b pb-2 flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-sm text-blue-600">format_color_text</span> Cores dos Textos &amp; Links
+              </h4>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <!-- Título -->
+                <div class="space-y-1">
+                  <label class="block text-[10px] text-gray-600 font-bold uppercase">Título Principal</label>
+                  <div class="flex items-center gap-2">
+                    <input v-model="settings.sec_busca_title_color" type="color" class="w-7 h-7 p-0 border-0 bg-transparent cursor-pointer shrink-0 rounded-full" />
+                    <input v-model="settings.sec_busca_title_color" type="text" placeholder="#333333" class="flex-1 border border-gray-300 px-2 py-1 text-xs rounded bg-white font-mono uppercase focus:ring-1 focus:ring-blue-600 focus:outline-none" />
+                  </div>
+                </div>
+                <!-- Subtítulo -->
+                <div class="space-y-1">
+                  <label class="block text-[10px] text-gray-600 font-bold uppercase">Subtítulo</label>
+                  <div class="flex items-center gap-2">
+                    <input v-model="settings.sec_busca_subtitle_color" type="color" class="w-7 h-7 p-0 border-0 bg-transparent cursor-pointer shrink-0 rounded-full" />
+                    <input v-model="settings.sec_busca_subtitle_color" type="text" placeholder="#666666" class="flex-1 border border-gray-300 px-2 py-1 text-xs rounded bg-white font-mono uppercase focus:ring-1 focus:ring-blue-600 focus:outline-none" />
+                  </div>
+                </div>
+                <!-- Título Links -->
+                <div class="space-y-1">
+                  <label class="block text-[10px] text-gray-600 font-bold uppercase">Título Links ("Buscas mais...")</label>
+                  <div class="flex items-center gap-2">
+                    <input v-model="settings.sec_busca_quick_title_color" type="color" class="w-7 h-7 p-0 border-0 bg-transparent cursor-pointer shrink-0 rounded-full" />
+                    <input v-model="settings.sec_busca_quick_title_color" type="text" placeholder="#666666" class="flex-1 border border-gray-300 px-2 py-1 text-xs rounded bg-white font-mono uppercase focus:ring-1 focus:ring-blue-600 focus:outline-none" />
+                  </div>
+                </div>
+                <!-- Cor dos Links Rápidos -->
+                <div class="space-y-1">
+                  <label class="block text-[10px] text-gray-600 font-bold uppercase">Links Rápidos</label>
+                  <div class="flex items-center gap-2">
+                    <input v-model="settings.sec_busca_quick_links_color" type="color" class="w-7 h-7 p-0 border-0 bg-transparent cursor-pointer shrink-0 rounded-full" />
+                    <input v-model="settings.sec_busca_quick_links_color" type="text" placeholder="#444444" class="flex-1 border border-gray-300 px-2 py-1 text-xs rounded bg-white font-mono uppercase focus:ring-1 focus:ring-blue-600 focus:outline-none" />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 3. Modelo & Cores do Input de Pesquisa -->
+            <div class="bg-white p-4 rounded-lg border border-gray-200 space-y-4">
+              <div class="flex items-center justify-between border-b pb-2">
+                <h4 class="text-xs font-bold text-slate-800 uppercase flex items-center gap-1.5">
+                  <span class="material-symbols-outlined text-sm text-emerald-600">tune</span>
+                  Modelo &amp; Estilo do Input de Pesquisa
+                </h4>
+                <span class="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded uppercase">Campo de Busca</span>
+              </div>
+
+              <!-- Presets Rápidos de Modelo -->
+              <div class="space-y-2">
+                <label class="block text-[10px] text-gray-700 font-bold uppercase">Modelos de Input (Presets Rápidos):</label>
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  <button @click="applySearchInputPreset('pill')" type="button" class="px-2.5 py-1.5 bg-slate-50 hover:bg-slate-100 border border-slate-300 text-slate-700 rounded-full text-[11px] font-bold transition-all cursor-pointer flex items-center justify-center gap-1 shadow-2xs">
+                    <span class="material-symbols-outlined text-xs text-blue-600">radio_button_checked</span> Pílula / Pill
+                  </button>
+                  <button @click="applySearchInputPreset('default')" type="button" class="px-2.5 py-1.5 bg-slate-50 hover:bg-slate-100 border border-slate-300 text-slate-700 rounded-md text-[11px] font-bold transition-all cursor-pointer flex items-center justify-center gap-1 shadow-2xs">
+                    <span class="material-symbols-outlined text-xs text-blue-600">crop_square</span> Suave (Padrão)
+                  </button>
+                  <button @click="applySearchInputPreset('square')" type="button" class="px-2.5 py-1.5 bg-slate-50 hover:bg-slate-100 border border-slate-300 text-slate-700 rounded-none text-[11px] font-bold transition-all cursor-pointer flex items-center justify-center gap-1 shadow-2xs">
+                    <span class="material-symbols-outlined text-xs text-slate-800">check_box_outline_blank</span> Reto / Retangular
+                  </button>
+                  <button @click="applySearchInputPreset('qualitec')" type="button" class="px-2.5 py-1.5 bg-blue-50 hover:bg-blue-100 border-2 border-blue-700 text-blue-900 rounded-lg text-[11px] font-bold transition-all cursor-pointer flex items-center justify-center gap-1 shadow-2xs">
+                    <span class="material-symbols-outlined text-xs text-blue-700">verified</span> Azul Qualitec
+                  </button>
+                  <button @click="applySearchInputPreset('elevated')" type="button" class="px-2.5 py-1.5 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 rounded-lg text-[11px] font-bold transition-all cursor-pointer flex items-center justify-center gap-1 shadow-md">
+                    <span class="material-symbols-outlined text-xs text-purple-600">layers</span> Elevado / Sombra
+                  </button>
+                  <button @click="applySearchInputPreset('dark')" type="button" class="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-900 border border-slate-700 text-white rounded-lg text-[11px] font-bold transition-all cursor-pointer flex items-center justify-center gap-1 shadow-2xs">
+                    <span class="material-symbols-outlined text-xs text-amber-400">dark_mode</span> Modo Escuro
+                  </button>
+                </div>
+              </div>
+
+              <!-- Controles Detalhados de Cor do Input -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-gray-100">
+                <!-- Cor de Fundo do Input -->
+                <div class="space-y-1">
+                  <label class="block text-[10px] text-gray-600 font-bold uppercase">Cor de Fundo do Input</label>
+                  <div class="flex items-center gap-2">
+                    <input v-model="settings.sec_busca_input_bg" type="color" class="w-7 h-7 p-0 border-0 bg-transparent cursor-pointer shrink-0 rounded-full" />
+                    <input v-model="settings.sec_busca_input_bg" type="text" placeholder="#ffffff" class="flex-1 border border-gray-300 px-2 py-1 text-xs rounded bg-white font-mono uppercase focus:ring-1 focus:ring-blue-600 focus:outline-none" />
+                  </div>
+                </div>
+
+                <!-- Cor da Borda do Input -->
+                <div class="space-y-1">
+                  <label class="block text-[10px] text-gray-600 font-bold uppercase">Cor da Borda</label>
+                  <div class="flex items-center gap-2">
+                    <input v-model="settings.sec_busca_input_border_color" type="color" class="w-7 h-7 p-0 border-0 bg-transparent cursor-pointer shrink-0 rounded-full" />
+                    <input v-model="settings.sec_busca_input_border_color" type="text" placeholder="#93c5fd" class="flex-1 border border-gray-300 px-2 py-1 text-xs rounded bg-white font-mono uppercase focus:ring-1 focus:ring-blue-600 focus:outline-none" />
+                  </div>
+                </div>
+
+                <!-- Cor do Texto -->
+                <div class="space-y-1">
+                  <label class="block text-[10px] text-gray-600 font-bold uppercase">Cor do Texto Digitado</label>
+                  <div class="flex items-center gap-2">
+                    <input v-model="settings.sec_busca_input_text_color" type="color" class="w-7 h-7 p-0 border-0 bg-transparent cursor-pointer shrink-0 rounded-full" />
+                    <input v-model="settings.sec_busca_input_text_color" type="text" placeholder="#1f2937" class="flex-1 border border-gray-300 px-2 py-1 text-xs rounded bg-white font-mono uppercase focus:ring-1 focus:ring-blue-600 focus:outline-none" />
+                  </div>
+                </div>
+
+                <!-- Cor do Ícone da Lupa -->
+                <div class="space-y-1">
+                  <label class="block text-[10px] text-gray-600 font-bold uppercase">Cor do Ícone da Lupa</label>
+                  <div class="flex items-center gap-2">
+                    <input v-model="settings.sec_busca_input_icon_color" type="color" class="w-7 h-7 p-0 border-0 bg-transparent cursor-pointer shrink-0 rounded-full" />
+                    <input v-model="settings.sec_busca_input_icon_color" type="text" placeholder="#2563eb" class="flex-1 border border-gray-300 px-2 py-1 text-xs rounded bg-white font-mono uppercase focus:ring-1 focus:ring-blue-600 focus:outline-none" />
+                  </div>
+                </div>
+              </div>
+
+              <!-- Controles de Formato (Arredondamento, Borda, Altura) -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-gray-100">
+                <!-- Arredondamento (Border Radius) -->
+                <div class="space-y-1">
+                  <div class="flex justify-between text-[10px] text-gray-700 font-bold uppercase">
+                    <span>Arredondamento (Border Radius)</span>
+                    <span class="font-mono text-emerald-600 font-bold text-xs">{{ settings.sec_busca_input_border_radius ?? 6 }}px</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <input v-model.number="settings.sec_busca_input_border_radius" type="range" min="0" max="50" step="1" class="flex-1 accent-emerald-600 cursor-pointer" />
+                    <input v-model.number="settings.sec_busca_input_border_radius" type="number" min="0" max="50" class="w-14 border border-gray-300 p-1 text-xs text-center rounded bg-white font-mono" />
+                  </div>
+                  <div class="flex justify-between text-[9px] text-gray-400 font-sans">
+                    <span>0px (Reto)</span>
+                    <span>6px (Suave)</span>
+                    <span>50px (Pílula)</span>
+                  </div>
+                </div>
+
+                <!-- Espessura da Borda (Border Width) -->
+                <div class="space-y-1">
+                  <div class="flex justify-between text-[10px] text-gray-700 font-bold uppercase">
+                    <span>Espessura da Borda</span>
+                    <span class="font-mono text-emerald-600 font-bold text-xs">{{ settings.sec_busca_input_border_width ?? 1 }}px</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <input v-model.number="settings.sec_busca_input_border_width" type="range" min="0" max="5" step="1" class="flex-1 accent-emerald-600 cursor-pointer" />
+                    <input v-model.number="settings.sec_busca_input_border_width" type="number" min="0" max="5" class="w-14 border border-gray-300 p-1 text-xs text-center rounded bg-white font-mono" />
+                  </div>
+                </div>
+
+                <!-- Altura / Espessura do Input -->
+                <div class="space-y-1">
+                  <div class="flex justify-between text-[10px] text-gray-700 font-bold uppercase">
+                    <span>Altura do Input</span>
+                    <span class="font-mono text-emerald-600 font-bold text-xs">{{ settings.sec_busca_input_height ?? 42 }}px</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <input v-model.number="settings.sec_busca_input_height" type="range" min="32" max="64" step="2" class="flex-1 accent-emerald-600 cursor-pointer" />
+                    <input v-model.number="settings.sec_busca_input_height" type="number" min="32" max="64" class="w-14 border border-gray-300 p-1 text-xs text-center rounded bg-white font-mono" />
+                  </div>
+                </div>
+
+                <!-- Sombra Suave (Shadow) -->
+                <div class="space-y-1 flex flex-col justify-center">
+                  <label class="block text-[10px] text-gray-700 font-bold uppercase">Sombra Suave</label>
+                  <label class="flex items-center gap-2 cursor-pointer text-xs font-semibold text-slate-700 pt-1">
+                    <input type="checkbox" v-model="settings.sec_busca_input_shadow" class="w-4 h-4 text-emerald-600 rounded focus:ring-emerald-500 cursor-pointer" />
+                    <span>Aplicar sombra suave ao input</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Coluna Direita: Live Preview em Tempo Real -->
+          <div class="bg-white p-4 rounded-lg border border-gray-200 space-y-4 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between border-b pb-2 mb-3">
+                <span class="text-xs font-bold text-slate-800 uppercase tracking-wide flex items-center gap-1.5">
+                  <span class="material-symbols-outlined text-blue-600 text-sm">preview</span>
+                  Pré-Visualização em Tempo Real da Área &amp; Input
+                </span>
+                <span class="text-[10px] bg-blue-100 text-blue-800 font-bold px-2 py-0.5 rounded uppercase">Ao Vivo</span>
+              </div>
+              <p class="text-[11px] text-slate-500 mb-3">
+                Veja abaixo como a faixa e o campo de pesquisa aparecerão na página inicial para os visitantes:
+              </p>
+
+              <!-- Simulação da Seção Home com Linhas Divisórias -->
+              <div class="border border-gray-300 rounded-lg overflow-hidden shadow-inner">
+                <!-- Hero Placeholder (topo) -->
+                <div class="bg-slate-700 h-6 px-3 flex items-center justify-between text-[9px] text-slate-300 font-mono">
+                  <span>[ Banner Principal Hero ]</span>
+                  <span class="text-[8px] opacity-75">Fim do Banner</span>
+                </div>
+
+                <!-- Linha Divisória Superior Preview -->
+                <div 
+                  v-if="(settings.divider_hero_busca_height ?? 12) > 0"
+                  class="w-full transition-all border-b border-gray-200/50 flex items-center justify-center"
+                  :style="{
+                    height: `${Math.max(2, Math.round((settings.divider_hero_busca_height ?? 12) * 0.7))}px`,
+                    backgroundColor: settings.divider_hero_busca_bg || '#ffffff'
+                  }"
+                  :title="`Linha divisória superior: ${settings.divider_hero_busca_height}px`"
+                ></div>
+
+                <!-- Conteúdo da Seção de Busca Preview -->
+                <div 
+                  class="w-full transition-all"
+                  :style="{
+                    backgroundColor: settings.sec_busca_bg || '#e9e9e9',
+                    paddingTop: `${Math.round((settings.sec_busca_ptop ?? 48) * 0.45)}px`,
+                    paddingBottom: `${Math.round((settings.sec_busca_pbot ?? 56) * 0.45)}px`
+                  }"
+                >
+                  <div class="px-4 grid grid-cols-1 sm:grid-cols-2 gap-4 items-center">
+                    <!-- Lado Esquerdo Preview -->
+                    <div class="space-y-1.5">
+                      <h3 
+                        class="text-base font-semibold leading-tight transition-colors"
+                        :style="{ color: settings.sec_busca_title_color || '#333333' }"
+                      >
+                        Como podemos te ajudar?
+                      </h3>
+                      <p 
+                        class="text-[11px] leading-tight transition-colors"
+                        :style="{ color: settings.sec_busca_subtitle_color || '#666666' }"
+                      >
+                        Utilize a busca rápida e encontre sua necessidade
+                      </p>
+
+                      <!-- Input Preview -->
+                      <div class="relative w-full pt-1">
+                        <span 
+                          class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-sm pointer-events-none transition-colors"
+                          :style="{ color: settings.sec_busca_input_icon_color || '#2563eb' }"
+                        >
+                          search
+                        </span>
+                        <input 
+                          type="text" 
+                          readonly
+                          placeholder="BUSCAR EQUIPAMENTO..." 
+                          class="w-full pl-8 pr-3 text-xs outline-none transition-all cursor-default"
+                          :class="settings.sec_busca_input_shadow !== false ? 'shadow-xs' : ''"
+                          :style="{
+                            backgroundColor: settings.sec_busca_input_bg || '#ffffff',
+                            color: settings.sec_busca_input_text_color || '#1f2937',
+                            borderWidth: `${settings.sec_busca_input_border_width ?? 1}px`,
+                            borderColor: settings.sec_busca_input_border_color || '#93c5fd',
+                            borderStyle: (settings.sec_busca_input_border_width ?? 1) > 0 ? 'solid' : 'none',
+                            borderRadius: `${settings.sec_busca_input_border_radius ?? 6}px`,
+                            height: `${Math.max(30, Math.round((settings.sec_busca_input_height ?? 42) * 0.85))}px`
+                          }"
+                        />
+                      </div>
+                    </div>
+
+                    <!-- Lado Direito Preview -->
+                    <div class="space-y-1 pl-2 border-l border-gray-300/60 hidden sm:block">
+                      <span 
+                        class="text-[10px] font-bold block"
+                        :style="{ color: settings.sec_busca_quick_title_color || '#666666' }"
+                      >
+                        Buscas mais utilizadas
+                      </span>
+                      <div 
+                        class="text-[10px] space-y-0.5 leading-snug"
+                        :style="{ color: settings.sec_busca_quick_links_color || '#444444' }"
+                      >
+                        <div>• Contato de vendas / suporte</div>
+                        <div>• Válvulas de Segurança</div>
+                        <div>• Reparos HEROSE</div>
+                        <div>• Transmissores de Pressão</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Linha Divisória Inferior Preview -->
+                <div 
+                  v-if="(settings.divider_busca_segmentos_height ?? 12) > 0"
+                  class="w-full transition-all border-t border-gray-200/50"
+                  :style="{
+                    height: `${Math.max(2, Math.round((settings.divider_busca_segmentos_height ?? 12) * 0.7))}px`,
+                    backgroundColor: settings.divider_busca_segmentos_bg || '#ffffff'
+                  }"
+                  :title="`Linha divisória inferior: ${settings.divider_busca_segmentos_height}px`"
+                ></div>
+              </div>
+            </div>
+
+            <div class="text-[10px] text-gray-400 font-mono text-center pt-2 border-t border-gray-100">
+              Linha Superior: {{ settings.divider_hero_busca_height ?? 12 }}px | Linha Inferior: {{ settings.divider_busca_segmentos_height ?? 12 }}px | Input Radius: {{ settings.sec_busca_input_border_radius }}px
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- ===== SEÇÃO 1: CORES E DIMENSÕES DAS SEÇÕES DA HOME ===== -->
       <div class="space-y-6 bg-slate-50 p-5 rounded-lg border border-slate-200">
         <div class="flex items-center justify-between border-b border-slate-200 pb-3">
@@ -1066,6 +1495,121 @@
               <span class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> VÁLVULAS DE SEGURANÇA</span>
               <span class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> VÁLVULAS 3 VIAS</span>
               <span class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-blue-400"></span> TRANSMISSORES DE PRESSÃO</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Controles de Ofuscação do Fundo (Backdrop Blur & Escurecimento) -->
+        <div class="bg-white p-5 rounded-lg border border-gray-200 space-y-4">
+          <div class="flex items-center justify-between border-b border-gray-100 pb-2">
+            <span class="text-xs font-bold text-slate-800 uppercase tracking-wide flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-blue-600 text-base">blur_on</span>
+              Nível de Ofuscação do Menu Aberto (Desfoque de Fundo / Backdrop Blur)
+            </span>
+            <span class="text-[10px] bg-blue-100 text-blue-800 font-bold px-2 py-0.5 rounded uppercase">Efeito Apple</span>
+          </div>
+
+          <p class="text-xs text-slate-600">
+            Controle a intensidade do desfoque (blur) e do escurecimento aplicado sobre a página quando o menu de categorias for aberto.
+          </p>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Nível de Desfoque (Blur) -->
+            <div class="space-y-2">
+              <div class="flex justify-between text-xs text-gray-700 font-bold">
+                <span>Intensidade do Desfoque (Blur)</span>
+                <span class="font-mono text-blue-600 font-bold text-sm">{{ settings.mega_menu_blur ?? 20 }}px</span>
+              </div>
+              <input 
+                v-model.number="settings.mega_menu_blur" 
+                type="range" 
+                min="0" 
+                max="50" 
+                step="1" 
+                class="w-full accent-blue-600 cursor-pointer mt-2" 
+              />
+              <div class="flex justify-between text-[10px] text-gray-400 font-sans">
+                <span>0px (Sem Blur)</span>
+                <span>20px (Padrão Apple)</span>
+                <span>50px (Máximo)</span>
+              </div>
+            </div>
+
+            <!-- Opacidade do Escurecimento -->
+            <div class="space-y-2">
+              <div class="flex justify-between text-xs text-gray-700 font-bold">
+                <span>Escurecimento / Opacidade</span>
+                <span class="font-mono text-blue-600 font-bold text-sm">{{ settings.mega_menu_overlay_opacity ?? 48 }}%</span>
+              </div>
+              <input 
+                v-model.number="settings.mega_menu_overlay_opacity" 
+                type="range" 
+                min="0" 
+                max="100" 
+                step="2" 
+                class="w-full accent-blue-600 cursor-pointer mt-2" 
+              />
+              <div class="flex justify-between text-[10px] text-gray-400 font-sans">
+                <span>0% (Transparente)</span>
+                <span>48% (Padrão)</span>
+                <span>100% (Opaco)</span>
+              </div>
+            </div>
+
+            <!-- Cor da Ofuscação -->
+            <div class="space-y-2">
+              <label class="block text-xs text-gray-700 font-bold uppercase">Cor do Filtro / Overlay</label>
+              <div class="flex items-center gap-3">
+                <input 
+                  v-model="settings.mega_menu_overlay_color" 
+                  type="color" 
+                  class="w-10 h-9 rounded border border-gray-300 cursor-pointer p-0.5" 
+                />
+                <input 
+                  v-model="settings.mega_menu_overlay_color" 
+                  type="text" 
+                  class="flex-1 border border-gray-300 px-3 py-2 text-xs rounded bg-white text-slate-800 font-mono focus:ring-1 focus:ring-blue-600 focus:outline-none" 
+                  placeholder="#000000"
+                />
+              </div>
+              <!-- Atalhos -->
+              <div class="flex items-center gap-1.5 pt-1 flex-wrap">
+                <span class="text-[10px] text-gray-500 font-bold uppercase">Atalhos:</span>
+                <button @click="settings.mega_menu_overlay_color = '#000000'; settings.mega_menu_blur = 20; settings.mega_menu_overlay_opacity = 48" type="button" class="px-2 py-0.5 bg-slate-800 text-white text-[10px] rounded border border-slate-700 cursor-pointer">Padrão Apple</button>
+                <button @click="settings.mega_menu_overlay_color = '#000000'; settings.mega_menu_blur = 35; settings.mega_menu_overlay_opacity = 70" type="button" class="px-2 py-0.5 bg-black text-white text-[10px] rounded border border-slate-700 cursor-pointer">Forte</button>
+                <button @click="settings.mega_menu_overlay_color = '#000000'; settings.mega_menu_blur = 8; settings.mega_menu_overlay_opacity = 25" type="button" class="px-2 py-0.5 bg-slate-200 text-slate-800 text-[10px] rounded border border-slate-300 cursor-pointer">Suave</button>
+                <button @click="settings.mega_menu_blur = 0; settings.mega_menu_overlay_opacity = 0" type="button" class="px-2 py-0.5 bg-red-50 text-red-700 text-[10px] rounded border border-red-200 cursor-pointer">Desativar</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Preview da Ofuscação -->
+          <div class="pt-2">
+            <span class="text-[10px] text-gray-500 font-bold uppercase tracking-wider block mb-2">Simulação Visual da Ofuscação em Tempo Real</span>
+            <div class="relative w-full h-28 rounded-lg overflow-hidden border border-gray-300 shadow-inner flex items-center justify-center">
+              <!-- Fundo simulando a página com imagem e texto -->
+              <img 
+                src="https://pub-25a6482a064a4590a456d3dd2a76114b.r2.dev/products/image_1_valvula_de_alivio_criogenica.png" 
+                alt="Simulação da Página" 
+                class="absolute inset-0 w-full h-full object-cover"
+              />
+              <div class="absolute inset-0 flex flex-col items-center justify-center text-center p-4 bg-slate-900/30">
+                <span class="text-white font-bold text-sm drop-shadow">Conteúdo da Página Qualitec (Atrás do Menu)</span>
+                <span class="text-white/80 text-xs drop-shadow">Válvulas, Reguladores e Instrumentação Industrial</span>
+              </div>
+              <!-- Camada de Ofuscação Dinâmica -->
+              <div 
+                class="absolute inset-0 flex items-center justify-center transition-all duration-150"
+                :style="{
+                  backdropFilter: `blur(${settings.mega_menu_blur ?? 20}px) saturate(180%)`,
+                  WebkitBackdropFilter: `blur(${settings.mega_menu_blur ?? 20}px) saturate(180%)`,
+                  backgroundColor: hexToRgba(settings.mega_menu_overlay_color || '#000000', settings.mega_menu_overlay_opacity ?? 48)
+                }"
+              >
+                <div class="bg-white/90 text-slate-800 px-3 py-1 rounded text-xs font-mono font-bold shadow-md">
+                  Blur: {{ settings.mega_menu_blur ?? 20 }}px | Escurecimento: {{ settings.mega_menu_overlay_opacity ?? 48 }}%
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -1629,6 +2173,156 @@
                 </div>
               </div>
             </div>
+
+            <!-- Grossura & Dimensões do Card Verde -->
+            <div class="space-y-4 bg-slate-50 p-4 rounded-lg border border-slate-200">
+              <div class="flex items-center justify-between border-b border-slate-200 pb-2">
+                <span class="text-xs font-bold text-slate-800 uppercase tracking-wide flex items-center gap-1.5">
+                  <span class="material-symbols-outlined text-emerald-600 text-base">aspect_ratio</span>
+                  Grossura & Dimensões do Card Verde
+                </span>
+                <span class="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded uppercase">Tamanho & Espessura</span>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <!-- Largura Máxima do Card -->
+                <div class="space-y-1 sm:col-span-2">
+                  <div class="flex justify-between items-center text-[10px] text-gray-700 font-bold uppercase">
+                    <span>Largura do Card (Grossura Horizontal)</span>
+                    <span class="font-mono text-emerald-600 font-bold text-xs">{{ settings.hero_card_width ?? 576 }}px</span>
+                  </div>
+                  <div class="flex items-center gap-3">
+                    <input 
+                      type="range" 
+                      min="300" 
+                      max="1000" 
+                      step="10" 
+                      v-model.number="settings.hero_card_width" 
+                      class="flex-1 accent-emerald-600 cursor-pointer" 
+                    />
+                    <input 
+                      type="number" 
+                      min="300" 
+                      max="1000" 
+                      v-model.number="settings.hero_card_width" 
+                      class="w-16 border border-gray-300 p-1 text-xs text-center rounded bg-white font-mono" 
+                    />
+                  </div>
+                  <div class="flex justify-between text-[9px] text-gray-400 font-sans">
+                    <span>300px (Compacto)</span>
+                    <span>576px (Padrão)</span>
+                    <span>1000px (Largo)</span>
+                  </div>
+                </div>
+
+                <!-- Grossura Vertical (Padding Y / Altura Interna) -->
+                <div class="space-y-1">
+                  <div class="flex justify-between items-center text-[10px] text-gray-700 font-bold uppercase">
+                    <span>Espessura Vertical (Padding Y)</span>
+                    <span class="font-mono text-emerald-600 font-bold text-xs">{{ settings.hero_card_padding_y ?? 32 }}px</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <input 
+                      type="range" 
+                      min="10" 
+                      max="90" 
+                      step="2" 
+                      v-model.number="settings.hero_card_padding_y" 
+                      class="flex-1 accent-emerald-600 cursor-pointer" 
+                    />
+                    <input 
+                      type="number" 
+                      min="10" 
+                      max="90" 
+                      v-model.number="settings.hero_card_padding_y" 
+                      class="w-14 border border-gray-300 p-1 text-xs text-center rounded bg-white font-mono" 
+                    />
+                  </div>
+                </div>
+
+                <!-- Grossura Horizontal (Padding X / Margem Interna) -->
+                <div class="space-y-1">
+                  <div class="flex justify-between items-center text-[10px] text-gray-700 font-bold uppercase">
+                    <span>Espaçamento Lateral (Padding X)</span>
+                    <span class="font-mono text-emerald-600 font-bold text-xs">{{ settings.hero_card_padding_x ?? 40 }}px</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <input 
+                      type="range" 
+                      min="10" 
+                      max="90" 
+                      step="2" 
+                      v-model.number="settings.hero_card_padding_x" 
+                      class="flex-1 accent-emerald-600 cursor-pointer" 
+                    />
+                    <input 
+                      type="number" 
+                      min="10" 
+                      max="90" 
+                      v-model.number="settings.hero_card_padding_x" 
+                      class="w-14 border border-gray-300 p-1 text-xs text-center rounded bg-white font-mono" 
+                    />
+                  </div>
+                </div>
+
+                <!-- Opacidade do Card Verde -->
+                <div class="space-y-1">
+                  <div class="flex justify-between items-center text-[10px] text-gray-700 font-bold uppercase">
+                    <span>Opacidade / Transparência</span>
+                    <span class="font-mono text-emerald-600 font-bold text-xs">{{ settings.hero_card_opacity ?? 85 }}%</span>
+                  </div>
+                  <input 
+                    type="range" 
+                    min="20" 
+                    max="100" 
+                    step="5" 
+                    v-model.number="settings.hero_card_opacity" 
+                    class="w-full accent-emerald-600 cursor-pointer" 
+                  />
+                </div>
+
+                <!-- Arredondamento das Bordas (Border Radius) -->
+                <div class="space-y-1">
+                  <div class="flex justify-between items-center text-[10px] text-gray-700 font-bold uppercase">
+                    <span>Arredondamento das Bordas</span>
+                    <span class="font-mono text-emerald-600 font-bold text-xs">{{ settings.hero_card_border_radius ?? 8 }}px</span>
+                  </div>
+                  <input 
+                    type="range" 
+                    min="0" 
+                    max="40" 
+                    step="2" 
+                    v-model.number="settings.hero_card_border_radius" 
+                    class="w-full accent-emerald-600 cursor-pointer" 
+                  />
+                </div>
+
+                <!-- Cor do Card Verde -->
+                <div class="space-y-1 sm:col-span-2">
+                  <label class="block text-[10px] text-gray-700 font-bold uppercase">Cor de Fundo do Card</label>
+                  <div class="flex items-center gap-3">
+                    <input 
+                      v-model="settings.hero_card_bg_color" 
+                      type="color" 
+                      class="w-10 h-9 rounded border border-gray-300 cursor-pointer p-0.5" 
+                    />
+                    <input 
+                      v-model="settings.hero_card_bg_color" 
+                      type="text" 
+                      class="flex-1 border border-gray-300 px-3 py-2 text-xs rounded bg-white text-slate-800 font-mono focus:ring-1 focus:ring-emerald-600 focus:outline-none" 
+                      placeholder="#74b934"
+                    />
+                  </div>
+                  <!-- Atalhos -->
+                  <div class="flex items-center gap-1.5 pt-1 flex-wrap">
+                    <span class="text-[10px] text-gray-500 font-bold uppercase">Presets:</span>
+                    <button @click="settings.hero_card_bg_color = '#74b934'; settings.hero_card_width = 576; settings.hero_card_padding_y = 32; settings.hero_card_padding_x = 40" type="button" class="px-2 py-0.5 bg-[#74b934] text-white text-[10px] font-bold rounded border border-emerald-600 cursor-pointer">Verde Padrão</button>
+                    <button @click="settings.hero_card_width = 720; settings.hero_card_padding_y = 48; settings.hero_card_padding_x = 56" type="button" class="px-2 py-0.5 bg-slate-800 text-white text-[10px] rounded border border-slate-700 cursor-pointer">Card Encorpado / Grosso</button>
+                    <button @click="settings.hero_card_width = 420; settings.hero_card_padding_y = 20; settings.hero_card_padding_x = 24" type="button" class="px-2 py-0.5 bg-slate-200 text-slate-800 text-[10px] rounded border border-slate-300 cursor-pointer">Card Fino / Compacto</button>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
 
           <!-- Coluna da Direita: Preview Interativo -->
@@ -1670,13 +2364,20 @@
 
               <!-- Card Verde Arrastável na Prévia -->
               <div 
-                class="absolute p-3 rounded-lg shadow-lg border border-white/20 transition-all duration-75 max-w-[65%]"
+                class="absolute shadow-lg border border-white/20 transition-all duration-75"
                 :style="{
                   left: `${settings.hero_card_offset_x || 18}%`,
                   top: `${settings.hero_card_offset_y || 45}%`,
                   bottom: settings.hero_card_extend_bottom ? '0px' : 'auto',
-                  backgroundColor: getCardBgStyle(settings.hero_card_bg_color, settings.hero_card_opacity),
-                  color: settings.hero_card_text_color || '#ffffff'
+                  ...getCardBgStyle(settings.hero_card_bg_color, settings.hero_card_opacity),
+                  color: settings.hero_card_text_color || '#ffffff',
+                  borderRadius: `${Math.round((settings.hero_card_border_radius ?? 8) * 0.43)}px`,
+                  paddingTop: `${Math.round((settings.hero_card_padding_y ?? 32) * 0.43)}px`,
+                  paddingBottom: `${Math.round((settings.hero_card_padding_y ?? 32) * 0.43)}px`,
+                  paddingLeft: `${Math.round((settings.hero_card_padding_x ?? 40) * 0.43)}px`,
+                  paddingRight: `${Math.round((settings.hero_card_padding_x ?? 40) * 0.43)}px`,
+                  maxWidth: `${Math.round((settings.hero_card_width ?? 576) * 0.43)}px`,
+                  width: '100%'
                 }"
               >
                 <p 
@@ -2022,11 +2723,37 @@ interface SiteSettings {
   hero_card_offset_y: number
   hero_card_opacity: number
   hero_card_extend_bottom: boolean
+  hero_card_width: number
+  hero_card_padding_y: number
+  hero_card_padding_x: number
+  hero_card_border_radius: number
   // Segment Cards (Home)
   segment_img_criogenia: string
   segment_img_oleo_gas: string
   segment_img_sucroalcooleiro: string
   // Cores e Dimensões das Seções da Home
+  sec_busca_bg: string
+  sec_busca_ptop: number
+  sec_busca_pbot: number
+  sec_busca_min_height: number
+  sec_busca_title_color: string
+  sec_busca_subtitle_color: string
+  sec_busca_quick_title_color: string
+  sec_busca_quick_links_color: string
+  sec_busca_input_bg: string
+  sec_busca_input_text_color: string
+  sec_busca_input_border_color: string
+  sec_busca_input_icon_color: string
+  sec_busca_input_placeholder_color: string
+  sec_busca_input_border_radius: number
+  sec_busca_input_border_width: number
+  sec_busca_input_height: number
+  sec_busca_input_shadow: boolean
+  // Faixas Divisórias (Linhas brancas entre seções)
+  divider_hero_busca_height: number
+  divider_hero_busca_bg: string
+  divider_busca_segmentos_height: number
+  divider_busca_segmentos_bg: string
   sec_segmentos_bg: string
   sec_segmentos_ptop: number
   sec_segmentos_pbot: number
@@ -2046,6 +2773,9 @@ interface SiteSettings {
   // Barra do Mega Menu (Header)
   mega_menu_bg_color: string
   mega_menu_height: number
+  mega_menu_blur: number
+  mega_menu_overlay_opacity: number
+  mega_menu_overlay_color: string
   // Botões de Categoria (Abas)
   mega_menu_cat_font_family: string
   mega_menu_cat_font_size: number
@@ -2204,6 +2934,9 @@ const defaultSettings: SiteSettings = {
   catalog_grid_gap_y: 20,
   mega_menu_bg_color: '#1d1d1f',
   mega_menu_height: 44,
+  mega_menu_blur: 20,
+  mega_menu_overlay_opacity: 48,
+  mega_menu_overlay_color: '#000000',
   mega_menu_cat_font_family: 'system-ui',
   mega_menu_cat_font_size: 12,
   mega_menu_cat_color: '#ffffff',
@@ -2239,9 +2972,34 @@ const defaultSettings: SiteSettings = {
   hero_card_offset_y: 55,
   hero_card_opacity: 85,
   hero_card_extend_bottom: true,
+  hero_card_width: 576,
+  hero_card_padding_y: 32,
+  hero_card_padding_x: 40,
+  hero_card_border_radius: 8,
   segment_img_criogenia: 'https://lh3.googleusercontent.com/aida/AP1WRLsDWV00WRL33tuhAG3BPA8GTPcBz-pfzYJ5QGz2_CFnkvCSprf16WTZORxqYJd3VFMaSLF81Wdm-S9-UEVYwRS6IZjDh4VV8WwGm6i7fTQgU4oSmP9IGxRBZnXvSg-lgNzx7dHLh96NV6al1sI8sdEOoVx6IZCUOcKyTMikgpuW736a8c-W4OfY41ayLpgc1yRxJm4ux29KF3X6Vl4DjzUrBJhQVrk6zwaVUJrs9k2kRxWzoaJlEeyRARs',
   segment_img_oleo_gas: 'https://lh3.googleusercontent.com/aida/AP1WRLtMAi3za4oatqWzMuvla-WvZQlt9FguAx22h8nx9U6lR8p142s5QcL4EPPE0ligkQbqZ0q-ZYW-hqDRV2uJVGv0NMmhiEuyzJbKk7sUfZpHHA4_sz8P-TyC7QparCuJFeAeovwFTiSEpumRpFGJg-y1rdhCKN1ensV_n46sSPNrBJMqn7MqzXsxs1FqEOTTk7iB0mQ42_IaiLxVLi8QHfDnmf1qJl39Y9bqn9spftMGhs_woAvKg85Vgk0',
   segment_img_sucroalcooleiro: 'https://lh3.googleusercontent.com/aida/AP1WRLtx-24uZLAzxnTShKPl8Wv12JS85bEMJBe8sqHO25f6hSfCDYWD7dOd3t0TS1qSXQfoEmpRejEnBgmszPULohKQhnktzaTJxNZlqCZtWMl_i2qHHdWBFpI5OD1WyuR3zn6bDrno3XOkEm5_52rNlHCVRUzbbVXx-6T9Fq-atHYsA-bfuEzXbOwh0ibv0HAdlvONto1p0-R41aQY_ZMMGGD6KANY4mawEiSd7OT1CHuJeCgTozkzRuxGGg',
+  sec_busca_bg: '#e9e9e9',
+  sec_busca_ptop: 48,
+  sec_busca_pbot: 56,
+  sec_busca_min_height: 0,
+  sec_busca_title_color: '#333333',
+  sec_busca_subtitle_color: '#666666',
+  sec_busca_quick_title_color: '#666666',
+  sec_busca_quick_links_color: '#444444',
+  sec_busca_input_bg: '#ffffff',
+  sec_busca_input_text_color: '#1f2937',
+  sec_busca_input_border_color: '#93c5fd',
+  sec_busca_input_icon_color: '#2563eb',
+  sec_busca_input_placeholder_color: '#9ca3af',
+  sec_busca_input_border_radius: 6,
+  sec_busca_input_border_width: 1,
+  sec_busca_input_height: 42,
+  sec_busca_input_shadow: true,
+  divider_hero_busca_height: 12,
+  divider_hero_busca_bg: '#ffffff',
+  divider_busca_segmentos_height: 12,
+  divider_busca_segmentos_bg: '#ffffff',
   sec_segmentos_bg: '#ffffff',
   sec_segmentos_ptop: 20,
   sec_segmentos_pbot: 24,
@@ -2456,8 +3214,107 @@ function hexToRgba(hex: string, opacityPercent: number): string {
   return `rgba(${r}, ${g}, ${b}, ${alpha.toFixed(2)})`
 }
 
-function resetBlock(block: 'sections' | 'segmentCards' | 'newsCards' | 'footer') {
-  if (block === 'sections') {
+function applySearchInputPreset(preset: 'default' | 'pill' | 'square' | 'qualitec' | 'elevated' | 'dark' | 'bold') {
+  if (preset === 'default') {
+    settings.sec_busca_input_border_radius = 6
+    settings.sec_busca_input_border_width = 1
+    settings.sec_busca_input_border_color = '#93c5fd'
+    settings.sec_busca_input_bg = '#ffffff'
+    settings.sec_busca_input_text_color = '#1f2937'
+    settings.sec_busca_input_icon_color = '#2563eb'
+    settings.sec_busca_input_shadow = true
+    settings.sec_busca_input_height = 42
+  } else if (preset === 'pill') {
+    settings.sec_busca_input_border_radius = 50
+    settings.sec_busca_input_border_width = 1
+    settings.sec_busca_input_border_color = '#93c5fd'
+    settings.sec_busca_input_bg = '#ffffff'
+    settings.sec_busca_input_text_color = '#1f2937'
+    settings.sec_busca_input_icon_color = '#2563eb'
+    settings.sec_busca_input_shadow = true
+    settings.sec_busca_input_height = 44
+  } else if (preset === 'square') {
+    settings.sec_busca_input_border_radius = 0
+    settings.sec_busca_input_border_width = 1
+    settings.sec_busca_input_border_color = '#334155'
+    settings.sec_busca_input_bg = '#ffffff'
+    settings.sec_busca_input_text_color = '#1f2937'
+    settings.sec_busca_input_icon_color = '#005db7'
+    settings.sec_busca_input_shadow = false
+    settings.sec_busca_input_height = 42
+  } else if (preset === 'qualitec') {
+    settings.sec_busca_input_border_radius = 8
+    settings.sec_busca_input_border_width = 2
+    settings.sec_busca_input_border_color = '#005db7'
+    settings.sec_busca_input_bg = '#ffffff'
+    settings.sec_busca_input_text_color = '#003366'
+    settings.sec_busca_input_icon_color = '#005db7'
+    settings.sec_busca_input_shadow = true
+    settings.sec_busca_input_height = 44
+  } else if (preset === 'elevated') {
+    settings.sec_busca_input_border_radius = 10
+    settings.sec_busca_input_border_width = 0
+    settings.sec_busca_input_border_color = '#e2e8f0'
+    settings.sec_busca_input_bg = '#ffffff'
+    settings.sec_busca_input_text_color = '#1f2937'
+    settings.sec_busca_input_icon_color = '#2563eb'
+    settings.sec_busca_input_shadow = true
+    settings.sec_busca_input_height = 46
+  } else if (preset === 'dark') {
+    settings.sec_busca_input_border_radius = 8
+    settings.sec_busca_input_border_width = 1
+    settings.sec_busca_input_border_color = '#475569'
+    settings.sec_busca_input_bg = '#334155'
+    settings.sec_busca_input_text_color = '#ffffff'
+    settings.sec_busca_input_icon_color = '#60a5fa'
+    settings.sec_busca_input_shadow = true
+    settings.sec_busca_input_height = 42
+  } else if (preset === 'bold') {
+    settings.sec_busca_input_border_radius = 12
+    settings.sec_busca_input_border_width = 3
+    settings.sec_busca_input_border_color = '#2563eb'
+    settings.sec_busca_input_bg = '#ffffff'
+    settings.sec_busca_input_text_color = '#1e3a8a'
+    settings.sec_busca_input_icon_color = '#2563eb'
+    settings.sec_busca_input_shadow = true
+    settings.sec_busca_input_height = 46
+  }
+  props.triggerToast?.(`Modelo "${preset}" aplicado com sucesso!`, 'success')
+}
+
+function resetBlock(block: 'sections' | 'segmentCards' | 'newsCards' | 'footer' | 'busca') {
+  if (block === 'busca') {
+    settings.sec_busca_bg = defaultSettings.sec_busca_bg
+    settings.sec_busca_ptop = defaultSettings.sec_busca_ptop
+    settings.sec_busca_pbot = defaultSettings.sec_busca_pbot
+    settings.sec_busca_min_height = defaultSettings.sec_busca_min_height
+    settings.sec_busca_title_color = defaultSettings.sec_busca_title_color
+    settings.sec_busca_subtitle_color = defaultSettings.sec_busca_subtitle_color
+    settings.sec_busca_quick_title_color = defaultSettings.sec_busca_quick_title_color
+    settings.sec_busca_quick_links_color = defaultSettings.sec_busca_quick_links_color
+    settings.sec_busca_input_bg = defaultSettings.sec_busca_input_bg
+    settings.sec_busca_input_text_color = defaultSettings.sec_busca_input_text_color
+    settings.sec_busca_input_border_color = defaultSettings.sec_busca_input_border_color
+    settings.sec_busca_input_icon_color = defaultSettings.sec_busca_input_icon_color
+    settings.sec_busca_input_placeholder_color = defaultSettings.sec_busca_input_placeholder_color
+    settings.sec_busca_input_border_radius = defaultSettings.sec_busca_input_border_radius
+    settings.sec_busca_input_border_width = defaultSettings.sec_busca_input_border_width
+    settings.sec_busca_input_height = defaultSettings.sec_busca_input_height
+    settings.sec_busca_input_shadow = defaultSettings.sec_busca_input_shadow
+    settings.divider_hero_busca_height = defaultSettings.divider_hero_busca_height
+    settings.divider_hero_busca_bg = defaultSettings.divider_hero_busca_bg
+    settings.divider_busca_segmentos_height = defaultSettings.divider_busca_segmentos_height
+    settings.divider_busca_segmentos_bg = defaultSettings.divider_busca_segmentos_bg
+    props.triggerToast?.('Valores originais da área de busca restaurados!', 'success')
+  } else if (block === 'sections') {
+    settings.sec_busca_bg = defaultSettings.sec_busca_bg
+    settings.sec_busca_ptop = defaultSettings.sec_busca_ptop
+    settings.sec_busca_pbot = defaultSettings.sec_busca_pbot
+    settings.sec_busca_min_height = defaultSettings.sec_busca_min_height
+    settings.divider_hero_busca_height = defaultSettings.divider_hero_busca_height
+    settings.divider_hero_busca_bg = defaultSettings.divider_hero_busca_bg
+    settings.divider_busca_segmentos_height = defaultSettings.divider_busca_segmentos_height
+    settings.divider_busca_segmentos_bg = defaultSettings.divider_busca_segmentos_bg
     settings.sec_segmentos_bg = defaultSettings.sec_segmentos_bg
     settings.sec_segmentos_ptop = defaultSettings.sec_segmentos_ptop
     settings.sec_segmentos_pbot = defaultSettings.sec_segmentos_pbot
