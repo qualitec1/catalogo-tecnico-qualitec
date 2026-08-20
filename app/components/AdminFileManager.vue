@@ -304,13 +304,8 @@ onMounted(() => {
 async function fetchFiles() {
   loading.value = true
   try {
-    const { data, error } = await supabase
-      .from('uploaded_files')
-      .select('*')
-      .order('uploaded_at', { ascending: false })
-
-    if (error) throw error
-    files.value = data || []
+    const res = await $fetch<{ files?: any[] }>('/api/admin/files')
+    files.value = res?.files || []
   } catch (err: any) {
     console.error('Error fetching files:', err)
     emit('toast', { message: 'Erro ao carregar arquivos', type: 'error' })
@@ -472,12 +467,9 @@ async function deleteFile() {
 
   deleting.value = true
   try {
-    const { error } = await supabase
-      .from('uploaded_files')
-      .delete()
-      .eq('id', deleteModal.value.id)
-
-    if (error) throw error
+    await $fetch(`/api/admin/files?id=${deleteModal.value.id}`, {
+      method: 'DELETE'
+    })
 
     emit('toast', { message: 'Arquivo deletado com sucesso', type: 'success' })
     await fetchFiles()

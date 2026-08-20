@@ -1,5 +1,6 @@
 import { readBody, createError, sendError } from 'h3'
 import { supabaseAdmin } from '../../utils/supabaseAdmin'
+import { requireAdmin } from '../../utils/requireAdmin'
 
 // Validação de força de senha
 function validatePassword(password: string): { valid: boolean; errors: string[] } {
@@ -38,8 +39,11 @@ function validatePassword(password: string): { valid: boolean; errors: string[] 
 }
 
 export default defineEventHandler(async (event) => {
+  // Apenas administradores autenticados e ativos podem registrar novos usuários
+  await requireAdmin(event)
+
   const body = await readBody(event)
-  const { email, password } = body || {}
+  const { email, password, role = 'user' } = body || {}
 
   if (!email || !password) {
     return sendError(event, createError({ statusCode: 400, statusMessage: 'Email and password are required' }))
@@ -93,17 +97,19 @@ export default defineEventHandler(async (event) => {
       return sendError(event, createError({ statusCode, statusMessage }))
     }
 
-    // Log de sucesso
-    console.info('[Security] User registered:', {
-      timestamp: new Date().toISOString(),
-      email: email.replace(/(?<=.{2}).(?=.*@)/g, '*'),
-      user_id: data.user?.id,
-      ip: event.node.req.socket.remoteAddress
-    })
+    // Se criado com sucesso, atualizar perfil com a role definida pelo admin
+    if (data.user?.id) {
+      await supabaseAdmin.from('profiles').upsert({
+        id: data.user.id,
+        role: role === 'admin' ? 'admin' : 'user',
+        is_active: true,
+        updated_at: new Date().toISOString()
+      })
+    }
 
     return {
       ok: true,
-      message: 'Conta criada com sucesso. Faça login.',
+      message: 'Conta criada com sucesso pelo administrador.',
       user: data.user || null
     }
   } catch (err) {

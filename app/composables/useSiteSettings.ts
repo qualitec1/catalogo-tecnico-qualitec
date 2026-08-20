@@ -520,14 +520,11 @@ export default function useSiteSettings() {
   const fetchSiteSettings = async (force = false) => {
     if (loaded.value && !force) return
     try {
-      const { data } = await supabase
-        .from('pdf_settings')
-        .select('layout_settings')
-        .eq('category', 'GERAL')
-        .single()
+      const publicSettingsRes = await $fetch<{ settings?: any[] }>('/api/public/settings')
+      const geralRow = (publicSettingsRes?.settings || []).find((s: any) => s.category?.toUpperCase().trim() === 'GERAL')
 
-      if (data?.layout_settings?.site_settings) {
-        const saved = data.layout_settings.site_settings
+      if (geralRow?.layout_settings?.site_settings) {
+        const saved = geralRow.layout_settings.site_settings
         const merged = { ...defaults }
         Object.keys(defaults).forEach(key => {
           if (saved[key] !== undefined) {

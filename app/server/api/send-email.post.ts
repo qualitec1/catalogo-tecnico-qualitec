@@ -1,62 +1,29 @@
-import { resolve } from 'node:path'
-import nodemailer from 'nodemailer'
-import { readBody, createError } from 'h3'
-import { createClient } from '@supabase/supabase-js'
+import { supabaseAdmin } from '../utils/supabaseAdmin'
 
-async function saveNewsletterSubscriber(email: string, lang: string) {
+async function saveNewsletterSubscriber(email: string, lang: string): Promise<{ success: boolean; error?: string }> {
+  if (!supabaseAdmin) {
+    const errMsg = 'SUPABASE_SERVICE_ROLE_KEY not configured. Cannot persist newsletter subscriber.'
+    console.error(`[send-email] Config Error: ${errMsg}`)
+    return { success: false, error: errMsg }
+  }
+
   try {
-    const config = useRuntimeConfig()
-    const supabaseUrl = process.env.SUPABASE_URL || process.env.NUXT_PUBLIC_SUPABASE_URL || (config.public as any)?.supabaseUrl
-    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_KEY || (config.public as any)?.supabaseAnonKey
-
-    if (!supabaseUrl || !supabaseKey) return
-
-    const supabase = createClient(supabaseUrl, supabaseKey)
     const normalizedEmail = email.toLowerCase().trim()
+    const { error } = await supabaseAdmin.from('newsletter_subscribers').upsert({
+      email: normalizedEmail,
+      lang: (lang || 'pt').toLowerCase(),
+      created_at: new Date().toISOString()
+    }, { onConflict: 'email' })
 
-    // 1. Tentar gravar na nova tabela dedicada 'newsletter_subscribers'
-    try {
-      await supabase.from('newsletter_subscribers').upsert({
-        email: normalizedEmail,
-        lang: (lang || 'pt').toLowerCase(),
-        created_at: new Date().toISOString()
-      }, { onConflict: 'email' })
-    } catch (newTableErr) {
-      console.warn('[Supabase Save New Table Warning]', newTableErr)
+    if (error) {
+      console.error('[send-email] Error persisting newsletter subscriber:', error.message)
+      return { success: false, error: error.message }
     }
-
-    // 2. Gravar também no JSON legado 'pdf_settings' para retrocompatibilidade
-    const { data } = await supabase
-      .from('pdf_settings')
-      .select('id, layout_settings')
-      .eq('category', 'GERAL')
-      .maybeSingle()
-
-    if (data) {
-      const currentLayout = data.layout_settings || {}
-      const existingList: Array<{ email: string; lang: string; subscribed_at: string }> = currentLayout.newsletter_subscribers || []
-
-      const exists = existingList.some(item => item.email.toLowerCase() === normalizedEmail)
-      if (!exists) {
-        existingList.unshift({
-          email: normalizedEmail,
-          lang: (lang || 'pt').toLowerCase(),
-          subscribed_at: new Date().toISOString()
-        })
-
-        const updatedLayout = {
-          ...currentLayout,
-          newsletter_subscribers: existingList
-        }
-
-        await supabase
-          .from('pdf_settings')
-          .update({ layout_settings: updatedLayout })
-          .eq('category', 'GERAL')
-      }
-    }
-  } catch (err) {
-    console.warn('[Supabase Save Subscriber Warning]', err)
+    return { success: true }
+  } catch (err: any) {
+    const errMsg = err?.message || 'Unexpected error saving subscriber'
+    console.error('[send-email] Unexpected error saving subscriber:', errMsg)
+    return { success: false, error: errMsg }
   }
 }
 
@@ -69,70 +36,36 @@ async function saveContactSubmission(contactData: {
   message: string
   productName?: string
   type?: string
-}) {
+}): Promise<{ success: boolean; error?: string }> {
+  if (!supabaseAdmin) {
+    const errMsg = 'SUPABASE_SERVICE_ROLE_KEY not configured. Cannot persist contact submission.'
+    console.error(`[send-email] Config Error: ${errMsg}`)
+    return { success: false, error: errMsg }
+  }
+
   try {
-    const config = useRuntimeConfig()
-    const supabaseUrl = process.env.SUPABASE_URL || process.env.NUXT_PUBLIC_SUPABASE_URL || (config.public as any)?.supabaseUrl
-    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_KEY || (config.public as any)?.supabaseAnonKey
+    const { error } = await supabaseAdmin.from('contact_submissions').insert({
+      name: contactData.name || '',
+      email: (contactData.email || '').toLowerCase().trim(),
+      phone: contactData.phone || '',
+      company: contactData.company || '',
+      subject: contactData.subject || '',
+      message: contactData.message || '',
+      product_name: contactData.productName || '',
+      type: contactData.type || 'contact',
+      status: 'new',
+      created_at: new Date().toISOString()
+    })
 
-    if (!supabaseUrl || !supabaseKey) return
-
-    const supabase = createClient(supabaseUrl, supabaseKey)
-
-    // 1. Tentar gravar na nova tabela dedicada 'contact_submissions'
-    try {
-      await supabase.from('contact_submissions').insert({
-        name: contactData.name || '',
-        email: (contactData.email || '').toLowerCase().trim(),
-        phone: contactData.phone || '',
-        company: contactData.company || '',
-        subject: contactData.subject || '',
-        message: contactData.message || '',
-        product_name: contactData.productName || '',
-        type: contactData.type || 'contact',
-        status: 'new',
-        created_at: new Date().toISOString()
-      })
-    } catch (newTableErr) {
-      console.warn('[Supabase Save Contact New Table Warning]', newTableErr)
+    if (error) {
+      console.error('[send-email] Error persisting contact submission:', error.message)
+      return { success: false, error: error.message }
     }
-
-    // 2. Gravar também no JSON legado 'pdf_settings' para retrocompatibilidade
-    const { data } = await supabase
-      .from('pdf_settings')
-      .select('id, layout_settings')
-      .eq('category', 'GERAL')
-      .maybeSingle()
-
-    if (data) {
-      const currentLayout = data.layout_settings || {}
-      const existingList: Array<any> = currentLayout.contact_submissions || []
-
-      existingList.unshift({
-        id: 'cnt_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7),
-        name: contactData.name || '',
-        email: (contactData.email || '').toLowerCase().trim(),
-        phone: contactData.phone || '',
-        company: contactData.company || '',
-        subject: contactData.subject || '',
-        message: contactData.message || '',
-        productName: contactData.productName || '',
-        type: contactData.type || 'contact',
-        created_at: new Date().toISOString()
-      })
-
-      const updatedLayout = {
-        ...currentLayout,
-        contact_submissions: existingList
-      }
-
-      await supabase
-        .from('pdf_settings')
-        .update({ layout_settings: updatedLayout })
-        .eq('category', 'GERAL')
-    }
-  } catch (err) {
-    console.warn('[Supabase Save Contact Warning]', err)
+    return { success: true }
+  } catch (err: any) {
+    const errMsg = err?.message || 'Unexpected error saving contact'
+    console.error('[send-email] Unexpected error saving contact:', errMsg)
+    return { success: false, error: errMsg }
   }
 }
 
@@ -667,8 +600,11 @@ export default defineEventHandler(async (event) => {
     if (type === 'newsletter') {
       const activeLang = (lang || 'pt').toLowerCase()
 
-      // 0. Gravar e-mail cadastrado no Supabase
-      await saveNewsletterSubscriber(email, activeLang)
+      // 0. Gravar e-mail cadastrado no Supabase via service_role
+      const dbResult = await saveNewsletterSubscriber(email, activeLang)
+      if (!dbResult.success) {
+        console.error('[send-email] Lead persistence failed for newsletter subscriber:', dbResult.error)
+      }
 
       // 1. Notificar equipe interna
       const internalMailOptions = {
@@ -720,15 +656,20 @@ export default defineEventHandler(async (event) => {
         console.warn('[SMTP Client Email Warning]', clientErr)
       }
 
-      return { success: true, message: 'Inscrição enviada e confirmada com sucesso!' }
+      return {
+        success: true,
+        persisted: dbResult.success,
+        warning: !dbResult.success ? 'Inscrição transmitida por e-mail, com falha na persistência em banco.' : undefined,
+        message: 'Inscrição enviada e confirmada com sucesso!'
+      }
     }
 
     if (type === 'contact' || type === 'quote') {
       const isQuote = type === 'quote'
       const titleSubject = isQuote ? 'Solicitação de Orçamento' : 'Formulário de Contato'
 
-      // Save contact to database
-      await saveContactSubmission({
+      // 0. Gravar contato no Supabase via service_role
+      const dbResult = await saveContactSubmission({
         name,
         email,
         phone,
@@ -738,8 +679,11 @@ export default defineEventHandler(async (event) => {
         productName,
         type
       })
+      if (!dbResult.success) {
+        console.error('[send-email] Lead persistence failed for contact submission:', dbResult.error)
+      }
 
-      // Notificar equipe
+      // 1. Notificar equipe
       const internalMailOptions = {
         from: `"Qualitec Website" <${user}>`,
         to: recipientList.join(', '),
@@ -831,7 +775,12 @@ export default defineEventHandler(async (event) => {
         console.warn('[SMTP Client Confirmation Warning]', clientErr)
       }
 
-      return { success: true, message: 'Mensagem enviada com sucesso! Em breve entraremos em contato.' }
+      return {
+        success: true,
+        persisted: dbResult.success,
+        warning: !dbResult.success ? 'Mensagem transmitida por e-mail, com falha na persistência em banco.' : undefined,
+        message: 'Mensagem enviada com sucesso! Em breve entraremos em contato.'
+      }
     }
 
     throw createError({

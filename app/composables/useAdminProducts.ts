@@ -92,8 +92,10 @@ export function useAdminProducts(triggerToast: (msg: string, type?: 'success' | 
         ex_image_url: product.exImageUrl || null
       }
 
-      const { error } = await supabase.from('products').insert([payload])
-      if (error) throw error
+      await $fetch('/api/admin/products', {
+        method: 'POST',
+        body: payload
+      })
 
       triggerToast('Equipamento cadastrado com sucesso!', 'success')
       await fetchProducts()
@@ -146,12 +148,10 @@ export function useAdminProducts(triggerToast: (msg: string, type?: 'success' | 
         payload.datasheet_name = null
       }
 
-      const { error } = await supabase
-        .from('products')
-        .update(payload)
-        .eq('id', product.id)
-        
-      if (error) throw error
+      await $fetch(`/api/admin/products?id=${product.id}`, {
+        method: 'PUT',
+        body: payload
+      })
 
       triggerToast('Equipamento atualizado com sucesso!', 'success')
       await fetchProducts()
@@ -166,8 +166,9 @@ export function useAdminProducts(triggerToast: (msg: string, type?: 'success' | 
   const deleteProduct = async (id: number) => {
     if (confirm('Deseja realmente remover este equipamento?')) {
       try {
-        const { error } = await supabase.from('products').delete().eq('id', id)
-        if (error) throw error
+        await $fetch(`/api/admin/products?id=${id}`, {
+          method: 'DELETE'
+        })
         triggerToast('Equipamento removido do catálogo.', 'success')
         await fetchProducts()
       } catch (err: any) {
@@ -178,36 +179,33 @@ export function useAdminProducts(triggerToast: (msg: string, type?: 'success' | 
   }
 
   const deleteMultipleProducts = async (ids: number[]) => {
-    if (!ids || ids.length === 0) return
-    if (confirm(`Deseja realmente remover os ${ids.length} equipamentos selecionados? Esta ação não pode ser desfeita.`)) {
-      loading.value = true
+    if (confirm(`Deseja realmente remover os ${ids.length} equipamentos selecionados?`)) {
       try {
-        const { error } = await supabase.from('products').delete().in('id', ids)
-        if (error) throw error
-        triggerToast(`${ids.length} equipamentos removidos com sucesso!`, 'success')
+        for (const id of ids) {
+          await $fetch(`/api/admin/products?id=${id}`, {
+            method: 'DELETE'
+          })
+        }
+        triggerToast(`${ids.length} equipamento(s) removido(s) do catálogo.`, 'success')
         await fetchProducts()
       } catch (err: any) {
         console.error(err)
-        triggerToast(`Erro ao remover equipamentos selecionados: ${err.message || err}`, 'error')
-      } finally {
-        loading.value = false
+        triggerToast(`Erro ao remover produtos: ${err.message || err}`, 'error')
       }
     }
   }
 
   const deleteAllProducts = async () => {
-    if (confirm('Deseja realmente remover TODOS os produtos do catálogo? Esta ação não pode ser desfeita.')) {
-      loading.value = true
+    if (confirm('ATENÇÃO: Deseja realmente remover TODOS os equipamentos do catálogo? Esta ação não pode ser desfeita.')) {
       try {
-        const { error } = await supabase.from('products').delete().neq('id', 0)
-        if (error) throw error
-        triggerToast('Todos os produtos foram removidos do catálogo com sucesso!', 'success')
+        await $fetch('/api/admin/products?id=all', {
+          method: 'DELETE'
+        })
+        triggerToast('Todos os equipamentos foram removidos do catálogo.', 'success')
         await fetchProducts()
       } catch (err: any) {
         console.error(err)
-        triggerToast(`Erro ao remover todos os produtos: ${err.message}`, 'error')
-      } finally {
-        loading.value = false
+        triggerToast(`Erro ao remover todos os produtos: ${err.message || err}`, 'error')
       }
     }
   }
@@ -572,8 +570,10 @@ export function useAdminProducts(triggerToast: (msg: string, type?: 'success' | 
       }
       
       try {
-        const { error } = await supabase.from('products').insert(parsedProducts)
-        if (error) throw error
+        await $fetch('/api/admin/products', {
+          method: 'POST',
+          body: parsedProducts
+        })
         triggerToast(`${parsedProducts.length} produtos importados com sucesso!`, 'success')
         
         const { fetchAssets } = useCategoryColors()
@@ -613,12 +613,15 @@ export function useAdminProducts(triggerToast: (msg: string, type?: 'success' | 
         const upperCat = (p.category || 'GERAL').toUpperCase().trim()
         
         if (upperTitle !== p.title || upperCat !== p.category) {
-          const { error: updateErr } = await supabase
-            .from('products')
-            .update({ title: upperTitle, category: upperCat })
-            .eq('id', p.id)
-          
-          if (!updateErr) updatedCount++
+          try {
+            await $fetch(`/api/admin/products?id=${p.id}`, {
+              method: 'PUT',
+              body: { title: upperTitle, category: upperCat }
+            })
+            updatedCount++
+          } catch (updateErr) {
+            console.error('Error updating uppercase product:', updateErr)
+          }
         }
       }
 

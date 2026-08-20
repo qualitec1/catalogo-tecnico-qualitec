@@ -3658,21 +3658,18 @@ const saveSettings = async () => {
       .from('pdf_settings')
       .select('id, layout_settings')
       .eq('category', 'GERAL')
-      .single()
+      .maybeSingle()
 
     const currentLayout = geralData?.layout_settings || {}
     currentLayout.site_settings = { ...settings }
 
-    if (geralData?.id) {
-      await supabase
-        .from('pdf_settings')
-        .update({ layout_settings: currentLayout })
-        .eq('id', geralData.id)
-    } else {
-      await supabase
-        .from('pdf_settings')
-        .insert([{ category: 'GERAL', layout_settings: currentLayout }])
-    }
+    await $fetch('/api/admin/settings', {
+      method: 'POST',
+      body: {
+        category: 'GERAL',
+        layout_settings: currentLayout
+      }
+    })
 
     await fetchSiteSettings(true)
 

@@ -234,7 +234,7 @@
                     <input v-model="cards[activeCard - 1].link_label_es" type="text" placeholder="Ver nuestros productos" class="flex-1 border border-gray-300 px-3 py-1.5 text-xs rounded bg-white focus:ring-1 focus:ring-emerald-500 focus:outline-none" />
                   </div>
                 </div>
-
+                
                 <!-- Preview -->
                 <div class="border border-dashed border-emerald-300 rounded p-3 bg-white mt-2">
                   <p class="text-[10px] text-gray-400 mb-2 uppercase font-bold">Prévia</p>
@@ -336,9 +336,9 @@ const saveCard = async (n: number) => {
   saving.value = true
   try {
     const card = cards.value[n - 1]
-    const { error } = await (supabase as any)
-      .from('home_news_cards')
-      .upsert({
+    await $fetch('/api/admin/news', {
+      method: 'POST',
+      body: {
         id: card.id,
         title_pt: card.title_pt,
         title_en: card.title_en,
@@ -349,11 +349,10 @@ const saveCard = async (n: number) => {
         link_label_pt: card.link_label_pt,
         link_label_en: card.link_label_en,
         link_label_es: card.link_label_es,
-        show_link_button: card.show_link_button,
-        updated_at: new Date().toISOString()
-      }, { onConflict: 'id' })
+        show_link_button: card.show_link_button
+      }
+    })
 
-    if (error) throw error
     props.triggerToast(`✅ Card ${n} salvo com sucesso!`, 'success')
   } catch (err: any) {
     props.triggerToast(`Erro ao salvar Card ${n}: ${err.message}`, 'error')

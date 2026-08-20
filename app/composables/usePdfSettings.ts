@@ -24,8 +24,9 @@ export default function usePdfSettings() {
 
   const fetchPdfSettings = async () => {
     try {
-      const { data, error } = await supabase.from('pdf_settings').select('*')
-      console.log('[usePdfSettings] fetchPdfSettings called. data rows:', data?.length, 'error:', error)
+      const response = await $fetch<{ settings?: any[] }>('/api/public/settings')
+      const data = response?.settings || []
+      console.log('[usePdfSettings] fetchPdfSettings called. data rows:', data.length)
       if (data) {
         const mapping: Record<string, PdfSettings> = {}
         for (const item of data) {

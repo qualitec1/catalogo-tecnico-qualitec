@@ -19,6 +19,10 @@
             <span class="material-symbols-outlined text-sm mr-1">arrow_back</span>
             Ver Catálogo
           </NuxtLink>
+          <button @click="handleLogout" class="text-xs text-red-300 hover:text-red-100 transition-colors uppercase font-bold flex items-center bg-red-950/40 hover:bg-red-900/60 px-3 py-1.5 rounded border border-red-800/50">
+            <span class="material-symbols-outlined text-sm mr-1">logout</span>
+            Sair
+          </button>
         </div>
       </div>
     </header>
@@ -249,8 +253,18 @@ import { useAdminProducts } from '../composables/useAdminProducts'
 import { useCatalog } from '../composables/useCatalog'
 
 definePageMeta({
-  layout: false
+  layout: false,
+  middleware: ['admin']
 })
+
+const handleLogout = async () => {
+  try {
+    await $fetch('/api/auth/logout', { method: 'POST' })
+  } catch (e) {
+    console.error('Logout error:', e)
+  }
+  await navigateTo('/login')
+}
 
 const {
   fetchAssets: fetchAdminCatalogAssets,

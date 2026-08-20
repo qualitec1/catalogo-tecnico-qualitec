@@ -20,7 +20,8 @@ export default function useCategoryColors() {
   const fetchAssets = async () => {
     try {
       const { data } = await supabase.from('category_assets').select('*')
-      const { data: pdfSettingsData } = await supabase.from('pdf_settings').select('*')
+      const publicSettingsRes = await $fetch<{ settings?: any[] }>('/api/public/settings')
+      const pdfSettingsData = publicSettingsRes?.settings || []
       if (data) {
         const mapping: Record<string, CategoryAsset> = {}
         for (const item of data) {

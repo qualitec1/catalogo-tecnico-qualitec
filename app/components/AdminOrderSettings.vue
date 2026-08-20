@@ -432,23 +432,20 @@ const saveCategoriesOrder = async () => {
       .from('pdf_settings')
       .select('id, layout_settings')
       .eq('category', 'GERAL')
-      .single()
+      .maybeSingle()
 
     const currentLayout = geralData?.layout_settings || {}
     currentLayout.category_order = categoriesList.value
     currentLayout.show_category_buttons = showCategoryButtons.value
     currentLayout.category_button_groups = categoryGroups.value
 
-    if (geralData?.id) {
-      await supabase
-        .from('pdf_settings')
-        .update({ layout_settings: currentLayout })
-        .eq('id', geralData.id)
-    } else {
-      await supabase
-        .from('pdf_settings')
-        .insert([{ category: 'GERAL', layout_settings: currentLayout }])
-    }
+    await $fetch('/api/admin/settings', {
+      method: 'POST',
+      body: {
+        category: 'GERAL',
+        layout_settings: currentLayout
+      }
+    })
 
     props.triggerToast?.('Ordem e configurações das categorias salvas com sucesso!', 'success')
   } catch (err: any) {
@@ -542,10 +539,10 @@ const saveProductsOrder = async () => {
     for (let i = 0; i < productsList.value.length; i++) {
       const prod = productsList.value[i]
       prod.sortOrder = i + 1
-      await supabase
-        .from('products')
-        .update({ sort_order: i + 1 })
-        .eq('id', prod.id)
+      await $fetch(`/api/admin/products?id=${prod.id}`, {
+        method: 'PUT',
+        body: { sort_order: i + 1 }
+      })
     }
 
     props.triggerToast?.('Ordem dos equipamentos salva com sucesso!', 'success')

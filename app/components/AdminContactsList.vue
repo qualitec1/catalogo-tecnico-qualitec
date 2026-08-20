@@ -210,83 +210,13 @@ const selectedContact = ref<ContactRecord | null>(null)
 const fetchContacts = async () => {
   loading.value = true
   try {
-    const supabase = useSupabaseClient()
-    let list: ContactRecord[] = []
-
-    // 1. Busca no JSON de 'pdf_settings'
-    try {
-      const { data: pdfData } = await supabase
-        .from('pdf_settings')
-        .select('layout_settings')
-
-      if (pdfData && pdfData.length > 0) {
-        const contactMap = new Map<string, ContactRecord>()
-
-        for (const row of pdfData) {
-          const cnts = row.layout_settings?.contact_submissions
-          if (Array.isArray(cnts)) {
-            for (const c of cnts) {
-              if (c) {
-                const id = c.id || c.created_at || Math.random().toString()
-                contactMap.set(id, c)
-              }
-            }
-          }
-        }
-
-        list = Array.from(contactMap.values())
-      }
-    } catch (_) {}
-
-    // 2. Tenta buscar na nova tabela 'contact_submissions'
-    try {
-      const { data: tblData } = await supabase
-        .from('contact_submissions')
-        .select('*')
-
-      if (tblData && tblData.length > 0) {
-        const contactMap = new Map<string, ContactRecord>()
-
-        for (const c of list) {
-          if (c?.id) contactMap.set(c.id, c)
-        }
-
-        for (const item of tblData) {
-          if (item) {
-            const mapped: ContactRecord = {
-              id: item.id,
-              name: item.name,
-              email: item.email,
-              phone: item.phone,
-              company: item.company,
-              subject: item.subject,
-              message: item.message,
-              productName: item.product_name,
-              type: item.type || 'contact',
-              created_at: item.created_at
-            }
-            contactMap.set(item.id || Math.random().toString(), mapped)
-          }
-        }
-
-        list = Array.from(contactMap.values())
-      }
-    } catch (_) {}
-
-    // 3. Fallback para a rota interna de API
-    if (list.length === 0) {
-      const res = await fetch('/api/admin/contacts')
-      const data = await res.json()
-      if (data?.contacts && data.contacts.length > 0) {
-        list = data.contacts
-      }
-    }
-
-    contacts.value = list.sort(
+    const data = await $fetch<{ contacts?: ContactRecord[] }>('/api/admin/contacts')
+    contacts.value = (data?.contacts || []).sort(
       (a, b) => new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime()
     )
   } catch (err) {
     console.error('Erro ao carregar contatos:', err)
+    props.triggerToast?.('Erro ao carregar lista de contatos', 'error')
   } finally {
     loading.value = false
   }

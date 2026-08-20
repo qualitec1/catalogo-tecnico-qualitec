@@ -400,10 +400,12 @@ export function useTranslationsAdmin() {
       section: e.section,
       updated_at: new Date().toISOString(),
     }))
-    const { error } = await supabase
-      .from('site_translations')
-      .upsert(rows, { onConflict: 'lang_code,key' })
-    if (error) throw error
+
+    await $fetch('/api/admin/translations', {
+      method: 'POST',
+      body: rows
+    })
+
     // Update local cache
     entries.forEach(e => {
       dbOverrides.value[lang][e.key as TranslationKey] = e.value

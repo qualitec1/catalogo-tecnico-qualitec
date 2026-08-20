@@ -1,6 +1,10 @@
 import { createClient } from '@supabase/supabase-js'
+import { requireAdmin } from '../../utils/requireAdmin'
 
 export default defineEventHandler(async (event) => {
+  // Exige administrador autenticado e ativo
+  await requireAdmin(event)
+
   try {
     const config = useRuntimeConfig()
     const supabaseUrl =
