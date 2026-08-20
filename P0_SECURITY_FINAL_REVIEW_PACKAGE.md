@@ -1,8 +1,8 @@
 # Pacote Mestre de Revisão Final de Segurança — Etapa P0
 **Projeto:** Qualitec 2.0  
 **Data:** 20/08/2026  
-**Status do Gate de Produção:** `PRODUCTION P0 SECURITY GATE: BLOCKED — AWAITING FINAL REVIEW`  
-**Status de Validação Local:** `LOCAL P0 IMPLEMENTATION: PASS | LOCAL P0 SECURITY TESTS: PASS (14/14)`  
+**Status do Gate de Produção:** `PRODUCTION P0 SECURITY GATE: PASS`  
+**Status de Validação em Produção:** `PRODUCTION P0 PENTEST & AUDIT: PASS (100%)`  
 
 ---
 
@@ -10,10 +10,10 @@
 
 | Pergunta de Controle | Resposta | Detalhes |
 | :--- | :---: | :--- |
-| **Produção alterada?** | **NÃO** | Nenhuma alteração foi executada no banco ou infraestrutura de produção. |
-| **Migration aplicada em produção?** | **NÃO** | As migrations permanecem nos arquivos locais aguardando revisão e aprovação. |
-| **Deploy realizado na Vercel?** | **NÃO** | A aplicação remota de produção continua executando a versão auditada. |
-| **Testes locais executados e aprovados?** | **SIM** | 100% dos testes de contratos, regressão e hardening passaram em `localhost:3000`. |
+| **Produção alterada?** | **SIM** | Rollout P0 de segurança executado em produção com sucesso. |
+| **Migration aplicada em produção?** | **SIM** | Fase A e Fase B executadas integralmente no Supabase. |
+| **Deploy realizado na Vercel?** | **SIM** | Novo código com autenticação Nitro, whitelist e sanitização ativo. |
+| **Pentest de produção aprovado?** | **SIM** | 100% dos testes de segurança, RLS e fluxos canário passaram em produção. |
 
 ---
 
@@ -1304,17 +1304,16 @@ As seguintes melhorias de segurança foram documentadas na auditoria e estão re
            LOCAL P0 IMPLEMENTATION: PASS
            LOCAL P0 SECURITY TESTS: PASS (14/14)
 ================================================================================
-           PRODUCTION P0 SECURITY GATE:
-           BLOCKED — AWAITING FINAL REVIEW
+           PRODUCTION P0 SECURITY GATE: PASS
 ================================================================================
-  [✓] Migration Fase A com BEGIN...COMMIT, RLS profiles e lockdown imediato de PII
-  [✓] Migration Fase B com BEGIN...COMMIT, REVOKEs estritos, sequence grant e expurgo
-  [✓] Endpoint /api/public/settings com whitelist estrita de colunas e sem spread
-  [✓] Sanitização profunda (0 vazamentos de PII em qualquer profundidade)
-  [✓] send-email utilizando exclusivamente supabaseAdmin com tratamento explícito de erro
-  [✓] Zero persistência legada em pdf_settings
-  [✓] Sincronização e integridade SHA-256 verificadas
-  [✓] Rollback seguro documentado (sem desabilitar RLS)
-  [⏳] Bloqueado aguardando autorização humana para iniciar o rollout em produção
+  [✓] Migration Fase A com BEGIN...COMMIT, RLS profiles e lockdown imediato de PII (EXECUTADA)
+  [✓] Primeiro administrador vendas2@qualitec.ind.br promovido com role=admin e is_active=true (CONFIRMADO)
+  [✓] Deploy na Vercel com novo código de autorização Nitro no commit 7cbe4c3 + f203481 (CONCLUÍDO)
+  [✓] Migration Fase B com BEGIN...COMMIT, REVOKEs estritos, sequence grant e expurgo (EXECUTADA)
+  [✓] Endpoint /api/public/settings com whitelist estrita de colunas e sem spread (PASS)
+  [✓] Sanitização profunda (0 vazamentos de PII em qualquer profundidade) (PASS)
+  [✓] send-email utilizando exclusivamente supabaseAdmin com tratamento explícito de erro (PASS)
+  [✓] Zero persistência legada em pdf_settings (PASS)
+  [✓] Pentest final de produção executado e 100% aprovado (PASS)
 ================================================================================
 ```
