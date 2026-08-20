@@ -2,19 +2,22 @@ import 'dotenv/config'
 import ws from 'ws'
 import { createClient } from '@supabase/supabase-js'
 
-// Do not throw on import time to allow dev server to start when envs are missing.
-// Export `supabaseAdmin` as `null` when config is not present; endpoints should
-// handle the absence and return proper errors. This prevents an uncaught
-// exception during module initialization.
+// Client exclusivo para operações administrativas / service_role no servidor.
+// Configurado sem persistência de sessão para evitar contaminação em ambiente server-side.
 let _supabaseAdmin: any = null
 
-if (process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY) {
+const supabaseUrl = process.env.SUPABASE_URL || process.env.NUXT_PUBLIC_SUPABASE_URL
+const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+
+if (supabaseUrl && serviceRoleKey) {
   _supabaseAdmin = createClient(
-    process.env.SUPABASE_URL,
-    process.env.SUPABASE_SERVICE_ROLE_KEY,
+    supabaseUrl,
+    serviceRoleKey,
     {
       auth: {
-        persistSession: false
+        persistSession: false,
+        autoRefreshToken: false,
+        detectSessionInUrl: false
       },
       realtime: {
         transport: ws
@@ -22,9 +25,8 @@ if (process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY) {
     }
   )
 } else {
-  // Informative warning for developer
   // eslint-disable-next-line no-console
-  console.warn('Warning: SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY not set. supabaseAdmin will be null.')
+  console.warn('[Security] SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY not set. supabaseAdmin is null.')
 }
 
 export const supabaseAdmin = _supabaseAdmin
