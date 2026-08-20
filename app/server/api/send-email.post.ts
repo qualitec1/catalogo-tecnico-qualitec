@@ -1,3 +1,6 @@
+import { resolve } from 'node:path'
+import nodemailer from 'nodemailer'
+import { readBody, createError } from 'h3'
 import { supabaseAdmin } from '../utils/supabaseAdmin'
 
 async function saveNewsletterSubscriber(email: string, lang: string): Promise<{ success: boolean; error?: string }> {
