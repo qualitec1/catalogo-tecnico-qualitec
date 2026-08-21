@@ -18,7 +18,7 @@ export default defineEventHandler(async (event) => {
     return sendError(event, createError({ statusCode: 503, statusMessage: 'Supabase is not configured on server.' }))
   }
 
-  // Get user info from Supabase Auth using accessToken
+  // Obter informações do usuário a partir do token
   const { data: { user }, error: authError } = await supabaseAdmin.auth.getUser(accessToken)
 
   if (authError || !user) {
@@ -32,12 +32,14 @@ export default defineEventHandler(async (event) => {
     .eq('id', user.id)
     .maybeSingle()
 
-  const isAdmin = profile?.role === 'admin' && profile?.is_active === true
+  const isActive = profile?.is_active === true
+  const isMasterAdmin = profile?.role === 'master_admin' && isActive
+  const isAdmin = (profile?.role === 'admin' || isMasterAdmin) && isActive
 
   return {
     user,
     profile: profile || null,
-    isAdmin
+    isAdmin,
+    isMasterAdmin
   }
 })
-

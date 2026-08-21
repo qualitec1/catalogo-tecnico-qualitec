@@ -1,13 +1,13 @@
-// Plugin Nuxt: inicializa o cliente Supabase com o transport ws correto no servidor
-// e WebSocket nativo no browser. Injeta via provide para uso em todo o app.
+// Plugin Nuxt: inicializa o cliente Supabase
+// No servidor: usa cliente leve sem WebSocket e sem persistência
+// No browser: usa WebSocket nativo
 import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 
 export default defineNuxtPlugin(async (nuxtApp) => {
   const runtimeConfig = useRuntimeConfig()
 
   if (import.meta.server) {
-    // Popula runtimeConfig.public no servidor a partir do process.env do Docker
-    // Isso é enviado automaticamente para o browser no payload SSR do Nuxt!
+    // Popula runtimeConfig.public no servidor a partir do process.env
     const url = process.env.SUPABASE_URL || process.env.NUXT_PUBLIC_SUPABASE_URL || (runtimeConfig.public as any).supabaseUrl
     const key = process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_KEY || process.env.NUXT_PUBLIC_SUPABASE_ANON_KEY || (runtimeConfig.public as any).supabaseAnonKey
 
@@ -15,7 +15,6 @@ export default defineNuxtPlugin(async (nuxtApp) => {
     if (key) (runtimeConfig.public as any).supabaseAnonKey = key
   }
 
-  // runtimeConfig.public está disponível tanto no servidor quanto no browser após hidratação
   const supabaseUrl =
     ((runtimeConfig.public as any)?.supabaseUrl as string) ||
     (import.meta.server ? process.env.SUPABASE_URL || process.env.NUXT_PUBLIC_SUPABASE_URL : '') ||
@@ -41,18 +40,14 @@ export default defineNuxtPlugin(async (nuxtApp) => {
 
   if (supabaseUrl && supabaseAnonKey) {
     if (import.meta.server) {
-      // No servidor: usar 'ws' como transport do Realtime para evitar erro no Node < 22
-      const ws = await import('ws').then(m => m.default ?? m)
       client = createClient(supabaseUrl, supabaseAnonKey, {
-        auth: { persistSession: false },
-        realtime: { transport: ws as any }
+        auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false }
       })
 
       if (tokenState.value) {
         await client.auth.setSession({ access_token: tokenState.value, refresh_token: '' })
       }
     } else {
-      // No browser: WebSocket nativo disponível
       client = createClient(supabaseUrl, supabaseAnonKey)
 
       if (tokenState.value) {
@@ -67,4 +62,3 @@ export default defineNuxtPlugin(async (nuxtApp) => {
     }
   }
 })
-

@@ -1,13 +1,19 @@
 // Middleware de rate limiting para proteção contra força bruta e DDoS
 import { createError, sendError, getRequestIP } from 'h3'
 
-// Armazena tentativas por IP (em produção usar Redis)
+// Armazena tentativas por IP
 const rateLimitStore = new Map<string, { count: number; resetAt: number }>()
 
 // Configurações de rate limit por rota
 const rateLimitConfig: Record<string, { maxRequests: number; windowMs: number }> = {
   '/api/auth/login': { maxRequests: 5, windowMs: 15 * 60 * 1000 }, // 5 tentativas em 15 min
   '/api/auth/register': { maxRequests: 3, windowMs: 60 * 60 * 1000 }, // 3 tentativas em 1 hora
+  '/api/auth/totp/setup': { maxRequests: 5, windowMs: 15 * 60 * 1000 }, // 5 tentativas em 15 min
+  '/api/auth/totp/confirm': { maxRequests: 6, windowMs: 15 * 60 * 1000 }, // 6 tentativas de 6 dígitos em 15 min (anti brute-force)
+  '/api/auth/totp/disable': { maxRequests: 5, windowMs: 15 * 60 * 1000 }, // 5 tentativas em 15 min
+  '/api/admin/users/invite': { maxRequests: 5, windowMs: 15 * 60 * 1000 }, // 5 convites em 15 min
+  '/api/admin/users/resend-invite': { maxRequests: 5, windowMs: 15 * 60 * 1000 }, // 5 reenvios em 15 min
+  '/api/admin/users/status': { maxRequests: 10, windowMs: 15 * 60 * 1000 }, // 10 alterações em 15 min
   '/api/upload-r2': { maxRequests: 10, windowMs: 60 * 1000 }, // 10 uploads por minuto
   '/api/admin/products': { maxRequests: 100, windowMs: 60 * 1000 }, // 100 req por minuto
 }

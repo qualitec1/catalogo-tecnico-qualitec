@@ -96,6 +96,14 @@
           <span class="material-symbols-outlined text-base">forum</span>
           Contatos do Chat
         </button>
+        <button @click="currentTab = 'administradores'" :class="currentTab === 'administradores' ? 'bg-indigo-900 text-white font-bold' : 'text-slate-600 hover:bg-slate-100 font-semibold'" class="px-6 py-2.5 text-xs uppercase tracking-wider rounded transition-colors border-0 cursor-pointer flex items-center gap-1">
+          <span class="material-symbols-outlined text-base">manage_accounts</span>
+          Administradores
+        </button>
+        <button @click="currentTab = 'seguranca'" :class="currentTab === 'seguranca' ? 'bg-slate-950 text-white font-bold' : 'text-slate-600 hover:bg-slate-100 font-semibold'" class="px-6 py-2.5 text-xs uppercase tracking-wider rounded transition-colors border-0 cursor-pointer flex items-center gap-1">
+          <span class="material-symbols-outlined text-base">shield_lock</span>
+          Segurança
+        </button>
       </div>
 
       <!-- Tab: Products -->
@@ -184,6 +192,20 @@
       <!-- Tab: Contatos do Chat / Site -->
       <div v-show="currentTab === 'contatos'">
         <AdminContactsList
+          :trigger-toast="triggerToast"
+        />
+      </div>
+
+      <!-- Tab: Administradores & Convites -->
+      <div v-show="currentTab === 'administradores'">
+        <AdminUsersManagement
+          :trigger-toast="triggerToast"
+        />
+      </div>
+
+      <!-- Tab: Segurança & 2FA -->
+      <div v-show="currentTab === 'seguranca'">
+        <AdminSecuritySettings
           :trigger-toast="triggerToast"
         />
       </div>

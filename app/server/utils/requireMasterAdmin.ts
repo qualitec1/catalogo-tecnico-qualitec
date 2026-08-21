@@ -1,24 +1,12 @@
 import { H3Event, getCookie, getHeader, createError } from 'h3'
 import { supabaseAdmin } from './supabaseAdmin'
-
-export interface AdminUserContext {
-  user: {
-    id: string
-    email?: string
-    [key: string]: any
-  }
-  profile: {
-    role: string
-    is_active: boolean
-    [key: string]: any
-  }
-}
+import type { AdminUserContext } from './requireAdmin'
 
 /**
- * Valida se a requisição atual possui uma sessão válida de administrador (admin ou master_admin) ativo.
- * Lança 401 se não autenticado e 403 se autenticado mas não autorizado.
+ * Valida se a requisição atual possui uma sessão válida exclusivamente de MASTER_ADMIN ativo.
+ * Lança 401 se não autenticado e 403 se não for master_admin ativo.
  */
-export async function requireAdmin(event: H3Event): Promise<AdminUserContext> {
+export async function requireMasterAdmin(event: H3Event): Promise<AdminUserContext> {
   // 1. Obter o access token do cookie ou do header Authorization
   let accessToken = getCookie(event, 'sb-access-token')
   if (!accessToken) {
@@ -36,7 +24,7 @@ export async function requireAdmin(event: H3Event): Promise<AdminUserContext> {
   }
 
   if (!supabaseAdmin) {
-    console.error('[requireAdmin] supabaseAdmin is not initialized.')
+    console.error('[requireMasterAdmin] supabaseAdmin is not initialized.')
     throw createError({
       statusCode: 503,
       statusMessage: 'Authentication service unavailable.'
@@ -53,7 +41,7 @@ export async function requireAdmin(event: H3Event): Promise<AdminUserContext> {
     })
   }
 
-  // 3. Consultar perfil e autorização administrativa
+  // 3. Consultar perfil e autorização de Master Admin
   const { data: profile, error: profileError } = await supabaseAdmin
     .from('profiles')
     .select('id, full_name, role, is_active')
@@ -61,19 +49,18 @@ export async function requireAdmin(event: H3Event): Promise<AdminUserContext> {
     .maybeSingle()
 
   if (profileError) {
-    console.warn('[requireAdmin] Could not verify profiles table/columns:', profileError.message)
+    console.warn('[requireMasterAdmin] Could not verify profiles table/columns:', profileError.message)
     throw createError({
       statusCode: 403,
-      statusMessage: 'Forbidden: Administrative profile not found or unverified.'
+      statusMessage: 'Forbidden: Profile not found or unverified.'
     })
   }
 
-  // Permite tanto 'admin' quanto 'master_admin' desde que is_active seja true
-  const hasAdminRole = profile?.role === 'admin' || profile?.role === 'master_admin'
-  if (!profile || !hasAdminRole || profile.is_active !== true) {
+  // Apenas 'master_admin' ativo é autorizado
+  if (!profile || profile.role !== 'master_admin' || profile.is_active !== true) {
     throw createError({
       statusCode: 403,
-      statusMessage: 'Forbidden: You do not have administrative privileges.'
+      statusMessage: 'Forbidden: Esta operação requer privilégios exclusivos de Master Admin.'
     })
   }
 

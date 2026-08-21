@@ -70,8 +70,9 @@ export default defineEventHandler(async (event) => {
     }))
   }
 
-  if (!profile || profile.role !== 'admin' || profile.is_active !== true) {
-    console.warn('[Security] Login blocked - User is not an active admin:', {
+  const hasAdminPrivilege = profile?.role === 'admin' || profile?.role === 'master_admin'
+  if (!profile || !hasAdminPrivilege || profile.is_active !== true) {
+    console.warn('[Security] Login blocked - User is not an active admin/master_admin:', {
       userId,
       email: maskedEmail,
       role: profile?.role || 'none',

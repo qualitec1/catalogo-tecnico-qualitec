@@ -1,6 +1,9 @@
-import 'dotenv/config'
 import ws from 'ws'
 import { createClient } from '@supabase/supabase-js'
+
+if (typeof (globalThis as any).WebSocket === 'undefined') {
+  ;(globalThis as any).WebSocket = ws
+}
 
 let _supabaseServer: any = null
 
@@ -12,6 +15,11 @@ if (url && key) {
     url,
     key,
     {
+      auth: {
+        persistSession: false,
+        autoRefreshToken: false,
+        detectSessionInUrl: false
+      },
       realtime: {
         transport: ws
       }
@@ -22,4 +30,3 @@ if (url && key) {
 }
 
 export const supabaseServer = _supabaseServer
-

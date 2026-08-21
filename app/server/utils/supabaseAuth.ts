@@ -1,8 +1,11 @@
-import 'dotenv/config'
+import ws from 'ws'
 import { createClient } from '@supabase/supabase-js'
 
-// Client exclusivo para autenticação pública / signInWithPassword via anon key.
-// Configurado sem persistência de sessão para evitar contaminação em ambiente server-side.
+// Polyfill seguro de WebSocket para Node.js < 22 no runtime SSR do Nitro
+if (typeof (globalThis as any).WebSocket === 'undefined') {
+  ;(globalThis as any).WebSocket = ws
+}
+
 let _supabaseAuth: any = null
 
 const supabaseUrl = process.env.SUPABASE_URL || process.env.NUXT_PUBLIC_SUPABASE_URL
@@ -17,6 +20,9 @@ if (supabaseUrl && anonKey) {
         persistSession: false,
         autoRefreshToken: false,
         detectSessionInUrl: false
+      },
+      realtime: {
+        transport: ws
       }
     }
   )

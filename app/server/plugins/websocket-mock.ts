@@ -1,7 +1,8 @@
-// Este plugin era necessário para mockar WebSocket no Node < 22.
-// Agora o app/plugins/supabase.ts usa o pacote 'ws' diretamente como
-// transport do Supabase Realtime, tornando este mock desnecessário.
-export default defineNitroPlugin(() => {
-  // noop — WebSocket handled by app/plugins/supabase.ts
-})
+// Plugin Nitro: Define WebSocket global no servidor Node < 22 para o Supabase Realtime
+import ws from 'ws'
 
+export default defineNitroPlugin(() => {
+  if (typeof (globalThis as any).WebSocket === 'undefined') {
+    ;(globalThis as any).WebSocket = ws
+  }
+})
