@@ -11,7 +11,7 @@
               <img
                 alt="Qualitec Logo"
                 class="w-auto object-contain pointer-events-none transition-transform duration-150 select-none"
-                :src="siteSettings.header_logo_url || 'https://lh3.googleusercontent.com/aida/AP1WRLvb_lGcigKW6su6LN_Xd0Bf0AXsewLIulAi0GxcP_qLjBKDQwKkr4TLJgHAmnOXZ_CnTBIs1fPQUk9wsPoaEnw1KIo3G_pm2AD72CQGZpdCmL0me0d5Nw3sO0Jq1oNeH0TPtE84vraycYx20zMTmWG9t98pFKFcZH8ovF5vpsN6YK6J2ZqjcN6pDWW8byB81uqO2z6Crk115D73Mm9qXI78ObCCnUJ9BmIfEJoVkKB3TB8-KPNPPQ8kG9Y'"
+                :src="siteSettings.header_logo_url || 'https://pub-25a6482a064a4590a456d3dd2a76114b.r2.dev/1785536986887_0a3ga6_qualitec_logo.png'"
                 :style="{
                   height: `${siteSettings.header_logo_height || 48}px`,
                   transform: `translate(${siteSettings.header_logo_offset_x || 0}px, ${siteSettings.header_logo_offset_y || 0}px)`
@@ -635,6 +635,7 @@ const { currentLang, t, mergedTranslations, setLanguage } = useTranslations()
 
 // Configurações Globais do Site
 const { siteSettings, fetchSiteSettings } = useSiteSettings()
+await useAsyncData('site-settings', () => fetchSiteSettings())
 
 // Menu Árvore do MegaMenu
 const { megaMenuTree } = useCatalog()

@@ -11,7 +11,7 @@
               <img
                 alt="Qualitec Logo"
                 class="w-auto object-contain pointer-events-none transition-transform duration-150 select-none"
-                :src="siteSettings.header_logo_url || 'https://lh3.googleusercontent.com/aida/AP1WRLvb_lGcigKW6su6LN_Xd0Bf0AXsewLIulAi0GxcP_qLjBKDQwKkr4TLJgHAmnOXZ_CnTBIs1fPQUk9wsPoaEnw1KIo3G_pm2AD72CQGZpdCmL0me0d5Nw3sO0Jq1oNeH0TPtE84vraycYx20zMTmWG9t98pFKFcZH8ovF5vpsN6YK6J2ZqjcN6pDWW8byB81uqO2z6Crk115D73Mm9qXI78ObCCnUJ9BmIfEJoVkKB3TB8-KPNPPQ8kG9Y'"
+                :src="siteSettings.header_logo_url || 'https://pub-25a6482a064a4590a456d3dd2a76114b.r2.dev/1785536986887_0a3ga6_qualitec_logo.png'"
                 :style="{
                   height: `${siteSettings.header_logo_height || 48}px`,
                   transform: `translate(${siteSettings.header_logo_offset_x || 0}px, ${siteSettings.header_logo_offset_y || 0}px)`
@@ -128,7 +128,7 @@
         <img 
           alt="Painel de instrumentos industriais" 
           class="absolute inset-0 w-full h-full object-cover z-0" 
-          :src="siteSettings.hero_bg_image_url || 'https://lh3.googleusercontent.com/aida/AP1WRLuQGJlvhXgSbL5PCfgd-rVegzYgpPNJgtHn0Ea6Nm0tVayzLhjzQkKmbYMugrdMebtxFro3tlHv1N8ozueW3IWAmerLpn5BMh0-V4suiSBYyv-_1zhWqzLrg3b4d-rpkTVAeU22eoHKYZCmNp_AZySP90gelzHtlnS-8x3nRmtLSJEw4C0yhBjOP0LTv8cqJJere8bX1erK4A1HpU_AQV5WthPlinuCGSknmAf4oBmhbRpEqOyxTA2YAMo'"
+          :src="siteSettings.hero_bg_image_url || 'https://pub-25a6482a064a4590a456d3dd2a76114b.r2.dev/categories/cover_geral.png'"
         />
 
         <!-- Video Background Overlay -->
@@ -145,7 +145,6 @@
             ></iframe>
           </div>
 
-          <!-- Direct HTML5 MP4 / WebM / Wix Video -->
           <video 
             v-else
             ref="heroVideoRef"
@@ -158,10 +157,6 @@
             webkit-playsinline
             preload="auto"
             referrerpolicy="no-referrer"
-            @loadedmetadata="playVideo"
-            @loadeddata="playVideo"
-            @canplay="playVideo"
-            @canplaythrough="playVideo"
             :src="parsedVideo.url"
           ></video>
         </template>
@@ -588,6 +583,7 @@ import useTranslations from '../composables/useTranslations'
 import { useTranslationsAdmin } from '../composables/useTranslations'
 
 const { siteSettings, fetchSiteSettings } = useSiteSettings()
+await useAsyncData('site-settings', () => fetchSiteSettings())
 const { t, currentLang, translatedSegments, mergedTranslations } = useTranslations()
 const { fetchTranslationsFromDB } = useTranslationsAdmin()
 const heroVideoRef = ref<HTMLVideoElement | null>(null)
@@ -634,9 +630,9 @@ interface NewsCard {
 }
 
 const defaultImages = [
-  'https://lh3.googleusercontent.com/aida/AP1WRLuQGJlvhXgSbL5PCfgd-rVegzYgpPNJgtHn0Ea6Nm0tVayzLhjzQkKmbYMugrdMebtxFro3tlHv1N8ozueW3IWAmerLpn5BMh0-V4suiSBYyv-_1zhWqzLrg3b4d-rpkTVAeU22eoHKYZCmNp_AZySP90gelzHtlnS-8x3nRmtLSJEw4C0yhBjOP0LTv8cqJJere8bX1erK4A1HpU_AQV5WthPlinuCGSknmAf4oBmhbRpEqOyxTA2YAMo',
-  'https://lh3.googleusercontent.com/aida/AP1WRLuG8sZS2kOzj2vWiRJKUV2sBhsBQRWjVrjvR4wnSCqsuaozGrwLnu6MrCdeDc6xKeiRnf6slFTLtforvCKE7HTmjBOJeaU_T8oysOKzPgniF9frKcP6lAwR0QKqFO4ZO6opkVFeH45aEY72r6WhAnegRADQXfnRkibd80aizun5t04sqBpqCts1rDtBiRSA3QJDdstMlsoDw3n9s5ZbF_-xMhue9TPDh7AXsaZgogGTYlpRNluclB6ax78',
-  'https://lh3.googleusercontent.com/aida/AP1WRLv-GfRr-b2d9wobOGuNB9O-zkRJwTQEiHQAwyyzinqVG7T8NlRQuSfpMp5ZxkXK8OD5YQ4cZqUih3JQb1iSfTVvz2mH5t5WOfwH3Nq0nTyubrNNXy2c2wnpJkkDT59Se2En1-vv580MTcE7qKQcapGD5Mwi4hxg8HM7uxxJS2hgp5rgDJRlQ5Q7-QQb4OsKI3kX9bTKAVQ_PzXV_bfUz5gn_TCDlVhk1qhr5_Xbr2maKQ_X-URbXHbcuQ'
+  'https://pub-25a6482a064a4590a456d3dd2a76114b.r2.dev/1785620464496_0m8xcv_captura_de_tela_2026-07-31_151548.png',
+  'https://pub-25a6482a064a4590a456d3dd2a76114b.r2.dev/1785762220127_5uel45_captura_de_tela_2026-07-31_165423.png',
+  'https://pub-25a6482a064a4590a456d3dd2a76114b.r2.dev/1785762337499_d5jo4c_captura_de_tela_2026-07-31_151530.png'
 ]
 
 const newsCards = ref<NewsCard[]>([
@@ -742,26 +738,13 @@ const playVideo = () => {
   const p = el.play()
   if (p !== undefined) {
     p.catch(err => {
-      console.warn('[HeroVideo] Autoplay blocked, registering gesture listener:', err)
-      const handleUserGesture = () => {
-        if (heroVideoRef.value) {
-          heroVideoRef.value.muted = true
-          heroVideoRef.value.play().catch(() => {})
-        }
-        ['click', 'touchstart', 'scroll', 'pointerdown', 'keydown'].forEach(evt => {
-          window.removeEventListener(evt, handleUserGesture)
-        })
-      }
-      ['click', 'touchstart', 'scroll', 'pointerdown', 'keydown'].forEach(evt => {
-        window.addEventListener(evt, handleUserGesture, { once: true, passive: true })
-      })
+      console.warn('[HeroVideo] Autoplay note:', err?.message || err)
     })
   }
 }
 
 onMounted(async () => {
   await Promise.all([
-    fetchSiteSettings(),
     fetchTranslationsFromDB(),
     fetchAssets(),
     loadProducts(),
@@ -771,16 +754,16 @@ onMounted(async () => {
   })
 })
 
-watch(() => [siteSettings.value.hero_bg_video_url, siteSettings.value.hero_bg_type], () => {
+watch(() => [siteSettings.value.hero_bg_video_url, siteSettings.value.hero_bg_type], (newVal, oldVal) => {
+  if (oldVal && newVal[0] === oldVal[0] && newVal[1] === oldVal[1]) return
   nextTick(() => {
     if (heroVideoRef.value) {
       heroVideoRef.value.muted = true
       heroVideoRef.value.defaultMuted = true
-      heroVideoRef.value.load()
       playVideo()
     }
   })
-}, { immediate: true, deep: true })
+})
 
 const parsedVideo = computed(() => {
   const url = (siteSettings.value.hero_bg_video_url || '').trim()

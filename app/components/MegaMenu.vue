@@ -7,7 +7,7 @@
     @mouseleave="handleContainerLeave"
   >
     <!-- Category Navigation Bar -->
-    <nav class="mega-menu-nav" :style="{ backgroundColor: siteSettings.mega_menu_bg_color || '#1d1d1f' }">
+    <nav class="mega-menu-nav" :style="{ backgroundColor: siteSettings.mega_menu_bg_color || '#ffffff' }">
       <div class="mega-menu-nav-inner" :style="{ height: `${siteSettings.mega_menu_height || 44}px` }">
         <button
           v-for="item in menuTree"
@@ -17,10 +17,10 @@
             height: `${siteSettings.mega_menu_height || 44}px`,
             fontFamily: siteSettings.mega_menu_cat_font_family || 'inherit',
             fontSize: `${siteSettings.mega_menu_cat_font_size || 12}px`,
-            color: siteSettings.mega_menu_cat_color || '#ffffff',
-            fontWeight: siteSettings.mega_menu_cat_bold ? '700' : '400',
+            color: siteSettings.mega_menu_cat_color || '#1e293b',
+            fontWeight: siteSettings.mega_menu_cat_bold ? '700' : '600',
             fontStyle: siteSettings.mega_menu_cat_italic ? 'italic' : 'normal',
-            textTransform: siteSettings.mega_menu_cat_uppercase ? 'uppercase' : 'none'
+            textTransform: siteSettings.mega_menu_cat_uppercase ? 'uppercase' : 'uppercase'
           }"
           :class="{
             'mega-menu-tab--active': selectedCategory === item.category,
@@ -43,7 +43,6 @@
       <div 
         v-show="isOpen && activeDropdownCategory"
         class="mega-menu-dropdown"
-        :style="{ backgroundColor: siteSettings.mega_menu_bg_color || '#1d1d1f' }"
       >
         <div class="mega-menu-dropdown-inner">
           <!-- Cross-fade content for each category -->
@@ -57,7 +56,7 @@
               <!-- If category has families with subcategories -->
               <template v-if="item.families.length > 0">
                 <div
-                  v-for="(fam, famIdx) in item.families"
+                  v-for="fam in item.families"
                   :key="fam.name"
                   class="mega-menu-family-col"
                 >
@@ -65,11 +64,11 @@
                     class="mega-menu-family-title"
                     :style="{
                       fontFamily: siteSettings.mega_menu_family_font_family || 'inherit',
-                      fontSize: `${siteSettings.mega_menu_family_font_size || 12}px`,
-                      color: siteSettings.mega_menu_family_color || '#6e6e73',
-                      fontWeight: siteSettings.mega_menu_family_bold ? '700' : '400',
+                      fontSize: `${siteSettings.mega_menu_family_font_size || 11}px`,
+                      color: siteSettings.mega_menu_family_color || '#64748b',
+                      fontWeight: siteSettings.mega_menu_family_bold ? '700' : '700',
                       fontStyle: siteSettings.mega_menu_family_italic ? 'italic' : 'normal',
-                      textTransform: siteSettings.mega_menu_family_uppercase ? 'uppercase' : 'none'
+                      textTransform: siteSettings.mega_menu_family_uppercase ? 'uppercase' : 'uppercase'
                     }"
                     @click="handleFamilyClick(item.category, fam.name)"
                   >
@@ -77,14 +76,14 @@
                   </h4>
                   <ul class="mega-menu-subcategory-list" v-if="fam.subcategories.length > 0">
                     <li 
-                      v-for="(sub, subIdx) in fam.subcategories" 
+                      v-for="sub in fam.subcategories" 
                       :key="sub"
                       class="mega-menu-subcategory-item"
                       :style="{
                         fontFamily: siteSettings.mega_menu_sub_font_family || 'inherit',
-                        fontSize: (subIdx === 0 && famIdx === 0) ? `${(siteSettings.mega_menu_sub_font_size || 13) + 7}px` : `${siteSettings.mega_menu_sub_font_size || 13}px`,
-                        color: siteSettings.mega_menu_sub_color || '#1d1d1f',
-                        fontWeight: siteSettings.mega_menu_sub_bold ? '600' : '400',
+                        fontSize: `${siteSettings.mega_menu_sub_font_size || 13}px`,
+                        color: siteSettings.mega_menu_sub_color || '#0f172a',
+                        fontWeight: siteSettings.mega_menu_sub_bold ? '600' : '500',
                         fontStyle: siteSettings.mega_menu_sub_italic ? 'italic' : 'normal',
                         textTransform: siteSettings.mega_menu_sub_uppercase ? 'uppercase' : 'none'
                       }"
@@ -96,9 +95,9 @@
                 </div>
               </template>
 
-              <!-- If category has no families, show a simple "View All" -->
+              <!-- If category has no families, show a clean "View All" -->
               <div v-else class="mega-menu-no-families">
-                <p class="mega-menu-no-families-text" @click="handleCategoryClick(item.category)">
+                <p class="mega-menu-no-families-text text-[#004a96] hover:text-blue-600 transition-colors" @click="handleCategoryClick(item.category)">
                   Ver todos os equipamentos de <strong>{{ translateCategory(item.category) }}</strong> &rarr;
                 </p>
               </div>
@@ -115,8 +114,8 @@
       v-show="isOpen"
       class="mega-menu-overlay"
       :style="{
-        backdropFilter: `blur(${siteSettings.mega_menu_blur ?? 20}px) saturate(180%)`,
-        WebkitBackdropFilter: `blur(${siteSettings.mega_menu_blur ?? 20}px) saturate(180%)`,
+        backdropFilter: `blur(${siteSettings.mega_menu_blur ?? 12}px) saturate(140%)`,
+        WebkitBackdropFilter: `blur(${siteSettings.mega_menu_blur ?? 12}px) saturate(140%)`,
         backgroundColor: getOverlayBg(siteSettings.mega_menu_overlay_color, siteSettings.mega_menu_overlay_opacity)
       }"
       @click="closeMenu"
@@ -190,7 +189,7 @@ const handleContainerLeave = () => {
     isOpen.value = false
     hoveredCategory.value = ''
     activeDropdownCategory.value = ''
-  }, 180)
+  }, 150)
 }
 
 const handleCategoryHover = (category: string) => {
@@ -200,7 +199,7 @@ const handleCategoryHover = (category: string) => {
   openTimer = setTimeout(() => {
     activeDropdownCategory.value = category
     isOpen.value = true
-  }, isOpen.value ? 0 : 120)
+  }, isOpen.value ? 0 : 80)
 }
 
 const closeMenu = () => {
@@ -248,13 +247,14 @@ watch(isOpen, (val) => {
 /* ===== NAV BAR ===== */
 .mega-menu-root {
   position: relative;
-  z-index: 100;
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Icons", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  z-index: 50;
+  font-family: inherit;
 }
 
 .mega-menu-nav {
-  background: #1d1d1f;
-  border-bottom: 1px solid rgba(255,255,255,0.08);
+  background: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
 }
 
 .mega-menu-nav-inner {
@@ -272,30 +272,30 @@ watch(isOpen, (val) => {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 0 20px;
+  padding: 0 18px;
   height: 44px;
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: inherit;
   font-size: 12px;
-  font-weight: 400;
-  letter-spacing: -0.01em;
-  color: rgba(255,255,255,0.8);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: #334155;
   background: transparent;
   border: none;
   cursor: pointer;
-  transition: color 0.2s ease, background-color 0.2s ease;
+  transition: color 0.15s ease, background-color 0.15s ease;
   white-space: nowrap;
   text-transform: uppercase;
 }
 
 .mega-menu-tab:hover,
 .mega-menu-tab--hover {
-  color: #fff;
-  background: rgba(255,255,255,0.08);
+  color: #004a96;
+  background: rgba(0, 74, 150, 0.05);
 }
 
 .mega-menu-tab--active {
-  color: #fff;
-  background: rgba(255,255,255,0.12);
+  color: #004a96;
+  background: rgba(0, 74, 150, 0.08);
 }
 
 .mega-menu-tab-dot {
@@ -311,18 +311,17 @@ watch(isOpen, (val) => {
   top: 100%;
   left: 0;
   right: 0;
-  z-index: 101;
-  border-bottom: none;
-  box-shadow: 0 15px 35px rgba(0,0,0,0.08);
-  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 78%, rgba(0, 0, 0, 0.7) 90%, transparent 100%);
-  mask-image: linear-gradient(to bottom, #000 0%, #000 78%, rgba(0, 0, 0, 0.7) 90%, transparent 100%);
+  z-index: 51;
+  background: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.15);
 }
 
 .mega-menu-dropdown-inner {
-  max-width: 1200px;
+  max-width: 1280px;
   margin: 0 auto;
-  padding: 36px 40px 44px;
-  min-height: 140px;
+  padding: 32px 40px 40px;
+  min-height: 120px;
 }
 
 .mega-menu-content-wrapper {
@@ -343,11 +342,12 @@ watch(isOpen, (val) => {
 }
 
 .mega-menu-family-title {
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  font-size: 12px;
-  font-weight: 400;
-  color: #6e6e73;
-  letter-spacing: -0.01em;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  color: #64748b;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
   margin: 0 0 10px 0;
   padding: 0;
   border: none;
@@ -356,7 +356,7 @@ watch(isOpen, (val) => {
 }
 
 .mega-menu-family-title:hover {
-  color: #1d1d1f;
+  color: #004a96;
 }
 
 .mega-menu-subcategory-list {
@@ -366,28 +366,19 @@ watch(isOpen, (val) => {
 }
 
 .mega-menu-subcategory-item {
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  font-size: 12px;
-  font-weight: 600;
-  color: #1d1d1f;
-  padding: 4px 0;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  color: #0f172a;
+  padding: 5px 0;
   cursor: pointer;
-  transition: opacity 0.15s ease;
-  line-height: 1.35;
-  letter-spacing: -0.01em;
-}
-
-.mega-menu-subcategory-item--large {
-  font-size: 22px;
-  font-weight: 600;
-  color: #1d1d1f;
-  letter-spacing: -0.015em;
-  margin-bottom: 6px;
-  line-height: 1.2;
+  transition: color 0.15s ease, transform 0.15s ease;
+  line-height: 1.4;
 }
 
 .mega-menu-subcategory-item:hover {
-  opacity: 0.65;
+  color: #2563eb;
+  transform: translateX(3px);
 }
 
 /* ===== NO FAMILIES STATE ===== */
@@ -396,31 +387,31 @@ watch(isOpen, (val) => {
   align-items: center;
   justify-content: flex-start;
   width: 100%;
-  min-height: 60px;
+  min-height: 50px;
 }
 
 .mega-menu-no-families-text {
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  font-size: 18px;
+  font-family: inherit;
+  font-size: 15px;
   font-weight: 600;
-  color: #1d1d1f;
+  color: #004a96;
   margin: 0;
   cursor: pointer;
-  transition: opacity 0.15s ease;
+  transition: color 0.15s ease;
 }
 
 .mega-menu-no-families-text:hover {
-  opacity: 0.7;
+  color: #2563eb;
 }
 
-/* ===== OVERLAY (FUNDO FOSCO BLUR ESTILO APPLE) ===== */
+/* ===== OVERLAY (FUNDO FOSCO BLUR) ===== */
 .mega-menu-overlay {
   position: fixed;
   inset: 0;
-  z-index: 99;
-  background: rgba(0, 0, 0, 0.48);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  z-index: 40;
+  background: rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 /* ===== ANIMATIONS ===== */

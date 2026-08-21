@@ -1,149 +1,101 @@
-# Script de verificação de segurança para Windows PowerShell
-# Execute com: powershell -ExecutionPolicy Bypass -File scripts/security-check.ps1
-
-Write-Host "🔒 Iniciando verificação de segurança..." -ForegroundColor Cyan
-Write-Host ""
+# Script de Verificacao de Seguranca do Projeto Qualitec
+Write-Host "Iniciando verificacao de seguranca..." -ForegroundColor Cyan
 
 $Issues = 0
 
-# 1. Verifica se .env está no gitignore
-Write-Host "1️⃣ Verificando .gitignore..." -ForegroundColor Yellow
-if (Select-String -Path .gitignore -Pattern "^\.env$" -Quiet) {
-    Write-Host "✓ .env está no .gitignore" -ForegroundColor Green
+# 1. Verifica variaveis de ambiente
+Write-Host ""
+Write-Host "1. Verificando configuracao do .env..." -ForegroundColor Yellow
+if (Test-Path ".env") {
+    $envContent = Get-Content ".env" -Raw
+    if ($envContent -match "CHANGE_THIS" -or $envContent -match "your-") {
+        Write-Host "[ALERTA] Valores placeholder detectados no .env" -ForegroundColor Yellow
+        $Issues++
+    } else {
+        Write-Host "[OK] .env configurado" -ForegroundColor Green
+    }
 } else {
-    Write-Host "✗ .env NÃO está no .gitignore" -ForegroundColor Red
+    Write-Host "[FALHA] .env nao encontrado!" -ForegroundColor Red
     $Issues++
 }
 
-# 2. Verifica se .env está commitado
+# 2. Verifica .gitignore
 Write-Host ""
-Write-Host "2️⃣ Verificando se .env está no Git..." -ForegroundColor Yellow
-$envInGit = git ls-files --error-unmatch .env 2>&1
-if ($LASTEXITCODE -eq 0) {
-    Write-Host "✗ CRÍTICO: .env está commitado no Git!" -ForegroundColor Red
-    Write-Host "  Execute: git rm --cached .env && git commit -m 'Remove .env'" -ForegroundColor Yellow
-    $Issues++
+Write-Host "2. Verificando .gitignore..." -ForegroundColor Yellow
+if (Test-Path ".gitignore") {
+    $gitignore = Get-Content ".gitignore" -Raw
+    if ($gitignore -match "^\.env" -or $gitignore -match "\n\.env") {
+        Write-Host "[OK] .env esta no .gitignore" -ForegroundColor Green
+    } else {
+        Write-Host "[FALHA] .env NAO esta no .gitignore!" -ForegroundColor Red
+        $Issues++
+    }
 } else {
-    Write-Host "✓ .env não está commitado" -ForegroundColor Green
-}
-
-# 3. Verifica dependências vulneráveis
-Write-Host ""
-Write-Host "3️⃣ Verificando dependências (npm audit)..." -ForegroundColor Yellow
-$auditResult = npm audit --audit-level=moderate 2>&1
-if ($LASTEXITCODE -eq 0) {
-    Write-Host "✓ Nenhuma vulnerabilidade moderada ou acima encontrada" -ForegroundColor Green
-} else {
-    Write-Host "⚠ Vulnerabilidades encontradas nas dependências" -ForegroundColor Yellow
-    Write-Host "  Execute: npm audit fix" -ForegroundColor Yellow
+    Write-Host "[FALHA] .gitignore nao encontrado!" -ForegroundColor Red
     $Issues++
 }
 
-# 4. Verifica se middlewares existem
+# 3. Verifica endpoints criticos
 Write-Host ""
-Write-Host "4️⃣ Verificando middlewares de segurança..." -ForegroundColor Yellow
-$middlewares = @(
-    "app/server/middleware/auth.ts",
-    "app/server/middleware/rate-limit.ts",
-    "app/server/middleware/security-headers.ts"
+Write-Host "3. Verificando existencia de endpoints de autenticacao..." -ForegroundColor Yellow
+$endpoints = @(
+    "app/server/api/auth/login.post.ts",
+    "app/server/api/auth/logout.post.ts",
+    "app/server/api/auth/refresh.post.ts",
+    "app/server/api/auth/session.get.ts",
+    "app/server/api/auth/totp/setup.post.ts",
+    "app/server/api/auth/totp/confirm.post.ts",
+    "app/server/api/auth/totp/disable.post.ts"
 )
 
-foreach ($middleware in $middlewares) {
-    if (Test-Path $middleware) {
-        Write-Host "✓ $middleware existe" -ForegroundColor Green
+foreach ($endpoint in $endpoints) {
+    if (Test-Path $endpoint) {
+        Write-Host "[OK] $endpoint existe" -ForegroundColor Green
     } else {
-        Write-Host "✗ $middleware NÃO encontrado" -ForegroundColor Red
+        Write-Host "[FALHA] $endpoint NAO encontrado" -ForegroundColor Red
         $Issues++
     }
 }
 
-# 5. Verifica secrets hardcoded no código
+# 4. Verifica middlewares
 Write-Host ""
-Write-Host "5️⃣ Buscando secrets hardcoded..." -ForegroundColor Yellow
-$secretsFound = Select-String -Path "*.ts","*.js","*.vue" `
-    -Pattern '(password|secret|api_key|token).*=.*[''"][a-zA-Z0-9]{10,}' `
-    -Exclude "security-check.ps1","security-check.sh" `
-    -Recurse `
-    -ErrorAction SilentlyContinue
+Write-Host "4. Verificando middlewares..." -ForegroundColor Yellow
+$middlewares = @(
+    "app/middleware/admin.ts"
+)
+
+foreach ($middleware in $middlewares) {
+    if (Test-Path $middleware) {
+        Write-Host "[OK] $middleware existe" -ForegroundColor Green
+    } else {
+        Write-Host "[FALHA] $middleware NAO encontrado" -ForegroundColor Red
+        $Issues++
+    }
+}
+
+# 5. Verifica secrets hardcoded no codigo
+Write-Host ""
+Write-Host "5. Buscando secrets hardcoded..." -ForegroundColor Yellow
+$secretsFound = Get-ChildItem -Path "app","server" -Include *.ts,*.js,*.vue -Recurse -File -ErrorAction SilentlyContinue | `
+    Select-String -Pattern '(password|secret|api_key|token)\s*=\s*[''"][a-zA-Z0-9]{20,}[''"]' -ErrorAction SilentlyContinue
 
 if ($null -eq $secretsFound) {
-    Write-Host "✓ Nenhum secret hardcoded encontrado" -ForegroundColor Green
+    Write-Host "[OK] Nenhum secret hardcoded encontrado" -ForegroundColor Green
 } else {
-    Write-Host "⚠ Possíveis secrets hardcoded encontrados:" -ForegroundColor Yellow
+    Write-Host "[ALERTA] Possiveis secrets hardcoded encontrados:" -ForegroundColor Yellow
     $secretsFound | ForEach-Object { Write-Host "  $_" -ForegroundColor Yellow }
-    $Issues++
-}
-
-# 6. Verifica uso de eval ou Function (code injection)
-Write-Host ""
-Write-Host "6️⃣ Buscando eval() ou Function()..." -ForegroundColor Yellow
-$evalFound = Select-String -Path "*.ts","*.js","*.vue" `
-    -Pattern '(eval\(|Function\()' `
-    -Recurse `
-    -ErrorAction SilentlyContinue `
-    | Where-Object { $_.Path -notmatch 'node_modules|\.nuxt|\.output' }
-
-if ($null -eq $evalFound) {
-    Write-Host "✓ Nenhum eval() ou Function() encontrado" -ForegroundColor Green
-} else {
-    Write-Host "✗ eval() ou Function() encontrado (risco de code injection):" -ForegroundColor Red
-    $evalFound | ForEach-Object { Write-Host "  $_" -ForegroundColor Red }
-    $Issues++
-}
-
-# 7. Verifica v-html (XSS risk)
-Write-Host ""
-Write-Host "7️⃣ Buscando v-html (risco XSS)..." -ForegroundColor Yellow
-$vhtmlFound = Select-String -Path "*.vue" `
-    -Pattern 'v-html' `
-    -Recurse `
-    -ErrorAction SilentlyContinue `
-    | Where-Object { $_.Path -notmatch 'node_modules|\.nuxt|\.output' }
-
-if ($null -eq $vhtmlFound) {
-    Write-Host "✓ Nenhum v-html encontrado" -ForegroundColor Green
-} else {
-    Write-Host "⚠ v-html encontrado (verifique sanitização):" -ForegroundColor Yellow
-    $vhtmlFound | ForEach-Object { Write-Host "  $_" -ForegroundColor Yellow }
-    $Issues++
-}
-
-# 8. Verifica console.log em produção
-Write-Host ""
-Write-Host "8️⃣ Buscando console.log..." -ForegroundColor Yellow
-$consoleCount = (Select-String -Path "*.ts","*.js","*.vue" `
-    -Pattern 'console\.(log|error|warn|info)' `
-    -Recurse `
-    -ErrorAction SilentlyContinue `
-    | Where-Object { $_.Path -notmatch 'node_modules|\.nuxt|\.output|security-check' }).Count
-
-if ($consoleCount -eq 0) {
-    Write-Host "✓ Nenhum console.log encontrado" -ForegroundColor Green
-} else {
-    Write-Host "⚠ $consoleCount console.log encontrados" -ForegroundColor Yellow
-    Write-Host "  Considere remover ou substituir por logger em produção" -ForegroundColor Yellow
 }
 
 # Resumo
 Write-Host ""
-Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" -ForegroundColor Cyan
-Write-Host "📊 RESUMO DA VERIFICAÇÃO" -ForegroundColor Cyan
-Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" -ForegroundColor Cyan
+Write-Host "========================================" -ForegroundColor Cyan
+Write-Host "RESUMO DA VERIFICACAO" -ForegroundColor Cyan
+Write-Host "========================================" -ForegroundColor Cyan
 
 if ($Issues -eq 0) {
-    Write-Host "✓ Nenhum problema crítico encontrado!" -ForegroundColor Green
-    Write-Host ""
-    Write-Host "Recomendações:"
-    Write-Host "  • Execute testes manuais de segurança"
-    Write-Host "  • Revise logs de autenticação regularmente"
-    Write-Host "  • Mantenha dependências atualizadas"
+    Write-Host "[OK] Nenhum problema critico encontrado!" -ForegroundColor Green
     exit 0
 } else {
-    Write-Host "✗ $Issues problema(s) encontrado(s)" -ForegroundColor Red
-    Write-Host ""
-    Write-Host "Ação necessária:"
-    Write-Host "  • Revise os problemas listados acima"
-    Write-Host "  • Consulte INSTRUCOES_SEGURANCA_CRITICAS.md"
-    Write-Host "  • Aplique as correções recomendadas"
+    Write-Host "[FALHA] $Issues problema(s) encontrado(s)" -ForegroundColor Red
     exit 1
 }

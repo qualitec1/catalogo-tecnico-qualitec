@@ -218,17 +218,25 @@ export function useCatalog() {
     const tree: { category: string; color: string; families: { name: string; subcategories: string[] }[] }[] = []
     const catMap = new Map<string, Map<string, Set<string>>>()
 
-    // Apenas mapear categorias de produtos do idioma selecionado que possuem produtos cadastrados
+    // 1. Inicializar todas as categorias listáveis no mapa
+    listableCategories.value.forEach(cat => {
+      if (!catMap.has(cat)) catMap.set(cat, new Map())
+    })
+
+    // 2. Mapear famílias e subcategorias dos produtos do idioma selecionado
     languageFilteredProducts.value.forEach(p => {
       if (!p.category || p.category.toUpperCase().trim() === 'GERAL') return
       const cat = p.category.toUpperCase().trim()
       if (!catMap.has(cat)) catMap.set(cat, new Map())
       const famMap = catMap.get(cat)!
-      const fam = (p.family || '').trim()
+      const fam = (p.family || '').trim() || (p.subcategory ? p.category : '')
+      const sub = (p.subcategory || '').trim()
       if (fam) {
         if (!famMap.has(fam)) famMap.set(fam, new Set())
-        const sub = (p.subcategory || '').trim()
         if (sub) famMap.get(fam)!.add(sub)
+      } else if (sub) {
+        if (!famMap.has(cat)) famMap.set(cat, new Set())
+        famMap.get(cat)!.add(sub)
       }
     })
 
