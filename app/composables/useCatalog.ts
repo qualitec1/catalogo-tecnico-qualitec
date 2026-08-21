@@ -29,8 +29,8 @@ export function useCatalog() {
   const supabase = useSupabaseClient()
   const { categoryAssets, fetchAssets, getCategoryColor } = useCategoryColors()
 
-  const products = ref<Product[]>([])
-  const loading = ref(true)
+  const products = useState<Product[]>('catalog-products', () => [])
+  const loading = useState<boolean>('catalog-loading', () => true)
 
   const showPrintModal = ref(false)
   const coverCategorySelection = ref<'dynamic' | 'GERAL' | 'specific'>('dynamic')
@@ -45,9 +45,6 @@ export function useCatalog() {
 
   const listableCategories = computed(() => {
     const cats = new Set<string>()
-    Object.keys(categoryAssets.value).forEach(k => {
-      if (k !== 'GERAL') cats.add(k.toUpperCase().trim())
-    })
     products.value.forEach(p => {
       if (p.category && p.category.toUpperCase().trim() !== 'GERAL') {
         cats.add(p.category.toUpperCase().trim())
@@ -218,13 +215,9 @@ export function useCatalog() {
     const tree: { category: string; color: string; families: { name: string; subcategories: string[] }[] }[] = []
     const catMap = new Map<string, Map<string, Set<string>>>()
 
-    // 1. Inicializar todas as categorias listáveis no mapa
-    listableCategories.value.forEach(cat => {
-      if (!catMap.has(cat)) catMap.set(cat, new Map())
-    })
-
-    // 2. Mapear famílias e subcategorias dos produtos do idioma selecionado
-    languageFilteredProducts.value.forEach(p => {
+    // Mapear famílias e subcategorias dos produtos existentes (filtrados por idioma se houver produtos no idioma, ou todos se não houver)
+    const prods = languageFilteredProducts.value.length > 0 ? languageFilteredProducts.value : products.value
+    prods.forEach(p => {
       if (!p.category || p.category.toUpperCase().trim() === 'GERAL') return
       const cat = p.category.toUpperCase().trim()
       if (!catMap.has(cat)) catMap.set(cat, new Map())

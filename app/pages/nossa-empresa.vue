@@ -638,7 +638,7 @@ const { siteSettings, fetchSiteSettings } = useSiteSettings()
 await useAsyncData('site-settings', () => fetchSiteSettings())
 
 // Menu Árvore do MegaMenu
-const { megaMenuTree } = useCatalog()
+const { megaMenuTree, loadProducts, fetchAssets } = useCatalog()
 
 // Estado do Modal de Contato
 const contactModalOpen = ref(false)
@@ -771,8 +771,12 @@ const parsedWhoVideo = computed(() => {
   }
 })
 
-onMounted(() => {
-  fetchSiteSettings()
+onMounted(async () => {
+  await Promise.all([
+    fetchSiteSettings(),
+    fetchAssets(),
+    loadProducts()
+  ])
 })
 </script>
 
