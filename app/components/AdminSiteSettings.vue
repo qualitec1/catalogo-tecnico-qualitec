@@ -2636,6 +2636,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, reactive } from 'vue'
+import { formatApiErrorMessage } from '../utils/formatError'
 
 const props = defineProps<{
   triggerToast?: (msg: string, type: 'success' | 'error') => void
@@ -3676,7 +3677,7 @@ const saveSettings = async () => {
     props.triggerToast?.('Configurações visuais e do Logotipo salvas com sucesso!', 'success')
   } catch (err: any) {
     console.error('[AdminSiteSettings] Error saving settings:', err)
-    props.triggerToast?.(`Erro ao salvar configurações: ${err.message || err}`, 'error')
+    props.triggerToast?.(formatApiErrorMessage(err, 'Erro ao salvar configurações'), 'error')
   } finally {
     saving.value = false
   }

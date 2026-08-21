@@ -312,6 +312,8 @@ const openAdminDownloadModal = async () => {
   showAdminPrintModal.value = true
 }
 
+import { formatApiErrorMessage } from '../utils/formatError'
+
 const supabase = useSupabaseClient()
 
 // Toast messages
@@ -320,12 +322,16 @@ const toastType = ref<'success' | 'error'>('success')
 const showToast = ref(false)
 
 const triggerToast = (message: string, type: 'success' | 'error' = 'success') => {
-  toastMessage.value = message
+  if (type === 'error') {
+    toastMessage.value = formatApiErrorMessage(message, 'Erro na operação')
+  } else {
+    toastMessage.value = message
+  }
   toastType.value = type
   showToast.value = true
   setTimeout(() => {
     showToast.value = false
-  }, 4000)
+  }, 6000)
 }
 
 const showToastMessage = (payload: { message: string; type: 'success' | 'error' }) => {
