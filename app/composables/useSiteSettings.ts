@@ -80,6 +80,7 @@ export interface SiteVisualSettings {
   // Logotipo do Cabeçalho (Header Logo)
   header_logo_url: string
   header_logo_height: number
+  header_logo_width?: number
   header_logo_offset_x: number
   header_logo_offset_y: number
   // Imagens dos Cards de Principais Segmentos (Home)
@@ -335,6 +336,7 @@ const defaults: SiteVisualSettings = {
   hero_card_border_radius: 8,
   header_logo_url: 'https://pub-25a6482a064a4590a456d3dd2a76114b.r2.dev/1785536986887_0a3ga6_qualitec_logo.png',
   header_logo_height: 48,
+  header_logo_width: 0,
   header_logo_offset_x: 0,
   header_logo_offset_y: 0,
   segment_img_criogenia: 'https://static.wixstatic.com/media/e6a741_331a1ffce9944bb7b63fdd7bcea3096f~mv2.png/v1/fill/w_297,h_182,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/Industrial%20gases.png',

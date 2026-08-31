@@ -6,14 +6,15 @@
       <div class="bg-white border-b border-gray-100">
         <div class="flex justify-between items-center h-16 px-8 max-w-[2560px] w-full mx-auto">
           <!-- Logo -->
-          <div class="flex items-center h-full overflow-visible">
-            <NuxtLink to="/" class="flex items-center h-full overflow-visible">
+          <div class="flex items-center h-16 overflow-visible shrink-0 relative">
+            <NuxtLink to="/" class="flex items-center h-full overflow-visible relative">
               <img 
                 alt="Qualitec Industrial" 
-                class="w-auto object-contain cursor-pointer pointer-events-none transition-transform duration-150 select-none" 
+                class="object-contain cursor-pointer pointer-events-auto transition-transform duration-75 select-none max-w-none" 
                 :src="siteSettings.header_logo_url || 'https://pub-25a6482a064a4590a456d3dd2a76114b.r2.dev/1785536986887_0a3ga6_qualitec_logo.png'"
                 :style="{
                   height: `${siteSettings.header_logo_height || 48}px`,
+                  width: siteSettings.header_logo_width && siteSettings.header_logo_width > 0 ? `${siteSettings.header_logo_width}px` : 'auto',
                   transform: `translate(${siteSettings.header_logo_offset_x || 0}px, ${siteSettings.header_logo_offset_y || 0}px)`
                 }"
               >

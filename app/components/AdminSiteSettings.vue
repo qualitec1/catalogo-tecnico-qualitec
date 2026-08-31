@@ -18,6 +18,9 @@
     </div>
 
     <template v-else>
+      <!-- ===== SEÇÃO: LOGOTIPO DO CABEÇALHO (HEADER) ===== -->
+      <AdminHeaderLogoSettings :settings="settings" :trigger-toast="props.triggerToast" />
+
       <!-- ===== SEÇÃO: PÁGINA NOSSA EMPRESA (INSTITUCIONAL) ===== -->
       <div class="space-y-6 bg-slate-50 p-5 rounded-lg border border-slate-200">
         <div class="flex items-center justify-between border-b border-slate-200 pb-3">
@@ -2681,6 +2684,7 @@ interface SiteSettings {
   // Logotipo do Cabeçalho
   header_logo_url: string
   header_logo_height: number
+  header_logo_width?: number
   header_logo_offset_x: number
   header_logo_offset_y: number
   // Botão "Ver Documentação"
@@ -2908,6 +2912,7 @@ interface SiteSettings {
 const defaultSettings: SiteSettings = {
   header_logo_url: 'https://pub-25a6482a064a4590a456d3dd2a76114b.r2.dev/1785536986887_0a3ga6_qualitec_logo.png',
   header_logo_height: 48,
+  header_logo_width: 0,
   header_logo_offset_x: 0,
   header_logo_offset_y: 0,
   btn_doc_bg_color: '#376092',
