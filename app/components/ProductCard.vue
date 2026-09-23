@@ -219,7 +219,7 @@ const getProductImage = (product: any) => {
   if (product.image && (product.image.startsWith('http://') || product.image.startsWith('https://'))) {
     return `/api/proxy-image?url=${encodeURIComponent(product.image)}`
   }
-  return product.image || 'https://via.placeholder.com/400x300/e5e7eb/6b7280?text=Produto'
+  return product.image || '/placeholder.png'
 }
 
 const handleImageError = (e: Event) => {

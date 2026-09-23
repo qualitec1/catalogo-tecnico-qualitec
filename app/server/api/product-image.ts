@@ -33,7 +33,14 @@ export default defineEventHandler(async (event) => {
     // Validação SSRF - whitelist de domínios
     const ALLOWED_DOMAINS = [
       'pub-25a6482a064a4590a456d3dd2a76114b.r2.dev',
-      'static.wixstatic.com'
+      'r2.dev',
+      'qualitec.ind.br',
+      'supabase.co',
+      'cloudflarestorage.com',
+      'static.wixstatic.com',
+      'images.unsplash.com',
+      'lh3.googleusercontent.com',
+      'googleusercontent.com'
     ]
     
     try {
@@ -58,6 +65,18 @@ export default defineEventHandler(async (event) => {
       const contentType = res.headers.get('Content-Type') || 'image/png'
       setHeader(event, 'Content-Type', contentType)
       setHeader(event, 'Cache-Control', 'public, max-age=86400')
+
+      const origin = event.node.req.headers.origin
+      if (origin) {
+        try {
+          const u = new URL(origin)
+          const host = u.hostname.toLowerCase()
+          if (host === 'localhost' || host === '127.0.0.1' || host === 'qualitec.ind.br' || host.endsWith('.qualitec.ind.br')) {
+            setHeader(event, 'Access-Control-Allow-Origin', origin)
+          }
+        } catch {}
+      }
+
       return Buffer.from(arrayBuffer)
     } catch (e: any) {
       if (e.statusCode === 403) throw e

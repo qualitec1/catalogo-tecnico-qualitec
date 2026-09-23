@@ -4,6 +4,7 @@ import { getQuery, createError, setHeader } from 'h3'
 const ALLOWED_DOMAINS = [
   'pub-25a6482a064a4590a456d3dd2a76114b.r2.dev', // Cloudflare R2
   'r2.dev',
+  'qualitec.ind.br', // Qualitec Drive e servidor de mídia
   'supabase.co',
   'cloudflarestorage.com',
   'static.wixstatic.com', // Wix (se usado)
@@ -53,9 +54,43 @@ function isAllowedUrl(urlString: string): boolean {
   }
 }
 
+function isAllowedOrigin(orig?: string, supabaseUrl?: string): boolean {
+  if (!orig) return false
+  try {
+    const u = new URL(orig)
+    const host = u.hostname.toLowerCase()
+    if (
+      host === 'localhost' ||
+      host === '127.0.0.1' ||
+      host === 'qualitec.ind.br' ||
+      host.endsWith('.qualitec.ind.br')
+    ) {
+      return true
+    }
+    if (supabaseUrl && orig.startsWith(supabaseUrl)) {
+      return true
+    }
+    return false
+  } catch {
+    return false
+  }
+}
+
 export default defineEventHandler(async (event) => {
   const query = getQuery(event)
   const url = query.url as string
+  const config = useRuntimeConfig()
+  const origin = event.node.req.headers.origin
+
+  // Suporte a preflight OPTIONS
+  if (event.node.req.method === 'OPTIONS') {
+    if (origin && isAllowedOrigin(origin, config.public?.supabaseUrl)) {
+      setHeader(event, 'Access-Control-Allow-Origin', origin)
+      setHeader(event, 'Access-Control-Allow-Methods', 'GET, OPTIONS')
+      setHeader(event, 'Access-Control-Allow-Headers', 'Content-Type, Authorization')
+    }
+    return ''
+  }
 
   if (!url) {
     throw createError({
@@ -94,16 +129,7 @@ export default defineEventHandler(async (event) => {
     setHeader(event, 'Content-Type', contentType)
     setHeader(event, 'Cache-Control', 'public, max-age=31536000, immutable') // Cache de 1 ano
     
-    // CORS mais restritivo - permite apenas origem do próprio site
-    const origin = event.node.req.headers.origin
-    const config = useRuntimeConfig()
-    const allowedOrigins = [
-      config.public.supabaseUrl,
-      'http://localhost:3000',
-      'http://localhost:5173'
-    ]
-    
-    if (origin && allowedOrigins.includes(origin)) {
+    if (origin && isAllowedOrigin(origin, config.public?.supabaseUrl)) {
       setHeader(event, 'Access-Control-Allow-Origin', origin)
     }
 

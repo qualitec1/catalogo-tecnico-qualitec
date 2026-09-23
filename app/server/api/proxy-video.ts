@@ -4,6 +4,7 @@ const ALLOWED_DOMAINS = [
   'video.wixstatic.com',
   'pub-25a6482a064a4590a456d3dd2a76114b.r2.dev',
   'r2.dev',
+  'qualitec.ind.br',
   'supabase.co',
   'cloudflarestorage.com',
   'youtube.com',
