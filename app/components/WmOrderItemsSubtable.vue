@@ -18,17 +18,17 @@
         <thead>
           <tr>
             <th class="w-12 text-center">Seq</th>
-            <th>Part Number</th>
-            <th>Código</th>
-            <th>Descrição do Produto</th>
-            <th class="text-center">Origem</th>
-            <th class="text-center">UN</th>
-            <th class="wm-num">Qtd Pedida</th>
-            <th class="wm-num">Qtd Faturada</th>
-            <th class="wm-num">Qtd Pendente</th>
-            <th class="wm-num">Preço Unitário</th>
-            <th class="wm-num">Valor Pendente</th>
-            <th class="text-center">Documentos</th>
+            <th class="w-32">Part Number</th>
+            <th class="w-24">Código</th>
+            <th class="min-w-[280px]">Descrição do Produto</th>
+            <th class="w-24 text-center">Origem</th>
+            <th class="w-14 text-center">UN</th>
+            <th class="w-24 wm-num">Qtd Pedida</th>
+            <th class="w-24 wm-num">Qtd Faturada</th>
+            <th class="w-24 wm-num">Qtd Pendente</th>
+            <th class="w-28 wm-num">Preço Unitário</th>
+            <th class="w-32 wm-num">Valor Pendente</th>
+            <th class="min-w-[140px] text-center">Documentos</th>
           </tr>
         </thead>
         <tbody>

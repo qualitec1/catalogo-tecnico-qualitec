@@ -108,10 +108,10 @@
 
 .wm-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 0.8125rem; }
 .wm-table th {
-  position: sticky; top: 0; z-index: 1;
+  position: static;
   background: var(--wm-surface-2); color: var(--wm-muted);
   font-size: 0.6875rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
-  text-align: left; padding: 0.7rem 0.75rem; border-bottom: 1px solid var(--wm-border); white-space: nowrap;
+  text-align: left; padding: 0.75rem 0.85rem; border-bottom: 1px solid var(--wm-border); white-space: nowrap;
 }
 .wm-table td { padding: 0.7rem 0.75rem; border-bottom: 1px solid var(--wm-border); vertical-align: middle; }
 .wm-row { cursor: pointer; transition: background-color 0.12s ease; }

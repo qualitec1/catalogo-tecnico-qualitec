@@ -4,7 +4,7 @@
       type="button"
       class="wm-btn wm-btn--primary shadow-sm"
       :disabled="disabled || isExporting"
-      @click="isOpen = !isOpen"
+      @click.stop="isOpen = !isOpen"
     >
       <span class="material-symbols-outlined text-[18px]">
         {{ isExporting ? 'hourglass_top' : 'download' }}

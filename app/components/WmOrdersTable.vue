@@ -42,17 +42,17 @@
         <thead>
           <tr>
             <th class="w-10 text-center">#</th>
-            <th class="w-12 text-center">Itens</th>
-            <th>Região / Filial</th>
-            <th>Pedido ITK</th>
-            <th>Pedido Cliente</th>
-            <th>Emissão</th>
-            <th class="text-center">Dias Aberto</th>
-            <th class="wm-num">Valor Total</th>
-            <th class="wm-num">Faturado</th>
-            <th class="wm-num">Pendente</th>
-            <th class="text-center">Status Faturamento</th>
-            <th>Status Logístico</th>
+            <th class="w-14 text-center">Itens</th>
+            <th class="min-w-[150px]">Região / Filial</th>
+            <th class="w-24">Pedido ITK</th>
+            <th class="w-28">Pedido Cliente</th>
+            <th class="w-24">Emissão</th>
+            <th class="w-24 text-center">Dias Aberto</th>
+            <th class="w-28 wm-num">Valor Total</th>
+            <th class="w-32 wm-num">Faturado</th>
+            <th class="w-32 wm-num">Pendente</th>
+            <th class="w-36 text-center">Status Faturamento</th>
+            <th class="min-w-[280px]">Status Logístico</th>
           </tr>
         </thead>
         <tbody>
@@ -148,7 +148,7 @@
 
               <!-- Status Logístico -->
               <td class="text-xs">
-                <div v-if="order.logisticsStatus" class="flex flex-wrap gap-1 max-w-xs">
+                <div v-if="order.logisticsStatus" class="flex flex-wrap gap-1.5 min-w-[260px]">
                   <span
                     v-for="(part, pIdx) in splitLogistics(order.logisticsStatus)"
                     :key="pIdx"

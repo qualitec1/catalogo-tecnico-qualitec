@@ -1,7 +1,8 @@
 <template>
   <section aria-label="Filtros" class="wm-card p-4">
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-8 gap-3 items-end">
-      <div class="sm:col-span-2 lg:col-span-4 xl:col-span-2">
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-6 2xl:grid-cols-12 gap-3 items-end">
+      <!-- Busca Livre -->
+      <div class="sm:col-span-2 md:col-span-4 lg:col-span-3 2xl:col-span-3">
         <label class="wm-label" for="wm-filter-search">Busca livre</label>
         <div class="relative">
           <span class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-[18px] wm-muted">search</span>
@@ -9,13 +10,14 @@
             id="wm-filter-search"
             v-model="filters.search"
             type="search"
-            class="wm-input pl-9"
-            placeholder="Pedido ITK, pedido cliente, produto ou part number"
+            class="wm-input pl-9 text-xs"
+            placeholder="Pedido ITK, pedido cliente, produto ou part number..."
           >
         </div>
       </div>
 
-      <div>
+      <!-- Região -->
+      <div class="sm:col-span-1 md:col-span-2 lg:col-span-1 2xl:col-span-1">
         <label class="wm-label" for="wm-filter-region">Região</label>
         <select id="wm-filter-region" v-model="filters.region" class="wm-input">
           <option value="">Todas</option>
@@ -23,23 +25,26 @@
         </select>
       </div>
 
-      <div>
-        <label class="wm-label" for="wm-filter-branch">Filial</label>
+      <!-- Filial -->
+      <div class="sm:col-span-1 md:col-span-2 lg:col-span-2 2xl:col-span-2">
+        <label class="wm-label" for="wm-filter-branch">Filial White Martins</label>
         <select id="wm-filter-branch" v-model="filters.branch" class="wm-input">
-          <option value="">Todas</option>
+          <option value="">Todas as Filiais</option>
           <option v-for="b in branchOptions" :key="b" :value="b">{{ b }}</option>
         </select>
       </div>
 
-      <div>
-        <label class="wm-label" for="wm-filter-status">Status</label>
+      <!-- Status -->
+      <div class="sm:col-span-1 md:col-span-2 lg:col-span-2 2xl:col-span-2">
+        <label class="wm-label" for="wm-filter-status">Status Faturamento</label>
         <select id="wm-filter-status" v-model="filters.status" class="wm-input">
-          <option value="">Todos</option>
+          <option value="">Todos os Status</option>
           <option v-for="s in WM_BILLING_STATUSES" :key="s" :value="s">{{ billingStatusLabel(s) }}</option>
         </select>
       </div>
 
-      <div>
+      <!-- Origem -->
+      <div class="sm:col-span-1 md:col-span-2 lg:col-span-1 2xl:col-span-1">
         <label class="wm-label" for="wm-filter-origin">Origem</label>
         <select id="wm-filter-origin" v-model="filters.origin" class="wm-input">
           <option value="">Todas</option>
@@ -47,23 +52,26 @@
         </select>
       </div>
 
-      <div>
+      <!-- Ordenação -->
+      <div class="sm:col-span-1 md:col-span-2 lg:col-span-1 2xl:col-span-1">
         <label class="wm-label" for="wm-filter-sort">Ordenação</label>
         <select id="wm-filter-sort" v-model="filters.sort" class="wm-input">
-          <option value="oldest">Mais antigos primeiro</option>
-          <option value="newest">Mais recentes primeiro</option>
-          <option value="pending_desc">Maior valor pendente</option>
+          <option value="oldest">Mais antigos</option>
+          <option value="newest">Mais recentes</option>
+          <option value="pending_desc">Maior valor</option>
         </select>
       </div>
 
-      <div class="flex gap-2">
-        <div class="flex-1 min-w-0">
-          <label class="wm-label" for="wm-filter-from">De</label>
-          <input id="wm-filter-from" v-model="filters.dateFrom" type="date" class="wm-input px-2">
-        </div>
-        <div class="flex-1 min-w-0">
-          <label class="wm-label" for="wm-filter-to">Até</label>
-          <input id="wm-filter-to" v-model="filters.dateTo" type="date" class="wm-input px-2">
+      <!-- Período De / Até -->
+      <div class="sm:col-span-2 md:col-span-4 lg:col-span-2 2xl:col-span-2">
+        <label class="wm-label">Período de Emissão</label>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <input id="wm-filter-from" v-model="filters.dateFrom" type="date" class="wm-input px-1.5 text-xs" title="Data inicial">
+          </div>
+          <div>
+            <input id="wm-filter-to" v-model="filters.dateTo" type="date" class="wm-input px-1.5 text-xs" title="Data final">
+          </div>
         </div>
       </div>
     </div>

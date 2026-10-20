@@ -2,7 +2,7 @@
   <div :class="['wm-root', isDarkMode ? 'wm-theme-dark' : 'wm-theme-light']">
     <!-- Cabeçalho Executivo do Painel -->
     <header class="border-b border-[var(--wm-border)] bg-[var(--wm-surface)]/80 backdrop-blur-md sticky top-0 z-30 shadow-xs">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-wrap items-center justify-between gap-3">
+      <div class="w-full max-w-[1840px] mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-wrap items-center justify-between gap-3">
         <!-- Marca e Título -->
         <div class="flex items-center gap-3">
           <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-cyan-500 flex items-center justify-center text-white shadow-md">
@@ -68,7 +68,7 @@
     </header>
 
     <!-- Conteúdo Principal -->
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+    <main class="w-full max-w-[1840px] mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
       <!-- Alerta de Erro -->
       <div
         v-if="errorMessage"
@@ -178,7 +178,10 @@ definePageMeta({
 })
 
 useHead({
-  title: 'White Martins — Gestão de Pedidos Pendentes | Qualitec Industrial'
+  title: 'White Martins — Gestão de Pedidos Pendentes | Qualitec Industrial',
+  meta: [
+    { name: 'viewport', content: 'width=device-width, initial-scale=1.0' }
+  ]
 })
 
 const activeTab = ref<'pedidos' | 'ranking'>('pedidos')

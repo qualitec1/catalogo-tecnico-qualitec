@@ -51,19 +51,19 @@
       <table class="wm-table">
         <thead>
           <tr>
-            <th class="w-14 text-center">Posição</th>
-            <th>Part Number</th>
-            <th>Código</th>
-            <th>Descrição do Produto</th>
-            <th class="text-center">Origem</th>
-            <th>Filial / Região</th>
-            <th>Pedido ITK</th>
-            <th>Ped. Cliente</th>
-            <th class="wm-num">Qtd Pendente</th>
-            <th class="wm-num" :class="{ 'font-black text-[var(--wm-accent)]': mode === 'unit' }">
+            <th class="w-16 text-center">Posição</th>
+            <th class="w-36">Part Number</th>
+            <th class="w-24">Código</th>
+            <th class="min-w-[280px]">Descrição do Produto</th>
+            <th class="w-24 text-center">Origem</th>
+            <th class="min-w-[150px]">Filial / Região</th>
+            <th class="w-24">Pedido ITK</th>
+            <th class="w-28">Ped. Cliente</th>
+            <th class="w-28 wm-num">Qtd Pendente</th>
+            <th class="w-32 wm-num" :class="{ 'font-black text-[var(--wm-accent)]': mode === 'unit' }">
               Preço Unitário
             </th>
-            <th class="wm-num" :class="{ 'font-black text-[var(--wm-accent)]': mode === 'total' }">
+            <th class="w-36 wm-num" :class="{ 'font-black text-[var(--wm-accent)]': mode === 'total' }">
               Valor Total Pendente
             </th>
           </tr>
