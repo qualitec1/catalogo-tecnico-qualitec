@@ -15,6 +15,10 @@
             <span class="material-symbols-outlined text-base">picture_as_pdf</span>
             Gerar / Baixar PDF
           </button>
+          <NuxtLink to="/gestao/pendencias-white-martins" class="text-xs text-cyan-300 hover:text-white transition-colors uppercase font-bold flex items-center">
+            <span class="material-symbols-outlined text-sm mr-1">analytics</span>
+            White Martins
+          </NuxtLink>
           <NuxtLink to="/" class="text-xs text-gray-300 hover:text-white transition-colors uppercase font-bold flex items-center">
             <span class="material-symbols-outlined text-sm mr-1">arrow_back</span>
             Ver Catálogo
