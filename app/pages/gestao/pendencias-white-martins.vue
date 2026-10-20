@@ -92,7 +92,11 @@
 
       <template v-else>
         <!-- Cards de Indicadores (KPIs) -->
-        <WmKpiCards :kpis="kpis" />
+        <WmKpiCards
+          :kpis="kpis"
+          :only-generic="filters.onlyGeneric"
+          @toggle-generic="filters.onlyGeneric = !filters.onlyGeneric"
+        />
 
         <!-- Barra de Filtros Interativos -->
         <WmFiltersBar

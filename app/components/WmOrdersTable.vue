@@ -84,7 +84,17 @@
 
               <!-- Região / Filial -->
               <td>
-                <div class="font-bold text-xs text-[var(--wm-text)]">{{ order.branch }}</div>
+                <div class="flex items-center gap-1.5 flex-wrap">
+                  <span class="font-bold text-xs text-[var(--wm-text)]">{{ order.branch }}</span>
+                  <span
+                    v-if="hasGeneric(order)"
+                    class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30"
+                    title="Pedido contém item genérico com customização manual do vendedor"
+                  >
+                    <span class="material-symbols-outlined text-[11px]">warning</span>
+                    Genérico
+                  </span>
+                </div>
                 <div class="text-[11px] wm-muted flex items-center gap-1.5 mt-0.5">
                   <span class="font-medium">{{ order.region }}</span>
                   <span v-if="order.state" class="font-mono text-[10px] px-1 rounded bg-[var(--wm-surface-3)]">
@@ -216,7 +226,7 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import type { WmOrderView } from '../composables/useWmPendingOrders'
+import { isGenericItem, type WmOrderView } from '../composables/useWmPendingOrders'
 import {
   agingClass,
   billingStatusClass,
@@ -227,20 +237,14 @@ import {
 } from '../utils/wmPendingFormat'
 import WmOrderItemsSubtable from './WmOrderItemsSubtable.vue'
 
-const props = defineProps<{
-  orders: WmOrderView[]
-}>()
-
+const props = defineProps<{ orders: WmOrderView[] }>()
 const pageSize = ref(30)
 const currentPage = ref(1)
 const expandedKeys = ref<Set<string>>(new Set())
 
-watch(() => props.orders, () => {
-  currentPage.value = 1
-})
+watch(() => props.orders, () => { currentPage.value = 1 })
 
 const totalPages = computed(() => Math.ceil(props.orders.length / pageSize.value) || 1)
-
 const pagedOrders = computed(() => {
   const start = (currentPage.value - 1) * pageSize.value
   return props.orders.slice(start, start + pageSize.value)
@@ -250,27 +254,22 @@ const allExpanded = computed(() =>
   pagedOrders.value.length > 0 && pagedOrders.value.every((o) => expandedKeys.value.has(o.itkCode))
 )
 
+const hasGeneric = (order: WmOrderView) =>
+  order.items.some((i) => (i.qtyPending > 0 || i.totalPending > 0) && isGenericItem(i))
+
 function toggleRow(itkCode: string): void {
   const next = new Set(expandedKeys.value)
-  if (next.has(itkCode)) {
-    next.delete(itkCode)
-  } else {
-    next.add(itkCode)
-  }
+  if (next.has(itkCode)) next.delete(itkCode)
+  else next.add(itkCode)
   expandedKeys.value = next
 }
 
 function toggleExpandAll(): void {
   const next = new Set(expandedKeys.value)
-  if (allExpanded.value) {
-    pagedOrders.value.forEach((o) => next.delete(o.itkCode))
-  } else {
-    pagedOrders.value.forEach((o) => next.add(o.itkCode))
-  }
+  if (allExpanded.value) pagedOrders.value.forEach((o) => next.delete(o.itkCode))
+  else pagedOrders.value.forEach((o) => next.add(o.itkCode))
   expandedKeys.value = next
 }
 
-function splitLogistics(str: string): string[] {
-  return str.split('|').map((s) => s.trim()).filter(Boolean)
-}
+const splitLogistics = (str: string) => str.split('|').map((s) => s.trim()).filter(Boolean)
 </script>

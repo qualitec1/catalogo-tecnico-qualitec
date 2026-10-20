@@ -77,9 +77,26 @@
     </div>
 
     <div class="flex flex-wrap items-center justify-between gap-3 mt-4 pt-3 border-t border-[var(--wm-border)]">
-      <p class="text-xs wm-muted">
-        <strong class="wm-accent">{{ resultCount }}</strong> {{ resultLabel }} encontrados
-      </p>
+      <div class="flex items-center gap-3 flex-wrap">
+        <p class="text-xs wm-muted">
+          <strong class="wm-accent">{{ resultCount }}</strong> {{ resultLabel }} encontrados
+        </p>
+        <span
+          v-if="filters.onlyGeneric"
+          class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30 shadow-xs"
+        >
+          <span class="material-symbols-outlined text-[14px]">warning</span>
+          <span>Filtro Ativo: Apenas Itens Genéricos</span>
+          <button
+            type="button"
+            class="hover:opacity-75 font-bold ml-1 text-sm leading-none cursor-pointer border-0 bg-transparent text-inherit"
+            title="Remover filtro de itens genéricos"
+            @click="filters.onlyGeneric = false"
+          >
+            &times;
+          </button>
+        </span>
+      </div>
       <button
         id="wm-filter-reset"
         type="button"

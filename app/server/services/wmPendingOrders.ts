@@ -27,6 +27,9 @@ interface ItemRow {
   notafiscal: string | null
   pre_nota: string | null
   it_ped_cli: string | null
+  customizacao_produto?: string | null
+  anotacoes_item?: string | null
+  prod_cli?: string | null
 }
 
 interface OrderRow {
@@ -83,12 +86,56 @@ function mapItem(row: ItemRow): WmPendingItem {
     totalPending: num(row.total_pendente),
     invoiceNumber: row.notafiscal,
     preInvoice: row.pre_nota,
-    clientOrderItem: row.it_ped_cli
+    clientOrderItem: row.it_ped_cli,
+    customProduct: row.customizacao_produto || null,
+    itemNotes: row.anotacoes_item || null,
+    clientProductCode: row.prod_cli || null
   }
 }
 
-function mapOrder(row: OrderRow): WmPendingOrder {
-  const items = (row.items ?? []).map(mapItem).sort((a, b) => a.seq.localeCompare(b.seq))
+let _cachedCustomMap: Map<string, { custom: string; notes: string; prodCli: string }> | null = null
+
+async function getCustomMap(): Promise<Map<string, { custom: string; notes: string; prodCli: string }>> {
+  if (_cachedCustomMap) return _cachedCustomMap
+  const map = new Map<string, { custom: string; notes: string; prodCli: string }>()
+  try {
+    const fs = await import('node:fs/promises')
+    const path = await import('node:path')
+    const jsonPath = path.resolve(process.cwd(), 'docs/wm_pending_data.json')
+    const raw = await fs.readFile(jsonPath, 'utf-8')
+    const orders = JSON.parse(raw.replace(/^\uFEFF/, ''))
+    for (const o of orders) {
+      for (const i of o.items || []) {
+        if (i.customizacao_produto || i.anotacoes_item || i.prod_cli) {
+          map.set(`${o.codigo_itk}-${i.seq}`, {
+            custom: i.customizacao_produto || '',
+            notes: i.anotacoes_item || '',
+            prodCli: i.prod_cli || i.it_ped_cli || ''
+          })
+        }
+      }
+    }
+  } catch (err: any) {
+    console.warn('[wmPendingOrders] Falha ao carregar customMap:', err?.message)
+  }
+  _cachedCustomMap = map
+  return map
+}
+
+function mapOrder(row: OrderRow, customMap?: Map<string, { custom: string; notes: string; prodCli: string }>): WmPendingOrder {
+  const items = (row.items ?? []).map((item) => {
+    const mapped = mapItem(item)
+    if (!mapped.customProduct && customMap) {
+      const extra = customMap.get(`${row.codigo_itk}-${mapped.seq}`)
+      if (extra) {
+        mapped.customProduct = extra.custom || null
+        mapped.itemNotes = extra.notes || mapped.itemNotes || null
+        mapped.clientProductCode = extra.prodCli || mapped.clientProductCode || null
+      }
+    }
+    return mapped
+  }).sort((a, b) => a.seq.localeCompare(b.seq))
+
   return {
     itkCode: row.codigo_itk,
     issuedAt: row.emissao,
@@ -115,6 +162,8 @@ function mapOrder(row: OrderRow): WmPendingOrder {
 
 /** Lê o espelho de pedidos pendentes WHITE MARTINS (somente leitura, service_role). */
 export async function listWmPendingOrders(): Promise<WmPendingOrdersResponse> {
+  const customMap = await getCustomMap()
+
   // 1. Tentar ler do Supabase (prioridade máxima)
   if (supabaseAdmin) {
     try {
@@ -130,7 +179,7 @@ export async function listWmPendingOrders(): Promise<WmPendingOrdersResponse> {
           (latest, r) => (!latest || r.synced_at > latest ? r.synced_at : latest),
           null
         )
-        return { orders: rows.map(mapOrder), syncedAt }
+        return { orders: rows.map((r) => mapOrder(r, customMap)), syncedAt }
       }
 
       if (error) {
@@ -186,7 +235,10 @@ export async function listWmPendingOrders(): Promise<WmPendingOrdersResponse> {
         totalPending: num(i.total_pendente),
         invoiceNumber: i.notafiscal || null,
         preInvoice: i.pre_nota || null,
-        clientOrderItem: i.it_ped_cli || null
+        clientOrderItem: i.it_ped_cli || null,
+        customProduct: i.customizacao_produto || null,
+        itemNotes: i.anotacoes_item || null,
+        clientProductCode: i.prod_cli || i.cod_prod_cli || null
       }))
     }))
 

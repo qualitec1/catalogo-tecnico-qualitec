@@ -1,0 +1,107 @@
+[
+  {
+    "pedido_itk": "00003616",
+    "pedido_cliente": "4000412294",
+    "filial": "Contagem",
+    "regiao": "Sudeste",
+    "item_cli": "10",
+    "seq": "00001",
+    "cod_produto": "00002503",
+    "desc_pedido": "GEN COMPONENTES/PECAS INDUSTRIAIS",
+    "desc_master": "GEN COMPONENTES/PECAS INDUSTRIAIS",
+    "part_number": "COMPTES INDUSTRIAIS",
+    "complemento": "",
+    "qtd_pedida": 1.0,
+    "qtd_pendente": 1.0,
+    "unitario": 850.0,
+    "total_pendente": 850.0,
+    "origem": "Importado",
+    "reasons": [
+      "Contém 'GEN' / Genérico no Part Number ou Descrição"
+    ]
+  },
+  {
+    "pedido_itk": "00002962",
+    "pedido_cliente": "4000382079",
+    "filial": "Diadema",
+    "regiao": "Sudeste",
+    "item_cli": "10",
+    "seq": "00001",
+    "cod_produto": "00001646",
+    "desc_pedido": "VALVULA SEGURANCA",
+    "desc_master": "VALVULA SEGURANCA",
+    "part_number": "00 PSV GEN",
+    "complemento": "",
+    "qtd_pedida": 1.0,
+    "qtd_pendente": 1.0,
+    "unitario": 1896.0,
+    "total_pendente": 1896.0,
+    "origem": "Importado",
+    "reasons": [
+      "Contém 'GEN' / Genérico no Part Number ou Descrição"
+    ]
+  },
+  {
+    "pedido_itk": "00002962",
+    "pedido_cliente": "4000382079",
+    "filial": "Diadema",
+    "regiao": "Sudeste",
+    "item_cli": "20",
+    "seq": "00002",
+    "cod_produto": "00001646",
+    "desc_pedido": "VALVULA SEGURANCA",
+    "desc_master": "VALVULA SEGURANCA",
+    "part_number": "00 PSV GEN",
+    "complemento": "",
+    "qtd_pedida": 1.0,
+    "qtd_pendente": 1.0,
+    "unitario": 1896.0,
+    "total_pendente": 1896.0,
+    "origem": "Importado",
+    "reasons": [
+      "Contém 'GEN' / Genérico no Part Number ou Descrição"
+    ]
+  },
+  {
+    "pedido_itk": "00002312",
+    "pedido_cliente": "4000369526",
+    "filial": "Vinhedo",
+    "regiao": "Sudeste",
+    "item_cli": "10",
+    "seq": "00001",
+    "cod_produto": "00001646",
+    "desc_pedido": "VALVULA SEGURANCA",
+    "desc_master": "VALVULA SEGURANCA",
+    "part_number": "00 PSV GEN",
+    "complemento": "",
+    "qtd_pedida": 10.0,
+    "qtd_pendente": 10.0,
+    "unitario": 439.0,
+    "total_pendente": 4390.0,
+    "origem": "Importado",
+    "reasons": [
+      "Contém 'GEN' / Genérico no Part Number ou Descrição"
+    ]
+  },
+  {
+    "pedido_itk": "00002052",
+    "pedido_cliente": "Não informado",
+    "filial": "Duque Ig",
+    "regiao": "Sudeste",
+    "item_cli": "10",
+    "seq": "00001",
+    "cod_produto": "00001646",
+    "desc_pedido": "VALVULA SEGURANCA",
+    "desc_master": "VALVULA SEGURANCA",
+    "part_number": "00 PSV GEN",
+    "complemento": "",
+    "qtd_pedida": 8.0,
+    "qtd_pendente": 8.0,
+    "unitario": 6613.0,
+    "total_pendente": 52904.0,
+    "origem": "Importado",
+    "reasons": [
+      "Contém 'GEN' / Genérico no Part Number ou Descrição"
+    ]
+  }
+]

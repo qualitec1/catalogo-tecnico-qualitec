@@ -43,9 +43,33 @@
             </td>
             <td class="font-mono text-[11px] wm-muted">{{ item.productCode }}</td>
             <td>
-              <div class="font-medium text-xs text-[var(--wm-text)] leading-tight">{{ item.description }}</div>
-              <div v-if="item.clientOrderItem" class="text-[10px] wm-muted mt-0.5">
-                Item Ped. Cliente: #{{ item.clientOrderItem }}
+              <div class="flex items-center gap-1.5 flex-wrap">
+                <span class="font-medium text-xs text-[var(--wm-text)] leading-tight">{{ item.description }}</span>
+                <span
+                  v-if="isGenericItem(item) || item.customProduct"
+                  class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30"
+                  title="Item genérico com customização ou ajuste manual do vendedor"
+                >
+                  <span class="material-symbols-outlined text-[12px]">warning</span>
+                  Customização do Vendedor
+                </span>
+              </div>
+
+              <!-- Destaque do texto digitado no ITK pelo vendedor -->
+              <div
+                v-if="item.customProduct"
+                class="mt-1.5 p-1.5 rounded-md bg-amber-500/10 border border-amber-500/30 text-[11px] font-mono text-[var(--wm-text)]"
+              >
+                <span class="text-amber-600 dark:text-amber-400 font-bold block text-[10px] uppercase tracking-wider mb-0.5">
+                  Texto Real / Ajuste Digitado no ITK:
+                </span>
+                <span class="font-semibold text-amber-700 dark:text-amber-300 break-words whitespace-pre-line">{{ item.customProduct }}</span>
+              </div>
+
+              <div class="text-[10px] wm-muted mt-1 flex flex-wrap items-center gap-2.5">
+                <span v-if="item.clientOrderItem">Item Ped. Cliente: <strong class="font-mono text-[var(--wm-text)]">#{{ item.clientOrderItem }}</strong></span>
+                <span v-if="item.clientProductCode">Cód. Mat. White Martins: <strong class="font-mono text-[var(--wm-text)]">{{ item.clientProductCode }}</strong></span>
+                <span v-if="item.itemNotes" class="italic text-[10px]">Obs: {{ item.itemNotes }}</span>
               </div>
             </td>
             <td class="text-center">
@@ -83,6 +107,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { isGenericItem } from '../composables/useWmPendingOrders'
 import type { WmPendingItem } from '../types/wmPendingOrders'
 import { formatBRL, formatQty, originClass } from '../utils/wmPendingFormat'
 

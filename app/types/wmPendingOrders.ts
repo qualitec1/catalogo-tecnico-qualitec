@@ -32,6 +32,9 @@ export interface WmPendingItem {
   invoiceNumber: string | null
   preInvoice: string | null
   clientOrderItem: string | null
+  customProduct?: string | null
+  itemNotes?: string | null
+  clientProductCode?: string | null
 }
 
 export interface WmPendingOrder {

@@ -21,6 +21,7 @@ export interface WmFilters {
   dateFrom: string
   dateTo: string
   search: string
+  onlyGeneric: boolean
 }
 
 export interface WmOrderView extends WmPendingOrder {
@@ -41,10 +42,30 @@ export interface WmKpis {
   preInvoice: number
   imported: { value: number; count: number }
   national: { value: number; count: number }
+  generic: { value: number; itemsCount: number; ordersCount: number }
+}
+
+export const GENERIC_PRODUCT_CODES = ['00001646', '00002503', '00002802'] as const
+
+export function isGenericItem(item: WmPendingItem): boolean {
+  if (GENERIC_PRODUCT_CODES.includes(item.productCode as any)) return true
+  const pn = (item.partNumber || '').toUpperCase()
+  if (pn === '00 PSV GEN' || pn === 'COMPTES INDUSTRIAIS' || pn === 'TUBO INDUSTRIAL' || pn.includes('GEN')) {
+    return true
+  }
+  const desc = (item.description || '').toUpperCase()
+  if (desc.startsWith('GEN ') || desc.includes('GENERICO') || desc.includes('GENÉRICO')) {
+    return true
+  }
+  return false
+}
+
+export function isOrderGeneric(order: WmPendingOrder): boolean {
+  return order.items.some((i) => (i.qtyPending > 0 || i.totalPending > 0) && isGenericItem(i))
 }
 
 const defaultFilters = (): WmFilters => ({
-  region: '', branch: '', status: '', origin: '', sort: 'oldest', dateFrom: '', dateTo: '', search: ''
+  region: '', branch: '', status: '', origin: '', sort: 'oldest', dateFrom: '', dateTo: '', search: '', onlyGeneric: false
 })
 
 const hasPending = (i: WmPendingItem) => i.qtyPending > 0
@@ -99,6 +120,7 @@ export function useWmPendingOrders() {
   const filteredOrders = computed<WmOrderView[]>(() => {
     const term = normalizeSearch(filters.search.trim())
     const list = orders.value.filter((o) =>
+      (!filters.onlyGeneric || isOrderGeneric(o)) &&
       (!filters.region || o.region === filters.region) &&
       (!filters.branch || o.branch === filters.branch) &&
       (!filters.status || o.billingStatus === filters.status) &&
@@ -116,7 +138,8 @@ export function useWmPendingOrders() {
   const kpis = computed<WmKpis>(() => {
     const k: WmKpis = {
       pendingTotal: 0, openOrders: 0, fullyPending: 0, partial: 0, preInvoice: 0,
-      imported: { value: 0, count: 0 }, national: { value: 0, count: 0 }
+      imported: { value: 0, count: 0 }, national: { value: 0, count: 0 },
+      generic: { value: 0, itemsCount: 0, ordersCount: 0 }
     }
     for (const o of filteredOrders.value) {
       k.pendingTotal += o.pendingValue
@@ -130,6 +153,20 @@ export function useWmPendingOrders() {
         bucket.count += 1
       }
     }
+    const genericSource = orders.value.filter((o) =>
+      (!filters.region || o.region === filters.region) &&
+      (!filters.branch || o.branch === filters.branch)
+    )
+    for (const o of genericSource) {
+      const gItems = o.items.filter((i) => (i.qtyPending > 0 || i.totalPending > 0) && isGenericItem(i))
+      if (gItems.length > 0) {
+        k.generic.ordersCount += 1
+        for (const gi of gItems) {
+          k.generic.itemsCount += 1
+          k.generic.value += gi.totalPending
+        }
+      }
+    }
     return k
   })
 
@@ -141,6 +178,7 @@ export function useWmPendingOrders() {
       const orderHit = !term || hit([order.itkCode, order.clientOrder, order.branch, order.clientTradeName])
       for (const item of order.items) {
         if (!hasPending(item) || (filters.origin && item.origin !== filters.origin)) continue
+        if (filters.onlyGeneric && !isGenericItem(item)) continue
         if (!orderHit && !hit([item.description, item.partNumber, item.productCode])) continue
         rows.push({ key: `${order.itkCode}-${item.seq}`, item, order })
       }
