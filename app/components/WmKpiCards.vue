@@ -22,9 +22,11 @@
             {{ onlyGeneric ? 'Filtro Ativo (Clique p/ Limpar)' : 'Clique p/ Filtrar' }}
           </span>
         </div>
-        <span class="wm-kpi-icon shrink-0" :style="{ background: card.gradient, color: card.glow }">
-          <WmLottieIcon v-if="card.lottie" :path="card.lottie" :size="28" />
-          <span v-else class="material-symbols-outlined text-[20px] text-white">{{ card.icon }}</span>
+        <div v-if="card.lottie" class="shrink-0 flex items-center justify-center w-10 h-10 select-none overflow-visible">
+          <WmLottieIcon :path="card.lottie" :size="44" />
+        </div>
+        <span v-else class="wm-kpi-icon shrink-0" :style="{ background: card.gradient, color: card.glow }">
+          <span class="material-symbols-outlined text-[20px] text-white">{{ card.icon }}</span>
         </span>
       </div>
       <div>
