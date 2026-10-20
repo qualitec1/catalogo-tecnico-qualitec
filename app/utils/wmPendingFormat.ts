@@ -1,5 +1,5 @@
 // Funções puras de formatação do painel de pendências WHITE MARTINS.
-import type { WmBillingStatus, WmOrigin } from '../../shared/types/wmPendingOrders'
+import type { WmBillingStatus, WmOrigin } from '../types/wmPendingOrders'
 
 const brl = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' })
 const qty = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 4 })

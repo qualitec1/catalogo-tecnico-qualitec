@@ -83,7 +83,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { WmPendingItem } from '../../shared/types/wmPendingOrders'
+import type { WmPendingItem } from '../types/wmPendingOrders'
 import { formatBRL, formatQty, originClass } from '../utils/wmPendingFormat'
 
 const props = defineProps<{

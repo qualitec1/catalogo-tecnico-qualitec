@@ -7,7 +7,7 @@ import type {
   WmPendingOrder,
   WmPendingOrdersResponse,
   WmRegion
-} from '../../../shared/types/wmPendingOrders'
+} from '../../types/wmPendingOrders'
 
 interface ItemRow {
   seq: string

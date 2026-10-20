@@ -87,7 +87,7 @@
 </template>
 
 <script setup lang="ts">
-import { WM_BILLING_STATUSES, WM_ORIGINS, WM_REGIONS } from '../../shared/types/wmPendingOrders'
+import { WM_BILLING_STATUSES, WM_ORIGINS, WM_REGIONS } from '../types/wmPendingOrders'
 import type { WmFilters } from '../composables/useWmPendingOrders'
 import { billingStatusLabel } from '../utils/wmPendingFormat'
 

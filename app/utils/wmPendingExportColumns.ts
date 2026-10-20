@@ -1,5 +1,5 @@
 // Colunas de exportação (uma linha por item, com os dados do pedido) do painel WHITE MARTINS.
-import type { WmPendingItem, WmPendingOrder } from '../../shared/types/wmPendingOrders'
+import type { WmPendingItem, WmPendingOrder } from '../types/wmPendingOrders'
 import type { ExportColumn } from './tableExport'
 import { billingStatusLabel, formatIsoDate } from './wmPendingFormat'
 

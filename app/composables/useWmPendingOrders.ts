@@ -6,7 +6,7 @@ import type {
   WmPendingOrder,
   WmPendingOrdersResponse,
   WmRegion
-} from '../../shared/types/wmPendingOrders'
+} from '../types/wmPendingOrders'
 import { daysBetween, normalizeSearch } from '../utils/wmPendingFormat'
 
 export type WmSortOrder = 'oldest' | 'newest' | 'pending_desc'
