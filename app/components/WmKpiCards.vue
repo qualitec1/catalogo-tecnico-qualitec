@@ -23,7 +23,8 @@
           </span>
         </div>
         <span class="wm-kpi-icon shrink-0" :style="{ background: card.gradient, color: card.glow }">
-          <span class="material-symbols-outlined text-[20px] text-white">{{ card.icon }}</span>
+          <WmLottieIcon v-if="card.lottie" :path="card.lottie" :size="28" />
+          <span v-else class="material-symbols-outlined text-[20px] text-white">{{ card.icon }}</span>
         </span>
       </div>
       <div>
@@ -39,6 +40,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import WmLottieIcon from './WmLottieIcon.vue'
 import type { WmKpis } from '../composables/useWmPendingOrders'
 import { formatBRL } from '../utils/wmPendingFormat'
 
@@ -72,7 +74,8 @@ const cards = computed(() => {
     {
       id: 'full', label: '100% pendentes (sem NF)', icon: 'hourglass_top',
       value: plural(k.fullyPending, 'pedido', 'pedidos'), hint: 'Nenhuma quantidade faturada',
-      gradient: 'linear-gradient(135deg,#dc2626,#f97316)', glow: '#dc2626'
+      gradient: 'linear-gradient(135deg,#dc2626,#f97316)', glow: '#dc2626',
+      lottie: '/animation/siren.json'
     },
     {
       id: 'partial', label: 'Parcialmente faturados', icon: 'incomplete_circle',
@@ -84,7 +87,8 @@ const cards = computed(() => {
       value: `${plural(k.generic?.ordersCount ?? 0, 'pedido', 'pedidos')} (${k.generic?.itemsCount ?? 0} itens)`,
       hint: `${formatBRL(k.generic?.value ?? 0)} pendentes com customização manual`,
       gradient: 'linear-gradient(135deg,#f59e0b,#ea580c)', glow: '#f59e0b',
-      clickable: true
+      clickable: true,
+      lottie: '/animation/siren.json'
     },
     {
       id: 'imported', label: 'Itens importados pendentes', icon: 'public',
