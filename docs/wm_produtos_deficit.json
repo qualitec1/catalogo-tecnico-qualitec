@@ -1,5 +1,5 @@
 {
-  "synced_at": "2026-10-21T14:36:57.643016",
+  "synced_at": "2026-10-21T16:17:31.010531",
   "total_produtos": 80,
   "produtos_com_deficit": 70,
   "produtos_com_estoque_ok": 10,
@@ -2823,9 +2823,9 @@
       "qtd_faturada": 0.0,
       "qtd_pendente": 12.0,
       "valor_pendente": 8182.0,
-      "saldo_estoque": 345.0,
+      "saldo_estoque": 340.0,
       "reservado_estoque": 0.0,
-      "disponivel_estoque": 345.0,
+      "disponivel_estoque": 340.0,
       "pedidos_count": 3,
       "pedidos": [
         {
@@ -3043,9 +3043,9 @@
       "qtd_faturada": 0.0,
       "qtd_pendente": 50.0,
       "valor_pendente": 813.0,
-      "saldo_estoque": 155.0,
+      "saldo_estoque": 53.0,
       "reservado_estoque": 0.0,
-      "disponivel_estoque": 155.0,
+      "disponivel_estoque": 53.0,
       "pedidos_count": 1,
       "pedidos": [
         {
