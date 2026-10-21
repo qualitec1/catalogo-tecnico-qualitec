@@ -232,9 +232,21 @@ const deficitPayload = ref<WmProductsDeficitPayload>({
 async function loadDeficit(): Promise<void> {
   try {
     const data = await $fetch<WmProductsDeficitPayload>('/api/admin/produtos-deficit-white-martins')
-    deficitPayload.value = data
+    if (data && data.produtos && data.produtos.length > 0) {
+      deficitPayload.value = data
+      return
+    }
   } catch (e) {
-    console.warn('Falha ao carregar balanço de produtos:', e)
+    console.warn('Tentando fallback público para balanço de produtos...')
+  }
+
+  try {
+    const fallback = await $fetch<WmProductsDeficitPayload>('/data/wm_produtos_deficit.json')
+    if (fallback && fallback.produtos && fallback.produtos.length > 0) {
+      deficitPayload.value = fallback
+    }
+  } catch (e) {
+    console.warn('Falha ao carregar balanço de produtos via fallback:', e)
   }
 }
 

@@ -6,6 +6,10 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
   modules: ['@nuxtjs/tailwindcss'],
+  routeRules: {
+    '/gestao/pendencias-white-martin': { redirect: { to: '/gestao/pendencias-white-martins', statusCode: 301 } },
+    '/pendencias-white-martin': { redirect: { to: '/gestao/pendencias-white-martins', statusCode: 301 } }
+  },
   app: {
     head: {
       title: 'Qualitec Industrial | Catálogo Técnico',
