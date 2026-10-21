@@ -32,7 +32,7 @@
             class="wm-btn wm-btn--ghost text-xs py-1.5 px-3"
             :disabled="loading"
             title="Recarregar dados"
-            @click="load"
+            @click="() => { load(); loadDeficit(); }"
           >
             <span class="material-symbols-outlined text-[16px]" :class="{ 'animate-spin': loading }">
               refresh
@@ -78,7 +78,7 @@
           <span class="material-symbols-outlined text-[20px]">error</span>
           <span>{{ errorMessage }}</span>
         </div>
-        <button type="button" class="underline font-bold" @click="load">Tentar novamente</button>
+        <button type="button" class="underline font-bold" @click="() => { load(); loadDeficit(); }">Tentar novamente</button>
       </div>
 
       <!-- Estado de Carregamento -->
@@ -136,6 +136,23 @@
                 {{ rankedItems.length }}
               </span>
             </button>
+
+            <!-- Nova Aba: Balanço por Produto (Necessidade de Estoque) -->
+            <button
+              type="button"
+              class="wm-tab"
+              :class="{ 'wm-tab--active': activeTab === 'produtos' }"
+              @click="activeTab = 'produtos'"
+            >
+              <span class="material-symbols-outlined text-[18px]">balance</span>
+              <span>Necessidade de Estoque</span>
+              <span v-if="deficitPayload.produtos_com_deficit > 0" class="wm-badge wm-badge--danger text-[10px]">
+                {{ deficitPayload.produtos_com_deficit }} em falta
+              </span>
+              <span v-else class="wm-badge wm-badge--neutral text-[10px]">
+                {{ deficitPayload.total_produtos }}
+              </span>
+            </button>
           </div>
 
           <div class="text-xs wm-muted hidden sm:block">
@@ -153,6 +170,16 @@
             :items="rankedItems"
             :mode="rankingMode"
             @update:mode="rankingMode = $event"
+          />
+        </div>
+
+        <!-- Visualização da Aba de Balanço de Estoque / Quanto Falta p/ Quitar -->
+        <div v-show="activeTab === 'produtos'">
+          <WmProductsBalanceTable
+            :items="deficitPayload.produtos"
+            :total-pecas-faltantes="deficitPayload.total_pecas_faltantes"
+            :produtos-com-deficit="deficitPayload.produtos_com_deficit"
+            :produtos-com-estoque-ok="deficitPayload.produtos_com_estoque_ok"
           />
         </div>
       </template>
@@ -174,6 +201,8 @@ import WmFiltersBar from '../../components/WmFiltersBar.vue'
 import WmKpiCards from '../../components/WmKpiCards.vue'
 import WmOrdersTable from '../../components/WmOrdersTable.vue'
 import WmRankingTable from '../../components/WmRankingTable.vue'
+import WmProductsBalanceTable from '../../components/WmProductsBalanceTable.vue'
+import type { WmProductsDeficitPayload } from '../../types/wmProductsDeficit'
 import '../../assets/css/wmDashboard.css'
 
 definePageMeta({
@@ -188,8 +217,26 @@ useHead({
   ]
 })
 
-const activeTab = ref<'pedidos' | 'ranking'>('pedidos')
+const activeTab = ref<'pedidos' | 'ranking' | 'produtos'>('pedidos')
 const isDarkMode = ref(true)
+
+const deficitPayload = ref<WmProductsDeficitPayload>({
+  synced_at: '',
+  total_produtos: 0,
+  produtos_com_deficit: 0,
+  produtos_com_estoque_ok: 0,
+  total_pecas_faltantes: 0,
+  produtos: []
+})
+
+async function loadDeficit(): Promise<void> {
+  try {
+    const data = await $fetch<WmProductsDeficitPayload>('/api/admin/produtos-deficit-white-martins')
+    deficitPayload.value = data
+  } catch (e) {
+    console.warn('Falha ao carregar balanço de produtos:', e)
+  }
+}
 
 const {
   orders,
@@ -220,5 +267,6 @@ onMounted(() => {
     if (saved) isDarkMode.value = saved === 'dark'
   }
   load()
+  loadDeficit()
 })
 </script>
