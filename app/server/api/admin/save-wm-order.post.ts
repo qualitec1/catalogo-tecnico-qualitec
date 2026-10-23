@@ -11,8 +11,10 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, message: 'Dados da Ordem de Compra incompletos.' })
   }
 
+  const engineUrl = (process.env.WM_ENGINE_URL || 'http://127.0.0.1:5050').replace(/\/+$/, '')
+
   try {
-    const resp = await fetch('http://127.0.0.1:5050/api/save-order', {
+    const resp = await fetch(`${engineUrl}/api/save-order`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -25,7 +27,7 @@ export default defineEventHandler(async (event) => {
   } catch (err: any) {
     return {
       success: false,
-      error: `Falha ao conectar no serviço do ITKSoft (porta 5050): ${err?.message || err}`
+      error: `Falha ao conectar no serviço do ITKSoft (${engineUrl}): ${err?.message || err}. Em produção na Vercel, certifique-se de que o túnel/serviço local está ativo (WM_ENGINE_URL).`
     }
   }
 })

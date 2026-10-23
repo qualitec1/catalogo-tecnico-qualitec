@@ -13,6 +13,8 @@ export default defineEventHandler(async (event) => {
 
   const results = []
 
+  const engineUrl = (process.env.WM_ENGINE_URL || 'http://127.0.0.1:5050').replace(/\/+$/, '')
+
   for (const part of parts) {
     // Processa apenas arquivos PDF
     const isPdf = (part.filename && part.filename.toLowerCase().endsWith('.pdf')) ||
@@ -23,7 +25,7 @@ export default defineEventHandler(async (event) => {
     if (isPdf && part.data && part.data.length > 0) {
       const filename = part.filename || 'ordem_compra.pdf'
       try {
-        const resp = await fetch('http://127.0.0.1:5050/api/process-order', {
+        const resp = await fetch(`${engineUrl}/api/process-order`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/pdf',
@@ -52,7 +54,7 @@ export default defineEventHandler(async (event) => {
         results.push({
           filename,
           status: 'ERROR',
-          error: `Falha ao conectar no motor de leitura local (porta 5050): ${err?.message || err}`
+          error: `Falha ao conectar no motor de leitura (${engineUrl}): ${err?.message || err}. Em produção na Vercel, certifique-se de que o túnel/serviço local está ativo (WM_ENGINE_URL).`
         })
       }
     }
