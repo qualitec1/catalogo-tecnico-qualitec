@@ -1,5 +1,5 @@
 <template>
-  <section aria-label="Indicadores" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-7 gap-3.5">
+  <section aria-label="Indicadores" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-8 gap-3.5">
     <article
       v-for="(card, idx) in cards"
       :key="card.id"
@@ -37,6 +37,39 @@
         <span :style="{ width: `${card.share}%` }" />
       </div>
     </article>
+
+    <!-- 8º Card: Importar Ordens de Compra (PDF) -->
+    <article
+      class="wm-card wm-kpi p-4 flex flex-col justify-between gap-3 relative transition-all duration-200 cursor-pointer border-dashed border-2 border-blue-500/40 hover:border-blue-500 bg-gradient-to-br from-blue-600/10 via-cyan-500/5 to-transparent hover:shadow-lg hover:shadow-blue-500/20 group select-none"
+      title="Clique para abrir o Leitor e Importador de Ordens de Compra em PDF"
+      @click="emit('open-import')"
+    >
+      <div class="flex items-start justify-between gap-2">
+        <div class="flex flex-col">
+          <span class="text-[11px] font-bold uppercase tracking-wider text-blue-500 dark:text-blue-400 leading-tight">
+            Importar Pedido
+          </span>
+          <span class="inline-flex items-center gap-1 mt-1 text-[10px] font-bold px-2 py-0.5 rounded-full w-fit bg-blue-500/15 text-blue-600 dark:text-blue-300 border border-blue-500/30">
+            Multi-PDF (SAP)
+          </span>
+        </div>
+        <span class="wm-kpi-icon shrink-0 group-hover:scale-110 transition-transform duration-200" style="background: linear-gradient(135deg, #2563eb, #06b6d4); color: #2563eb;">
+          <span class="material-symbols-outlined text-[20px] text-white">upload_file</span>
+        </span>
+      </div>
+      <div>
+        <p class="wm-heading text-lg xl:text-xl font-bold leading-tight group-hover:text-blue-500 transition-colors">
+          Ler Pedidos (PDF)
+        </p>
+        <p class="text-xs wm-muted mt-1 leading-snug">
+          Anexe 1 ou múltiplos PDFs p/ auditar e gravar
+        </p>
+      </div>
+      <div class="flex items-center gap-1.5 text-[11px] font-semibold text-blue-500 dark:text-blue-400 mt-1">
+        <span>Abrir Leitor</span>
+        <span class="material-symbols-outlined text-[14px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
+      </div>
+    </article>
   </section>
 </template>
 
@@ -53,6 +86,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   'toggle-generic': []
+  'open-import': []
 }>()
 
 const share = (part: number) =>

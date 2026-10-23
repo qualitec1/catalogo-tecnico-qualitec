@@ -96,6 +96,7 @@
           :kpis="kpis"
           :only-generic="filters.onlyGeneric"
           @toggle-generic="filters.onlyGeneric = !filters.onlyGeneric"
+          @open-import="isImportModalOpen = true"
         />
 
         <!-- Barra de Filtros Interativos -->
@@ -183,6 +184,13 @@
           />
         </div>
       </template>
+
+      <!-- Modal de Leitura e Importação de Pedidos White Martins (Multi-PDF) -->
+      <WmOrderImportModal
+        :is-open="isImportModalOpen"
+        @close="isImportModalOpen = false"
+        @order-imported="() => { load(); loadDeficit(); }"
+      />
     </main>
 
     <!-- Rodapé -->
@@ -202,6 +210,7 @@ import WmKpiCards from '../../components/WmKpiCards.vue'
 import WmOrdersTable from '../../components/WmOrdersTable.vue'
 import WmRankingTable from '../../components/WmRankingTable.vue'
 import WmProductsBalanceTable from '../../components/WmProductsBalanceTable.vue'
+import WmOrderImportModal from '../../components/WmOrderImportModal.vue'
 import type { WmProductsDeficitPayload } from '../../types/wmProductsDeficit'
 import '../../assets/css/wmDashboard.css'
 
@@ -219,6 +228,7 @@ useHead({
 
 const activeTab = ref<'pedidos' | 'ranking' | 'produtos'>('pedidos')
 const isDarkMode = ref(true)
+const isImportModalOpen = ref(false)
 
 const deficitPayload = ref<WmProductsDeficitPayload>({
   synced_at: '',

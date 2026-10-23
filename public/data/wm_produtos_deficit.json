@@ -1,9 +1,9 @@
 {
-  "synced_at": "2026-10-21T16:17:31.010531",
-  "total_produtos": 80,
-  "produtos_com_deficit": 70,
+  "synced_at": "2026-10-23T16:29:45.282133",
+  "total_produtos": 85,
+  "produtos_com_deficit": 75,
   "produtos_com_estoque_ok": 10,
-  "total_pecas_faltantes": 9459.0,
+  "total_pecas_faltantes": 11411.0,
   "produtos": [
     {
       "cod_produto": "00002252",
@@ -74,71 +74,19 @@
       "status_estoque": "Falta Estoque"
     },
     {
-      "cod_produto": "00002251",
-      "descricao": "TEE COBRE SW 15MM (SEM ANEL)",
-      "part_number": "CBT-15",
-      "unidade": "UN",
-      "origem": "Importado",
-      "qtd_pedida": 2200.0,
-      "qtd_faturada": 211.0,
-      "qtd_pendente": 1989.0,
-      "valor_pendente": 11969.67,
-      "saldo_estoque": 0.0,
-      "reservado_estoque": 0.0,
-      "disponivel_estoque": 0.0,
-      "pedidos_count": 4,
-      "pedidos": [
-        {
-          "codigo_itk": "00002158",
-          "pedido_cliente": "4000361449",
-          "filial": "Manaus",
-          "emissao": "2026-02-13",
-          "qtd_pendente": 100.0,
-          "valor_pendente": 603.0
-        },
-        {
-          "codigo_itk": "00001967",
-          "pedido_cliente": "4000321792",
-          "filial": "Manaus",
-          "emissao": "2025-12-15",
-          "qtd_pendente": 50.0,
-          "valor_pendente": 289.5
-        },
-        {
-          "codigo_itk": "00001279",
-          "pedido_cliente": "4000266348",
-          "filial": "Manaus",
-          "emissao": "2025-04-24",
-          "qtd_pendente": 50.0,
-          "valor_pendente": 289.5
-        },
-        {
-          "codigo_itk": "00000388",
-          "pedido_cliente": "4500010272",
-          "filial": "Salvador",
-          "emissao": "2024-01-11",
-          "qtd_pendente": 1789.0,
-          "valor_pendente": 10787.67
-        }
-      ],
-      "falta_para_quitar": 1989.0,
-      "falta_disp_livre": 1989.0,
-      "status_estoque": "Falta Estoque"
-    },
-    {
       "cod_produto": "00000098",
       "descricao": "VALV ESFERA MON PN50 1/2\" NPT PS LT LT TP AL - O2",
       "part_number": "01389.0400.6040",
       "unidade": "UN",
       "origem": "Importado",
-      "qtd_pedida": 2358.0,
+      "qtd_pedida": 4009.0,
       "qtd_faturada": 0.0,
-      "qtd_pendente": 2358.0,
-      "valor_pendente": 131932.35,
-      "saldo_estoque": 503.0,
-      "reservado_estoque": 6.0,
-      "disponivel_estoque": 497.0,
-      "pedidos_count": 15,
+      "qtd_pendente": 4009.0,
+      "valor_pendente": 223427.9,
+      "saldo_estoque": 502.0,
+      "reservado_estoque": 7.0,
+      "disponivel_estoque": 495.0,
+      "pedidos_count": 20,
       "pedidos": [
         {
           "codigo_itk": "00003581",
@@ -229,6 +177,30 @@
           "valor_pendente": 1036.0
         },
         {
+          "codigo_itk": "00003308",
+          "pedido_cliente": "4100122147",
+          "filial": "Matriz RJ",
+          "emissao": "2026-07-16",
+          "qtd_pendente": 300.0,
+          "valor_pendente": 15540.0
+        },
+        {
+          "codigo_itk": "00003654",
+          "pedido_cliente": "4100122147",
+          "filial": "Matriz RJ",
+          "emissao": "2026-07-15",
+          "qtd_pendente": 300.0,
+          "valor_pendente": 15540.0
+        },
+        {
+          "codigo_itk": "00003201",
+          "pedido_cliente": "4100120543",
+          "filial": "Vinhedo",
+          "emissao": "2026-06-26",
+          "qtd_pendente": 675.0,
+          "valor_pendente": 40938.75
+        },
+        {
           "codigo_itk": "00003165",
           "pedido_cliente": "4100120277",
           "filial": "Matriz RJ",
@@ -245,12 +217,28 @@
           "valor_pendente": 3626.0
         },
         {
+          "codigo_itk": "00003087",
+          "pedido_cliente": "4100119227",
+          "filial": "Duque Ig",
+          "emissao": "2026-06-09",
+          "qtd_pendente": 200.0,
+          "valor_pendente": 10360.0
+        },
+        {
           "codigo_itk": "00003059",
           "pedido_cliente": "4100118617",
           "filial": "Jaboatao",
           "emissao": "2026-05-29",
           "qtd_pendente": 30.0,
           "valor_pendente": 1554.0
+        },
+        {
+          "codigo_itk": "00003054",
+          "pedido_cliente": "4000389550",
+          "filial": "Matriz RJ",
+          "emissao": "2026-05-29",
+          "qtd_pendente": 176.0,
+          "valor_pendente": 9116.8
         },
         {
           "codigo_itk": "00002160",
@@ -261,8 +249,112 @@
           "valor_pendente": 3626.0
         }
       ],
-      "falta_para_quitar": 1855.0,
-      "falta_disp_livre": 1861.0,
+      "falta_para_quitar": 3507.0,
+      "falta_disp_livre": 3514.0,
+      "status_estoque": "Falta Estoque"
+    },
+    {
+      "cod_produto": "00002251",
+      "descricao": "TEE COBRE SW 15MM (SEM ANEL)",
+      "part_number": "CBT-15",
+      "unidade": "UN",
+      "origem": "Importado",
+      "qtd_pedida": 2200.0,
+      "qtd_faturada": 211.0,
+      "qtd_pendente": 1989.0,
+      "valor_pendente": 11969.67,
+      "saldo_estoque": 0.0,
+      "reservado_estoque": 0.0,
+      "disponivel_estoque": 0.0,
+      "pedidos_count": 4,
+      "pedidos": [
+        {
+          "codigo_itk": "00002158",
+          "pedido_cliente": "4000361449",
+          "filial": "Manaus",
+          "emissao": "2026-02-13",
+          "qtd_pendente": 100.0,
+          "valor_pendente": 603.0
+        },
+        {
+          "codigo_itk": "00001967",
+          "pedido_cliente": "4000321792",
+          "filial": "Manaus",
+          "emissao": "2025-12-15",
+          "qtd_pendente": 50.0,
+          "valor_pendente": 289.5
+        },
+        {
+          "codigo_itk": "00001279",
+          "pedido_cliente": "4000266348",
+          "filial": "Manaus",
+          "emissao": "2025-04-24",
+          "qtd_pendente": 50.0,
+          "valor_pendente": 289.5
+        },
+        {
+          "codigo_itk": "00000388",
+          "pedido_cliente": "4500010272",
+          "filial": "Salvador",
+          "emissao": "2024-01-11",
+          "qtd_pendente": 1789.0,
+          "valor_pendente": 10787.67
+        }
+      ],
+      "falta_para_quitar": 1989.0,
+      "falta_disp_livre": 1989.0,
+      "status_estoque": "Falta Estoque"
+    },
+    {
+      "cod_produto": "00000097",
+      "descricao": "VALV ESFERA TRIP 300# 1/2\" NPT PR LT LT TP AL",
+      "part_number": "01396.0400.6040",
+      "unidade": "UN",
+      "origem": "Importado",
+      "qtd_pedida": 270.0,
+      "qtd_faturada": 77.0,
+      "qtd_pendente": 193.0,
+      "valor_pendente": 16763.98,
+      "saldo_estoque": 0.0,
+      "reservado_estoque": 45.0,
+      "disponivel_estoque": -45.0,
+      "pedidos_count": 4,
+      "pedidos": [
+        {
+          "codigo_itk": "00003467",
+          "pedido_cliente": "4000420763",
+          "filial": "Contagem",
+          "emissao": "2026-08-24",
+          "qtd_pendente": 60.0,
+          "valor_pendente": 5211.6
+        },
+        {
+          "codigo_itk": "00003143",
+          "pedido_cliente": "4100120123",
+          "filial": "Cariacica",
+          "emissao": "2026-06-19",
+          "qtd_pendente": 20.0,
+          "valor_pendente": 1737.2
+        },
+        {
+          "codigo_itk": "00003086",
+          "pedido_cliente": "4100119121",
+          "filial": "Belem",
+          "emissao": "2026-06-09",
+          "qtd_pendente": 40.0,
+          "valor_pendente": 3474.4
+        },
+        {
+          "codigo_itk": "00002686",
+          "pedido_cliente": "4100115125",
+          "filial": "Sapucaia do Sul",
+          "emissao": "2026-04-09",
+          "qtd_pendente": 73.0,
+          "valor_pendente": 6340.78
+        }
+      ],
+      "falta_para_quitar": 193.0,
+      "falta_disp_livre": 193.0,
       "status_estoque": "Falta Estoque"
     },
     {
@@ -310,50 +402,6 @@
       "status_estoque": "Falta Estoque"
     },
     {
-      "cod_produto": "00000097",
-      "descricao": "VALV ESFERA TRIP 300# 1/2\" NPT PR LT LT TP AL",
-      "part_number": "01396.0400.6040",
-      "unidade": "UN",
-      "origem": "Importado",
-      "qtd_pedida": 230.0,
-      "qtd_faturada": 77.0,
-      "qtd_pendente": 153.0,
-      "valor_pendente": 13289.58,
-      "saldo_estoque": 0.0,
-      "reservado_estoque": 45.0,
-      "disponivel_estoque": -45.0,
-      "pedidos_count": 3,
-      "pedidos": [
-        {
-          "codigo_itk": "00003467",
-          "pedido_cliente": "4000420763",
-          "filial": "Contagem",
-          "emissao": "2026-08-24",
-          "qtd_pendente": 60.0,
-          "valor_pendente": 5211.6
-        },
-        {
-          "codigo_itk": "00003143",
-          "pedido_cliente": "4100120123",
-          "filial": "Cariacica",
-          "emissao": "2026-06-19",
-          "qtd_pendente": 20.0,
-          "valor_pendente": 1737.2
-        },
-        {
-          "codigo_itk": "00002686",
-          "pedido_cliente": "4100115125",
-          "filial": "Sapucaia do Sul",
-          "emissao": "2026-04-09",
-          "qtd_pendente": 73.0,
-          "valor_pendente": 6340.78
-        }
-      ],
-      "falta_para_quitar": 153.0,
-      "falta_disp_livre": 153.0,
-      "status_estoque": "Falta Estoque"
-    },
-    {
       "cod_produto": "00002253",
       "descricao": "CONECTOR SW X ROSCA MACHO (15 X 1/2)",
       "part_number": "CBNM-1504",
@@ -395,6 +443,198 @@
       ],
       "falta_para_quitar": 103.0,
       "falta_disp_livre": 103.0,
+      "status_estoque": "Falta Estoque"
+    },
+    {
+      "cod_produto": "00002744",
+      "descricao": "VALV GLOBO CRIO MA PN50 1.1SW42 AI/BZ HL",
+      "part_number": "01321.4042.0014",
+      "unidade": "UN",
+      "origem": "Importado",
+      "qtd_pedida": 102.0,
+      "qtd_faturada": 1.0,
+      "qtd_pendente": 101.0,
+      "valor_pendente": 254987.09,
+      "saldo_estoque": 0.0,
+      "reservado_estoque": 0.0,
+      "disponivel_estoque": 0.0,
+      "pedidos_count": 10,
+      "pedidos": [
+        {
+          "codigo_itk": "00003325",
+          "pedido_cliente": "4000409675",
+          "filial": "Manaus",
+          "emissao": "2026-07-21",
+          "qtd_pendente": 2.0,
+          "valor_pendente": 4902.8
+        },
+        {
+          "codigo_itk": "00003271",
+          "pedido_cliente": "4500028347",
+          "filial": "Contagem",
+          "emissao": "2026-07-10",
+          "qtd_pendente": 18.0,
+          "valor_pendente": 45484.92
+        },
+        {
+          "codigo_itk": "00003270",
+          "pedido_cliente": "4500028370",
+          "filial": "Contagem",
+          "emissao": "2026-07-10",
+          "qtd_pendente": 20.0,
+          "valor_pendente": 50538.8
+        },
+        {
+          "codigo_itk": "00003164",
+          "pedido_cliente": "4500027959",
+          "filial": "Contagem",
+          "emissao": "2026-06-22",
+          "qtd_pendente": 18.0,
+          "valor_pendente": 43665.48
+        },
+        {
+          "codigo_itk": "00003137",
+          "pedido_cliente": "4000398937",
+          "filial": "Contagem",
+          "emissao": "2026-06-17",
+          "qtd_pendente": 4.0,
+          "valor_pendente": 9703.4
+        },
+        {
+          "codigo_itk": "00002841",
+          "pedido_cliente": "4000327850",
+          "filial": "Manaus",
+          "emissao": "2026-04-22",
+          "qtd_pendente": 2.0,
+          "valor_pendente": 4902.8
+        },
+        {
+          "codigo_itk": "00002273",
+          "pedido_cliente": "4500023249",
+          "filial": "Contagem",
+          "emissao": "2026-03-12",
+          "qtd_pendente": 12.0,
+          "valor_pendente": 30642.48
+        },
+        {
+          "codigo_itk": "00001935",
+          "pedido_cliente": "4500024417",
+          "filial": "Vinhedo",
+          "emissao": "2025-12-09",
+          "qtd_pendente": 3.0,
+          "valor_pendente": 8968.53
+        },
+        {
+          "codigo_itk": "00001748",
+          "pedido_cliente": "4000327850",
+          "filial": "Manaus",
+          "emissao": "2025-10-21",
+          "qtd_pendente": 2.0,
+          "valor_pendente": 5107.08
+        },
+        {
+          "codigo_itk": "00001631",
+          "pedido_cliente": "4500022502",
+          "filial": "Duque Ig",
+          "emissao": "2025-09-04",
+          "qtd_pendente": 20.0,
+          "valor_pendente": 51070.8
+        }
+      ],
+      "falta_para_quitar": 101.0,
+      "falta_disp_livre": 101.0,
+      "status_estoque": "Falta Estoque"
+    },
+    {
+      "cod_produto": "00000048",
+      "descricao": "VALV ESFERA TRIP 300# 2\" NPT PR LT LT TP AL",
+      "part_number": "01396.2000.6040",
+      "unidade": "UN",
+      "origem": "Nacional",
+      "qtd_pedida": 98.0,
+      "qtd_faturada": 0.0,
+      "qtd_pendente": 98.0,
+      "valor_pendente": 40120.1,
+      "saldo_estoque": 0.0,
+      "reservado_estoque": 0.0,
+      "disponivel_estoque": 0.0,
+      "pedidos_count": 9,
+      "pedidos": [
+        {
+          "codigo_itk": "00003567",
+          "pedido_cliente": "4100120543",
+          "filial": "Vinhedo",
+          "emissao": "2026-09-30",
+          "qtd_pendente": 5.0,
+          "valor_pendente": 2247.75
+        },
+        {
+          "codigo_itk": "00003554",
+          "pedido_cliente": "4100127189",
+          "filial": "Cariacica",
+          "emissao": "2026-09-24",
+          "qtd_pendente": 5.0,
+          "valor_pendente": 2094.5
+        },
+        {
+          "codigo_itk": "00003430",
+          "pedido_cliente": "4100122852",
+          "filial": "Duque Ig",
+          "emissao": "2026-08-14",
+          "qtd_pendente": 10.0,
+          "valor_pendente": 4189.0
+        },
+        {
+          "codigo_itk": "00003201",
+          "pedido_cliente": "4100120543",
+          "filial": "Vinhedo",
+          "emissao": "2026-06-26",
+          "qtd_pendente": 5.0,
+          "valor_pendente": 2247.75
+        },
+        {
+          "codigo_itk": "00002661",
+          "pedido_cliente": "4100114908",
+          "filial": "Belem",
+          "emissao": "2026-04-08",
+          "qtd_pendente": 20.0,
+          "valor_pendente": 7927.6
+        },
+        {
+          "codigo_itk": "00003532",
+          "pedido_cliente": "4100114908",
+          "filial": "Belem",
+          "emissao": "2026-04-01",
+          "qtd_pendente": 20.0,
+          "valor_pendente": 7927.6
+        },
+        {
+          "codigo_itk": "00002294",
+          "pedido_cliente": "4000370405",
+          "filial": "Cariacica",
+          "emissao": "2026-03-16",
+          "qtd_pendente": 15.0,
+          "valor_pendente": 5945.7
+        },
+        {
+          "codigo_itk": "00002060",
+          "pedido_cliente": "4100109104",
+          "filial": "Duque Ig",
+          "emissao": "2026-01-20",
+          "qtd_pendente": 8.0,
+          "valor_pendente": 3351.2
+        },
+        {
+          "codigo_itk": "00001816",
+          "pedido_cliente": "4000333083",
+          "filial": "Contagem",
+          "emissao": "2025-11-05",
+          "qtd_pendente": 10.0,
+          "valor_pendente": 4189.0
+        }
+      ],
+      "falta_para_quitar": 98.0,
+      "falta_disp_livre": 98.0,
       "status_estoque": "Falta Estoque"
     },
     {
@@ -483,14 +723,14 @@
       "part_number": "01396.1200.6040",
       "unidade": "UN",
       "origem": "Nacional",
-      "qtd_pedida": 76.0,
+      "qtd_pedida": 83.0,
       "qtd_faturada": 0.0,
-      "qtd_pendente": 76.0,
-      "valor_pendente": 19403.77,
+      "qtd_pendente": 83.0,
+      "valor_pendente": 21181.84,
       "saldo_estoque": 0.0,
       "reservado_estoque": 0.0,
       "disponivel_estoque": 0.0,
-      "pedidos_count": 7,
+      "pedidos_count": 8,
       "pedidos": [
         {
           "codigo_itk": "00003554",
@@ -525,6 +765,14 @@
           "valor_pendente": 3810.15
         },
         {
+          "codigo_itk": "00003088",
+          "pedido_cliente": "4000396472",
+          "filial": "Matriz RJ",
+          "emissao": "2026-06-09",
+          "qtd_pendente": 7.0,
+          "valor_pendente": 1778.07
+        },
+        {
           "codigo_itk": "00001966",
           "pedido_cliente": "4100093737",
           "filial": "Cariacica",
@@ -549,140 +797,8 @@
           "valor_pendente": 1090.4
         }
       ],
-      "falta_para_quitar": 76.0,
-      "falta_disp_livre": 76.0,
-      "status_estoque": "Falta Estoque"
-    },
-    {
-      "cod_produto": "00000048",
-      "descricao": "VALV ESFERA TRIP 300# 2\" NPT PR LT LT TP AL",
-      "part_number": "01396.2000.6040",
-      "unidade": "UN",
-      "origem": "Nacional",
-      "qtd_pedida": 73.0,
-      "qtd_faturada": 0.0,
-      "qtd_pendente": 73.0,
-      "valor_pendente": 29944.75,
-      "saldo_estoque": 0.0,
-      "reservado_estoque": 0.0,
-      "disponivel_estoque": 0.0,
-      "pedidos_count": 7,
-      "pedidos": [
-        {
-          "codigo_itk": "00003567",
-          "pedido_cliente": "4100120543",
-          "filial": "Vinhedo",
-          "emissao": "2026-09-30",
-          "qtd_pendente": 5.0,
-          "valor_pendente": 2247.75
-        },
-        {
-          "codigo_itk": "00003554",
-          "pedido_cliente": "4100127189",
-          "filial": "Cariacica",
-          "emissao": "2026-09-24",
-          "qtd_pendente": 5.0,
-          "valor_pendente": 2094.5
-        },
-        {
-          "codigo_itk": "00003430",
-          "pedido_cliente": "4100122852",
-          "filial": "Duque Ig",
-          "emissao": "2026-08-14",
-          "qtd_pendente": 10.0,
-          "valor_pendente": 4189.0
-        },
-        {
-          "codigo_itk": "00003532",
-          "pedido_cliente": "4100114908",
-          "filial": "Belem",
-          "emissao": "2026-04-01",
-          "qtd_pendente": 20.0,
-          "valor_pendente": 7927.6
-        },
-        {
-          "codigo_itk": "00002294",
-          "pedido_cliente": "4000370405",
-          "filial": "Cariacica",
-          "emissao": "2026-03-16",
-          "qtd_pendente": 15.0,
-          "valor_pendente": 5945.7
-        },
-        {
-          "codigo_itk": "00002060",
-          "pedido_cliente": "4100109104",
-          "filial": "Duque Ig",
-          "emissao": "2026-01-20",
-          "qtd_pendente": 8.0,
-          "valor_pendente": 3351.2
-        },
-        {
-          "codigo_itk": "00001816",
-          "pedido_cliente": "4000333083",
-          "filial": "Contagem",
-          "emissao": "2025-11-05",
-          "qtd_pendente": 10.0,
-          "valor_pendente": 4189.0
-        }
-      ],
-      "falta_para_quitar": 73.0,
-      "falta_disp_livre": 73.0,
-      "status_estoque": "Falta Estoque"
-    },
-    {
-      "cod_produto": "00002389",
-      "descricao": "LUVA EM COBRE SOLDA 35MM - SEM ANEL",
-      "part_number": "CBL-35",
-      "unidade": "UN",
-      "origem": "Importado",
-      "qtd_pedida": 100.0,
-      "qtd_faturada": 46.0,
-      "qtd_pendente": 54.0,
-      "valor_pendente": 426.06,
-      "saldo_estoque": 0.0,
-      "reservado_estoque": 0.0,
-      "disponivel_estoque": 0.0,
-      "pedidos_count": 1,
-      "pedidos": [
-        {
-          "codigo_itk": "00000385",
-          "pedido_cliente": "4500010265",
-          "filial": "Belem",
-          "emissao": "2024-01-10",
-          "qtd_pendente": 54.0,
-          "valor_pendente": 426.06
-        }
-      ],
-      "falta_para_quitar": 54.0,
-      "falta_disp_livre": 54.0,
-      "status_estoque": "Falta Estoque"
-    },
-    {
-      "cod_produto": "00002807",
-      "descricao": "VALV SEG CRIO RETA LT 1/2\" NPT(M) @27.57 BAR",
-      "part_number": "CRV-500B-K-400",
-      "unidade": "UN",
-      "origem": "Importado",
-      "qtd_pedida": 48.0,
-      "qtd_faturada": 0.0,
-      "qtd_pendente": 48.0,
-      "valor_pendente": 18672.0,
-      "saldo_estoque": 0.0,
-      "reservado_estoque": 0.0,
-      "disponivel_estoque": 0.0,
-      "pedidos_count": 1,
-      "pedidos": [
-        {
-          "codigo_itk": "00001641",
-          "pedido_cliente": "4500022498",
-          "filial": "Contagem",
-          "emissao": "2025-09-03",
-          "qtd_pendente": 48.0,
-          "valor_pendente": 18672.0
-        }
-      ],
-      "falta_para_quitar": 48.0,
-      "falta_disp_livre": 48.0,
+      "falta_para_quitar": 83.0,
+      "falta_disp_livre": 83.0,
       "status_estoque": "Falta Estoque"
     },
     {
@@ -691,14 +807,14 @@
       "part_number": "PRPD-120-MED",
       "unidade": "UN",
       "origem": "Nacional",
-      "qtd_pedida": 49.0,
-      "qtd_faturada": 3.0,
-      "qtd_pendente": 46.0,
-      "valor_pendente": 244789.86,
+      "qtd_pedida": 71.0,
+      "qtd_faturada": 6.0,
+      "qtd_pendente": 65.0,
+      "valor_pendente": 348493.17,
       "saldo_estoque": 0.0,
       "reservado_estoque": 8.0,
       "disponivel_estoque": -8.0,
-      "pedidos_count": 12,
+      "pedidos_count": 18,
       "pedidos": [
         {
           "codigo_itk": "00003620",
@@ -765,12 +881,60 @@
           "valor_pendente": 15401.94
         },
         {
+          "codigo_itk": "00003345",
+          "pedido_cliente": "4100122606",
+          "filial": "Matriz RJ",
+          "emissao": "2026-07-23",
+          "qtd_pendente": 6.0,
+          "valor_pendente": 31797.54
+        },
+        {
+          "codigo_itk": "00003319",
+          "pedido_cliente": "4000409197",
+          "filial": "Contagem",
+          "emissao": "2026-07-20",
+          "qtd_pendente": 1.0,
+          "valor_pendente": 5600.7
+        },
+        {
+          "codigo_itk": "00003318",
+          "pedido_cliente": "4000409175",
+          "filial": "Contagem",
+          "emissao": "2026-07-20",
+          "qtd_pendente": 1.0,
+          "valor_pendente": 5600.7
+        },
+        {
           "codigo_itk": "00003276",
           "pedido_cliente": "4100121824",
           "filial": "Matriz RJ",
           "emissao": "2026-07-10",
           "qtd_pendente": 4.0,
           "valor_pendente": 21198.36
+        },
+        {
+          "codigo_itk": "00003269",
+          "pedido_cliente": "4100121791",
+          "filial": "Belem",
+          "emissao": "2026-07-10",
+          "qtd_pendente": 5.0,
+          "valor_pendente": 26497.95
+        },
+        {
+          "codigo_itk": "00003171",
+          "pedido_cliente": "4100120179",
+          "filial": "Vinhedo",
+          "emissao": "2026-06-23",
+          "qtd_pendente": 8.0,
+          "valor_pendente": 44805.6
+        },
+        {
+          "codigo_itk": "00003146",
+          "pedido_cliente": "4000399566",
+          "filial": "Matriz RJ",
+          "emissao": "2026-06-19",
+          "qtd_pendente": 1.0,
+          "valor_pendente": 5299.59
         },
         {
           "codigo_itk": "00003143",
@@ -793,80 +957,164 @@
           "pedido_cliente": "4100016884",
           "filial": "Jaboatao",
           "emissao": "2024-04-16",
-          "qtd_pendente": 5.0,
-          "valor_pendente": 26497.95
+          "qtd_pendente": 2.0,
+          "valor_pendente": 10599.18
         }
       ],
-      "falta_para_quitar": 46.0,
-      "falta_disp_livre": 46.0,
+      "falta_para_quitar": 65.0,
+      "falta_disp_livre": 65.0,
       "status_estoque": "Falta Estoque"
     },
     {
-      "cod_produto": "00002744",
-      "descricao": "VALV GLOBO CRIO MA PN50 1.1SW42 AI/BZ HL",
-      "part_number": "01321.4042.0014",
+      "cod_produto": "00002848",
+      "descricao": "VALV GLOBO AT 1” 11.5 NPSM PN380 LT CO O2",
+      "part_number": "MVA-8NR-C-NC",
       "unidade": "UN",
-      "origem": "Importado",
-      "qtd_pedida": 42.0,
-      "qtd_faturada": 1.0,
-      "qtd_pendente": 41.0,
-      "valor_pendente": 105594.49,
+      "origem": "Nacional",
+      "qtd_pedida": 60.0,
+      "qtd_faturada": 0.0,
+      "qtd_pendente": 60.0,
+      "valor_pendente": 1123667.12,
       "saldo_estoque": 0.0,
       "reservado_estoque": 0.0,
       "disponivel_estoque": 0.0,
-      "pedidos_count": 6,
+      "pedidos_count": 5,
       "pedidos": [
         {
-          "codigo_itk": "00003325",
-          "pedido_cliente": "4000409675",
-          "filial": "Manaus",
-          "emissao": "2026-07-21",
-          "qtd_pendente": 2.0,
-          "valor_pendente": 4902.8
+          "codigo_itk": "00003042",
+          "pedido_cliente": "4500026694",
+          "filial": "Sapucaia do Sul",
+          "emissao": "2026-05-28",
+          "qtd_pendente": 17.0,
+          "valor_pendente": 314559.5
         },
         {
-          "codigo_itk": "00002841",
-          "pedido_cliente": "4000327850",
-          "filial": "Manaus",
-          "emissao": "2026-04-22",
-          "qtd_pendente": 2.0,
-          "valor_pendente": 4902.8
+          "codigo_itk": "00003041",
+          "pedido_cliente": "4500026693",
+          "filial": "Matriz RJ",
+          "emissao": "2026-05-28",
+          "qtd_pendente": 9.0,
+          "valor_pendente": 166531.5
         },
         {
-          "codigo_itk": "00002273",
-          "pedido_cliente": "4500023249",
-          "filial": "Contagem",
-          "emissao": "2026-03-12",
-          "qtd_pendente": 12.0,
-          "valor_pendente": 30642.48
+          "codigo_itk": "00003040",
+          "pedido_cliente": "4500026692",
+          "filial": "Matriz RJ",
+          "emissao": "2026-05-28",
+          "qtd_pendente": 8.0,
+          "valor_pendente": 161485.12
         },
         {
-          "codigo_itk": "00001935",
-          "pedido_cliente": "4500024417",
-          "filial": "Vinhedo",
-          "emissao": "2025-12-09",
-          "qtd_pendente": 3.0,
-          "valor_pendente": 8968.53
+          "codigo_itk": "00003027",
+          "pedido_cliente": "4500026704",
+          "filial": "Cariacica",
+          "emissao": "2026-05-26",
+          "qtd_pendente": 10.0,
+          "valor_pendente": 185035.0
         },
         {
-          "codigo_itk": "00001748",
-          "pedido_cliente": "4000327850",
-          "filial": "Manaus",
-          "emissao": "2025-10-21",
-          "qtd_pendente": 2.0,
-          "valor_pendente": 5107.08
-        },
-        {
-          "codigo_itk": "00001631",
-          "pedido_cliente": "4500022502",
-          "filial": "Duque Ig",
-          "emissao": "2025-09-04",
-          "qtd_pendente": 20.0,
-          "valor_pendente": 51070.8
+          "codigo_itk": "00003024",
+          "pedido_cliente": "4500026691",
+          "filial": "Jaboatao",
+          "emissao": "2026-05-26",
+          "qtd_pendente": 16.0,
+          "valor_pendente": 296056.0
         }
       ],
-      "falta_para_quitar": 41.0,
-      "falta_disp_livre": 41.0,
+      "falta_para_quitar": 60.0,
+      "falta_disp_livre": 60.0,
+      "status_estoque": "Falta Estoque"
+    },
+    {
+      "cod_produto": "00002389",
+      "descricao": "LUVA EM COBRE SOLDA 35MM - SEM ANEL",
+      "part_number": "CBL-35",
+      "unidade": "UN",
+      "origem": "Importado",
+      "qtd_pedida": 100.0,
+      "qtd_faturada": 46.0,
+      "qtd_pendente": 54.0,
+      "valor_pendente": 426.06,
+      "saldo_estoque": 0.0,
+      "reservado_estoque": 0.0,
+      "disponivel_estoque": 0.0,
+      "pedidos_count": 1,
+      "pedidos": [
+        {
+          "codigo_itk": "00000385",
+          "pedido_cliente": "4500010265",
+          "filial": "Belem",
+          "emissao": "2024-01-10",
+          "qtd_pendente": 54.0,
+          "valor_pendente": 426.06
+        }
+      ],
+      "falta_para_quitar": 54.0,
+      "falta_disp_livre": 54.0,
+      "status_estoque": "Falta Estoque"
+    },
+    {
+      "cod_produto": "00002807",
+      "descricao": "VALV SEG CRIO RETA LT 1/2\" NPT(M) @27.57 BAR",
+      "part_number": "CRV-500B-K-400",
+      "unidade": "UN",
+      "origem": "Importado",
+      "qtd_pedida": 48.0,
+      "qtd_faturada": 0.0,
+      "qtd_pendente": 48.0,
+      "valor_pendente": 18672.0,
+      "saldo_estoque": 0.0,
+      "reservado_estoque": 0.0,
+      "disponivel_estoque": 0.0,
+      "pedidos_count": 1,
+      "pedidos": [
+        {
+          "codigo_itk": "00001641",
+          "pedido_cliente": "4500022498",
+          "filial": "Contagem",
+          "emissao": "2025-09-03",
+          "qtd_pendente": 48.0,
+          "valor_pendente": 18672.0
+        }
+      ],
+      "falta_para_quitar": 48.0,
+      "falta_disp_livre": 48.0,
+      "status_estoque": "Falta Estoque"
+    },
+    {
+      "cod_produto": "00000014",
+      "descricao": "VALV SEG CRIO RETA LT 1/4\" NPT(M) @24.13 BAR",
+      "part_number": "00 CRV-250B-K-350",
+      "unidade": "UN",
+      "origem": "Importado",
+      "qtd_pedida": 44.0,
+      "qtd_faturada": 0.0,
+      "qtd_pendente": 44.0,
+      "valor_pendente": 17996.0,
+      "saldo_estoque": 0.0,
+      "reservado_estoque": 0.0,
+      "disponivel_estoque": 0.0,
+      "pedidos_count": 2,
+      "pedidos": [
+        {
+          "codigo_itk": "00002819",
+          "pedido_cliente": "4000377909",
+          "filial": "Contagem",
+          "emissao": "2026-04-20",
+          "qtd_pendente": 20.0,
+          "valor_pendente": 8180.0
+        },
+        {
+          "codigo_itk": "00002743",
+          "pedido_cliente": "4000377533",
+          "filial": "Contagem",
+          "emissao": "2026-04-13",
+          "qtd_pendente": 24.0,
+          "valor_pendente": 9816.0
+        }
+      ],
+      "falta_para_quitar": 44.0,
+      "falta_disp_livre": 44.0,
       "status_estoque": "Falta Estoque"
     },
     {
@@ -1034,6 +1282,106 @@
       "status_estoque": "Falta Estoque"
     },
     {
+      "cod_produto": "00000093",
+      "descricao": "PRP REG PRESSAO MOD PRPS-120-IND",
+      "part_number": "PRPS-120-IND",
+      "unidade": "UN",
+      "origem": "Nacional",
+      "qtd_pedida": 26.0,
+      "qtd_faturada": 0.0,
+      "qtd_pendente": 26.0,
+      "valor_pendente": 87479.36,
+      "saldo_estoque": 0.0,
+      "reservado_estoque": 3.0,
+      "disponivel_estoque": -3.0,
+      "pedidos_count": 10,
+      "pedidos": [
+        {
+          "codigo_itk": "00003566",
+          "pedido_cliente": "4000431711",
+          "filial": "Manaus",
+          "emissao": "2026-09-30",
+          "qtd_pendente": 2.0,
+          "valor_pendente": 6156.74
+        },
+        {
+          "codigo_itk": "00003555",
+          "pedido_cliente": "4100127186",
+          "filial": "Cariacica",
+          "emissao": "2026-09-24",
+          "qtd_pendente": 5.0,
+          "valor_pendente": 17490.75
+        },
+        {
+          "codigo_itk": "00003519",
+          "pedido_cliente": "4100125918",
+          "filial": "Jaboatao",
+          "emissao": "2026-09-17",
+          "qtd_pendente": 2.0,
+          "valor_pendente": 6620.16
+        },
+        {
+          "codigo_itk": "00003517",
+          "pedido_cliente": "4100126152",
+          "filial": "Belem",
+          "emissao": "2026-09-17",
+          "qtd_pendente": 1.0,
+          "valor_pendente": 3310.08
+        },
+        {
+          "codigo_itk": "00003449",
+          "pedido_cliente": "4000410050",
+          "filial": "Contagem",
+          "emissao": "2026-08-19",
+          "qtd_pendente": 2.0,
+          "valor_pendente": 6996.3
+        },
+        {
+          "codigo_itk": "00003334",
+          "pedido_cliente": "4000410050",
+          "filial": "Contagem",
+          "emissao": "2026-07-22",
+          "qtd_pendente": 2.0,
+          "valor_pendente": 6996.3
+        },
+        {
+          "codigo_itk": "00003276",
+          "pedido_cliente": "4100121824",
+          "filial": "Matriz RJ",
+          "emissao": "2026-07-10",
+          "qtd_pendente": 4.0,
+          "valor_pendente": 13240.32
+        },
+        {
+          "codigo_itk": "00003268",
+          "pedido_cliente": "4000405864",
+          "filial": "Contagem",
+          "emissao": "2026-07-08",
+          "qtd_pendente": 1.0,
+          "valor_pendente": 3498.15
+        },
+        {
+          "codigo_itk": "00003248",
+          "pedido_cliente": "4100121122",
+          "filial": "Matriz RJ",
+          "emissao": "2026-07-03",
+          "qtd_pendente": 3.0,
+          "valor_pendente": 9930.24
+        },
+        {
+          "codigo_itk": "00003053",
+          "pedido_cliente": "4100118537",
+          "filial": "Matriz RJ",
+          "emissao": "2026-05-29",
+          "qtd_pendente": 4.0,
+          "valor_pendente": 13240.32
+        }
+      ],
+      "falta_para_quitar": 26.0,
+      "falta_disp_livre": 26.0,
+      "status_estoque": "Falta Estoque"
+    },
+    {
       "cod_produto": "00000047",
       "descricao": "VALV ESFERA TRIP 300# 1.1/2\" NPT PR LT LT TP AL",
       "part_number": "01396.1400.6040",
@@ -1091,90 +1439,6 @@
       ],
       "falta_para_quitar": 26.0,
       "falta_disp_livre": 26.0,
-      "status_estoque": "Falta Estoque"
-    },
-    {
-      "cod_produto": "00000093",
-      "descricao": "PRP REG PRESSAO MOD PRPS-120-IND",
-      "part_number": "PRPS-120-IND",
-      "unidade": "UN",
-      "origem": "Nacional",
-      "qtd_pedida": 21.0,
-      "qtd_faturada": 0.0,
-      "qtd_pendente": 21.0,
-      "valor_pendente": 70552.82,
-      "saldo_estoque": 0.0,
-      "reservado_estoque": 3.0,
-      "disponivel_estoque": -3.0,
-      "pedidos_count": 8,
-      "pedidos": [
-        {
-          "codigo_itk": "00003566",
-          "pedido_cliente": "4000431711",
-          "filial": "Manaus",
-          "emissao": "2026-09-30",
-          "qtd_pendente": 2.0,
-          "valor_pendente": 6156.74
-        },
-        {
-          "codigo_itk": "00003555",
-          "pedido_cliente": "4100127186",
-          "filial": "Cariacica",
-          "emissao": "2026-09-24",
-          "qtd_pendente": 5.0,
-          "valor_pendente": 17490.75
-        },
-        {
-          "codigo_itk": "00003519",
-          "pedido_cliente": "4100125918",
-          "filial": "Jaboatao",
-          "emissao": "2026-09-17",
-          "qtd_pendente": 2.0,
-          "valor_pendente": 6620.16
-        },
-        {
-          "codigo_itk": "00003517",
-          "pedido_cliente": "4100126152",
-          "filial": "Belem",
-          "emissao": "2026-09-17",
-          "qtd_pendente": 1.0,
-          "valor_pendente": 3310.08
-        },
-        {
-          "codigo_itk": "00003449",
-          "pedido_cliente": "4000410050",
-          "filial": "Contagem",
-          "emissao": "2026-08-19",
-          "qtd_pendente": 2.0,
-          "valor_pendente": 6996.3
-        },
-        {
-          "codigo_itk": "00003276",
-          "pedido_cliente": "4100121824",
-          "filial": "Matriz RJ",
-          "emissao": "2026-07-10",
-          "qtd_pendente": 4.0,
-          "valor_pendente": 13240.32
-        },
-        {
-          "codigo_itk": "00003268",
-          "pedido_cliente": "4000405864",
-          "filial": "Contagem",
-          "emissao": "2026-07-08",
-          "qtd_pendente": 1.0,
-          "valor_pendente": 3498.15
-        },
-        {
-          "codigo_itk": "00003053",
-          "pedido_cliente": "4100118537",
-          "filial": "Matriz RJ",
-          "emissao": "2026-05-29",
-          "qtd_pendente": 4.0,
-          "valor_pendente": 13240.32
-        }
-      ],
-      "falta_para_quitar": 21.0,
-      "falta_disp_livre": 21.0,
       "status_estoque": "Falta Estoque"
     },
     {
@@ -1354,6 +1618,194 @@
       "status_estoque": "Falta Estoque"
     },
     {
+      "cod_produto": "00002849",
+      "descricao": "VALV GLOBO AT 1” 11.5 NPSM PN380 LT CO O2",
+      "part_number": "MVA-8NR-C-NO",
+      "unidade": "UN",
+      "origem": "Nacional",
+      "qtd_pedida": 17.0,
+      "qtd_faturada": 0.0,
+      "qtd_pendente": 17.0,
+      "valor_pendente": 319605.92,
+      "saldo_estoque": 0.0,
+      "reservado_estoque": 0.0,
+      "disponivel_estoque": 0.0,
+      "pedidos_count": 5,
+      "pedidos": [
+        {
+          "codigo_itk": "00003042",
+          "pedido_cliente": "4500026694",
+          "filial": "Sapucaia do Sul",
+          "emissao": "2026-05-28",
+          "qtd_pendente": 2.0,
+          "valor_pendente": 37007.0
+        },
+        {
+          "codigo_itk": "00003041",
+          "pedido_cliente": "4500026693",
+          "filial": "Matriz RJ",
+          "emissao": "2026-05-28",
+          "qtd_pendente": 1.0,
+          "valor_pendente": 18503.5
+        },
+        {
+          "codigo_itk": "00003040",
+          "pedido_cliente": "4500026692",
+          "filial": "Matriz RJ",
+          "emissao": "2026-05-28",
+          "qtd_pendente": 3.0,
+          "valor_pendente": 60556.92
+        },
+        {
+          "codigo_itk": "00003027",
+          "pedido_cliente": "4500026704",
+          "filial": "Cariacica",
+          "emissao": "2026-05-26",
+          "qtd_pendente": 3.0,
+          "valor_pendente": 55510.5
+        },
+        {
+          "codigo_itk": "00003024",
+          "pedido_cliente": "4500026691",
+          "filial": "Jaboatao",
+          "emissao": "2026-05-26",
+          "qtd_pendente": 8.0,
+          "valor_pendente": 148028.0
+        }
+      ],
+      "falta_para_quitar": 17.0,
+      "falta_disp_livre": 17.0,
+      "status_estoque": "Falta Estoque"
+    },
+    {
+      "cod_produto": "00000034",
+      "descricao": "REG PRESSAO LIN SE LT 1/2\" NPT (37 / 0-15,5 BAR)",
+      "part_number": "4GDR-500B-V-C",
+      "unidade": "UN",
+      "origem": "Importado",
+      "qtd_pedida": 17.0,
+      "qtd_faturada": 0.0,
+      "qtd_pendente": 17.0,
+      "valor_pendente": 26437.75,
+      "saldo_estoque": 0.0,
+      "reservado_estoque": 32.0,
+      "disponivel_estoque": -32.0,
+      "pedidos_count": 6,
+      "pedidos": [
+        {
+          "codigo_itk": "00003653",
+          "pedido_cliente": "4000438884",
+          "filial": "Jaboatao",
+          "emissao": "2026-10-22",
+          "qtd_pendente": 4.0,
+          "valor_pendente": 6187.56
+        },
+        {
+          "codigo_itk": "00003544",
+          "pedido_cliente": "4500029618",
+          "filial": "Jaboatao",
+          "emissao": "2026-09-22",
+          "qtd_pendente": 8.0,
+          "valor_pendente": 12375.12
+        },
+        {
+          "codigo_itk": "00003525",
+          "pedido_cliente": "4000415618",
+          "filial": "Sertaozinho",
+          "emissao": "2026-09-17",
+          "qtd_pendente": 1.0,
+          "valor_pendente": 1687.51
+        },
+        {
+          "codigo_itk": "00003520",
+          "pedido_cliente": "4000425191",
+          "filial": "Jaboatao",
+          "emissao": "2026-09-17",
+          "qtd_pendente": 2.0,
+          "valor_pendente": 3093.78
+        },
+        {
+          "codigo_itk": "00003529",
+          "pedido_cliente": "4000421531",
+          "filial": "Sapucaia do Sul",
+          "emissao": "2026-08-26",
+          "qtd_pendente": 1.0,
+          "valor_pendente": 1546.89
+        },
+        {
+          "codigo_itk": "00003451",
+          "pedido_cliente": "4000415461",
+          "filial": "Jaboatao",
+          "emissao": "2026-08-19",
+          "qtd_pendente": 1.0,
+          "valor_pendente": 1546.89
+        }
+      ],
+      "falta_para_quitar": 17.0,
+      "falta_disp_livre": 17.0,
+      "status_estoque": "Falta Estoque"
+    },
+    {
+      "cod_produto": "00000792",
+      "descricao": "REG PRESSAO SIMPLES 120M/H CO2",
+      "part_number": "PRPS-120-CO2",
+      "unidade": "UN",
+      "origem": "Nacional",
+      "qtd_pedida": 17.0,
+      "qtd_faturada": 2.0,
+      "qtd_pendente": 15.0,
+      "valor_pendente": 62863.55,
+      "saldo_estoque": 0.0,
+      "reservado_estoque": 1.0,
+      "disponivel_estoque": -1.0,
+      "pedidos_count": 5,
+      "pedidos": [
+        {
+          "codigo_itk": "00003604",
+          "pedido_cliente": "4000399745",
+          "filial": "Cariacica",
+          "emissao": "2026-10-07",
+          "qtd_pendente": 2.0,
+          "valor_pendente": 8075.9
+        },
+        {
+          "codigo_itk": "00003148",
+          "pedido_cliente": "4000399745",
+          "filial": "Cariacica",
+          "emissao": "2026-06-19",
+          "qtd_pendente": 2.0,
+          "valor_pendente": 8075.9
+        },
+        {
+          "codigo_itk": "00003147",
+          "pedido_cliente": "4000399767",
+          "filial": "Cariacica",
+          "emissao": "2026-06-19",
+          "qtd_pendente": 1.0,
+          "valor_pendente": 4037.95
+        },
+        {
+          "codigo_itk": "00002970",
+          "pedido_cliente": "4500027236",
+          "filial": "Duque Ig",
+          "emissao": "2026-05-15",
+          "qtd_pendente": 4.0,
+          "valor_pendente": 17069.52
+        },
+        {
+          "codigo_itk": "00002960",
+          "pedido_cliente": "4500027126",
+          "filial": "Vinhedo",
+          "emissao": "2026-05-12",
+          "qtd_pendente": 6.0,
+          "valor_pendente": 25604.28
+        }
+      ],
+      "falta_para_quitar": 15.0,
+      "falta_disp_livre": 15.0,
+      "status_estoque": "Falta Estoque"
+    },
+    {
       "cod_produto": "00000064",
       "descricao": "REPARO HEROSE MOD 29256.0650.0000 (DN65)",
       "part_number": "29256.0650.0000 (DN",
@@ -1443,118 +1895,6 @@
       ],
       "falta_para_quitar": 15.0,
       "falta_disp_livre": 15.0,
-      "status_estoque": "Falta Estoque"
-    },
-    {
-      "cod_produto": "00000792",
-      "descricao": "REG PRESSAO SIMPLES 120M/H CO2",
-      "part_number": "PRPS-120-CO2",
-      "unidade": "UN",
-      "origem": "Nacional",
-      "qtd_pedida": 15.0,
-      "qtd_faturada": 2.0,
-      "qtd_pendente": 13.0,
-      "valor_pendente": 54787.65,
-      "saldo_estoque": 0.0,
-      "reservado_estoque": 1.0,
-      "disponivel_estoque": -1.0,
-      "pedidos_count": 4,
-      "pedidos": [
-        {
-          "codigo_itk": "00003604",
-          "pedido_cliente": "4000399745",
-          "filial": "Cariacica",
-          "emissao": "2026-10-07",
-          "qtd_pendente": 2.0,
-          "valor_pendente": 8075.9
-        },
-        {
-          "codigo_itk": "00003147",
-          "pedido_cliente": "4000399767",
-          "filial": "Cariacica",
-          "emissao": "2026-06-19",
-          "qtd_pendente": 1.0,
-          "valor_pendente": 4037.95
-        },
-        {
-          "codigo_itk": "00002970",
-          "pedido_cliente": "4500027236",
-          "filial": "Duque Ig",
-          "emissao": "2026-05-15",
-          "qtd_pendente": 4.0,
-          "valor_pendente": 17069.52
-        },
-        {
-          "codigo_itk": "00002960",
-          "pedido_cliente": "4500027126",
-          "filial": "Vinhedo",
-          "emissao": "2026-05-12",
-          "qtd_pendente": 6.0,
-          "valor_pendente": 25604.28
-        }
-      ],
-      "falta_para_quitar": 13.0,
-      "falta_disp_livre": 13.0,
-      "status_estoque": "Falta Estoque"
-    },
-    {
-      "cod_produto": "00000034",
-      "descricao": "REG PRESSAO LIN SE LT 1/2\" NPT (37 / 0-15,5 BAR)",
-      "part_number": "4GDR-500B-V-C",
-      "unidade": "UN",
-      "origem": "Importado",
-      "qtd_pedida": 13.0,
-      "qtd_faturada": 0.0,
-      "qtd_pendente": 13.0,
-      "valor_pendente": 20250.19,
-      "saldo_estoque": 0.0,
-      "reservado_estoque": 38.0,
-      "disponivel_estoque": -38.0,
-      "pedidos_count": 5,
-      "pedidos": [
-        {
-          "codigo_itk": "00003544",
-          "pedido_cliente": "4500029618",
-          "filial": "Jaboatao",
-          "emissao": "2026-09-22",
-          "qtd_pendente": 8.0,
-          "valor_pendente": 12375.12
-        },
-        {
-          "codigo_itk": "00003525",
-          "pedido_cliente": "4000415618",
-          "filial": "Sertaozinho",
-          "emissao": "2026-09-17",
-          "qtd_pendente": 1.0,
-          "valor_pendente": 1687.51
-        },
-        {
-          "codigo_itk": "00003520",
-          "pedido_cliente": "4000425191",
-          "filial": "Jaboatao",
-          "emissao": "2026-09-17",
-          "qtd_pendente": 2.0,
-          "valor_pendente": 3093.78
-        },
-        {
-          "codigo_itk": "00003529",
-          "pedido_cliente": "4000421531",
-          "filial": "Sapucaia do Sul",
-          "emissao": "2026-08-26",
-          "qtd_pendente": 1.0,
-          "valor_pendente": 1546.89
-        },
-        {
-          "codigo_itk": "00003451",
-          "pedido_cliente": "4000415461",
-          "filial": "Jaboatao",
-          "emissao": "2026-08-19",
-          "qtd_pendente": 1.0,
-          "valor_pendente": 1546.89
-        }
-      ],
-      "falta_para_quitar": 13.0,
-      "falta_disp_livre": 13.0,
       "status_estoque": "Falta Estoque"
     },
     {
@@ -1766,6 +2106,34 @@
       "status_estoque": "Falta Estoque"
     },
     {
+      "cod_produto": "00000087",
+      "descricao": "VALV SEG OXIG ANG BZ 1/2\" NPT(M X F) @08.00 BAR",
+      "part_number": "06380.0400.6040 @08.00BAR",
+      "unidade": "UN",
+      "origem": "Importado",
+      "qtd_pedida": 20.0,
+      "qtd_faturada": 0.0,
+      "qtd_pendente": 20.0,
+      "valor_pendente": 8839.8,
+      "saldo_estoque": 10.0,
+      "reservado_estoque": 7.0,
+      "disponivel_estoque": 3.0,
+      "pedidos_count": 1,
+      "pedidos": [
+        {
+          "codigo_itk": "00003637",
+          "pedido_cliente": "4000428900",
+          "filial": "Contagem",
+          "emissao": "2026-09-18",
+          "qtd_pendente": 20.0,
+          "valor_pendente": 8839.8
+        }
+      ],
+      "falta_para_quitar": 10.0,
+      "falta_disp_livre": 17.0,
+      "status_estoque": "Falta Estoque"
+    },
+    {
       "cod_produto": "00000752",
       "descricao": "REPARO HEROSE MOD 28203.0400.0000 (DN40)",
       "part_number": "28203.0400.0000 (DN4",
@@ -1914,6 +2282,42 @@
       "status_estoque": "Falta Estoque"
     },
     {
+      "cod_produto": "00000091",
+      "descricao": "REG PRESSAO MOD PRPD-300-MED",
+      "part_number": "PRPD-300-MED",
+      "unidade": "UN",
+      "origem": "Nacional",
+      "qtd_pedida": 7.0,
+      "qtd_faturada": 0.0,
+      "qtd_pendente": 7.0,
+      "valor_pendente": 49816.13,
+      "saldo_estoque": 0.0,
+      "reservado_estoque": 1.0,
+      "disponivel_estoque": -1.0,
+      "pedidos_count": 2,
+      "pedidos": [
+        {
+          "codigo_itk": "00003585",
+          "pedido_cliente": "4500029372",
+          "filial": "Salvador",
+          "emissao": "2026-10-02",
+          "qtd_pendente": 6.0,
+          "valor_pendente": 42699.54
+        },
+        {
+          "codigo_itk": "00003198",
+          "pedido_cliente": "4000401451",
+          "filial": "Matriz RJ",
+          "emissao": "2026-06-25",
+          "qtd_pendente": 1.0,
+          "valor_pendente": 7116.59
+        }
+      ],
+      "falta_para_quitar": 7.0,
+      "falta_disp_livre": 7.0,
+      "status_estoque": "Falta Estoque"
+    },
+    {
       "cod_produto": "00000753",
       "descricao": "REPARO TIPO CASTELO HC P/ VALV GLOBO 3/8\" (DN10)",
       "part_number": "28301.0100.0000 (DN",
@@ -1974,34 +2378,6 @@
       "status_estoque": "Falta Estoque"
     },
     {
-      "cod_produto": "00000091",
-      "descricao": "REG PRESSAO MOD PRPD-300-MED",
-      "part_number": "PRPD-300-MED",
-      "unidade": "UN",
-      "origem": "Nacional",
-      "qtd_pedida": 6.0,
-      "qtd_faturada": 0.0,
-      "qtd_pendente": 6.0,
-      "valor_pendente": 42699.54,
-      "saldo_estoque": 0.0,
-      "reservado_estoque": 1.0,
-      "disponivel_estoque": -1.0,
-      "pedidos_count": 1,
-      "pedidos": [
-        {
-          "codigo_itk": "00003585",
-          "pedido_cliente": "4500029372",
-          "filial": "Salvador",
-          "emissao": "2026-10-02",
-          "qtd_pendente": 6.0,
-          "valor_pendente": 42699.54
-        }
-      ],
-      "falta_para_quitar": 6.0,
-      "falta_disp_livre": 6.0,
-      "status_estoque": "Falta Estoque"
-    },
-    {
       "cod_produto": "00000102",
       "descricao": "VALV ESFERA MON PN50 2\" NPT PS LT LT TP AL - O2",
       "part_number": "01389.2000.6040",
@@ -2051,6 +2427,50 @@
           "emissao": "2026-03-12",
           "qtd_pendente": 5.0,
           "valor_pendente": 30718.15
+        }
+      ],
+      "falta_para_quitar": 5.0,
+      "falta_disp_livre": 5.0,
+      "status_estoque": "Falta Estoque"
+    },
+    {
+      "cod_produto": "00000125",
+      "descricao": "REPARO TIPO CASTELO HC P/ VALV GLOBO 2\" (DN50)",
+      "part_number": "28301.0500.0000",
+      "unidade": "UN",
+      "origem": "Importado",
+      "qtd_pedida": 5.0,
+      "qtd_faturada": 0.0,
+      "qtd_pendente": 5.0,
+      "valor_pendente": 20275.03,
+      "saldo_estoque": 0.0,
+      "reservado_estoque": 0.0,
+      "disponivel_estoque": 0.0,
+      "pedidos_count": 3,
+      "pedidos": [
+        {
+          "codigo_itk": "00003306",
+          "pedido_cliente": "4000407893",
+          "filial": "Matriz RJ",
+          "emissao": "2026-07-15",
+          "qtd_pendente": 1.0,
+          "valor_pendente": 3567.71
+        },
+        {
+          "codigo_itk": "00002311",
+          "pedido_cliente": "4000371095",
+          "filial": "Americana",
+          "emissao": "2026-03-17",
+          "qtd_pendente": 2.0,
+          "valor_pendente": 8353.66
+        },
+        {
+          "codigo_itk": "00001784",
+          "pedido_cliente": "4000330002",
+          "filial": "Americana",
+          "emissao": "2025-10-28",
+          "qtd_pendente": 2.0,
+          "valor_pendente": 8353.66
         }
       ],
       "falta_para_quitar": 5.0,
@@ -2114,42 +2534,6 @@
       "status_estoque": "Falta Estoque"
     },
     {
-      "cod_produto": "00000125",
-      "descricao": "REPARO TIPO CASTELO HC P/ VALV GLOBO 2\" (DN50)",
-      "part_number": "28301.0500.0000",
-      "unidade": "UN",
-      "origem": "Importado",
-      "qtd_pedida": 4.0,
-      "qtd_faturada": 0.0,
-      "qtd_pendente": 4.0,
-      "valor_pendente": 16707.32,
-      "saldo_estoque": 0.0,
-      "reservado_estoque": 0.0,
-      "disponivel_estoque": 0.0,
-      "pedidos_count": 2,
-      "pedidos": [
-        {
-          "codigo_itk": "00002311",
-          "pedido_cliente": "4000371095",
-          "filial": "Americana",
-          "emissao": "2026-03-17",
-          "qtd_pendente": 2.0,
-          "valor_pendente": 8353.66
-        },
-        {
-          "codigo_itk": "00001784",
-          "pedido_cliente": "4000330002",
-          "filial": "Americana",
-          "emissao": "2025-10-28",
-          "qtd_pendente": 2.0,
-          "valor_pendente": 8353.66
-        }
-      ],
-      "falta_para_quitar": 4.0,
-      "falta_disp_livre": 4.0,
-      "status_estoque": "Falta Estoque"
-    },
-    {
       "cod_produto": "00000094",
       "descricao": "REG PRESSAO MOD PRPS-300 - IND",
       "part_number": "PRPS-300-IND",
@@ -2186,31 +2570,83 @@
       "status_estoque": "Falta Estoque"
     },
     {
-      "cod_produto": "00000087",
-      "descricao": "VALV SEG OXIG ANG BZ 1/2\" NPT(M X F) @08.00 BAR",
-      "part_number": "06380.0400.6040 @08.00BAR",
+      "cod_produto": "00000304",
+      "descricao": "REPARO TIPO CASTELO HL P/ VALV GLOBO 2\" (DN50)",
+      "part_number": "28311.0500.0010",
       "unidade": "UN",
       "origem": "Importado",
-      "qtd_pedida": 20.0,
+      "qtd_pedida": 4.0,
       "qtd_faturada": 0.0,
-      "qtd_pendente": 20.0,
-      "valor_pendente": 8839.8,
-      "saldo_estoque": 16.0,
-      "reservado_estoque": 7.0,
-      "disponivel_estoque": 9.0,
-      "pedidos_count": 1,
+      "qtd_pendente": 4.0,
+      "valor_pendente": 14216.68,
+      "saldo_estoque": 0.0,
+      "reservado_estoque": 0.0,
+      "disponivel_estoque": 0.0,
+      "pedidos_count": 2,
       "pedidos": [
         {
-          "codigo_itk": "00003637",
-          "pedido_cliente": "4000428900",
-          "filial": "Contagem",
-          "emissao": "2026-09-18",
-          "qtd_pendente": 20.0,
-          "valor_pendente": 8839.8
+          "codigo_itk": "00003376",
+          "pedido_cliente": "4000412282",
+          "filial": "Duque Ig",
+          "emissao": "2026-07-30",
+          "qtd_pendente": 2.0,
+          "valor_pendente": 7108.34
+        },
+        {
+          "codigo_itk": "00003301",
+          "pedido_cliente": "4000398442",
+          "filial": "Matriz RJ",
+          "emissao": "2026-07-15",
+          "qtd_pendente": 2.0,
+          "valor_pendente": 7108.34
         }
       ],
       "falta_para_quitar": 4.0,
-      "falta_disp_livre": 11.0,
+      "falta_disp_livre": 4.0,
+      "status_estoque": "Falta Estoque"
+    },
+    {
+      "cod_produto": "00000275",
+      "descricao": "REPARO TIPO CASTELO HEL P/ VALV GLOBO 2\" (DN50)",
+      "part_number": "28311.0500.0020",
+      "unidade": "UN",
+      "origem": "Importado",
+      "qtd_pedida": 5.0,
+      "qtd_faturada": 1.0,
+      "qtd_pendente": 4.0,
+      "valor_pendente": 11120.84,
+      "saldo_estoque": 0.0,
+      "reservado_estoque": 0.0,
+      "disponivel_estoque": 0.0,
+      "pedidos_count": 3,
+      "pedidos": [
+        {
+          "codigo_itk": "00003641",
+          "pedido_cliente": "4000414799",
+          "filial": "Matriz RJ",
+          "emissao": "2026-08-05",
+          "qtd_pendente": 1.0,
+          "valor_pendente": 2780.21
+        },
+        {
+          "codigo_itk": "00003376",
+          "pedido_cliente": "4000412282",
+          "filial": "Duque Ig",
+          "emissao": "2026-07-30",
+          "qtd_pendente": 1.0,
+          "valor_pendente": 2780.21
+        },
+        {
+          "codigo_itk": "00002711",
+          "pedido_cliente": "4000378551",
+          "filial": "Matriz RJ",
+          "emissao": "2026-04-10",
+          "qtd_pendente": 2.0,
+          "valor_pendente": 5560.42
+        }
+      ],
+      "falta_para_quitar": 4.0,
+      "falta_disp_livre": 4.0,
       "status_estoque": "Falta Estoque"
     },
     {
@@ -2239,6 +2675,86 @@
       ],
       "falta_para_quitar": 4.0,
       "falta_disp_livre": 4.0,
+      "status_estoque": "Falta Estoque"
+    },
+    {
+      "cod_produto": "00000076",
+      "descricao": "REG PRESSAO MOD PRPD-300-CO2",
+      "part_number": "PRPD-300-CO2",
+      "unidade": "UN",
+      "origem": "Nacional",
+      "qtd_pedida": 3.0,
+      "qtd_faturada": 0.0,
+      "qtd_pendente": 3.0,
+      "valor_pendente": 23300.46,
+      "saldo_estoque": 0.0,
+      "reservado_estoque": 1.0,
+      "disponivel_estoque": -1.0,
+      "pedidos_count": 3,
+      "pedidos": [
+        {
+          "codigo_itk": "00003605",
+          "pedido_cliente": "4000431534",
+          "filial": "Vinhedo",
+          "emissao": "2026-10-08",
+          "qtd_pendente": 1.0,
+          "valor_pendente": 7988.73
+        },
+        {
+          "codigo_itk": "00003591",
+          "pedido_cliente": "4000431705",
+          "filial": "Vinhedo",
+          "emissao": "2026-10-05",
+          "qtd_pendente": 1.0,
+          "valor_pendente": 7988.73
+        },
+        {
+          "codigo_itk": "00003275",
+          "pedido_cliente": "4000406056",
+          "filial": "Cariacica",
+          "emissao": "2026-07-10",
+          "qtd_pendente": 1.0,
+          "valor_pendente": 7323.0
+        }
+      ],
+      "falta_para_quitar": 3.0,
+      "falta_disp_livre": 3.0,
+      "status_estoque": "Falta Estoque"
+    },
+    {
+      "cod_produto": "00000095",
+      "descricao": "REG PRESSAO MOD PRPD-120-IND",
+      "part_number": "PRPD-120 IND",
+      "unidade": "UN",
+      "origem": "Nacional",
+      "qtd_pedida": 3.0,
+      "qtd_faturada": 0.0,
+      "qtd_pendente": 3.0,
+      "valor_pendente": 16128.6,
+      "saldo_estoque": 0.0,
+      "reservado_estoque": 0.0,
+      "disponivel_estoque": 0.0,
+      "pedidos_count": 2,
+      "pedidos": [
+        {
+          "codigo_itk": "00003555",
+          "pedido_cliente": "4100127186",
+          "filial": "Cariacica",
+          "emissao": "2026-09-24",
+          "qtd_pendente": 2.0,
+          "valor_pendente": 10752.4
+        },
+        {
+          "codigo_itk": "00003293",
+          "pedido_cliente": "4000407084",
+          "filial": "Contagem",
+          "emissao": "2026-07-14",
+          "qtd_pendente": 1.0,
+          "valor_pendente": 5376.2
+        }
+      ],
+      "falta_para_quitar": 3.0,
+      "falta_disp_livre": 3.0,
       "status_estoque": "Falta Estoque"
     },
     {
@@ -2278,35 +2794,35 @@
       "status_estoque": "Falta Estoque"
     },
     {
-      "cod_produto": "00000275",
-      "descricao": "REPARO TIPO CASTELO HEL P/ VALV GLOBO 2\" (DN50)",
-      "part_number": "28311.0500.0020",
+      "cod_produto": "00000854",
+      "descricao": "REPARO TIPO CASTELO HC P/ VALV GLOBO 1.1/2\" (DN40)",
+      "part_number": "28301.0400.0000",
       "unidade": "UN",
       "origem": "Importado",
-      "qtd_pedida": 4.0,
-      "qtd_faturada": 1.0,
+      "qtd_pedida": 3.0,
+      "qtd_faturada": 0.0,
       "qtd_pendente": 3.0,
-      "valor_pendente": 8340.63,
+      "valor_pendente": 10980.84,
       "saldo_estoque": 0.0,
       "reservado_estoque": 0.0,
       "disponivel_estoque": 0.0,
       "pedidos_count": 2,
       "pedidos": [
         {
-          "codigo_itk": "00003641",
-          "pedido_cliente": "4000414799",
-          "filial": "Matriz RJ",
-          "emissao": "2026-08-05",
-          "qtd_pendente": 1.0,
-          "valor_pendente": 2780.21
+          "codigo_itk": "00003617",
+          "pedido_cliente": "4000424320",
+          "filial": "Americana",
+          "emissao": "2026-10-14",
+          "qtd_pendente": 2.0,
+          "valor_pendente": 7694.6
         },
         {
-          "codigo_itk": "00002711",
-          "pedido_cliente": "4000378551",
+          "codigo_itk": "00003309",
+          "pedido_cliente": "4000407897",
           "filial": "Matriz RJ",
-          "emissao": "2026-04-10",
-          "qtd_pendente": 2.0,
-          "valor_pendente": 5560.42
+          "emissao": "2026-07-16",
+          "qtd_pendente": 1.0,
+          "valor_pendente": 3286.24
         }
       ],
       "falta_para_quitar": 3.0,
@@ -2414,70 +2930,6 @@
       "status_estoque": "Falta Estoque"
     },
     {
-      "cod_produto": "00000076",
-      "descricao": "REG PRESSAO MOD PRPD-300-CO2",
-      "part_number": "PRPD-300-CO2",
-      "unidade": "UN",
-      "origem": "Nacional",
-      "qtd_pedida": 2.0,
-      "qtd_faturada": 0.0,
-      "qtd_pendente": 2.0,
-      "valor_pendente": 15977.46,
-      "saldo_estoque": 0.0,
-      "reservado_estoque": 1.0,
-      "disponivel_estoque": -1.0,
-      "pedidos_count": 2,
-      "pedidos": [
-        {
-          "codigo_itk": "00003605",
-          "pedido_cliente": "4000431534",
-          "filial": "Vinhedo",
-          "emissao": "2026-10-08",
-          "qtd_pendente": 1.0,
-          "valor_pendente": 7988.73
-        },
-        {
-          "codigo_itk": "00003591",
-          "pedido_cliente": "4000431705",
-          "filial": "Vinhedo",
-          "emissao": "2026-10-05",
-          "qtd_pendente": 1.0,
-          "valor_pendente": 7988.73
-        }
-      ],
-      "falta_para_quitar": 2.0,
-      "falta_disp_livre": 2.0,
-      "status_estoque": "Falta Estoque"
-    },
-    {
-      "cod_produto": "00000095",
-      "descricao": "REG PRESSAO MOD PRPD-120-IND",
-      "part_number": "PRPD-120 IND",
-      "unidade": "UN",
-      "origem": "Nacional",
-      "qtd_pedida": 2.0,
-      "qtd_faturada": 0.0,
-      "qtd_pendente": 2.0,
-      "valor_pendente": 10752.4,
-      "saldo_estoque": 0.0,
-      "reservado_estoque": 0.0,
-      "disponivel_estoque": 0.0,
-      "pedidos_count": 1,
-      "pedidos": [
-        {
-          "codigo_itk": "00003555",
-          "pedido_cliente": "4100127186",
-          "filial": "Cariacica",
-          "emissao": "2026-09-24",
-          "qtd_pendente": 2.0,
-          "valor_pendente": 10752.4
-        }
-      ],
-      "falta_para_quitar": 2.0,
-      "falta_disp_livre": 2.0,
-      "status_estoque": "Falta Estoque"
-    },
-    {
       "cod_produto": "00000136",
       "descricao": "REG PRESSAO MOD PRPS - 150-MIST",
       "part_number": "PRPS-150-MIST",
@@ -2499,62 +2951,6 @@
           "emissao": "2026-05-29",
           "qtd_pendente": 2.0,
           "valor_pendente": 10609.6
-        }
-      ],
-      "falta_para_quitar": 2.0,
-      "falta_disp_livre": 2.0,
-      "status_estoque": "Falta Estoque"
-    },
-    {
-      "cod_produto": "00000854",
-      "descricao": "REPARO TIPO CASTELO HC P/ VALV GLOBO 1.1/2\" (DN40)",
-      "part_number": "28301.0400.0000",
-      "unidade": "UN",
-      "origem": "Importado",
-      "qtd_pedida": 2.0,
-      "qtd_faturada": 0.0,
-      "qtd_pendente": 2.0,
-      "valor_pendente": 7694.6,
-      "saldo_estoque": 0.0,
-      "reservado_estoque": 0.0,
-      "disponivel_estoque": 0.0,
-      "pedidos_count": 1,
-      "pedidos": [
-        {
-          "codigo_itk": "00003617",
-          "pedido_cliente": "4000424320",
-          "filial": "Americana",
-          "emissao": "2026-10-14",
-          "qtd_pendente": 2.0,
-          "valor_pendente": 7694.6
-        }
-      ],
-      "falta_para_quitar": 2.0,
-      "falta_disp_livre": 2.0,
-      "status_estoque": "Falta Estoque"
-    },
-    {
-      "cod_produto": "00000304",
-      "descricao": "REPARO TIPO CASTELO HL P/ VALV GLOBO 2\" (DN50)",
-      "part_number": "28311.0500.0010",
-      "unidade": "UN",
-      "origem": "Importado",
-      "qtd_pedida": 2.0,
-      "qtd_faturada": 0.0,
-      "qtd_pendente": 2.0,
-      "valor_pendente": 7108.34,
-      "saldo_estoque": 0.0,
-      "reservado_estoque": 0.0,
-      "disponivel_estoque": 0.0,
-      "pedidos_count": 1,
-      "pedidos": [
-        {
-          "codigo_itk": "00003301",
-          "pedido_cliente": "4000398442",
-          "filial": "Matriz RJ",
-          "emissao": "2026-07-15",
-          "qtd_pendente": 2.0,
-          "valor_pendente": 7108.34
         }
       ],
       "falta_para_quitar": 2.0,
@@ -2639,6 +3035,34 @@
           "emissao": "2026-08-28",
           "qtd_pendente": 2.0,
           "valor_pendente": 2510.0
+        }
+      ],
+      "falta_para_quitar": 2.0,
+      "falta_disp_livre": 2.0,
+      "status_estoque": "Falta Estoque"
+    },
+    {
+      "cod_produto": "00000063",
+      "descricao": "REPARO TIPO CASTELO HL P/ VALV GLOBO 3/8\" (DN10)",
+      "part_number": "28311.0100.0010",
+      "unidade": "UN",
+      "origem": "Importado",
+      "qtd_pedida": 2.0,
+      "qtd_faturada": 0.0,
+      "qtd_pendente": 2.0,
+      "valor_pendente": 2251.7,
+      "saldo_estoque": 0.0,
+      "reservado_estoque": 0.0,
+      "disponivel_estoque": 0.0,
+      "pedidos_count": 1,
+      "pedidos": [
+        {
+          "codigo_itk": "00003305",
+          "pedido_cliente": "4000407885",
+          "filial": "Matriz RJ",
+          "emissao": "2026-07-15",
+          "qtd_pendente": 2.0,
+          "valor_pendente": 2251.7
         }
       ],
       "falta_para_quitar": 2.0,
@@ -2758,6 +3182,34 @@
       "status_estoque": "Falta Estoque"
     },
     {
+      "cod_produto": "00002734",
+      "descricao": "VALV SEG CRIO ANG BZ 1.1/2\" X 2\" NPT(M X F) @02.50 BAR",
+      "part_number": "06388.2314.6040 @03.00BAR",
+      "unidade": "UN",
+      "origem": "Importado",
+      "qtd_pedida": 1.0,
+      "qtd_faturada": 0.0,
+      "qtd_pendente": 1.0,
+      "valor_pendente": 5680.0,
+      "saldo_estoque": 0.0,
+      "reservado_estoque": 0.0,
+      "disponivel_estoque": 0.0,
+      "pedidos_count": 1,
+      "pedidos": [
+        {
+          "codigo_itk": "00002473",
+          "pedido_cliente": "4000374555",
+          "filial": "Contagem",
+          "emissao": "2026-03-30",
+          "qtd_pendente": 1.0,
+          "valor_pendente": 5680.0
+        }
+      ],
+      "falta_para_quitar": 1.0,
+      "falta_disp_livre": 1.0,
+      "status_estoque": "Falta Estoque"
+    },
+    {
       "cod_produto": "00000068",
       "descricao": "REPARO HEROSE MOD 29256.0500.0000 (DN50)",
       "part_number": "29256.0500.0000 (DN",
@@ -2823,9 +3275,9 @@
       "qtd_faturada": 0.0,
       "qtd_pendente": 12.0,
       "valor_pendente": 8182.0,
-      "saldo_estoque": 340.0,
+      "saldo_estoque": 334.0,
       "reservado_estoque": 0.0,
-      "disponivel_estoque": 340.0,
+      "disponivel_estoque": 334.0,
       "pedidos_count": 3,
       "pedidos": [
         {
